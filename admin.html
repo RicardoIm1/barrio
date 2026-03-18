@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <title>Administración - Avisos Jardines</title>
+  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+</head>
+<body>
+  <header class="header">
+    <div class="contenedor">
+      <h1>Administración</h1>
+      <div>
+        <a href="/avisos-jardines/index.html">Ver avisos</a>
+        <a href="#" id="cerrar-sesion" style="margin-left: 8px;">Cerrar sesión</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <div id="mensaje-container"></div>
+
+    <div class="filtros" id="admin-tabs">
+      <button class="filtro activo" data-tab="nuevo">Nuevo aviso</button>
+      <button class="filtro" data-tab="lista">Mis avisos</button>
+      <button class="filtro" data-tab="perfil">Mi perfil</button>
+    </div>
+
+    <!-- Pestaña: Nuevo aviso -->
+    <div id="tab-nuevo" class="tab activo">
+      <form id="form-aviso" class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
+
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" name="categoria" required>
+            <option value="">Seleccionar</option>
+            <option value="urgente">Urgente</option>
+            <option value="eventos">Eventos</option>
+            <option value="servicios">Servicios</option>
+            <option value="perdidos">Perdidos y encontrados</option>
+            <option value="clasificados">Clasificados</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
+        </div>
+
+        <div class="campo">
+          <label for="contenido">Descripción</label>
+          <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="ubicacion">Ubicación (opcional)</label>
+          <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
+        </div>
+
+        <div class="campo">
+          <label for="contacto">Contacto (opcional)</label>
+          <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
+        </div>
+
+        <div class="campo">
+          <label for="fecha_evento">Fecha del evento (opcional)</label>
+          <input type="date" id="fecha_evento" name="fecha_evento">
+        </div>
+
+        <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
+          <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+        </div>
+
+        <div class="grupo-botones">
+          <button type="submit" class="boton">Publicar aviso</button>
+          <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pestaña: Lista de avisos -->
+    <div id="tab-lista" class="tab">
+      <div id="mis-avisos-container"></div>
+      <div id="paginacion-admin" class="paginacion"></div>
+    </div>
+
+    <!-- Pestaña: Perfil -->
+    <div id="tab-perfil" class="tab">
+      <div class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
+        
+        <div id="perfil-info"></div>
+
+        <div style="margin-top: 32px;">
+          <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
+          <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
+            Activar notificaciones
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+<!-- Contenedor donde se cargará el footer -->
+    <div id="footer-container"></div>
+
+    <script>
+        // Cargar el footer
+        fetch('/avisos-jardines/common/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+                // Actualizar el año después de cargar el footer
+                document.getElementById('anio-actual').textContent = new Date().getFullYear();
+            })
+            .catch(error => console.error('Error cargando el footer:', error));
+    </script>
+
+  <script src="/avisos-jardines/js/api.js"></script>
+  <script src="/avisos-jardines/js/auth.js"></script>
+  <script src="/avisos-jardines/js/admin.js"></script>
+</body>
+</html>
