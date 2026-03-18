@@ -1,48 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-  <title>Iniciar sesión - Avisos Jardines</title>
-  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>Iniciar sesión - Avisos Jardines</title>
+    <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
 </head>
+
 <body>
-  <header class="header">
-    <div class="contenedor">
-      <h1>Avisos Jardines</h1>
-      <div>
-        <a href="/avisos-jardines/index.html">Volver</a>
-      </div>
-    </div>
-  </header>
+    <header class="header">
+        <div class="contenedor">
+            <h1>Avisos Jardines</h1>
+            <div>
+                <a href="/avisos-jardines/index.html">Volver</a>
+            </div>
+        </div>
+    </header>
 
-  <main class="contenedor-chico">
-    <div id="mensaje-container"></div>
+    <main class="contenedor-chico">
+        <div id="mensaje-container"></div>
 
-    <form id="form-login" class="formulario">
-      <h2 style="margin-bottom: 24px; font-weight: 500;">Iniciar sesión</h2>
-      
-      <div class="campo">
-        <label for="email">Correo electrónico</label>
-        <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com">
-      </div>
+        <form id="form-login" class="formulario">
+            <h2 style="margin-bottom: 24px; font-weight: 500;">Iniciar sesión</h2>
 
-      <div class="campo">
-        <label for="clave">Clave de acceso</label>
-        <input type="password" id="clave" name="clave" required placeholder="Tu clave">
-      </div>
+            <div class="campo">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com">
+            </div>
 
-      <button type="submit" class="boton">Entrar</button>
-    </form>
-  </main>
+            <div class="campo">
+                <label for="clave">Clave de acceso</label>
+                <input type="password" id="clave" name="clave" required placeholder="Tu clave">
+            </div>
 
-  <footer class="footer">
-    <div class="contenedor">
-      <p>Periódico mural digital de la Colonia Jardines</p>
-    </div>
-  </footer>
+            <button type="submit" class="boton">Entrar</button>
+        </form>
+    </main>
 
-  <script src="/avisos-jardines/js/api.js"></script>
-  <script src="/avisos-jardines/js/auth.js"></script>
+    <!-- Contenedor donde se cargará el footer -->
+    <div id="footer-container"></div>
+
+    <script>
+        // Cargar el footer
+        fetch('/avisos-jardines/common/footer.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('footer-container').innerHTML = data;
+                // Actualizar el año después de cargar el footer
+                document.getElementById('anio-actual').textContent = new Date().getFullYear();
+            })
+            .catch(error => console.error('Error cargando el footer:', error));
+    </script>
+
+    <script src="/avisos-jardines/js/api.js"></script>
+    <script src="/avisos-jardines/js/auth.js"></script>
 </body>
+
 </html>
