@@ -19,30 +19,29 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzfHel-cMAp4tSyDt_a1w8HZ8G0u5yI4aEf6S32rVW8U2VqFYWY25jDQNuC0pU8SVTHWg/exec";
 
-    async function cargarAvisos() {
-      try {
-        const res = await fetch(`${API_URL}?action=read`);
-        const avisos = await res.json();
+    function cargarAvisos() {
+      const script = document.createElement("script");
+      script.src = `${API_URL}?action=read&callback=mostrarAvisos`;
+      document.body.appendChild(script);
+    }
 
-        const contenedor = document.getElementById("avisos");
-        contenedor.innerHTML = "";
+    function mostrarAvisos(avisos) {
+      const contenedor = document.getElementById("avisos");
+      contenedor.innerHTML = "";
 
-        avisos.forEach(aviso => {
-          const div = document.createElement("div");
-          div.className = "aviso";
-          div.innerHTML = `
-            <div class="titulo">${aviso.Titulo}</div>
-            <div class="descripcion">${aviso.Descripcion}</div>
-            <div class="categoria">Categoría: ${aviso.Categoria}</div>
-            <div class="prioridad">Prioridad: ${aviso.Prioridad}</div>
-            <div class="fecha">Publicado: ${new Date(aviso.FechaCreacion).toLocaleString()}</div>
-            <div class="autor">Por: ${aviso.Autor}</div>
-          `;
-          contenedor.appendChild(div);
-        });
-      } catch (err) {
-        console.error("Error cargando avisos", err);
-      }
+      avisos.forEach(aviso => {
+        const div = document.createElement("div");
+        div.className = "aviso";
+        div.innerHTML = `
+          <div class="titulo">${aviso.Titulo}</div>
+          <div class="descripcion">${aviso.Descripcion}</div>
+          <div class="categoria">Categoría: ${aviso.Categoria}</div>
+          <div class="prioridad">Prioridad: ${aviso.Prioridad}</div>
+          <div class="fecha">Publicado: ${new Date(aviso.FechaCreacion).toLocaleString()}</div>
+          <div class="autor">Por: ${aviso.Autor}</div>
+        `;
+        contenedor.appendChild(div);
+      });
     }
 
     cargarAvisos();
