@@ -1,14 +1,14 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
   baseUrl: 'https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec',
-  
+
   // Timeout para peticiones (30 segundos)
   timeout: 30000,
-  
+
   get apiKey() {
     return localStorage.getItem('api_key');
   },
-  
+
   set apiKey(valor) {
     if (valor) {
       localStorage.setItem('api_key', valor);
@@ -16,7 +16,7 @@ const API = {
       localStorage.removeItem('api_key');
     }
   },
-  
+
   // ==================== MÉTODO PRINCIPAL CON MEJOR MANEJO ====================
   async peticion(accion, coleccion = null, datos = {}, id = null, consulta = {}, paginacion = {}) {
     const payload = {
@@ -28,7 +28,7 @@ const API = {
       paginacion: paginacion,
       api_key: this.apiKey
     };
-    
+
     // Control de reintentos
     let ultimoError = null;
     for (let intento = 1; intento <= 3; intento++) {
@@ -36,7 +36,7 @@ const API = {
         // Crear AbortController para timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-        
+
         const respuesta = await fetch(this.baseUrl, {
           method: 'POST',
           body: JSON.stringify(payload),
@@ -45,25 +45,25 @@ const API = {
           },
           signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
-        
+
         if (!respuesta.ok) {
           throw new Error(`HTTP ${respuesta.status}: ${respuesta.statusText}`);
         }
-        
+
         const resultado = await respuesta.json();
-        
+
         if (!resultado.success) {
           throw new Error(resultado.error || 'Error en la operación');
         }
-        
+
         return resultado.data;
-        
-      } catch(error) {
+
+      } catch (error) {
         ultimoError = error;
         console.warn(`Intento ${intento} fallido:`, error.message);
-        
+
         // Si es error de red, esperar antes de reintentar
         if (error.name === 'TypeError' || error.name === 'AbortError') {
           if (intento < 3) {
@@ -74,36 +74,36 @@ const API = {
         break;
       }
     }
-    
+
     // Si llegamos aquí, todos los intentos fallaron
     console.error('API Error después de 3 intentos:', ultimoError);
-    
+
     // Mensaje de error más amigable
     let mensajeError = 'No se pudo conectar con el servidor. ';
     if (ultimoError.name === 'AbortError') {
       mensajeError += 'La petición tomó demasiado tiempo.';
-    } else if (ultimoError.message.includes('Failed to fetch')) {
+    } else if (ultimoError.message && ultimoError.message.includes('Failed to fetch')) {
       mensajeError += 'Verifica tu conexión a internet.';
-    } else {
+    } else if (ultimoError.message) {
       mensajeError += ultimoError.message;
     }
-    
+
     this.mostrarError(mensajeError);
     throw new Error(mensajeError);
   },
-  
+
   // ==================== MÉTODOS CRUD ====================
   crear: (coleccion, datos) => API.peticion('CREAR', coleccion, datos),
-  
+
   leer: (coleccion, id) => API.peticion('LEER', coleccion, {}, id),
-  
+
   actualizar: (coleccion, id, datos) => API.peticion('ACTUALIZAR', coleccion, datos, id),
-  
+
   eliminar: (coleccion, id) => API.peticion('ELIMINAR', coleccion, {}, id),
-  
-  listar: (coleccion, consulta = {}, paginacion = {}) => 
+
+  listar: (coleccion, consulta = {}, paginacion = {}) =>
     API.peticion('LISTAR', coleccion, {}, null, consulta, paginacion),
-  
+
   // ==================== AUTENTICACIÓN ====================
   async login(email, clave) {
     try {
@@ -118,22 +118,22 @@ const API = {
       throw error;
     }
   },
-  
+
   logout() {
     this.apiKey = null;
     localStorage.removeItem('usuario');
   },
-  
+
   getUsuarioActual() {
     const usuario = localStorage.getItem('usuario');
     return usuario ? JSON.parse(usuario) : null;
   },
-  
+
   // ==================== NOTIFICACIONES ====================
   async guardarTokenFCM(token, dispositivo) {
     return this.peticion('GUARDAR_TOKEN', null, { token, dispositivo });
   },
-  
+
   // ==================== UTILERÍAS ====================
   mostrarError(mensaje) {
     const contenedor = document.getElementById('mensaje-container');
@@ -148,7 +148,7 @@ const API = {
       console.error('Error:', mensaje);
     }
   },
-  
+
   mostrarExito(mensaje) {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
@@ -160,11 +160,11 @@ const API = {
       }, 5000);
     }
   },
-  
+
   // Método para verificar conectividad
   async verificarConexion() {
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec', {
+      await fetch(this.baseUrl, {
         method: 'HEAD',
         mode: 'no-cors'
       });
