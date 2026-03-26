@@ -1,81 +1,39 @@
-// ==================== AUTENTICACIÓN ====================
+// ==================== AUTH ====================
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Verificar si hay sesión activa
+  // Verificar si hay usuario autenticado
   const usuario = API.getUsuarioActual();
   const loginLink = document.getElementById('login-link');
   
-  if (loginLink) {
-    if (usuario) {
-      loginLink.textContent = usuario.nombre || 'Mi cuenta';
-      loginLink.href = 'admin.html';
-    } else {
-      loginLink.textContent = 'Iniciar sesión';
-      loginLink.href = 'login.html';
-    }
-  }
-  
-  // Formulario de login
-  const formLogin = document.getElementById('form-login');
-  if (formLogin) {
-    formLogin.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const email = document.getElementById('email').value;
-      const clave = document.getElementById('clave').value;
-      
-      try {
-        const resultado = await API.login(email, clave);
-        API.mostrarExito('Sesión iniciada correctamente');
-        setTimeout(() => {
-          window.location.href = 'admin.html';
-        }, 1000);
-      } catch(error) {
-        // Error ya mostrado por API
-      }
-    });
-  }
-  
-  // Cerrar sesión
-  const cerrarSesion = document.getElementById('cerrar-sesion');
-  if (cerrarSesion) {
-    cerrarSesion.addEventListener('click', function(e) {
-      e.preventDefault();
-      API.logout();
-      window.location.href = 'index.html';
-    });
+  if (usuario && loginLink) {
+    loginLink.textContent = `Hola, ${usuario.nombre}`;
+    loginLink.href = '/avisos-jardines/admin.html';
   }
 });
 
-// ==================== NOTIFICACIONES ====================
-
-async function activarNotificaciones() {
-  if (!('Notification' in window)) {
-    API.mostrarError('Tu navegador no soporta notificaciones');
-    return;
-  }
-  
+// Función para iniciar sesión (llamar desde formulario)
+async function iniciarSesion(email, password) {
   try {
-    const permiso = await Notification.requestPermission();
+    const resultado = await API.login(email, password);
     
-    if (permiso === 'granted') {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: 'TU_CLAVE_VAPID' // Reemplazar
-      });
+    if (resultado && resultado.usuario) {
+      API.mostrarExito(`Bienvenido ${resultado.usuario.nombre}`);
       
-      await API.guardarTokenFCM(
-        JSON.stringify(subscription),
-        navigator.userAgent
-      );
-      
-      API.mostrarExito('Notificaciones activadas');
-    } else {
-      API.mostrarError('Permiso denegado para notificaciones');
+      // Redirigir según rol
+      if (resultado.usuario.rol === 'admin') {
+        window.location.href = '/avisos-jardines/admin.html';
+      } else {
+        window.location.href = '/avisos-jardines/index.html';
+      }
     }
-  } catch(error) {
-    console.error('Error activando notificaciones:', error);
-    API.mostrarError('Error al activar notificaciones');
+  } catch (error) {
+    console.error('Error en login:', error);
+    API.mostrarError('Credenciales incorrectas');
   }
+}
+
+// Función para cerrar sesión
+function cerrarSesion() {
+  API.logout();
+  window.location.href = '/avisos-jardines/index.html';
 }

@@ -17,7 +17,7 @@ const API = {
     }
   },
 
-  // ==================== MÉTODO PRINCIPAL CON MEJOR MANEJO ====================
+  // ==================== MÉTODO PRINCIPAL ====================
   async peticion(accion, coleccion = null, datos = {}, id = null, consulta = {}, paginacion = {}) {
     const payload = {
       accion: accion,
@@ -29,13 +29,11 @@ const API = {
       api_key: this.apiKey
     };
 
-    console.log('Enviando petición:', { accion, coleccion, payload });
+    console.log('📤 Enviando petición:', { accion, coleccion });
 
-    // Control de reintentos
     let ultimoError = null;
     for (let intento = 1; intento <= 3; intento++) {
       try {
-        // Crear AbortController para timeout
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -55,20 +53,12 @@ const API = {
         }
 
         const resultado = await respuesta.json();
-        console.log('Respuesta API:', resultado);
+        console.log('📥 Respuesta API:', resultado);
 
-        // Verificar si la API devolvió success: true
         if (resultado.success === true) {
-          // Si es el mensaje de bienvenida o datos reales
-          if (resultado.data && resultado.data.message === 'API de Avisos Jardines activa') {
-            // Es solo un mensaje de bienvenida, no datos reales
-            console.warn('API devolvió mensaje de bienvenida, puede que la colección no exista');
-            return { datos: [], paginacion: { pagina: 1, paginas: 0, total: 0 } };
-          }
           return resultado.data;
         }
         
-        // Si no tiene success o es false, lanzar error
         if (!resultado.success && resultado.error) {
           throw new Error(resultado.error);
         }
@@ -79,7 +69,6 @@ const API = {
         ultimoError = error;
         console.warn(`Intento ${intento} fallido:`, error.message);
 
-        // Si es error de red, esperar antes de reintentar
         if (error.name === 'TypeError' || error.name === 'AbortError') {
           if (intento < 3) {
             await new Promise(resolve => setTimeout(resolve, 2000 * intento));
@@ -90,10 +79,8 @@ const API = {
       }
     }
 
-    // Si llegamos aquí, todos los intentos fallaron
-    console.error('API Error después de 3 intentos:', ultimoError);
-
-    // Mensaje de error más amigable
+    console.error('❌ API Error:', ultimoError);
+    
     let mensajeError = 'No se pudo conectar con el servidor. ';
     if (ultimoError.name === 'AbortError') {
       mensajeError += 'La petición tomó demasiado tiempo.';
@@ -109,25 +96,23 @@ const API = {
 
   // ==================== MÉTODOS CRUD ====================
   crear: (coleccion, datos) => API.peticion('CREAR', coleccion, datos),
-
   leer: (coleccion, id) => API.peticion('LEER', coleccion, {}, id),
-
   actualizar: (coleccion, id, datos) => API.peticion('ACTUALIZAR', coleccion, datos, id),
-
   eliminar: (coleccion, id) => API.peticion('ELIMINAR', coleccion, {}, id),
-
   listar: (coleccion, consulta = {}, paginacion = {}) =>
     API.peticion('LISTAR', coleccion, {}, null, consulta, paginacion),
 
   // ==================== AUTENTICACIÓN ====================
-  async login(email, clave) {
+  async login(email, password) {
     try {
-      const resultado = await this.peticion('LOGIN', null, { email, clave });
+      const resultado = await this.peticion('LOGIN', null, { email, password });
       if (resultado && resultado.api_key) {
         this.apiKey = resultado.api_key;
         localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+        localStorage.setItem('api_key', resultado.api_key);
+        return resultado;
       }
-      return resultado;
+      throw new Error('No se recibió API key');
     } catch (error) {
       this.mostrarError('Error al iniciar sesión: ' + error.message);
       throw error;
@@ -137,11 +122,17 @@ const API = {
   logout() {
     this.apiKey = null;
     localStorage.removeItem('usuario');
+    localStorage.removeItem('api_key');
   },
 
   getUsuarioActual() {
     const usuario = localStorage.getItem('usuario');
     return usuario ? JSON.parse(usuario) : null;
+  },
+
+  // Verificar si el usuario está autenticado
+  isAuthenticated() {
+    return !!this.apiKey;
   },
 
   // ==================== NOTIFICACIONES ====================
@@ -176,26 +167,19 @@ const API = {
     }
   },
 
-  // Método para verificar conectividad
+  // Verificar conectividad
   async verificarConexion() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
       
       const respuesta = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ accion: 'PING' }),
+        method: 'GET',
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
-      
-      if (respuesta.ok) {
-        const data = await respuesta.json();
-        return data.success === true;
-      }
-      return false;
+      return respuesta.ok;
     } catch (error) {
       console.warn('No hay conexión con el servidor:', error.message);
       return false;

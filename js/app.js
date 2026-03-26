@@ -4,49 +4,10 @@ let paginaActual = 1;
 let categoriaActual = 'todos';
 let mensajeInfoTimeout = null;
 
-// Datos de prueba para cuando la API no tenga datos
-const DATOS_PRUEBA = {
-  datos: [
-    {
-      id: 1,
-      titulo: 'Bienvenidos al Avisos Jardines',
-      contenido: 'Este es un aviso de ejemplo. Pronto aparecerán los avisos reales de tu colonia.',
-      categoria: 'eventos',
-      created_at: new Date().toISOString(),
-      ubicacion: 'Colonia Jardines',
-      status: 'activo'
-    },
-    {
-      id: 2,
-      titulo: 'Junta de Vecinos',
-      contenido: 'Se invita a todos los vecinos a la junta mensual el próximo sábado en el salón comunitario.',
-      categoria: 'eventos',
-      created_at: new Date().toISOString(),
-      ubicacion: 'Salón Comunitario',
-      status: 'activo'
-    },
-    {
-      id: 3,
-      titulo: '⚠️ Corte de agua programado',
-      contenido: 'El próximo martes habrá corte de agua por mantenimiento de 9am a 2pm.',
-      categoria: 'urgente',
-      created_at: new Date().toISOString(),
-      ubicacion: 'Toda la colonia',
-      status: 'activo'
-    }
-  ],
-  paginacion: {
-    pagina: 1,
-    paginas: 1,
-    total: 3
-  }
-};
-
 document.addEventListener('DOMContentLoaded', async function() {
-  // Limpiar mensaje de conexión anterior si existe
   if (mensajeInfoTimeout) clearTimeout(mensajeInfoTimeout);
   
-  // Primero verificar conexión
+  // Verificar conexión
   const conectado = await API.verificarConexion();
   if (!conectado) {
     const container = document.getElementById('mensaje-container');
@@ -64,7 +25,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   }
   
-  // Luego cargar los avisos
+  // Verificar autenticación y mostrar botón correspondiente
+  const usuario = API.getUsuarioActual();
+  const loginLink = document.getElementById('login-link');
+  
+  if (usuario && loginLink) {
+    loginLink.textContent = `👤 ${usuario.nombre}`;
+    loginLink.href = '/avisos-jardines/admin.html';
+  } else if (loginLink) {
+    loginLink.textContent = 'Iniciar sesión';
+    loginLink.href = '/avisos-jardines/login.html';
+  }
+  
+  // Cargar avisos
   await cargarAvisos();
   
   // Configurar filtros
@@ -84,7 +57,7 @@ async function cargarAvisos() {
   const contenedor = document.getElementById('avisos-container');
   if (!contenedor) return;
   
-  contenedor.innerHTML = '<div class="cargando">Cargando avisos...</div>';
+  contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
   
   try {
     const consulta = { status: 'activo' };
@@ -93,47 +66,42 @@ async function cargarAvisos() {
       consulta.categoria = categoriaActual;
     }
     
-    let resultado;
-    try {
-      resultado = await API.listar('AVISOS', consulta, {
-        pagina: paginaActual,
-        limite: 12
-      });
-    } catch (apiError) {
-      console.warn('Error al obtener datos de API, usando datos de prueba:', apiError);
-      resultado = DATOS_PRUEBA;
+    // Si no hay API key, no podremos listar avisos
+    if (!API.isAuthenticated()) {
+      console.warn('No autenticado, mostrando mensaje de login');
+      contenedor.innerHTML = `
+        <div class="mensaje mensaje-info">
+          🔐 Inicia sesión para ver los avisos de la colonia
+          <br><br>
+          <a href="/avisos-jardines/login.html" class="boton">Iniciar sesión</a>
+        </div>
+      `;
+      return;
     }
     
-    // Filtrar por categoría si es necesario
-    let avisosFiltrados = resultado.datos || [];
-    if (categoriaActual !== 'todos') {
-      avisosFiltrados = avisosFiltrados.filter(aviso => aviso.categoria === categoriaActual);
-    }
+    const resultado = await API.listar('AVISOS', consulta, {
+      pagina: paginaActual,
+      limite: 12
+    });
     
-    if (avisosFiltrados.length === 0) {
+    if (!resultado || !resultado.datos || resultado.datos.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos en esta categoría</div>';
     } else {
-      contenedor.innerHTML = avisosFiltrados.map(aviso => crearTarjetaAviso(aviso)).join('');
+      contenedor.innerHTML = resultado.datos.map(aviso => crearTarjetaAviso(aviso)).join('');
     }
     
-    // Renderizar paginación (simple para datos de prueba)
-    if (resultado.paginacion) {
-      renderizarPaginacion({
-        ...resultado.paginacion,
-        paginas: Math.ceil(avisosFiltrados.length / 12) || 1
-      });
+    if (resultado && resultado.paginacion) {
+      renderizarPaginacion(resultado.paginacion);
     }
     
   } catch(error) {
     console.error('Error al cargar avisos:', error);
-    // Mostrar datos de prueba como fallback
-    const avisosFiltrados = DATOS_PRUEBA.datos.filter(aviso => 
-      categoriaActual === 'todos' || aviso.categoria === categoriaActual
-    );
-    contenedor.innerHTML = avisosFiltrados.map(aviso => crearTarjetaAviso(aviso)).join('');
-    if (avisosFiltrados.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos en esta categoría</div>';
-    }
+    contenedor.innerHTML = `
+      <div class="mensaje mensaje-error">
+        ❌ Error al cargar avisos. 
+        ${error.message === 'NO_AUTENTICADO' ? 'Debes iniciar sesión.' : 'Verifica tu conexión a internet.'}
+      </div>
+    `;
   }
 }
 
@@ -156,13 +124,13 @@ function crearTarjetaAviso(aviso) {
   return `
     <div class="tarjeta ${claseUrgente}">
       <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
-      <div class="tarjeta-fecha">${fecha}</div>
+      <div class="tarjeta-fecha">📅 ${fecha}</div>
       <div class="tarjeta-contenido">${escapeHTML(contenido.substring(0, 150))}${contenido.length > 150 ? '...' : ''}</div>
       <div class="tarjeta-meta">
-        <span>${escapeHTML(categoria)}</span>
+        <span>🏷️ ${escapeHTML(categoria)}</span>
         ${ubicacion ? `<span>📍 ${escapeHTML(ubicacion)}</span>` : ''}
       </div>
-      ${id ? `<a href="aviso.html?id=${id}" class="boton boton-chico" style="margin-top: 16px;">Ver completo</a>` : ''}
+      ${id ? `<a href="aviso.html?id=${id}" class="boton boton-chico" style="margin-top: 16px;">Ver completo →</a>` : ''}
     </div>
   `;
 }
