@@ -1,6 +1,9 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
-  baseUrl: 'https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec', // REEMPLAZAR CON TU URL
+  baseUrl: 'https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec',
+  
+  // Timeout para peticiones (30 segundos)
+  timeout: 30000,
   
   get apiKey() {
     return localStorage.getItem('api_key');
@@ -14,7 +17,7 @@ const API = {
     }
   },
   
-  // ==================== MÉTODO PRINCIPAL ====================
+  // ==================== MÉTODO PRINCIPAL CON MEJOR MANEJO ====================
   async peticion(accion, coleccion = null, datos = {}, id = null, consulta = {}, paginacion = {}) {
     const payload = {
       accion: accion,
@@ -26,28 +29,67 @@ const API = {
       api_key: this.apiKey
     };
     
-    try {
-      const respuesta = await fetch(this.baseUrl, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'application/json'
+    // Control de reintentos
+    let ultimoError = null;
+    for (let intento = 1; intento <= 3; intento++) {
+      try {
+        // Crear AbortController para timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+        
+        const respuesta = await fetch(this.baseUrl, {
+          method: 'POST',
+          body: JSON.stringify(payload),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!respuesta.ok) {
+          throw new Error(`HTTP ${respuesta.status}: ${respuesta.statusText}`);
         }
-      });
-      
-      const resultado = await respuesta.json();
-      
-      if (!resultado.success) {
-        throw new Error(resultado.error);
+        
+        const resultado = await respuesta.json();
+        
+        if (!resultado.success) {
+          throw new Error(resultado.error || 'Error en la operación');
+        }
+        
+        return resultado.data;
+        
+      } catch(error) {
+        ultimoError = error;
+        console.warn(`Intento ${intento} fallido:`, error.message);
+        
+        // Si es error de red, esperar antes de reintentar
+        if (error.name === 'TypeError' || error.name === 'AbortError') {
+          if (intento < 3) {
+            await new Promise(resolve => setTimeout(resolve, 2000 * intento));
+            continue;
+          }
+        }
+        break;
       }
-      
-      return resultado.data;
-      
-    } catch(error) {
-      console.error('API Error:', error);
-      this.mostrarError(error.message);
-      throw error;
     }
+    
+    // Si llegamos aquí, todos los intentos fallaron
+    console.error('API Error después de 3 intentos:', ultimoError);
+    
+    // Mensaje de error más amigable
+    let mensajeError = 'No se pudo conectar con el servidor. ';
+    if (ultimoError.name === 'AbortError') {
+      mensajeError += 'La petición tomó demasiado tiempo.';
+    } else if (ultimoError.message.includes('Failed to fetch')) {
+      mensajeError += 'Verifica tu conexión a internet.';
+    } else {
+      mensajeError += ultimoError.message;
+    }
+    
+    this.mostrarError(mensajeError);
+    throw new Error(mensajeError);
   },
   
   // ==================== MÉTODOS CRUD ====================
@@ -64,12 +106,17 @@ const API = {
   
   // ==================== AUTENTICACIÓN ====================
   async login(email, clave) {
-    const resultado = await this.peticion('LOGIN', null, { email, clave });
-    if (resultado.api_key) {
-      this.apiKey = resultado.api_key;
-      localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+    try {
+      const resultado = await this.peticion('LOGIN', null, { email, clave });
+      if (resultado && resultado.api_key) {
+        this.apiKey = resultado.api_key;
+        localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+      }
+      return resultado;
+    } catch (error) {
+      this.mostrarError('Error al iniciar sesión: ' + error.message);
+      throw error;
     }
-    return resultado;
   },
   
   logout() {
@@ -91,20 +138,40 @@ const API = {
   mostrarError(mensaje) {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
-      contenedor.innerHTML = `<div class="mensaje mensaje-error">${mensaje}</div>`;
+      contenedor.innerHTML = `<div class="mensaje mensaje-error">⚠️ ${mensaje}</div>`;
       setTimeout(() => {
-        contenedor.innerHTML = '';
-      }, 5000);
+        if (contenedor.innerHTML.includes(mensaje)) {
+          contenedor.innerHTML = '';
+        }
+      }, 8000);
+    } else {
+      console.error('Error:', mensaje);
     }
   },
   
   mostrarExito(mensaje) {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
-      contenedor.innerHTML = `<div class="mensaje mensaje-exito">${mensaje}</div>`;
+      contenedor.innerHTML = `<div class="mensaje mensaje-exito">✓ ${mensaje}</div>`;
       setTimeout(() => {
-        contenedor.innerHTML = '';
+        if (contenedor.innerHTML.includes(mensaje)) {
+          contenedor.innerHTML = '';
+        }
       }, 5000);
+    }
+  },
+  
+  // Método para verificar conectividad
+  async verificarConexion() {
+    try {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec', {
+        method: 'HEAD',
+        mode: 'no-cors'
+      });
+      return true;
+    } catch (error) {
+      console.warn('No hay conexión con el servidor');
+      return false;
     }
   }
 };
