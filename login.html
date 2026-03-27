@@ -55,6 +55,16 @@
 
     <script src="/avisos-jardines/js/api.js"></script>
     <script src="/avisos-jardines/js/auth.js"></script>
+
+    <script>
+        document.getElementById('form-login').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Evita recargar la página
+            const email = document.getElementById('email').value;
+            const clave = document.getElementById('clave').value;
+            await iniciarSesion(email, clave);
+        });
+    </script>
+
 </body>
 
 </html>
