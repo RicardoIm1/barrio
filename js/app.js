@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // Cargar avisos
-  await cargarAvisosPublicos();
+  await cargarAvisos();
 
   // Configurar filtros
   document.querySelectorAll('.filtro').forEach(btn => {
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
       categoriaActual = this.dataset.categoria;
       paginaActual = 1;
-      cargarAvisos();
+      cargarAvisosPublicos();
     });
   });
 });
@@ -100,7 +100,7 @@ async function cargarAvisosPublicos() {
   contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
 
   try {
-    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwiL7oD3APPpLVgrGaBh0xULVoNJt09iVBL81eG2NYTIUbCdGUOQW1dpkgjw4-k_r6KMFfz8m5VVw0/pub?gid=0&single=true&output=csvTU_URL_PUBLICADA_DE_GOOGLE_SHEETS"; // reemplaza con la URL real
+    const url = "https://docs.google.com/spreadsheets/d/1s8w2Wb8uiQQMMrZn2TQYD5sVDbp-NdpnnQR8l-YTqXM/edit?usp=sharing"; // reemplaza con la URL real
     const resp = await fetch(url);
     const texto = await resp.text();
 
