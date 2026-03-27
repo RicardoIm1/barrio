@@ -1,6 +1,6 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
-  baseUrl: 'https://script.google.com/macros/s/AKfycbyXb5zCWvI6wQ2Apggij2J1ilFEydkfByunwYFBiH0SEXtSgFS4jWtwCAjkbqBqsQ30/exec',
+  baseUrl: 'https://avisos-jardines.netlify.app',
 
   // Timeout para peticiones (30 segundos)
   timeout: 30000,
