@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   });
 });
 
-async function cargarAvisos() {
+/* async function cargarAvisos() {
   const contenedor = document.getElementById('avisos-container');
   if (!contenedor) return;
 
@@ -91,8 +91,43 @@ async function cargarAvisos() {
       </div>
     `;
   }
-}
+} */
 
+async function cargarAvisosPublicos() {
+  const contenedor = document.getElementById('avisos-container');
+  if (!contenedor) return;
+
+  contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
+
+  try {
+    const url = "TU_URL_PUBLICADA_DE_GOOGLE_SHEETS"; // reemplaza con la URL real
+    const resp = await fetch(url);
+    const texto = await resp.text();
+
+    // Convertir CSV a objetos
+    const filas = texto.split("\n").map(f => f.split(","));
+    const encabezados = filas[0];
+    const datos = filas.slice(1).map(fila => {
+      let obj = {};
+      encabezados.forEach((h, i) => obj[h.trim()] = fila[i] ? fila[i].trim() : "");
+      return obj;
+    });
+
+    if (datos.length === 0) {
+      contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos publicados</div>';
+    } else {
+      contenedor.innerHTML = datos.map(aviso => crearTarjetaAviso(aviso)).join('');
+    }
+
+  } catch (error) {
+    console.error("Error cargando avisos públicos:", error);
+    contenedor.innerHTML = `
+      <div class="mensaje mensaje-error">
+        ❌ Error al cargar avisos públicos. Verifica tu conexión.
+      </div>
+    `;
+  }
+}
 
 function crearTarjetaAviso(aviso) {
   if (!aviso) return '';
