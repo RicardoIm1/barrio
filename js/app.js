@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   // Cargar avisos
-  await cargarAvisos();
+  await cargarAvisosPublicos();
 
   // Configurar filtros
   document.querySelectorAll('.filtro').forEach(btn => {
