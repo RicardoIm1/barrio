@@ -1,6 +1,6 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
-  baseUrl: 'https://avisos-jardines.netlify.app',
+  baseUrl: 'https://avisos-jardines.netlify.app/api',
 
   // Timeout para peticiones (30 segundos)
   timeout: 30000,
