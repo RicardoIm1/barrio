@@ -2,42 +2,104 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-  <title>Aviso - Avisos Jardines</title>
+  <title>Aviso</title>
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
 </head>
 <body>
   <header class="header">
     <div class="contenedor">
-      <h1>Avisos Jardines</h1>
+      <h1>Detalle del aviso</h1>
       <div>
         <a href="/avisos-jardines/index.html">Volver</a>
       </div>
     </div>
   </header>
 
-  <main class="contenedor-chico">
+  <main class="contenedor">
     <div id="mensaje-container"></div>
-    <div id="aviso-detalle" class="cargando">Cargando aviso...</div>
+    <div id="aviso-container"></div>
   </main>
 
-  <!-- Contenedor donde se cargará el footer -->
-    <div id="footer-container"></div>
-
-    <script>
-        // Cargar el footer
-        fetch('/avisos-jardines/common/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('footer-container').innerHTML = data;
-                // Actualizar el año después de cargar el footer
-                document.getElementById('anio-actual').textContent = new Date().getFullYear();
-            })
-            .catch(error => console.error('Error cargando el footer:', error));
-    </script>
-
   <script src="/avisos-jardines/js/api.js"></script>
-  <script src="/avisos-jardines/js/auth.js"></script>
-  <script src="/avisos-jardines/js/aviso.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      const editar = params.get('editar') === 'true';
+
+      if (!id) {
+        document.getElementById('aviso-container').innerHTML = 
+          '<div class="mensaje mensaje-error">Aviso no encontrado</div>';
+        return;
+      }
+
+      try {
+        const resultado = await API.leer("AVISOS", id);
+        if (!resultado || !resultado.datos) {
+          document.getElementById('aviso-container').innerHTML = 
+            '<div class="mensaje mensaje-error">Aviso no disponible</div>';
+          return;
+        }
+
+        const aviso = resultado.datos;
+
+        if (editar) {
+          // Formulario de edición
+          document.getElementById('aviso-container').innerHTML = `
+            <form id="form-editar" class="formulario">
+              <h2>Editar aviso</h2>
+              <div class="campo">
+                <label>Título</label>
+                <input type="text" id="titulo" value="${aviso.titulo}">
+              </div>
+              <div class="campo">
+                <label>Contenido</label>
+                <textarea id="contenido">${aviso.contenido}</textarea>
+              </div>
+              <div class="campo">
+                <label>Ubicación</label>
+                <input type="text" id="ubicacion" value="${aviso.ubicacion || ''}">
+              </div>
+              <div class="grupo-botones">
+                <button type="submit" class="boton">Guardar cambios</button>
+                <a href="aviso.html?id=${id}" class="boton boton-secundario">Cancelar</a>
+              </div>
+            </form>
+          `;
+
+          document.getElementById('form-editar').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const datos = {
+              titulo: document.getElementById('titulo').value,
+              contenido: document.getElementById('contenido').value,
+              ubicacion: document.getElementById('ubicacion').value
+            };
+            try {
+              await API.actualizar("AVISOS", id, datos);
+              API.mostrarExito("✅ Aviso actualizado");
+              window.location.href = `aviso.html?id=${id}`;
+            } catch (error) {
+              API.mostrarError("❌ Error al actualizar aviso");
+            }
+          });
+
+        } else {
+          // Vista normal
+          document.getElementById('aviso-container').innerHTML = `
+            <div class="tarjeta">
+              <h2>${aviso.titulo}</h2>
+              <p>${aviso.contenido}</p>
+              ${aviso.ubicacion ? `<p>📍 ${aviso.ubicacion}</p>` : ''}
+              <p>📅 ${new Date(aviso.created_at).toLocaleDateString('es-MX')}</p>
+            </div>
+          `;
+        }
+
+      } catch (error) {
+        document.getElementById('aviso-container').innerHTML = 
+          '<div class="mensaje mensaje-error">Error al cargar aviso</div>';
+      }
+    });
+  </script>
 </body>
 </html>
