@@ -2,29 +2,8 @@
 
 let paginaActual = 1;
 let categoriaActual = 'todos';
-let mensajeInfoTimeout = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
-  if (mensajeInfoTimeout) clearTimeout(mensajeInfoTimeout);
-
-  // Verificar conexión
-  const conectado = await API.verificarConexion();
-  if (!conectado) {
-    const container = document.getElementById('mensaje-container');
-    if (container) {
-      container.innerHTML = `
-        <div class="mensaje mensaje-info">
-          🔄 Conectando con el servidor... Si el problema persiste, verifica tu conexión a internet.
-        </div>
-      `;
-      mensajeInfoTimeout = setTimeout(() => {
-        if (container.innerHTML && container.innerHTML.includes('Conectando')) {
-          container.innerHTML = '';
-        }
-      }, 5000);
-    }
-  }
-
   // Verificar autenticación y mostrar botón correspondiente
   const usuario = API.getUsuarioActual();
   const loginLink = document.getElementById('login-link');
@@ -37,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     loginLink.href = '/avisos-jardines/login.html';
   }
 
-  // Cargar avisos
+  // ✅ Cargar avisos públicos directamente desde la hoja publicada
   await cargarAvisosPublicos();
 
   // Configurar filtros
@@ -53,46 +32,6 @@ document.addEventListener('DOMContentLoaded', async function () {
   });
 });
 
-/* async function cargarAvisos() {
-  const contenedor = document.getElementById('avisos-container');
-  if (!contenedor) return;
-
-  contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
-
-  try {
-    const consulta = { status: 'activo' };
-
-    if (categoriaActual !== 'todos') {
-      consulta.categoria = categoriaActual;
-    }
-
-    // ✅ Ya no bloqueamos si no hay login: se listan avisos públicos
-    const resultado = await API.listar('AVISOS', consulta, {
-      pagina: paginaActual,
-      limite: 12
-    });
-
-    if (!resultado || !resultado.datos || resultado.datos.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos en esta categoría</div>';
-    } else {
-      contenedor.innerHTML = resultado.datos.map(aviso => crearTarjetaAviso(aviso)).join('');
-    }
-
-    if (resultado && resultado.paginacion) {
-      renderizarPaginacion(resultado.paginacion);
-    }
-
-  } catch (error) {
-    console.error('Error al cargar avisos:', error);
-    contenedor.innerHTML = `
-      <div class="mensaje mensaje-error">
-        ❌ Error al cargar avisos. 
-        ${error.message || 'Verifica tu conexión a internet.'}
-      </div>
-    `;
-  }
-} */
-
 async function cargarAvisosPublicos() {
   const contenedor = document.getElementById('avisos-container');
   if (!contenedor) return;
@@ -100,18 +39,24 @@ async function cargarAvisosPublicos() {
   contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
 
   try {
-    const url = "https://docs.google.com/spreadsheets/d/1s8w2Wb8uiQQMMrZn2TQYD5sVDbp-NdpnnQR8l-YTqXM"; // reemplaza con la URL real
+    // 👉 Usa la URL publicada de tu hoja AVISOS en formato CSV
+    const url = "https://docs.google.com/spreadsheets/d/e/TU_ID/pub?output=csv";
     const resp = await fetch(url);
     const texto = await resp.text();
 
     // Convertir CSV a objetos
     const filas = texto.split("\n").map(f => f.split(","));
     const encabezados = filas[0];
-    const datos = filas.slice(1).map(fila => {
+    let datos = filas.slice(1).map(fila => {
       let obj = {};
       encabezados.forEach((h, i) => obj[h.trim()] = fila[i] ? fila[i].trim() : "");
       return obj;
     });
+
+    // Filtrar por categoría
+    if (categoriaActual !== 'todos') {
+      datos = datos.filter(aviso => aviso.categoria === categoriaActual);
+    }
 
     if (datos.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos publicados</div>';
@@ -167,35 +112,4 @@ function escapeHTML(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-function renderizarPaginacion(paginacion) {
-  const contenedor = document.getElementById('paginacion');
-  if (!contenedor) return;
-
-  if (!paginacion || paginacion.paginas <= 1) {
-    contenedor.innerHTML = '';
-    return;
-  }
-
-  let html = '';
-
-  for (let i = 1; i <= paginacion.paginas; i++) {
-    if (i === 1 || i === paginacion.paginas ||
-      (i >= paginaActual - 2 && i <= paginaActual + 2)) {
-      html += `<button class="pagina ${i === paginaActual ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
-    } else if (i === paginaActual - 3 || i === paginaActual + 3) {
-      html += `<span class="paginacion-puntos" style="padding: 8px 12px; background: none; cursor: default;">...</span>`;
-    }
-  }
-
-  contenedor.innerHTML = html;
-
-  contenedor.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
-    btn.addEventListener('click', function () {
-      paginaActual = parseInt(this.dataset.pagina);
-      cargarAvisos();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  });
 }
