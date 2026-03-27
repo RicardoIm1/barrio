@@ -1,6 +1,6 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
-  baseUrl: 'https://script.google.com/macros/s/AKfycbzTJm2gSR5EhtECVrFmorcNJ-bC0Hx3pTT2-u_m2Zwh6NyHbK_RDvP4lWcXMHggbZQY/exec',
+  baseUrl: 'https://script.google.com/macros/s/AKfycbzHE7FbHosGBLwzJjaoP1DcIUZEUCBUyEwGheLeeMSnU7d82jUj1J1hnX91y5MOBPOY/exec',
 
   // Timeout para peticiones (30 segundos)
   timeout: 30000,
