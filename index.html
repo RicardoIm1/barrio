@@ -1,20 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-  <title>Avisos Colonia Jardines</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/jeronimoricardo/favicon-32x32.png">
+  <title>Avisos Jardines</title>
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
   <link rel="manifest" href="/avisos-jardines/manifest.json">
   <meta name="theme-color" content="#2c3e50">
 </head>
-
 <body>
   <header class="header">
     <div class="contenedor">
-      <h1>Avisos Colonia Jardines</h1>
+      <h1>Avisos Jardines</h1>
       <div>
         <a href="/avisos-jardines/login.html" id="login-link">Iniciar sesión</a>
       </div>
@@ -44,15 +41,33 @@
     <div id="paginacion" class="paginacion"></div>
   </main>
 
-  <footer class="footer">
-    <div class="contenedor">
-      <p>Periódico mural digital de la Colonia Jardines</p>
-    </div>
-  </footer>
+  <!-- Footer -->
+  <div id="footer-container"></div>
 
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/auth.js"></script>
   <script src="/avisos-jardines/js/app.js"></script>
-</body>
 
+  <script>
+    // Cargar footer dinámico
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('/avisos-jardines/common/footer.html')
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
+        .then(data => {
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            const anioElement = document.getElementById('anio-actual');
+            if (anioElement) {
+              anioElement.textContent = new Date().getFullYear();
+            }
+          }
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    });
+  </script>
+</body>
 </html>
