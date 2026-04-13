@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
@@ -8,16 +9,9 @@
   <link rel="manifest" href="/avisos-jardines/manifest.json">
   <meta name="theme-color" content="#2c3e50">
 </head>
+
 <body>
-  <header class="header">
-    <div class="contenedor">
-      <h1>Avisos Colonia Jardines PVR</h1>
-      <h4>El canal oficial donde los vecinos sí ven las cosas</h4>
-      <div>
-        <a href="/avisos-jardines/login.html" id="login-link">Iniciar sesión</a>
-      </div>
-    </div>
-  </header>
+  <div id="header-container"></div>
 
   <main class="contenedor">
     <!-- Filtros de categorías -->
@@ -51,7 +45,7 @@
 
   <script>
     // Cargar footer dinámico
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
@@ -71,4 +65,5 @@
     });
   </script>
 </body>
+
 </html>
