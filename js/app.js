@@ -115,23 +115,49 @@ function crearTarjetaAviso(aviso) {
     'clasificados': '📢 Clasificados'
   };
 
+  const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
   const clicks = aviso.clicks || 0;
 
-  const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
+  // 🔧 WhatsApp
+  let botonWhatsApp = '';
+  const telefono = normalizarTelefono(aviso.contacto);
+
+  if (telefono) {
+    const link = generarLinkWhatsApp(telefono, aviso);
+
+    botonWhatsApp = `
+      <a href="${link}" 
+         target="_blank" 
+         class="boton boton-chico"
+         onclick="registrarClickWhatsApp('${aviso.id}')"
+         style="margin-top: 8px; background:#25D366; color:white;">
+         📲 Contactar
+      </a>
+    `;
+  }
 
   return `
     <div class="tarjeta ${claseUrgente}">
       <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
       <div class="tarjeta-fecha">📅 ${fecha}</div>
-      <div class="tarjeta-contenido">${escapeHTML(contenido.substring(0, 150))}${contenido.length > 150 ? '...' : ''}</div>
+      <div class="tarjeta-contenido">
+        ${escapeHTML(contenido.substring(0, 150))}
+        ${contenido.length > 150 ? '...' : ''}
+      </div>
+
       <div class="tarjeta-meta">
         <span>${categoriaNombre}</span>
         ${aviso.ubicacion ? `<span>📍 ${escapeHTML(aviso.ubicacion)}</span>` : ''}
+        <span>👁️ ${clicks} interesados</span>
       </div>
-      <a href="${link}" 
-   target="_blank" 
-   class="boton boton-chico"
-   onclick="registrarClickWhatsApp('${aviso.id}')">
+
+      ${botonWhatsApp}
+
+      <a href="/avisos-jardines/aviso.html?id=${aviso.id}" 
+         class="boton boton-chico" 
+         style="margin-top: 8px;">
+         Ver detalles →
+      </a>
     </div>
   `;
 }
