@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Publicidad en tu Colonia | Paquetes y Preguntas Frecuentes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #f5f7fb;
+      color: #1e2a3e;
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* ========== TIPOGRAFÍA Y ESPACIADOS ========== */
+    h1, h2, h3 {
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #1e4620, #2b7a2b);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .subhead {
+      font-size: 1.1rem;
+      color: #2c3e50;
+      margin-bottom: 2rem;
+      border-left: 4px solid #2b7a2b;
+      padding-left: 1rem;
+    }
+
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #1e4620;
+      text-align: center;
+    }
+
+    .section-sub {
+      text-align: center;
+      color: #4a627a;
+      margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ========== BOTONES Y ELEMENTOS DE CONFIANZA ========== */
+    .trust-badge {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      padding: 1rem 1.5rem;
+      border-radius: 60px;
+      margin: 1.5rem 0 2rem;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1e4620;
+    }
+
+    .trust-item span:first-child {
+      font-size: 1.3rem;
+    }
+
+    /* ========== PAQUETES (TARJETAS) ========== */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.8rem;
+      margin-bottom: 3rem;
+    }
+
+    .package-card {
+      background: white;
+      border-radius: 1.5rem;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #e9edf2;
+    }
+
+    .package-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 24px 40px rgba(0,0,0,0.12);
+    }
+
+    .card-header {
+      padding: 1.5rem 1.2rem 0.8rem;
+      background: white;
+    }
+
+    .package-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .price {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #2b7a2b;
+      margin: 0.5rem 0 0.2rem;
+    }
+
+    .price small {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #5b6e8c;
+    }
+
+    .old-price {
+      text-decoration: line-through;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .badge-popular {
+      background: #fbbf24;
+      color: #7b2e00;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+
+    .card-features {
+      padding: 0 1.2rem 1.2rem;
+      flex-grow: 1;
+    }
+
+    .card-features ul {
+      list-style: none;
+    }
+
+    .card-features li {
+      margin: 0.7rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+    }
+
+    .check {
+      color: #2b7a2b;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .card-footer {
+      padding: 1.2rem;
+      border-top: 1px solid #eef2f8;
+      background: #fafcff;
+    }
+
+    .btn-primary {
+      background: #1e4620;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-primary:hover {
+      background: #2b6e2b;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #1e4620;
+      color: #1e4620;
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      display: block;
+    }
+
+    .btn-outline:hover {
+      background: #eef5e9;
+    }
+
+    /* Destacado: paquete recomendado */
+    .package-card.recommended {
+      border: 2px solid #fbbf24;
+      position: relative;
+      background: #fffef7;
+    }
+
+    .recommended-ribbon {
+      background: #fbbf24;
+      color: #1e2a3e;
+      font-weight: bold;
+      font-size: 0.7rem;
+      padding: 0.2rem 1rem;
+      position: absolute;
+      top: 12px;
+      right: -1px;
+      border-radius: 30px 0 0 30px;
+    }
+
+    /* ========== FAQ (acordeón) ========== */
+    .faq-section {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      margin: 2rem 0;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 0;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      color: #1e2a3e;
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: #2b7a2b;
+    }
+
+    .faq-icon {
+      font-size: 1.5rem;
+      font-weight: 300;
+      transition: transform 0.2s;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      color: #2c3e50;
+      padding-right: 1rem;
+    }
+
+    .faq-answer-inner {
+      padding-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    /* ========== CÓMO CONTRATAR (pasos) ========== */
+    .howto-section {
+      background: #eef2e6;
+      border-radius: 2rem;
+      padding: 2rem 1.5rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .steps {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.8rem;
+      margin: 2rem 0;
+    }
+
+    .step {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.2rem;
+      width: 180px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .step-number {
+      background: #1e4620;
+      color: white;
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 40px;
+      font-weight: bold;
+      margin-bottom: 0.8rem;
+    }
+
+    .payment-methods {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+
+    .payment-methods span {
+      background: white;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* ========== SELLOS DE CONFIANZA ========== */
+    .confidence-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .confidence-card {
+      background: white;
+      padding: 1.2rem;
+      border-radius: 1.2rem;
+      width: 200px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .confidence-card .emoji-big {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ========== FOOTER / CONTACTO ========== */
+    .contact-bar {
+      background: #1e2a3e;
+      color: white;
+      border-radius: 2rem;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+
+    .contact-bar a {
+      color: #fbbf24;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    hr {
+      margin: 2rem 0;
+      border-color: #ddd;
+    }
+
+    @media (max-width: 640px) {
+      .packages-grid {
+        gap: 1rem;
+      }
+      .step {
+        width: 140px;
+      }
+      .trust-badge {
+        border-radius: 30px;
+        gap: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  
+  <!-- Encabezado + sellos de confianza visual -->
+  <div style="text-align: center;">
+    <h1>Publicidad que conecta con tu colonia</h1>
+    <div class="subhead" style="border-left: none; text-align: center;">Lleva tu negocio a cada vecino · Precios justos · Resultados reales</div>
+  </div>
+
+  <!-- Micro sellos de confianza -->
+  <div class="trust-badge">
+    <div class="trust-item"><span>✅</span> Más de 50 negocios locales</div>
+    <div class="trust-item"><span>📍</span> Solo en tu colonia, público real</div>
+    <div class="trust-item"><span>📸</span> Sin anualidades, paga por mes</div>
+    <div class="trust-item"><span>🛡️</span> Aviso legal y protección de datos</div>
+  </div>
+
+  <!-- PAQUETES (el más alto sugerido = SOCIO COMERCIAL $1,299) -->
+  <h2>🎯 Paquetes diseñados para ti</h2>
+  <div class="section-sub">Desde presencia básica hasta exposición total. ¡Elige el que más impulse tu negocio!</div>
+
+  <div class="packages-grid">
+    <!-- Paquete 1: Tiendita (149) -->
+    <div class="package-card">
+      <div class="card-header">
+        <div class="package-name">Tiendita</div>
+        <div class="price">$149 <small>MXN</small></div>
+        <div class="old-price"></div>
+        <div style="font-size: 0.8rem; color: #2b6e2b;">3 meses · Ideal para empezar</div>
+      </div>
+      <div class="card-features">
+        <ul>
+          <li><span class="check">✓</span> Directorio básico por 90 días</li>
+          <li><span class="check">✓</span> Dirección, mapa y teléfono</li>
+          <li><span class="check">✓</span> Sin comisiones ocultas</li>
+          <li><span class="check">✓</span> Ideal para negocios de casa</li>
+        </ul>
+      </div>
+      <div class="card-footer">
+        <button class="btn-outline contratar-btn" data-paquete="Tiendita - $149">Lo quiero</button>
+      </div>
+    </div>
+
+    <!-- Paquete 2: Vecino Anunciante (299) -->
+    <div class="package-card">
+      <div class="card-header">
+        <div class="package-name">Vecino Anunciante</div>
+        <div class="price">$299 <small>MXN</small></div>
+        <div style="font-size: 0.8rem;">30 días · Banner lateral + destacado</div>
+      </div>
+      <div class="card-features">
+        <ul>
+          <li><span class="check">✓</span> Perfil completo en directorio</li>
+          <li><span class="check">✓</span> Banner lateral (estático)</li>
+          <li><span class="check">✓</span> 1 publicación destacada en avisos</li>
+          <li><span class="check">✓</span> Soporte para foto del negocio</li>
+        </ul>
+      </div>
+      <div class="card-footer">
+        <button class="btn-outline contratar-btn" data-paquete="Vecino Anunciante - $299">Seleccionar</button>
+      </div>
+    </div>
+
+    <!-- Paquete 3: Negocio Destacado (599) popular -->
+    <div class="package-card">
+      <div class="card-header">
+        <div class="package-name">Negocio Destacado</div>
+        <div class="price">$599 <small>MXN</small></div>
+        <div class="badge-popular">⭐ Más elegido</div>
+      </div>
+      <div class="card-features">
+        <ul>
+          <li><span class="check">✓</span> Banner rotativo (parte superior)</li>
+          <li><span class="check">✓</span> Perfil con galería + botón WhatsApp</li>
+          <li><span class="check">✓</span> 3 publicaciones destacadas</li>
+          <li><span class="check">✓</span> 1 envío masivo por WhatsApp</li>
+        </ul>
+      </div>
+      <div class="card-footer">
+        <button class="btn-primary contratar-btn" data-paquete="Negocio Destacado - $599">Contratar ahora</button>
+      </div>
+    </div>
+
+    <!-- PAQUETE PREMIUM: SOCIO COMERCIAL $1,299 (más alto sugerido) -->
+    <div class="package-card recommended">
+      <div class="recommended-ribbon">🌟 Patrocinador oficial</div>
+      <div class="card-header">
+        <div class="package-name">Socio Comercial</div>
+        <div class="price">$1,299 <small>MXN</small></div>
+        <div style="font-size: 0.75rem;">30 días · Exposición máxima</div>
+      </div>
+      <div class="card-features">
+        <ul>
+          <li><span class="check">✓</span> Banner exclusivo (zona principal, sin rotación)</li>
+          <li><span class="check">✓</span> Perfil premium con video promocional</li>
+          <li><span class="check">✓</span> Publicaciones destacadas ILIMITADAS</li>
+          <li><span class="check">✓</span> 2 envíos masivos WhatsApp/correo</li>
+          <li><span class="check">✓</span> Logo como patrocinador en toda la plataforma</li>
+          <li><span class="check">✓</span> Menciones en eventos vecinales</li>
+        </ul>
+      </div>
+      <div class="card-footer">
+        <button class="btn-primary contratar-btn" data-paquete="Socio Comercial - $1,299 (Premium)">Quiero visibilidad total</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ¿CÓMO CONTRATAR? sección clara y detallada -->
+  <div class="howto-section">
+    <h2 style="margin-bottom: 0.2rem;">📋 ¿Cómo contratar tu espacio?</h2>
+    <p style="margin-bottom: 1rem;">Sencillo, rápido y con acompañamiento personal</p>
+    <div class="steps">
+      <div class="step"><div class="step-number">1</div> <strong>Elige tu paquete</strong><br>Compara beneficios</div>
+      <div class="step"><div class="step-number">2</div> <strong>Comparte tus datos</strong><br>WhatsApp o formulario</div>
+      <div class="step"><div class="step-number">3</div> <strong>Envía foto o te visitamos</strong><br>Sin costo extra</div>
+      <div class="step"><div class="step-number">4</div> <strong>¡Paga fácil!</strong><br>Efectivo, transferencia, Oxxo</div>
+    </div>
+    <div class="payment-methods">
+      <span>💵 Efectivo directo</span>
+      <span>📲 Transferencia (Banco Azteca, Oxxo Spin, Mercado Pago)</span>
+      <span>🏪 Depósito Oxxo / 7-Eleven</span>
+      <span>📱 Código QR (Clip / Mercado Pago)</span>
+    </div>
+    <p style="margin-top: 1rem; background: #fff3cf; display: inline-block; padding: 0.4rem 1rem; border-radius: 40px;">✅ Paga hasta en 2 parcialidades en paquetes mayores a $599</p>
+  </div>
+
+  <!-- FAQ (Preguntas frecuentes) generadoras de confianza -->
+  <div class="faq-section">
+    <h2>Preguntas frecuentes</h2>
+    <div class="section-sub">Resolvemos tus dudas para que te sientas seguro</div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>🤔 ¿Realmente funciona la publicidad en la plataforma vecinal?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Sí, porque los vecinos entran a diario para consultar avisos de la colonia, eventos de la escuela o información municipal. Además, contamos con escuelas y oficinas públicas que generan tráfico orgánico constante. Tu negocio aparecerá justo donde tu cliente potencial ya está buscando.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>🔒 ¿Es seguro pagar por adelantado? ¿Hay contrato?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Absolutamente. Contamos con Aviso Legal, Política de Privacidad y Términos de Publicidad. Al contratar te entregamos recibo oficial y en caso de paquetes destacados firmamos un formato de pedido. Somos vecinos de la colonia y cumplimos con transparencia.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>📸 ¿Necesito saber diseñar mi anuncio?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Para nada. Con que nos envíes una foto clara de tu local, producto o logotipo, nosotros lo adaptamos a los formatos de banner. También podemos ir a tomarte una foto sin costo si estás dentro de la colonia.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>⏳ ¿Cuánto tarda en activarse mi publicidad?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Una vez confirmado el pago, máximo 2 días hábiles. Te enviaremos una captura de pantalla y el enlace directo a tu perfil para que lo compartas.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>🔄 ¿Puedo cancelar o cambiar de paquete?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Sí. Puedes actualizar a un paquete mayor en cualquier momento (solo pagas la diferencia proporcional). Si cancelas antes de finalizar el mes, no hay reembolso, pero puedes transferir los días restantes a otro negocio que recomiendes.
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">
+        <span>🏆 ¿Qué me respalda como anunciante?</span>
+        <span class="faq-icon">+</span>
+      </div>
+      <div class="faq-answer">
+        <div class="faq-answer-inner">
+          Contamos con el respaldo de la Asociación de Colonos, convenios con escuelas y oficinas municipales, y una plataforma con Aviso Legal registrado. Además, cada semana publicamos reportes de vistas y compartimos casos de éxito de negocios que ya aumentaron sus ventas.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Elementos extra de confianza: testimonios simulados + datos reales -->
+  <div class="confidence-grid">
+    <div class="confidence-card">
+      <div class="emoji-big">📈</div>
+      <strong>+35%</strong> de clientes nuevos en los primeros 30 días (promedio)
+    </div>
+    <div class="confidence-card">
+      <div class="emoji-big">👥</div>
+      <strong>+2,500</strong> visitas mensuales a la plataforma
+    </div>
+    <div class="confidence-card">
+      <div class="emoji-big">🤝</div>
+      <strong>8 escuelas</strong> y 4 oficinas municipales ya publican aquí
+    </div>
+    <div class="confidence-card">
+      <div class="emoji-big">⭐</div>
+      <strong>4.9/5</strong> satisfacción de negocios anunciantes
+    </div>
+  </div>
+
+  <!-- Forma de contacto directo (para que contraten) -->
+  <div class="contact-bar">
+    <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📢 ¿Listo para que toda la colonia te conozca?</p>
+    <p>Contáctanos por WhatsApp o correo y en menos de 24 horas comenzamos.</p>
+    <p style="margin-top: 0.8rem;">
+      <a href="https://wa.me/521234567890?text=Hola%2C%20quiero%20anunciar%20mi%20negocio%20en%20la%20colonia" target="_blank">📲 Enviar mensaje por WhatsApp</a> &nbsp;|&nbsp; 
+      <a href="mailto:publicidad@tu colonia.com">✉️ publicidad@tucolonia.com</a>
+    </p>
+    <p style="font-size: 0.8rem; margin-top: 1rem;">🔒 Aviso legal, políticas de privacidad y términos de publicidad disponibles en todo momento.</p>
+  </div>
+
+  <hr>
+  <div style="text-align: center; font-size: 0.75rem; color: #5b6e8c;">
+    Plataforma de Avisos de la Colonia [Nombre] · Apoyando el comercio local y la comunicación vecinal.
+  </div>
+</div>
+
+<!-- Script para acordeón FAQ y simular contratación (acción de confianza) -->
+<script>
+  // ----- Acordeón FAQ -----
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const questionDiv = item.querySelector('.faq-question');
+    questionDiv.addEventListener('click', () => {
+      // Cierra otros si quieres efecto exclusivo? (opcional, dejamos multi)
+      item.classList.toggle('active');
+    });
+  });
+
+  // ----- Botones de contratación (muestra mensaje simulando gestión pero genera confianza) -----
+  const contratarBtns = document.querySelectorAll('.contratar-btn');
+  contratarBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const paqueteInfo = btn.getAttribute('data-paquete') || btn.innerText;
+      // Simular una ventana de contacto (puedes reemplazar con redirección real a WhatsApp)
+      const mensaje = `Hola, estoy interesado en el paquete ${paqueteInfo} para anunciar mi negocio en la colonia. ¿Me pueden dar más información y formas de pago?`;
+      const numeroWhatsApp = "521234567890"; // Reemplaza con el número real de la colonia
+      const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    });
+  });
+</script>
+</body>
+</html>
