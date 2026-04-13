@@ -7,13 +7,12 @@ const UI = {
     if (!container) return;
 
     try {
-      const res = await fetch('/avisos-jardines/common/header.html');
+      const res = await fetch('/avisos-jardines/common/header.html?v=' + Date.now());
       if (!res.ok) throw new Error('Header no encontrado');
 
       const html = await res.text();
       container.innerHTML = html;
 
-      // 🔥 SOLO ESTO
       this.sincronizarAuth();
 
     } catch (error) {
