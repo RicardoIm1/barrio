@@ -21,20 +21,31 @@ document.addEventListener('DOMContentLoaded', function() {
     formLogin.addEventListener('submit', async function(e) {
       e.preventDefault();
       
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
       
+      // Verificar que los elementos existen
       if (!email || !password) {
+        API.mostrarError('Error en el formulario');
+        return;
+      }
+      
+      const emailValue = email.value.trim();
+      const passwordValue = password.value;
+      
+      if (!emailValue || !passwordValue) {
         API.mostrarError('Completa todos los campos');
         return;
       }
       
       try {
-        const resultado = await API.login(email, password);
-        API.mostrarExito('Sesión iniciada correctamente');
-        setTimeout(() => {
-          window.location.href = '/avisos-jardines/admin.html';
-        }, 1500);
+        const resultado = await API.login(emailValue, passwordValue);
+        if (resultado && resultado.api_key) {
+          API.mostrarExito('Sesión iniciada correctamente');
+          setTimeout(() => {
+            window.location.href = '/avisos-jardines/admin.html';
+          }, 1500);
+        }
       } catch(error) {
         API.mostrarError('Credenciales incorrectas: ' + error.message);
       }
