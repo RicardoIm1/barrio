@@ -2,6 +2,7 @@
 
 let paginaActual = 1;
 let categoriaActual = 'todos';
+let todosLosAvisos = [];
 
 document.addEventListener('DOMContentLoaded', function() {
   cargarAvisos();
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
       this.classList.add('activo');
       categoriaActual = this.dataset.categoria;
       paginaActual = 1;
-      cargarAvisos();
+      filtrarYAplicarPaginacion();
     });
   });
 });
@@ -26,33 +27,46 @@ async function cargarAvisos() {
   contenedor.innerHTML = '<div class="cargando">Cargando avisos...</div>';
   
   try {
-    const consulta = { status: 'activo' };
-    if (categoriaActual !== 'todos') {
-      consulta.categoria = categoriaActual;
-    }
+    const resultado = await API.listar('AVISOS');
     
-    console.log('Consultando avisos con filtro:', consulta);
-    
-    // Usar listar sin necesidad de autenticación
-    const resultado = await API.listar('AVISOS', consulta, {
-      pagina: paginaActual,
-      limite: 12
-    });
-    
-    if (!resultado || !resultado.datos || resultado.datos.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos en esta categoría</div>';
+    if (resultado && resultado.datos) {
+      todosLosAvisos = resultado.datos;
+      filtrarYAplicarPaginacion();
     } else {
-      contenedor.innerHTML = resultado.datos.map(aviso => crearTarjetaAviso(aviso)).join('');
-    }
-    
-    if (resultado.paginacion) {
-      renderizarPaginacion(resultado.paginacion);
+      contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos disponibles</div>';
     }
     
   } catch(error) {
     console.error('Error cargando avisos:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar avisos. Verifica tu conexión.</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar avisos: ' + error.message + '</div>';
   }
+}
+
+function filtrarYAplicarPaginacion() {
+  let avisosFiltrados = todosLosAvisos;
+  
+  if (categoriaActual !== 'todos') {
+    avisosFiltrados = todosLosAvisos.filter(a => a.categoria === categoriaActual);
+  }
+  
+  const limite = 6;
+  const inicio = (paginaActual - 1) * limite;
+  const avisosPaginados = avisosFiltrados.slice(inicio, inicio + limite);
+  
+  const contenedor = document.getElementById('avisos-container');
+  if (avisosFiltrados.length === 0) {
+    contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos en esta categoría</div>';
+  } else {
+    contenedor.innerHTML = avisosPaginados.map(aviso => crearTarjetaAviso(aviso)).join('');
+  }
+  
+  const paginacion = {
+    pagina: paginaActual,
+    total: avisosFiltrados.length,
+    paginas: Math.ceil(avisosFiltrados.length / limite)
+  };
+  
+  renderizarPaginacion(paginacion);
 }
 
 function crearTarjetaAviso(aviso) {
@@ -69,11 +83,11 @@ function crearTarjetaAviso(aviso) {
   const contenido = aviso.contenido || '';
   
   const nombresCategoria = {
-    'urgente': 'Urgente',
-    'eventos': 'Eventos',
-    'servicios': 'Servicios',
-    'perdidos': 'Perdidos',
-    'clasificados': 'Clasificados'
+    'urgente': '⚠️ Urgente',
+    'eventos': '🎉 Eventos',
+    'servicios': '🛠️ Servicios',
+    'perdidos': '🐾 Perdidos',
+    'clasificados': '📢 Clasificados'
   };
   
   const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
@@ -81,13 +95,13 @@ function crearTarjetaAviso(aviso) {
   return `
     <div class="tarjeta ${claseUrgente}">
       <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
-      <div class="tarjeta-fecha">${fecha}</div>
+      <div class="tarjeta-fecha">📅 ${fecha}</div>
       <div class="tarjeta-contenido">${escapeHTML(contenido.substring(0, 150))}${contenido.length > 150 ? '...' : ''}</div>
       <div class="tarjeta-meta">
         <span>${categoriaNombre}</span>
         ${aviso.ubicacion ? `<span>📍 ${escapeHTML(aviso.ubicacion)}</span>` : ''}
       </div>
-      ${aviso.id ? `<a href="/avisos-jardines/aviso.html?id=${aviso.id}" class="boton boton-chico" style="margin-top: 16px;">Ver completo</a>` : ''}
+      <a href="/avisos-jardines/aviso.html?id=${aviso.id}" class="boton boton-chico" style="margin-top: 16px;">Ver detalles →</a>
     </div>
   `;
 }
@@ -106,7 +120,7 @@ function renderizarPaginacion(paginacion) {
   const contenedor = document.getElementById('paginacion');
   if (!contenedor) return;
   
-  if (!paginacion || paginacion.paginas <= 1) {
+  if (paginacion.paginas <= 1) {
     contenedor.innerHTML = '';
     return;
   }
@@ -125,7 +139,7 @@ function renderizarPaginacion(paginacion) {
   contenedor.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
     btn.addEventListener('click', function() {
       paginaActual = parseInt(this.dataset.pagina);
-      cargarAvisos();
+      filtrarYAplicarPaginacion();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
