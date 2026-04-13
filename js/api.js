@@ -23,7 +23,7 @@ const API = {
   peticionJSONP(accion, datos = {}) {
     return new Promise((resolve, reject) => {
       const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-      
+
       const payload = {
         accion: accion,
         datos: datos,
@@ -32,12 +32,12 @@ const API = {
         paginacion: datos.paginacion || {},
         api_key: this.apiKey
       };
-      
+
       // Construir URL con JSONP
       const url = this.baseUrl + '?callback=' + callbackName + '&jsonp=' + encodeURIComponent(JSON.stringify(payload));
-      
+
       // Crear callback global
-      window[callbackName] = function(respuesta) {
+      window[callbackName] = function (respuesta) {
         delete window[callbackName];
         if (document.body.contains(script)) document.body.removeChild(script);
         if (respuesta && respuesta.success) {
@@ -46,7 +46,7 @@ const API = {
           reject(new Error(respuesta?.error || 'Error en la petición'));
         }
       };
-      
+
       // Crear y agregar script
       const script = document.createElement('script');
       script.src = url;
@@ -64,7 +64,7 @@ const API = {
     try {
       const resultado = await this.peticionJSONP(accion, datos);
       return resultado;
-    } catch(error) {
+    } catch (error) {
       console.error('Error en petición:', error);
       throw error;
     }
@@ -72,13 +72,13 @@ const API = {
 
   async listar(coleccion, consulta = {}, paginacion = {}) {
     try {
-      const resultado = await this.peticionJSONP('LISTAR', { 
-        coleccion, 
-        consulta, 
-        paginacion 
+      const resultado = await this.peticionJSONP('LISTAR', {
+        coleccion,
+        consulta,
+        paginacion
       });
       return resultado;
-    } catch(error) {
+    } catch (error) {
       console.error('Error en listar:', error);
       this.mostrarError('Error al cargar datos: ' + error.message);
       throw error;
@@ -88,12 +88,12 @@ const API = {
   // Crear un nuevo registro
   async crear(coleccion, datos) {
     try {
-      const resultado = await this.peticionJSONP('CREAR', { 
-        coleccion, 
-        datos 
+      const resultado = await this.peticionJSONP('CREAR', {
+        coleccion,
+        datos
       });
       return resultado;
-    } catch(error) {
+    } catch (error) {
       console.error('Error en crear:', error);
       this.mostrarError('Error al crear: ' + error.message);
       throw error;
@@ -103,13 +103,13 @@ const API = {
   // Actualizar un registro
   async actualizar(coleccion, id, datos) {
     try {
-      const resultado = await this.peticionJSONP('ACTUALIZAR', { 
-        coleccion, 
-        id, 
-        datos 
+      const resultado = await this.peticionJSONP('ACTUALIZAR', {
+        coleccion,
+        id,
+        datos
       });
       return resultado;
-    } catch(error) {
+    } catch (error) {
       console.error('Error en actualizar:', error);
       this.mostrarError('Error al actualizar: ' + error.message);
       throw error;
@@ -119,12 +119,12 @@ const API = {
   // Eliminar un registro
   async eliminar(coleccion, id) {
     try {
-      const resultado = await this.peticionJSONP('ELIMINAR', { 
-        coleccion, 
-        id 
+      const resultado = await this.peticionJSONP('ELIMINAR', {
+        coleccion,
+        id
       });
       return resultado;
-    } catch(error) {
+    } catch (error) {
       console.error('Error en eliminar:', error);
       this.mostrarError('Error al eliminar: ' + error.message);
       throw error;
@@ -134,12 +134,34 @@ const API = {
   async login(email, password) {
     try {
       const resultado = await this.peticionJSONP('LOGIN', { email, password });
-      if (resultado.api_key) {
-        this.apiKey = resultado.api_key;
-        localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+
+      console.log('Respuesta LOGIN:', resultado);
+
+      // 🔥 SIEMPRE guardar algo si hay respuesta
+      if (resultado) {
+
+        // guardar api_key si existe
+        if (resultado.api_key) {
+          this.apiKey = resultado.api_key;
+        }
+
+        // 🔥 CLAVE: guardar usuario aunque no venga api_key
+        if (resultado.usuario) {
+          localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+        } else {
+          // fallback mínimo (para no romper flujo)
+          localStorage.setItem('usuario', JSON.stringify({
+            email: email,
+            nombre: 'Usuario'
+          }));
+        }
+
+        return resultado;
       }
-      return resultado;
-    } catch(error) {
+
+      throw new Error('Respuesta vacía del servidor');
+
+    } catch (error) {
       this.mostrarError('Error en login: ' + error.message);
       throw error;
     }
@@ -159,9 +181,9 @@ const API = {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
       contenedor.innerHTML = `<div class="mensaje mensaje-error">${mensaje}</div>`;
-      setTimeout(() => { 
+      setTimeout(() => {
         if (contenedor.innerHTML.includes(mensaje)) {
-          contenedor.innerHTML = ''; 
+          contenedor.innerHTML = '';
         }
       }, 5000);
     } else {
@@ -174,9 +196,9 @@ const API = {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
       contenedor.innerHTML = `<div class="mensaje mensaje-exito">${mensaje}</div>`;
-      setTimeout(() => { 
+      setTimeout(() => {
         if (contenedor.innerHTML.includes(mensaje)) {
-          contenedor.innerHTML = ''; 
+          contenedor.innerHTML = '';
         }
       }, 5000);
     } else {
