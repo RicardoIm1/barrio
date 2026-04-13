@@ -96,6 +96,8 @@ function filtrarYAplicarPaginacion() {
 }
 
 function crearTarjetaAviso(aviso) {
+  const telefono = normalizarTelefono(aviso.contacto || '');
+
   const fecha = aviso.created_at
     ? new Date(aviso.created_at).toLocaleDateString('es-MX', {
       day: 'numeric',
@@ -119,9 +121,8 @@ function crearTarjetaAviso(aviso) {
   const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
   const clicks = aviso.clicks || 0;
 
-  // 🔧 WhatsApp
+  // 🔥 construir botón solo si hay teléfono válido
   let botonWhatsApp = '';
-  const telefono = normalizarTelefono(aviso.contacto);
 
   if (telefono) {
     const link = generarLinkWhatsApp(telefono, aviso);
@@ -138,6 +139,54 @@ function crearTarjetaAviso(aviso) {
   }
 
   return `
+    <div class="tarjeta ${claseUrgente}">
+      <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
+      <div class="tarjeta-fecha">📅 ${fecha}</div>
+
+      <div class="tarjeta-contenido">
+        ${escapeHTML(contenido.substring(0, 150))}
+        ${contenido.length > 150 ? '...' : ''}
+      </div>
+
+      <div class="tarjeta-meta">
+        <span>${categoriaNombre}</span>
+        ${aviso.ubicacion ? `<span>📍 ${escapeHTML(aviso.ubicacion)}</span>` : ''}
+        <span>👁️ ${clicks} interesados</span>
+      </div>
+
+      ${botonWhatsApp}
+
+      <a href="/avisos-jardines/aviso.html?id=${aviso.id}" 
+         class="boton boton-chico" 
+         style="margin-top: 8px;">
+         Ver detalles →
+      </a>
+    </div>
+  `;
+}
+
+const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
+const clicks = aviso.clicks || 0;
+
+// 🔧 WhatsApp
+let botonWhatsApp = '';
+const telefono = normalizarTelefono(aviso.contacto);
+
+if (telefono) {
+  const link = generarLinkWhatsApp(telefono, aviso);
+
+  botonWhatsApp = `
+      <a href="${link}" 
+         target="_blank" 
+         class="boton boton-chico"
+         onclick="registrarClickWhatsApp('${aviso.id}')"
+         style="margin-top: 8px; background:#25D366; color:white;">
+         📲 Contactar
+      </a>
+    `;
+}
+
+return `
     <div class="tarjeta ${claseUrgente}">
       <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
       <div class="tarjeta-fecha">📅 ${fecha}</div>
