@@ -1,7 +1,7 @@
 // ==================== CONFIGURACIÓN ====================
 const API = {
   // REEMPLAZA CON TU URL DE APPS SCRIPT
-  baseUrl: 'https://script.google.com/macros/s/AKfycbyXb5zCWvI6wQ2Apggij2J1ilFEydkfByunwYFBiH0SEXtSgFS4jWtwCAjkbqBqsQ30/exec',
+  baseUrl: 'https://script.google.com/macros/s/AKfycbzHE7FbHosGBLwzJjaoP1DcIUZEUCBUyEwGheLeeMSnU7d82jUj1J1hnX91y5MOBPOY/exec',
   
   get apiKey() {
     return localStorage.getItem('api_key');
