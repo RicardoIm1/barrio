@@ -80,3 +80,31 @@ async function activarNotificaciones() {
     API.mostrarError('Permiso denegado para notificaciones');
   }
 }
+
+function inicializarHeaderAuth() {
+  const usuario = API.getUsuarioActual();
+  const loginLink = document.getElementById('login-link');
+  const cerrarSesion = document.getElementById('cerrar-sesion');
+
+  if (loginLink) {
+    if (usuario) {
+      loginLink.textContent = usuario.nombre || 'Mi cuenta';
+      loginLink.href = '/avisos-jardines/admin.html';
+
+      if (cerrarSesion) cerrarSesion.style.display = 'inline';
+    } else {
+      loginLink.textContent = 'Iniciar sesión';
+      loginLink.href = '/avisos-jardines/login.html';
+
+      if (cerrarSesion) cerrarSesion.style.display = 'none';
+    }
+  }
+
+  if (cerrarSesion) {
+    cerrarSesion.addEventListener('click', function(e) {
+      e.preventDefault();
+      API.logout();
+      window.location.href = '/avisos-jardines/index.html';
+    });
+  }
+}
