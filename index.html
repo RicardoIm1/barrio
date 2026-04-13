@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
@@ -9,7 +8,6 @@
   <link rel="manifest" href="/avisos-jardines/manifest.json">
   <meta name="theme-color" content="#2c3e50">
 </head>
-
 <body>
   <header class="header">
     <div class="contenedor">
@@ -20,119 +18,37 @@
     </div>
   </header>
 
-  <div class="contenido-principal">
-    <main class="contenedor">
-      <!-- Filtros de categorías -->
-      <div class="filtros" id="filtros">
-        <button class="filtro activo" data-categoria="todos">Todos</button>
-        <button class="filtro" data-categoria="urgente">Urgente</button>
-        <button class="filtro" data-categoria="eventos">Eventos</button>
-        <button class="filtro" data-categoria="servicios">Servicios</button>
-        <button class="filtro" data-categoria="perdidos">Perdidos</button>
-        <button class="filtro" data-categoria="clasificados">Clasificados</button>
-      </div>
+  <main class="contenedor">
+    <!-- Filtros de categorías -->
+    <div class="filtros" id="filtros">
+      <button class="filtro activo" data-categoria="todos">Todos</button>
+      <button class="filtro" data-categoria="urgente">Urgente</button>
+      <button class="filtro" data-categoria="eventos">Eventos</button>
+      <button class="filtro" data-categoria="servicios">Servicios</button>
+      <button class="filtro" data-categoria="perdidos">Perdidos</button>
+      <button class="filtro" data-categoria="clasificados">Clasificados</button>
+    </div>
 
-      <!-- Mensajes de error/info -->
-      <div id="mensaje-container"></div>
+    <!-- Mensajes de error/info -->
+    <div id="mensaje-container"></div>
 
-      <!-- Avisos -->
-      <div id="avisos-container" class="grid-avisos">
-        <div class="cargando">📢 Cargando avisos...</div>
-      </div>
+    <!-- Avisos -->
+    <div id="avisos-container" class="grid-avisos">
+      <div class="cargando">Cargando avisos...</div>
+    </div>
 
-      <!-- Paginación -->
-      <div id="paginacion" class="paginacion"></div>
-    </main>
-  </div>
+    <!-- Paginación -->
+    <div id="paginacion" class="paginacion"></div>
+  </main>
 
-  <!-- Footer -->
-  <div id="footer-container"></div>
+  <footer class="footer">
+    <div class="contenedor">
+      <p>Periódico mural digital de la Colonia Jardines</p>
+    </div>
+  </footer>
 
-  <!-- Scripts -->
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/auth.js"></script>
   <script src="/avisos-jardines/js/app.js"></script>
-
-  <script>
-    // Función para crear tarjeta de aviso con enlace al detalle
-    function crearTarjetaAviso(aviso) {
-      const fecha = aviso.created_at
-        ? new Date(aviso.created_at).toLocaleDateString('es-MX', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          })
-        : 'Fecha no disponible';
-
-      const claseUrgente = aviso.categoria === 'urgente' ? 'urgente' : '';
-      const titulo = aviso.titulo || 'Sin título';
-      const contenido = aviso.contenido || '';
-
-      return `
-        <div class="tarjeta ${claseUrgente}">
-          <div class="tarjeta-titulo">${titulo}</div>
-          <div class="tarjeta-fecha">📅 ${fecha}</div>
-          <div class="tarjeta-contenido">${contenido.substring(0, 150)}${contenido.length > 150 ? '...' : ''}</div>
-          <div class="tarjeta-meta">
-            <span>🏷️ ${aviso.categoria || 'general'}</span>
-            ${aviso.ubicacion ? `<span>📍 ${aviso.ubicacion}</span>` : ''}
-          </div>
-          ${aviso.id ? `<a href="aviso.html?id=${aviso.id}" class="boton boton-chico" style="margin-top: 16px;">Ver completo →</a>` : ''}
-        </div>
-      `;
-    }
-
-    // Cargar avisos públicos
-    async function cargarAvisosPublicos() {
-      const contenedor = document.getElementById('avisos-container');
-      contenedor.innerHTML = '<div class="cargando">📢 Cargando avisos...</div>';
-
-      try {
-        const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQwiL7oD3APPpLVgrGaBh0xULVoNJt09iVBL81eG2NYTIUbCdGUOQW1dpkgjw4-k_r6KMFfz8m5VVw0/pub?gid=0&single=true&output=csv"; 
-        const resp = await fetch(url);
-        const texto = await resp.text();
-
-        const filas = texto.split("\n").map(f => f.split(","));
-        const encabezados = filas[0];
-        const datos = filas.slice(1).map(fila => {
-          let obj = {};
-          encabezados.forEach((h, i) => obj[h.trim()] = fila[i] ? fila[i].trim() : "");
-          return obj;
-        });
-
-        if (datos.length === 0) {
-          contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos publicados</div>';
-        } else {
-          contenedor.innerHTML = datos.map(aviso => crearTarjetaAviso(aviso)).join('');
-        }
-      } catch (error) {
-        console.error("Error cargando avisos públicos:", error);
-        contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos públicos</div>';
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', cargarAvisosPublicos);
-
-    // Cargar footer dinámico
-    document.addEventListener('DOMContentLoaded', function () {
-      fetch('/avisos-jardines/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
-        .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const anioElement = document.getElementById('anio-actual');
-            if (anioElement) {
-              anioElement.textContent = new Date().getFullYear();
-            }
-          }
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
-    });
-  </script>
 </body>
-
 </html>
