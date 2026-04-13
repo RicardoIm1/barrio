@@ -77,7 +77,7 @@ const API = {
       console.error('Error en peticion:', error);
       throw error;
     }
-  }
+  },
   
   async login(email, password) {
     const resultado = await this.peticion('LOGIN', { email, password });
