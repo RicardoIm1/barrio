@@ -51,7 +51,6 @@ async function cargarAviso(id, modoEditar = false) {
 }
 
 function crearVistaDetalle(aviso) {
-  // Manejo seguro de fecha de creación
   let fecha = aviso.created_at
     ? new Date(aviso.created_at).toLocaleDateString('es-MX', {
       weekday: 'long',
@@ -63,35 +62,62 @@ function crearVistaDetalle(aviso) {
 
   const claseUrgente = aviso.categoria === 'urgente' ? 'urgente' : '';
 
+  const nombresCategoria = {
+    'urgente': '⚠️ Urgente',
+    'eventos': '🎉 Eventos',
+    'servicios': '🛠️ Servicios',
+    'perdidos': '🐾 Perdidos',
+    'clasificados': '📢 Clasificados'
+  };
+
+  const categoriaNombre = nombresCategoria[aviso.categoria] || 'General';
+  const clicks = aviso.clicks || 0;
+
   let html = `
     <div class="tarjeta ${claseUrgente}">
-      <h1 class="tarjeta-titulo" style="font-size: 24px;">${aviso.titulo || 'Sin título'}</h1>
-      <div class="tarjeta-fecha">Publicado: ${fecha}</div>
-      <div class="tarjeta-contenido" style="font-size: 18px; line-height: 1.6;">${aviso.contenido || ''}</div>
+      <h1 class="tarjeta-titulo" style="font-size: 24px;">
+        ${aviso.titulo || 'Sin título'}
+      </h1>
+
+      <div class="tarjeta-fecha">
+        Publicado: ${fecha}
+      </div>
+
+      <div class="tarjeta-meta">
+        <span>${categoriaNombre}</span>
+        ${aviso.ubicacion ? `<span>📍 ${aviso.ubicacion}</span>` : ''}
+        <span>👁️ ${clicks} interesados</span>
+      </div>
+
+      <div class="tarjeta-contenido" style="font-size: 18px; line-height: 1.6;">
+        ${aviso.contenido || ''}
+      </div>
   `;
 
-  if (aviso.ubicacion) {
-    html += `<div class="tarjeta-meta"><span>📍 Ubicación: ${aviso.ubicacion}</span></div>`;
-  }
-
+  // 📲 WhatsApp seguro (sin romper nada)
   if (aviso.contacto) {
-    const telefono = aviso.contacto.replace(/\D/g, '');
-    let telefonoFinal = null;
+    let num = String(aviso.contacto).replace(/\D/g, '');
+    let telefono = null;
 
-    if (telefono.length === 10) telefonoFinal = '521' + telefono;
-    else if (telefono.startsWith('52')) telefonoFinal = telefono;
+    if (num.length === 10) telefono = '521' + num;
+    else if (num.startsWith('52') && num.length === 12) telefono = num;
+    else if (num.startsWith('521') && num.length === 13) telefono = num;
 
-    if (telefonoFinal) {
-      const mensaje = encodeURIComponent(`Hola, vi tu anuncio (${aviso.id}) en Jardines Vallarta`);
-      const link = `https://wa.me/${telefonoFinal}?text=${mensaje}`;
+    if (telefono) {
+      const mensaje = encodeURIComponent(
+        `Hola, vi tu anuncio (${aviso.id}) de ${aviso.titulo} en Jardines Vallarta. ¿Sigue disponible?`
+      );
+
+      const link = `https://wa.me/${telefono}?text=${mensaje}`;
 
       html += `
-      <div style="margin-top:16px;">
-        <a href="${link}" target="_blank" class="boton" style="background:#25D366; color:white;">
-          📲 Contactar por WhatsApp
-        </a>
-      </div>
-    `;
+        <div style="margin-top:16px;">
+          <a href="${link}" target="_blank" class="boton"
+             style="background:#25D366; color:white;">
+            📲 Contactar por WhatsApp
+          </a>
+        </div>
+      `;
     } else {
       html += `<div class="tarjeta-meta"><span>📞 ${aviso.contacto}</span></div>`;
     }
@@ -103,12 +129,19 @@ function crearVistaDetalle(aviso) {
   }
 
   if (aviso.imagen_url) {
-    html += `<div style="margin-top:16px;"><img src="${aviso.imagen_url}" alt="Imagen del aviso" style="max-width:100%; border-radius:4px;"></div>`;
+    html += `
+      <div style="margin-top:16px;">
+        <img src="${aviso.imagen_url}" 
+             style="max-width:100%; border-radius:6px;">
+      </div>
+    `;
   }
 
   html += `
       <div style="margin-top: 24px;">
-        <a href="index.html" class="boton boton-chico" style="width: auto;">Volver</a>
+        <a href="index.html" class="boton boton-chico">
+          ← Volver
+        </a>
       </div>
     </div>
   `;
