@@ -7,21 +7,11 @@ const Auth = {
     try {
       const resultado = await API.login(email, password);
 
-      console.log('Resultado login:', resultado);
-
-      // 🔍 Validación realista
-      if (!resultado) {
-        throw new Error('Sin respuesta del servidor');
+      if (resultado && resultado.api_key) {
+        return resultado;
+      } else {
+        throw new Error('Credenciales inválidas');
       }
-
-      // ⚠️ Aquí depende de tu backend
-      // Ajusta según lo que realmente regrese tu API
-      if (resultado.error) {
-        throw new Error(resultado.error);
-      }
-
-      // ✔️ Login válido
-      return resultado;
 
     } catch (error) {
       console.error('Error en login:', error);
@@ -39,11 +29,30 @@ const Auth = {
     return API.getUsuarioActual();
   },
 
-  // 🛡️ Protección de rutas
+  // ✅ ¿Hay sesión?
+  isLoggedIn() {
+    return !!this.getUsuario();
+  },
+
+  // 🛡️ Protección básica
   requireAuth(redirect = '/avisos-jardines/login.html') {
     const usuario = this.getUsuario();
 
     if (!usuario) {
+      window.location.href = redirect;
+      return null;
+    }
+
+    return usuario;
+  },
+
+  // 👑 Protección por rol
+  requireRole(rol, redirect = '/avisos-jardines/index.html') {
+    const usuario = this.requireAuth();
+
+    if (!usuario) return null;
+
+    if (usuario.rol !== rol) {
       window.location.href = redirect;
       return null;
     }

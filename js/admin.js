@@ -4,44 +4,41 @@ let paginaAdmin = 1;
 let avisosActuales = [];
 let filtroCategoriaAdmin = 'todos';
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   console.log('Admin.js cargado correctamente');
-  
-  const usuario = API.getUsuarioActual();
-  if (!usuario) {
-    window.location.href = '/avisos-jardines/login.html';
-    return;
-  }
-  
+
+  const usuario = Auth.requireAuth();
+  if (!usuario) return;
+
   console.log('Usuario logueado:', usuario);
-  
+
   if (usuario.rol === 'admin') {
     const tabUsuarios = document.getElementById('tab-usuarios-btn');
     if (tabUsuarios) {
       tabUsuarios.style.display = 'inline-block';
     }
   }
-  
+
   configurarTabs();
-  
+
   // Cierre de sesión
   const cerrarSesionBtn = document.getElementById('cerrar-sesion');
   if (cerrarSesionBtn) {
-    cerrarSesionBtn.addEventListener('click', function(e) {
+    cerrarSesionBtn.addEventListener('click', function (e) {
       e.preventDefault();
       API.cerrarSesion();
       window.location.href = '/avisos-jardines/login.html';
     });
   }
-  
+
   // FORMULARIO NUEVO AVISO - CORREGIDO con nombres EXACTOS
   const formAviso = document.getElementById('form-aviso');
   if (formAviso) {
-    formAviso.addEventListener('submit', async function(e) {
+    formAviso.addEventListener('submit', async function (e) {
       e.preventDefault();
-      
+
       const usuarioActual = API.getUsuarioActual();
-      
+
       // LOS NOMBRES DEBEN COINCIDIR EXACTAMENTE con los encabezados de tu hoja
       const datos = {
         titulo: document.getElementById('titulo').value,
@@ -56,55 +53,55 @@ document.addEventListener('DOMContentLoaded', function() {
         // Estos se generan automáticamente en el backend
         // id, created_at, updated_at se generan en codigo.gs
       };
-      
+
       console.log('Enviando aviso con datos:', datos);
-      
+
       // Validar campos requeridos
       if (!datos.categoria || !datos.titulo || !datos.contenido) {
         API.mostrarError('Completa los campos obligatorios');
         return;
       }
-      
+
       try {
         const resultado = await API.crear('AVISOS', datos);
         console.log('Respuesta del servidor:', resultado);
         API.mostrarExito('✅ Aviso publicado correctamente');
         formAviso.reset();
         document.getElementById('urgente').checked = false;
-        
+
         // Cambiar a pestaña de lista
         const listaTab = document.querySelector('[data-tab="lista"]');
         if (listaTab) listaTab.click();
-        
-      } catch(error) {
+
+      } catch (error) {
         console.error('Error al publicar:', error);
         API.mostrarError('Error al publicar: ' + error.message);
       }
     });
   }
-  
+
   // Cancelar formulario
   const cancelar = document.getElementById('cancelar');
   if (cancelar) {
-    cancelar.addEventListener('click', function() {
+    cancelar.addEventListener('click', function () {
       const form = document.getElementById('form-aviso');
       if (form) form.reset();
       document.getElementById('urgente').checked = false;
     });
   }
-  
+
   // Activar notificaciones
   const btnNotif = document.getElementById('activar-notificaciones');
   if (btnNotif) {
     btnNotif.addEventListener('click', activarNotificaciones);
   }
-  
+
   // Formulario de nuevo usuario
   const formUsuario = document.getElementById('form-usuario');
   if (formUsuario) {
-    formUsuario.addEventListener('submit', async function(e) {
+    formUsuario.addEventListener('submit', async function (e) {
       e.preventDefault();
-      
+
       const datos = {
         email: document.getElementById('user-email').value,
         nombre: document.getElementById('user-nombre').value,
@@ -113,44 +110,44 @@ document.addEventListener('DOMContentLoaded', function() {
         categorias: document.getElementById('user-categorias').value || 'todas',
         activo: 'TRUE'
       };
-      
+
       if (!datos.email || !datos.nombre || !datos.password_hash) {
         API.mostrarError('Completa todos los campos');
         return;
       }
-      
+
       try {
         await API.peticion('CREAR_USUARIO', datos);
         API.mostrarExito('✅ Usuario creado correctamente');
         formUsuario.reset();
         cargarUsuarios();
-      } catch(error) {
+      } catch (error) {
         API.mostrarError('Error al crear usuario: ' + error.message);
       }
     });
   }
-  
+
   // Cargar avisos iniciales
   cargarMisAvisos();
 });
 
 function configurarTabs() {
   const tabs = document.querySelectorAll('[data-tab]');
-  
+
   tabs.forEach(btn => {
-    btn.addEventListener('click', function() {
+    btn.addEventListener('click', function () {
       tabs.forEach(b => b.classList.remove('activo'));
       this.classList.add('activo');
-      
+
       document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('activo');
       });
-      
+
       const tabId = `tab-${this.dataset.tab}`;
       const tabSeleccionada = document.getElementById(tabId);
       if (tabSeleccionada) {
         tabSeleccionada.classList.add('activo');
-        
+
         if (this.dataset.tab === 'lista') {
           cargarMisAvisos();
         } else if (this.dataset.tab === 'perfil') {
@@ -166,9 +163,9 @@ function configurarTabs() {
 async function cargarMisAvisos() {
   const contenedor = document.getElementById('mis-avisos-container');
   if (!contenedor) return;
-  
+
   contenedor.innerHTML = '<div class="cargando">🔄 Cargando avisos...</div>';
-  
+
   try {
     // Agregar filtro de categorías
     if (!document.querySelector('.filtros-categorias')) {
@@ -183,9 +180,9 @@ async function cargarMisAvisos() {
         </div>
       `;
       contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
-      
+
       document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
           document.querySelectorAll('[data-filtro-cat]').forEach(b => b.classList.remove('activo'));
           this.classList.add('activo');
           filtroCategoriaAdmin = this.dataset.filtroCat;
@@ -194,35 +191,35 @@ async function cargarMisAvisos() {
         });
       });
     }
-    
+
     let consulta = { status: 'activo' };
     if (filtroCategoriaAdmin !== 'todos') {
       consulta.categoria = filtroCategoriaAdmin;
     }
-    
+
     const resultado = await API.listar('AVISOS', consulta, {
       pagina: paginaAdmin,
       limite: 10
     });
-    
+
     const avisos = resultado.datos || [];
     const paginacion = resultado.paginacion || { pagina: 1, paginas: 1, total: 0 };
-    
+
     console.log('Avisos cargados:', avisos.length);
-    
+
     if (avisos.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos que coincidan con los filtros</div>';
       return;
     }
-    
+
     let html = '';
     avisos.forEach(aviso => {
-      const fecha = aviso.created_at 
+      const fecha = aviso.created_at
         ? new Date(aviso.created_at).toLocaleDateString('es-MX')
         : 'Fecha no disponible';
       const contenidoPreview = aviso.contenido ? aviso.contenido.substring(0, 100) : '';
       const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
-      
+
       html += `
         <div class="tarjeta" style="${esUrgente ? 'border-left: 4px solid #dc3545; background: #fff5f5;' : ''}">
           <div class="tarjeta-titulo"><strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong> ${esUrgente ? '⚠️' : ''}</div>
@@ -240,9 +237,9 @@ async function cargarMisAvisos() {
         </div>
       `;
     });
-    
+
     contenedor.innerHTML = html;
-    
+
     // Paginación
     if (paginacion.paginas > 1) {
       let pagHtml = '<div class="paginacion-botones" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">';
@@ -260,12 +257,12 @@ async function cargarMisAvisos() {
         pagHtml += `<button class="pagina" data-pagina="${paginaAdmin + 1}" style="padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Siguiente »</button>`;
       }
       pagHtml += '</div>';
-      
+
       const pagContainer = document.getElementById('paginacion-admin');
       if (pagContainer) {
         pagContainer.innerHTML = pagHtml;
         pagContainer.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
-          btn.addEventListener('click', function() {
+          btn.addEventListener('click', function () {
             paginaAdmin = parseInt(this.dataset.pagina);
             cargarMisAvisos();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -273,8 +270,8 @@ async function cargarMisAvisos() {
         });
       }
     }
-    
-  } catch(error) {
+
+  } catch (error) {
     console.error('Error cargando avisos:', error);
     contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos: ' + error.message + '</div>';
   }
@@ -287,9 +284,9 @@ function verAviso(id) {
 function cargarPerfil() {
   const contenedor = document.getElementById('perfil-info');
   if (!contenedor) return;
-  
+
   const usuario = API.getUsuarioActual();
-  
+
   contenedor.innerHTML = `
     <div class="campo">
       <label>👤 Nombre</label>
@@ -313,18 +310,18 @@ function cargarPerfil() {
 async function cargarUsuarios() {
   const contenedor = document.getElementById('lista-usuarios-container');
   if (!contenedor) return;
-  
+
   contenedor.innerHTML = '<div class="cargando">🔄 Cargando usuarios...</div>';
-  
+
   try {
     const resultado = await API.listar('USUARIOS', { activo: 'TRUE' });
     const usuarios = resultado.datos || [];
-    
+
     if (usuarios.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">👥 No hay usuarios registrados</div>';
       return;
     }
-    
+
     let html = '<div style="margin-top: 16px;">';
     usuarios.forEach(user => {
       html += `
@@ -339,10 +336,10 @@ async function cargarUsuarios() {
       `;
     });
     html += '</div>';
-    
+
     contenedor.innerHTML = html;
-    
-  } catch(error) {
+
+  } catch (error) {
     console.error('Error cargando usuarios:', error);
     contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar usuarios</div>';
   }
@@ -354,13 +351,13 @@ async function editarAviso(id) {
 
 async function eliminarAviso(id) {
   if (!confirm('¿Eliminar este aviso permanentemente?')) return;
-  
+
   try {
     const resultado = await API.eliminar('AVISOS', id);
     console.log('Resultado eliminar:', resultado);
     API.mostrarExito('✅ Aviso eliminado correctamente');
     cargarMisAvisos();
-  } catch(error) {
+  } catch (error) {
     console.error('Error al eliminar:', error);
     API.mostrarError('Error al eliminar: ' + error.message);
   }
@@ -368,12 +365,12 @@ async function eliminarAviso(id) {
 
 async function eliminarUsuario(id) {
   if (!confirm('¿Eliminar este usuario permanentemente?')) return;
-  
+
   try {
     await API.eliminar('USUARIOS', id);
     API.mostrarExito('✅ Usuario eliminado correctamente');
     cargarUsuarios();
-  } catch(error) {
+  } catch (error) {
     API.mostrarError('Error al eliminar: ' + error.message);
   }
 }
