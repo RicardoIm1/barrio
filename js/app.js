@@ -27,7 +27,15 @@ async function cargarAvisos() {
   contenedor.innerHTML = '<div class="cargando">Cargando avisos...</div>';
   
   try {
-    const resultado = await API.listar('AVISOS');
+    const consulta = {};
+    if (categoriaActual !== 'todos') {
+      consulta.categoria = categoriaActual;
+    }
+    
+    const resultado = await API.listar('AVISOS', consulta, {
+      pagina: paginaActual,
+      limite: 12
+    });
     
     if (resultado && resultado.datos) {
       todosLosAvisos = resultado.datos;
