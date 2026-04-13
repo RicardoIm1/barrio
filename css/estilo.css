@@ -16,13 +16,13 @@
   --color-error: #e74c3c;
   --color-exito: #27ae60;
   --color-urgente: #e67e22;
-  
+
   --espaciado-xs: 4px;
   --espaciado-sm: 8px;
   --espaciado-md: 16px;
   --espaciado-lg: 24px;
   --espaciado-xl: 32px;
-  
+
   --fuente-titulo: 24px;
   --fuente-subtitulo: 20px;
   --fuente-cuerpo: 18px;
@@ -57,8 +57,8 @@ body {
 }
 
 .contenido-principal {
-    flex: 1;
-    width: 100%;
+  flex: 1;
+  width: 100%;
 }
 
 /* ==================== HEADER ==================== */
@@ -362,4 +362,57 @@ body {
   font-size: var(--fuente-pequena);
   color: var(--color-texto-claro);
   border-top: 1px solid var(--color-borde);
+}
+
+.categoria-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.categoria-urgente {
+  background-color: #dc3545;
+  color: white;
+}
+
+.categoria-eventos {
+  background-color: #28a745;
+  color: white;
+}
+
+.categoria-servicios {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.categoria-perdidos {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.categoria-clasificados {
+  background-color: #6c757d;
+  color: white;
+}
+
+.tarjeta.urgente {
+  border-left: 4px solid #dc3545;
+  background-color: #fff5f5;
+}
+
+.paginacion-info {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.paginacion-botones {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }

@@ -1,68 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
   <title>Administración - Avisos Colonia Jardines PVR</title>
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <style>
+    /* Estilos adicionales para asegurar que los tabs funcionen */
+    .tab {
+      display: none;
+    }
+    
+    .tab.activo {
+      display: block;
+    }
+    
+    .filtro.activo {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    
+    #admin-tabs {
+      margin-bottom: 30px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .filtro {
+      cursor: pointer;
+    }
+  </style>
 </head>
-<style>
-  /* Agrega esto a tu estilo.css */
-  .categoria-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: capitalize;
-  }
-
-  .categoria-urgente {
-    background-color: #dc3545;
-    color: white;
-  }
-
-  .categoria-eventos {
-    background-color: #28a745;
-    color: white;
-  }
-
-  .categoria-servicios {
-    background-color: #17a2b8;
-    color: white;
-  }
-
-  .categoria-perdidos {
-    background-color: #ffc107;
-    color: #333;
-  }
-
-  .categoria-clasificados {
-    background-color: #6c757d;
-    color: white;
-  }
-
-  .tarjeta.urgente {
-    border-left: 4px solid #dc3545;
-    background-color: #fff5f5;
-  }
-
-  .paginacion-info {
-    text-align: center;
-    margin-bottom: 10px;
-    color: #666;
-    font-size: 14px;
-  }
-
-  .paginacion-botones {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-</style>
-
 <body>
   <header class="header">
     <div class="contenedor">
@@ -148,7 +116,7 @@
     <div id="tab-perfil" class="tab">
       <div class="formulario" style="max-width: 100%;">
         <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
-
+        
         <div id="perfil-info"></div>
 
         <div style="margin-top: 32px;">
@@ -164,18 +132,18 @@
     <div id="tab-usuarios" class="tab">
       <div class="formulario" style="max-width: 100%;">
         <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
-
+        
         <form id="form-usuario">
           <div class="campo">
             <label for="user-email">Email</label>
             <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
           </div>
-
+          
           <div class="campo">
             <label for="user-nombre">Nombre completo</label>
             <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
           </div>
-
+          
           <div class="campo">
             <label for="user-rol">Rol</label>
             <select id="user-rol" required>
@@ -183,12 +151,12 @@
               <option value="admin">Administrador</option>
             </select>
           </div>
-
+          
           <div class="campo">
             <label for="user-password">Contraseña</label>
             <input type="password" id="user-password" required placeholder="Contraseña temporal">
           </div>
-
+          
           <div class="campo">
             <label for="user-categorias">Categorías permitidas</label>
             <select id="user-categorias">
@@ -196,14 +164,16 @@
               <option value="urgente">Solo urgentes</option>
               <option value="eventos">Solo eventos</option>
               <option value="servicios">Solo servicios</option>
+              <option value="perdidos">Solo perdidos</option>
+              <option value="clasificados">Solo clasificados</option>
             </select>
           </div>
-
+          
           <div class="grupo-botones">
             <button type="submit" class="boton">Crear usuario</button>
           </div>
         </form>
-
+        
         <h3 style="margin: 32px 0 16px;">Usuarios registrados</h3>
         <div id="lista-usuarios-container"></div>
       </div>
@@ -212,15 +182,16 @@
 
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/admin.js"></script>
-
+  
   <script>
     // Manejar cierre de sesión
-    document.getElementById('cerrar-sesion')?.addEventListener('click', function (e) {
+    document.getElementById('cerrar-sesion')?.addEventListener('click', function(e) {
       e.preventDefault();
-      API.cerrarSesion();
+      if (API.cerrarSesion) {
+        API.cerrarSesion();
+      }
       window.location.href = '/avisos-jardines/login.html';
     });
   </script>
 </body>
-
 </html>

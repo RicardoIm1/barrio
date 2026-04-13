@@ -2,43 +2,32 @@
 
 let paginaAdmin = 1;
 let avisosActuales = [];
-let filtroCategoriaAdmin = 'todos'; // Nuevo: filtro por categoría
+let filtroCategoriaAdmin = 'todos';
 
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('Admin.js cargado correctamente');
+  
   // Verificar sesión
   const usuario = API.getUsuarioActual();
   if (!usuario) {
+    console.log('No hay sesión activa, redirigiendo a login');
     window.location.href = '/avisos-jardines/login.html';
     return;
   }
+  
+  console.log('Usuario logueado:', usuario);
   
   // Mostrar pestaña de usuarios solo si es admin
   if (usuario.rol === 'admin') {
     const tabUsuarios = document.getElementById('tab-usuarios-btn');
     if (tabUsuarios) {
       tabUsuarios.style.display = 'inline-block';
+      console.log('Pestaña de usuarios visible');
     }
   }
   
   // Configurar tabs
-  document.querySelectorAll('[data-tab]').forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('[data-tab]').forEach(b => b.classList.remove('activo'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('activo'));
-      
-      this.classList.add('activo');
-      const tabId = document.getElementById(`tab-${this.dataset.tab}`);
-      if (tabId) tabId.classList.add('activo');
-      
-      if (this.dataset.tab === 'lista') {
-        cargarMisAvisos();
-      } else if (this.dataset.tab === 'perfil') {
-        cargarPerfil();
-      } else if (this.dataset.tab === 'usuarios') {
-        cargarUsuarios();
-      }
-    });
-  });
+  configurarTabs();
   
   // Formulario nuevo aviso
   const formAviso = document.getElementById('form-aviso');
@@ -126,68 +115,108 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Agregar filtro de categorías en la pestaña de lista
-  agregarFiltroCategorias();
+  // Cargar contenido inicial según la pestaña activa
+  const tabActiva = document.querySelector('.tab.activo');
+  if (tabActiva && tabActiva.id === 'tab-lista') {
+    cargarMisAvisos();
+  } else if (tabActiva && tabActiva.id === 'tab-perfil') {
+    cargarPerfil();
+  } else if (tabActiva && tabActiva.id === 'tab-usuarios') {
+    cargarUsuarios();
+  }
 });
 
-// Función para agregar filtro de categorías
-function agregarFiltroCategorias() {
-  const container = document.getElementById('mis-avisos-container');
-  if (!container) return;
+function configurarTabs() {
+  const tabs = document.querySelectorAll('[data-tab]');
+  console.log('Configurando tabs, encontradas:', tabs.length);
   
-  // Crear el filtro si no existe
-  if (!document.getElementById('filtro-categoria-admin')) {
-    const filtroHTML = `
-      <div class="filtros" style="margin-bottom: 20px; justify-content: flex-start;">
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'todos' ? 'activo' : ''}" data-filtro="todos">Todos</button>
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'urgente' ? 'activo' : ''}" data-filtro="urgente">Urgentes</button>
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'eventos' ? 'activo' : ''}" data-filtro="eventos">Eventos</button>
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'servicios' ? 'activo' : ''}" data-filtro="servicios">Servicios</button>
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'perdidos' ? 'activo' : ''}" data-filtro="perdidos">Perdidos</button>
-        <button class="filtro filtro-categoria ${filtroCategoriaAdmin === 'clasificados' ? 'activo' : ''}" data-filtro="clasificados">Clasificados</button>
-      </div>
-    `;
-    container.insertAdjacentHTML('beforebegin', filtroHTML);
-    
-    // Agregar event listeners a los filtros
-    document.querySelectorAll('.filtro-categoria').forEach(btn => {
-      btn.addEventListener('click', function() {
-        filtroCategoriaAdmin = this.dataset.filtro;
-        paginaAdmin = 1; // Resetear página al cambiar filtro
-        cargarMisAvisos();
+  tabs.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      console.log('Click en tab:', this.dataset.tab);
+      
+      // Cambiar clase activa en botones
+      tabs.forEach(b => b.classList.remove('activo'));
+      this.classList.add('activo');
+      
+      // Ocultar todas las tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('activo');
       });
+      
+      // Mostrar la tab seleccionada
+      const tabId = `tab-${this.dataset.tab}`;
+      const tabSeleccionada = document.getElementById(tabId);
+      if (tabSeleccionada) {
+        tabSeleccionada.classList.add('activo');
+        console.log('Mostrando tab:', tabId);
+        
+        // Cargar contenido según la tab
+        if (this.dataset.tab === 'lista') {
+          cargarMisAvisos();
+        } else if (this.dataset.tab === 'perfil') {
+          cargarPerfil();
+        } else if (this.dataset.tab === 'usuarios') {
+          cargarUsuarios();
+        }
+      } else {
+        console.error('No se encontró la tab:', tabId);
+      }
     });
-  }
+  });
 }
 
 async function cargarMisAvisos() {
+  console.log('Cargando mis avisos...');
   const contenedor = document.getElementById('mis-avisos-container');
-  if (!contenedor) return;
+  if (!contenedor) {
+    console.error('No se encontró el contenedor mis-avisos-container');
+    return;
+  }
   
   contenedor.innerHTML = '<div class="cargando">Cargando avisos...</div>';
   
   try {
-    // Obtener usuario actual para filtrar por sus avisos
-    const usuario = API.getUsuarioActual();
+    // Agregar filtro de categorías si no existe
+    if (!document.querySelector('.filtros-categorias')) {
+      const filtrosHTML = `
+        <div class="filtros filtros-categorias" style="margin-bottom: 20px; justify-content: flex-start;">
+          <button class="filtro ${filtroCategoriaAdmin === 'todos' ? 'activo' : ''}" data-filtro-cat="todos">Todos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'urgente' ? 'activo' : ''}" data-filtro-cat="urgente">Urgentes</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'eventos' ? 'activo' : ''}" data-filtro-cat="eventos">Eventos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'servicios' ? 'activo' : ''}" data-filtro-cat="servicios">Servicios</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'perdidos' ? 'activo' : ''}" data-filtro-cat="perdidos">Perdidos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'clasificados' ? 'activo' : ''}" data-filtro-cat="clasificados">Clasificados</button>
+        </div>
+      `;
+      contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
+      
+      // Agregar event listeners a los filtros de categoría
+      document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
+        btn.addEventListener('click', function() {
+          filtroCategoriaAdmin = this.dataset.filtroCat;
+          paginaAdmin = 1;
+          cargarMisAvisos();
+        });
+      });
+    }
     
     // Construir filtros
     let filtros = { status: 'activo' };
     
-    // Si no es admin, filtrar por sus propios avisos
-    if (usuario.rol !== 'admin') {
-      filtros.usuario_id = usuario.id;
-    }
-    
-    // Aplicar filtro de categoría si no es "todos"
+    // Aplicar filtro de categoría
     if (filtroCategoriaAdmin !== 'todos') {
       filtros.categoria = filtroCategoriaAdmin;
     }
+    
+    console.log('Filtros aplicados:', filtros);
     
     const resultado = await API.listar('AVISOS', filtros, {
       pagina: paginaAdmin,
       limite: 10,
       orderBy: 'created_at DESC'
     });
+    
+    console.log('Resultado de avisos:', resultado);
     
     if (!resultado || !resultado.datos || resultado.datos.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos que coincidan con los filtros seleccionados</div>';
@@ -203,16 +232,13 @@ async function cargarMisAvisos() {
         : 'Fecha no disponible';
       const contenidoPreview = aviso.contenido ? aviso.contenido.substring(0, 100) : '';
       
-      // Clase especial para avisos urgentes
-      const tarjetaClass = aviso.destacado === 'TRUE' ? 'tarjeta urgente' : 'tarjeta';
-      
       html += `
-        <div class="${tarjetaClass}">
+        <div class="tarjeta">
           <div class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</div>
           <div class="tarjeta-fecha">📅 ${fecha}</div>
           <div class="tarjeta-contenido">${escapeHTML(contenidoPreview)}...</div>
           <div class="tarjeta-meta">
-            <span class="categoria-badge categoria-${aviso.categoria}">${aviso.categoria}</span>
+            <span class="categoria-badge">${aviso.categoria || 'general'}</span>
           </div>
           <div class="grupo-botones" style="margin-top: 16px;">
             <a href="/avisos-jardines/aviso.html?id=${aviso.id}" class="boton boton-chico" style="width: auto;">Ver</a>
@@ -228,7 +254,7 @@ async function cargarMisAvisos() {
     
   } catch(error) {
     console.error('Error cargando avisos:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar tus avisos</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar tus avisos: ' + error.message + '</div>';
   }
 }
 
@@ -244,12 +270,10 @@ function renderizarPaginacionAdmin(paginacion) {
   let html = '<div class="paginacion-info">Página ' + paginaAdmin + ' de ' + paginacion.paginas + '</div>';
   html += '<div class="paginacion-botones">';
   
-  // Botón anterior
   if (paginaAdmin > 1) {
     html += `<button class="pagina" data-pagina="${paginaAdmin - 1}">« Anterior</button>`;
   }
   
-  // Números de página
   for (let i = 1; i <= paginacion.paginas; i++) {
     if (i === 1 || i === paginacion.paginas || (i >= paginaAdmin - 2 && i <= paginaAdmin + 2)) {
       html += `<button class="pagina ${i === paginaAdmin ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
@@ -258,7 +282,6 @@ function renderizarPaginacionAdmin(paginacion) {
     }
   }
   
-  // Botón siguiente
   if (paginaAdmin < paginacion.paginas) {
     html += `<button class="pagina" data-pagina="${paginaAdmin + 1}">Siguiente »</button>`;
   }
@@ -276,39 +299,49 @@ function renderizarPaginacionAdmin(paginacion) {
 }
 
 function cargarPerfil() {
+  console.log('Cargando perfil...');
   const contenedor = document.getElementById('perfil-info');
-  if (!contenedor) return;
+  if (!contenedor) {
+    console.error('No se encontró el contenedor perfil-info');
+    return;
+  }
   
   const usuario = API.getUsuarioActual();
+  console.log('Usuario para perfil:', usuario);
   
   contenedor.innerHTML = `
     <div class="campo">
       <label>Nombre</label>
-      <div style="padding: 8px 0;">${escapeHTML(usuario.nombre || '—')}</div>
+      <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.nombre || '—')}</div>
     </div>
     <div class="campo">
       <label>Correo electrónico</label>
-      <div style="padding: 8px 0;">${escapeHTML(usuario.email)}</div>
+      <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.email)}</div>
     </div>
     <div class="campo">
       <label>Rol</label>
-      <div style="padding: 8px 0;">${escapeHTML(usuario.rol)}</div>
+      <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.rol)}</div>
     </div>
     <div class="campo">
       <label>Categorías permitidas</label>
-      <div style="padding: 8px 0;">${escapeHTML(usuario.categorias || 'todas')}</div>
+      <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.categorias || 'todas')}</div>
     </div>
   `;
 }
 
 async function cargarUsuarios() {
+  console.log('Cargando usuarios...');
   const contenedor = document.getElementById('lista-usuarios-container');
-  if (!contenedor) return;
+  if (!contenedor) {
+    console.error('No se encontró el contenedor lista-usuarios-container');
+    return;
+  }
   
   contenedor.innerHTML = '<div class="cargando">Cargando usuarios...</div>';
   
   try {
     const resultado = await API.listar('USUARIOS', { activo: 'TRUE' });
+    console.log('Usuarios cargados:', resultado);
     
     if (!resultado || !resultado.datos || resultado.datos.length === 0) {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay usuarios registrados</div>';
@@ -323,7 +356,7 @@ async function cargarUsuarios() {
           <div>📧 ${escapeHTML(user.email)}</div>
           <div>👔 Rol: ${escapeHTML(user.rol)} | 🏷️ Categorías: ${escapeHTML(user.categorias || 'todas')}</div>
           <div class="grupo-botones" style="margin-top: 12px;">
-            <button class="boton boton-chico boton-secundario" onclick="cambiarEstadoUsuario('${user.id}')">${user.activo === 'TRUE' ? 'Desactivar' : 'Activar'}</button>
+            <button class="boton boton-chico boton-secundario" onclick="cambiarEstadoUsuario('${user.id}')">Desactivar</button>
           </div>
         </div>
       `;
@@ -334,17 +367,20 @@ async function cargarUsuarios() {
     
   } catch(error) {
     console.error('Error cargando usuarios:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar usuarios</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar usuarios: ' + error.message + '</div>';
   }
 }
 
-// Función para activar notificaciones (implementación básica)
 async function activarNotificaciones() {
+  console.log('Activando notificaciones...');
   if ('Notification' in window) {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
       API.mostrarExito('Notificaciones activadas correctamente');
-      // Aquí puedes agregar lógica para suscribir al usuario a notificaciones push
+      new Notification('¡Notificaciones activadas!', {
+        body: 'Recibirás alertas de nuevos avisos importantes',
+        icon: '/avisos-jardines/favicon.ico'
+      });
     } else {
       API.mostrarError('No se pudieron activar las notificaciones');
     }
@@ -353,11 +389,11 @@ async function activarNotificaciones() {
   }
 }
 
-// Función para cambiar estado de usuario
 async function cambiarEstadoUsuario(id) {
+  console.log('Cambiando estado de usuario:', id);
   try {
     await API.peticion('ACTUALIZAR_USUARIO', { id, activo: 'FALSE' });
-    API.mostrarExito('Estado de usuario actualizado');
+    API.mostrarExito('Usuario desactivado');
     cargarUsuarios();
   } catch(error) {
     API.mostrarError('Error al actualizar usuario: ' + error.message);
@@ -365,6 +401,7 @@ async function cambiarEstadoUsuario(id) {
 }
 
 async function editarAviso(id) {
+  console.log('Editando aviso:', id);
   window.location.href = `/avisos-jardines/aviso.html?id=${id}&editar=true`;
 }
 
