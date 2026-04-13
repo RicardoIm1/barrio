@@ -1,9 +1,35 @@
-  const API = {
-   baseUrl: 'https://script.google.com/macros/s/AKfycbxNCWY2g5VkMNYXN8dmywt_ElACDM17Z-riMMU_ocm7oswRQGc76ErYhA-DlOmVTgk4/exec',
+/* baseUrl: 'https://script.google.com/macros/s/AKfycbxNCWY2g5VkMNYXN8dmywt_ElACDM17Z-riMMU_ocm7oswRQGc76ErYhA-DlOmVTgk4/exec', */
+// ==================== API CLIENT ====================
+const API = {
+  baseUrl: 'https://script.google.com/macros/s/AKfycbzINnCQrPcFUrT4eUZ0M2KjJ4rN3wqA2HeUAGjJlBijP_VlNiiFjH21e4e-tnzdPQs4/exec',
   
+  // Autenticación
+  get apiKey() {
+    return localStorage.getItem('api_key');
+  },
+  
+  set apiKey(valor) {
+    if (valor) {
+      localStorage.setItem('api_key', valor);
+    } else {
+      localStorage.removeItem('api_key');
+    }
+  },
+  
+  getUsuarioActual() {
+    const usuario = localStorage.getItem('usuario');
+    if (!usuario) return null;
+    try {
+      return JSON.parse(usuario);
+    } catch(e) {
+      return null;
+    }
+  },
+  
+  // Petición usando JSONP (evita CORS)
   async peticion(accion, coleccion = null, datos = {}, id = null, consulta = {}, paginacion = {}) {
     return new Promise((resolve, reject) => {
-      const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      const callbackName = 'jsonp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
       
       const payload = {
         accion: accion,
@@ -12,7 +38,7 @@
         id: id,
         consulta: consulta,
         paginacion: paginacion,
-        callback: callbackName
+        api_key: this.apiKey
       };
       
       const url = this.baseUrl + '?jsonp=' + encodeURIComponent(JSON.stringify(payload));
@@ -20,10 +46,10 @@
       window[callbackName] = function(data) {
         delete window[callbackName];
         document.body.removeChild(script);
-        if (data.success) {
+        if (data && data.success) {
           resolve(data.data);
         } else {
-          reject(new Error(data.error));
+          reject(new Error(data?.error || 'Error en la petición'));
         }
       };
       
@@ -31,14 +57,56 @@
       script.src = url;
       script.onerror = () => {
         delete window[callbackName];
-        document.body.removeChild(script);
-        reject(new Error('Error de conexión'));
+        if (document.body.contains(script)) document.body.removeChild(script);
+        reject(new Error('Error de conexión con el servidor'));
       };
       document.body.appendChild(script);
     });
   },
   
-  listar: function(coleccion, consulta = {}, paginacion = {}) {
-    return this.peticion('LISTAR', coleccion, {}, null, consulta, paginacion);
+  // Métodos CRUD
+  crear: (coleccion, datos) => API.peticion('CREAR', coleccion, datos),
+  leer: (coleccion, id) => API.peticion('LEER', coleccion, {}, id),
+  actualizar: (coleccion, id, datos) => API.peticion('ACTUALIZAR', coleccion, datos, id),
+  eliminar: (coleccion, id) => API.peticion('ELIMINAR', coleccion, {}, id),
+  listar: (coleccion, consulta = {}, paginacion = {}) => 
+    API.peticion('LISTAR', coleccion, {}, null, consulta, paginacion),
+  
+  // Login
+  async login(email, password) {
+    const resultado = await this.peticion('LOGIN', null, { email, password });
+    if (resultado.api_key) {
+      this.apiKey = resultado.api_key;
+      localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+    }
+    return resultado;
+  },
+  
+  logout() {
+    this.apiKey = null;
+    localStorage.removeItem('usuario');
+  },
+  
+  // Utilidades
+  mostrarError(mensaje) {
+    const contenedor = document.getElementById('mensaje-container');
+    if (contenedor) {
+      contenedor.innerHTML = `<div class="mensaje mensaje-error">${mensaje}</div>`;
+      setTimeout(() => {
+        if (contenedor.innerHTML.includes(mensaje)) contenedor.innerHTML = '';
+      }, 5000);
+    } else {
+      alert(mensaje);
+    }
+  },
+  
+  mostrarExito(mensaje) {
+    const contenedor = document.getElementById('mensaje-container');
+    if (contenedor) {
+      contenedor.innerHTML = `<div class="mensaje mensaje-exito">${mensaje}</div>`;
+      setTimeout(() => {
+        if (contenedor.innerHTML.includes(mensaje)) contenedor.innerHTML = '';
+      }, 5000);
+    }
   }
 };
