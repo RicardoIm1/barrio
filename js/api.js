@@ -39,7 +39,7 @@ const API = {
       // Crear callback global
       window[callbackName] = function(respuesta) {
         delete window[callbackName];
-        document.body.removeChild(script);
+        if (document.body.contains(script)) document.body.removeChild(script);
         if (respuesta && respuesta.success) {
           resolve(respuesta.data);
         } else {
@@ -59,6 +59,17 @@ const API = {
     });
   },
 
+  // Método genérico para cualquier petición
+  async peticion(accion, datos = {}) {
+    try {
+      const resultado = await this.peticionJSONP(accion, datos);
+      return resultado;
+    } catch(error) {
+      console.error('Error en petición:', error);
+      throw error;
+    }
+  },
+
   async listar(coleccion, consulta = {}, paginacion = {}) {
     try {
       const resultado = await this.peticionJSONP('LISTAR', { 
@@ -69,7 +80,53 @@ const API = {
       return resultado;
     } catch(error) {
       console.error('Error en listar:', error);
-      this.mostrarError('Error al cargar avisos: ' + error.message);
+      this.mostrarError('Error al cargar datos: ' + error.message);
+      throw error;
+    }
+  },
+
+  // Crear un nuevo registro
+  async crear(coleccion, datos) {
+    try {
+      const resultado = await this.peticionJSONP('CREAR', { 
+        coleccion, 
+        datos 
+      });
+      return resultado;
+    } catch(error) {
+      console.error('Error en crear:', error);
+      this.mostrarError('Error al crear: ' + error.message);
+      throw error;
+    }
+  },
+
+  // Actualizar un registro
+  async actualizar(coleccion, id, datos) {
+    try {
+      const resultado = await this.peticionJSONP('ACTUALIZAR', { 
+        coleccion, 
+        id, 
+        datos 
+      });
+      return resultado;
+    } catch(error) {
+      console.error('Error en actualizar:', error);
+      this.mostrarError('Error al actualizar: ' + error.message);
+      throw error;
+    }
+  },
+
+  // Eliminar un registro
+  async eliminar(coleccion, id) {
+    try {
+      const resultado = await this.peticionJSONP('ELIMINAR', { 
+        coleccion, 
+        id 
+      });
+      return resultado;
+    } catch(error) {
+      console.error('Error en eliminar:', error);
+      this.mostrarError('Error al eliminar: ' + error.message);
       throw error;
     }
   },
@@ -88,18 +145,28 @@ const API = {
     }
   },
 
-  logout() {
+  cerrarSesion() {
     this.apiKey = null;
     localStorage.removeItem('usuario');
+    localStorage.removeItem('api_key');
+  },
+
+  logout() {
+    this.cerrarSesion();
   },
 
   mostrarError(mensaje) {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
       contenedor.innerHTML = `<div class="mensaje mensaje-error">${mensaje}</div>`;
-      setTimeout(() => { contenedor.innerHTML = ''; }, 5000);
+      setTimeout(() => { 
+        if (contenedor.innerHTML.includes(mensaje)) {
+          contenedor.innerHTML = ''; 
+        }
+      }, 5000);
     } else {
       console.error(mensaje);
+      alert(mensaje);
     }
   },
 
@@ -107,7 +174,13 @@ const API = {
     const contenedor = document.getElementById('mensaje-container');
     if (contenedor) {
       contenedor.innerHTML = `<div class="mensaje mensaje-exito">${mensaje}</div>`;
-      setTimeout(() => { contenedor.innerHTML = ''; }, 5000);
+      setTimeout(() => { 
+        if (contenedor.innerHTML.includes(mensaje)) {
+          contenedor.innerHTML = ''; 
+        }
+      }, 5000);
+    } else {
+      console.log(mensaje);
     }
   }
 };

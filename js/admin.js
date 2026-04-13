@@ -43,7 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
         contacto: document.getElementById('contacto').value || '',
         fecha_evento: document.getElementById('fecha_evento').value || '',
         destacado: document.getElementById('urgente').checked ? 'TRUE' : 'FALSE',
-        status: 'activo'
+        status: 'activo',
+        usuario_id: usuario.id,
+        created_at: new Date().toISOString()
       };
       
       // Validar campos requeridos
@@ -96,7 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
         rol: document.getElementById('user-rol').value,
         password: document.getElementById('user-password').value,
         categorias: document.getElementById('user-categorias').value || 'todas',
-        activo: 'TRUE'
+        activo: 'TRUE',
+        created_at: new Date().toISOString()
       };
       
       if (!datos.email || !datos.nombre || !datos.password) {
@@ -179,13 +182,13 @@ async function cargarMisAvisos() {
     // Agregar filtro de categorías si no existe
     if (!document.querySelector('.filtros-categorias')) {
       const filtrosHTML = `
-        <div class="filtros filtros-categorias" style="margin-bottom: 20px; justify-content: flex-start;">
-          <button class="filtro ${filtroCategoriaAdmin === 'todos' ? 'activo' : ''}" data-filtro-cat="todos">Todos</button>
-          <button class="filtro ${filtroCategoriaAdmin === 'urgente' ? 'activo' : ''}" data-filtro-cat="urgente">Urgentes</button>
-          <button class="filtro ${filtroCategoriaAdmin === 'eventos' ? 'activo' : ''}" data-filtro-cat="eventos">Eventos</button>
-          <button class="filtro ${filtroCategoriaAdmin === 'servicios' ? 'activo' : ''}" data-filtro-cat="servicios">Servicios</button>
-          <button class="filtro ${filtroCategoriaAdmin === 'perdidos' ? 'activo' : ''}" data-filtro-cat="perdidos">Perdidos</button>
-          <button class="filtro ${filtroCategoriaAdmin === 'clasificados' ? 'activo' : ''}" data-filtro-cat="clasificados">Clasificados</button>
+        <div class="filtros filtros-categorias" style="margin-bottom: 20px; justify-content: flex-start; flex-wrap: wrap;">
+          <button class="filtro ${filtroCategoriaAdmin === 'todos' ? 'activo' : ''}" data-filtro-cat="todos">📋 Todos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'urgente' ? 'activo' : ''}" data-filtro-cat="urgente">⚠️ Urgentes</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'eventos' ? 'activo' : ''}" data-filtro-cat="eventos">🎉 Eventos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'servicios' ? 'activo' : ''}" data-filtro-cat="servicios">🔧 Servicios</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'perdidos' ? 'activo' : ''}" data-filtro-cat="perdidos">🔍 Perdidos</button>
+          <button class="filtro ${filtroCategoriaAdmin === 'clasificados' ? 'activo' : ''}" data-filtro-cat="clasificados">💰 Clasificados</button>
         </div>
       `;
       contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
@@ -193,6 +196,10 @@ async function cargarMisAvisos() {
       // Agregar event listeners a los filtros de categoría
       document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
         btn.addEventListener('click', function() {
+          // Actualizar clase activa
+          document.querySelectorAll('[data-filtro-cat]').forEach(b => b.classList.remove('activo'));
+          this.classList.add('activo');
+          
           filtroCategoriaAdmin = this.dataset.filtroCat;
           paginaAdmin = 1;
           cargarMisAvisos();
@@ -200,61 +207,65 @@ async function cargarMisAvisos() {
       });
     }
     
-    // Construir filtros
-    let filtros = { status: 'activo' };
+    // Construir consulta
+    let consulta = { status: 'activo' };
     
     // Aplicar filtro de categoría
     if (filtroCategoriaAdmin !== 'todos') {
-      filtros.categoria = filtroCategoriaAdmin;
+      consulta.categoria = filtroCategoriaAdmin;
     }
     
-    console.log('Filtros aplicados:', filtros);
+    console.log('Consulta aplicada:', consulta);
     
-    const resultado = await API.listar('AVISOS', filtros, {
+    const resultado = await API.listar('AVISOS', consulta, {
       pagina: paginaAdmin,
-      limite: 10,
-      orderBy: 'created_at DESC'
+      limite: 10
     });
     
     console.log('Resultado de avisos:', resultado);
     
-    if (!resultado || !resultado.datos || resultado.datos.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos que coincidan con los filtros seleccionados</div>';
+    // Verificar estructura de resultado
+    const avisos = resultado.datos || resultado || [];
+    const paginacion = resultado.paginacion || { pagina: 1, paginas: 1, total: avisos.length };
+    
+    if (!avisos || avisos.length === 0) {
+      contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos que coincidan con los filtros seleccionados</div>';
       return;
     }
     
-    avisosActuales = resultado.datos;
+    avisosActuales = avisos;
     
     let html = '';
-    resultado.datos.forEach(aviso => {
+    avisos.forEach(aviso => {
       const fecha = aviso.created_at 
-        ? new Date(aviso.created_at).toLocaleDateString()
+        ? new Date(aviso.created_at).toLocaleDateString('es-MX')
         : 'Fecha no disponible';
       const contenidoPreview = aviso.contenido ? aviso.contenido.substring(0, 100) : '';
+      const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
       
       html += `
-        <div class="tarjeta">
-          <div class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</div>
+        <div class="tarjeta" style="${esUrgente ? 'border-left: 4px solid #dc3545; background: #fff5f5;' : ''}">
+          <div class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')} ${esUrgente ? '⚠️' : ''}</div>
           <div class="tarjeta-fecha">📅 ${fecha}</div>
-          <div class="tarjeta-contenido">${escapeHTML(contenidoPreview)}...</div>
+          <div class="tarjeta-contenido">${escapeHTML(contenidoPreview)}${aviso.contenido && aviso.contenido.length > 100 ? '...' : ''}</div>
           <div class="tarjeta-meta">
-            <span class="categoria-badge">${aviso.categoria || 'general'}</span>
+            <span class="categoria-badge categoria-${aviso.categoria}">🏷️ ${aviso.categoria || 'general'}</span>
           </div>
           <div class="grupo-botones" style="margin-top: 16px;">
-            <a href="/avisos-jardines/aviso.html?id=${aviso.id}" class="boton boton-chico" style="width: auto;">Ver</a>
-            <button class="boton boton-chico boton-secundario" onclick="editarAviso('${aviso.id}')">Editar</button>
-            <button class="boton boton-chico boton-secundario" onclick="eliminarAviso('${aviso.id}')">Eliminar</button>
+            <a href="/avisos-jardines/aviso.html?id=${aviso.id}" class="boton boton-chico" style="width: auto;">👁️ Ver</a>
+            <button class="boton boton-chico boton-secundario" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
+            <button class="boton boton-chico boton-secundario" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
           </div>
         </div>
       `;
     });
     
     contenedor.innerHTML = html;
-    renderizarPaginacionAdmin(resultado.paginacion);
+    renderizarPaginacionAdmin(paginacion);
     
   } catch(error) {
     console.error('Error cargando avisos:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar tus avisos: ' + error.message + '</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar tus avisos: ' + error.message + '</div>';
   }
 }
 
@@ -267,23 +278,23 @@ function renderizarPaginacionAdmin(paginacion) {
     return;
   }
   
-  let html = '<div class="paginacion-info">Página ' + paginaAdmin + ' de ' + paginacion.paginas + '</div>';
-  html += '<div class="paginacion-botones">';
+  let html = '<div class="paginacion-info">📄 Página ' + paginaAdmin + ' de ' + paginacion.paginas + '</div>';
+  html += '<div class="paginacion-botones" style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 20px;">';
   
   if (paginaAdmin > 1) {
-    html += `<button class="pagina" data-pagina="${paginaAdmin - 1}">« Anterior</button>`;
+    html += `<button class="pagina" data-pagina="${paginaAdmin - 1}" style="padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">« Anterior</button>`;
   }
   
   for (let i = 1; i <= paginacion.paginas; i++) {
     if (i === 1 || i === paginacion.paginas || (i >= paginaAdmin - 2 && i <= paginaAdmin + 2)) {
-      html += `<button class="pagina ${i === paginaAdmin ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
+      html += `<button class="pagina ${i === paginaAdmin ? 'activa' : ''}" data-pagina="${i}" style="padding: 8px 12px; border: 1px solid ${i === paginaAdmin ? '#007bff' : '#ddd'}; background: ${i === paginaAdmin ? '#007bff' : 'white'}; color: ${i === paginaAdmin ? 'white' : '#333'}; border-radius: 4px; cursor: pointer; min-width: 40px;">${i}</button>`;
     } else if (i === paginaAdmin - 3 || i === paginaAdmin + 3) {
-      html += `<span class="pagina" style="background: none; cursor: default;">...</span>`;
+      html += `<span style="padding: 8px 12px;">...</span>`;
     }
   }
   
   if (paginaAdmin < paginacion.paginas) {
-    html += `<button class="pagina" data-pagina="${paginaAdmin + 1}">Siguiente »</button>`;
+    html += `<button class="pagina" data-pagina="${paginaAdmin + 1}" style="padding: 8px 12px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Siguiente »</button>`;
   }
   
   html += '</div>';
@@ -309,21 +320,26 @@ function cargarPerfil() {
   const usuario = API.getUsuarioActual();
   console.log('Usuario para perfil:', usuario);
   
+  if (!usuario) {
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">No se encontró información del usuario</div>';
+    return;
+  }
+  
   contenedor.innerHTML = `
     <div class="campo">
-      <label>Nombre</label>
+      <label>👤 Nombre</label>
       <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.nombre || '—')}</div>
     </div>
     <div class="campo">
-      <label>Correo electrónico</label>
+      <label>📧 Correo electrónico</label>
       <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.email)}</div>
     </div>
     <div class="campo">
-      <label>Rol</label>
+      <label>👔 Rol</label>
       <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.rol)}</div>
     </div>
     <div class="campo">
-      <label>Categorías permitidas</label>
+      <label>🏷️ Categorías permitidas</label>
       <div style="padding: 8px 0; background: #f5f5f5; border-radius: 4px;">${escapeHTML(usuario.categorias || 'todas')}</div>
     </div>
   `;
@@ -343,20 +359,22 @@ async function cargarUsuarios() {
     const resultado = await API.listar('USUARIOS', { activo: 'TRUE' });
     console.log('Usuarios cargados:', resultado);
     
-    if (!resultado || !resultado.datos || resultado.datos.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay usuarios registrados</div>';
+    const usuarios = resultado.datos || resultado || [];
+    
+    if (!usuarios || usuarios.length === 0) {
+      contenedor.innerHTML = '<div class="mensaje mensaje-info">👥 No hay usuarios registrados</div>';
       return;
     }
     
     let html = '<div style="margin-top: 16px;">';
-    resultado.datos.forEach(user => {
+    usuarios.forEach(user => {
       html += `
         <div class="tarjeta" style="margin-bottom: 12px;">
           <div><strong>${escapeHTML(user.nombre || 'Sin nombre')}</strong></div>
           <div>📧 ${escapeHTML(user.email)}</div>
           <div>👔 Rol: ${escapeHTML(user.rol)} | 🏷️ Categorías: ${escapeHTML(user.categorias || 'todas')}</div>
           <div class="grupo-botones" style="margin-top: 12px;">
-            <button class="boton boton-chico boton-secundario" onclick="cambiarEstadoUsuario('${user.id}')">Desactivar</button>
+            <button class="boton boton-chico boton-secundario" onclick="cambiarEstadoUsuario('${user.id}')">🔒 Desactivar</button>
           </div>
         </div>
       `;
@@ -367,7 +385,7 @@ async function cargarUsuarios() {
     
   } catch(error) {
     console.error('Error cargando usuarios:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar usuarios: ' + error.message + '</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar usuarios: ' + error.message + '</div>';
   }
 }
 
@@ -376,24 +394,26 @@ async function activarNotificaciones() {
   if ('Notification' in window) {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
-      API.mostrarExito('Notificaciones activadas correctamente');
+      API.mostrarExito('🔔 Notificaciones activadas correctamente');
       new Notification('¡Notificaciones activadas!', {
         body: 'Recibirás alertas de nuevos avisos importantes',
         icon: '/avisos-jardines/favicon.ico'
       });
     } else {
-      API.mostrarError('No se pudieron activar las notificaciones');
+      API.mostrarError('❌ No se pudieron activar las notificaciones');
     }
   } else {
-    API.mostrarError('Tu navegador no soporta notificaciones');
+    API.mostrarError('❌ Tu navegador no soporta notificaciones');
   }
 }
 
 async function cambiarEstadoUsuario(id) {
   console.log('Cambiando estado de usuario:', id);
+  if (!confirm('¿Desactivar este usuario?')) return;
+  
   try {
-    await API.peticion('ACTUALIZAR_USUARIO', { id, activo: 'FALSE' });
-    API.mostrarExito('Usuario desactivado');
+    await API.actualizar('USUARIOS', id, { activo: 'FALSE' });
+    API.mostrarExito('✅ Usuario desactivado correctamente');
     cargarUsuarios();
   } catch(error) {
     API.mostrarError('Error al actualizar usuario: ' + error.message);
@@ -410,7 +430,7 @@ async function eliminarAviso(id) {
   
   try {
     await API.eliminar('AVISOS', id);
-    API.mostrarExito('Aviso eliminado correctamente');
+    API.mostrarExito('✅ Aviso eliminado correctamente');
     cargarMisAvisos();
   } catch(error) {
     API.mostrarError('Error al eliminar: ' + error.message);
