@@ -113,7 +113,7 @@ function crearVistaDetalle(aviso) {
       html += `
         <div style="margin-top:16px;">
           <a href="${link}" target="_blank" class="boton"
-             style="background:#25D366; color:white;">
+             style="background:#F9BF24; color:white;">
             📲 Contactar por WhatsApp
           </a>
         </div>

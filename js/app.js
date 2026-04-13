@@ -151,7 +151,7 @@ function crearTarjetaAviso(aviso) {
          target="_blank" 
          class="boton boton-chico"
          onclick="registrarClickWhatsApp('${aviso.id}')"
-         style="margin-top: 8px; background:#25D366; color:white;">
+         style="margin-top: 8px; background:#F9BF24; color:white;">
          📲 Contactar
       </a>
     `;
