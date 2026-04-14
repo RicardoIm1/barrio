@@ -1,7 +1,7 @@
 <header class="header">
     <div class="contenedor header-contenido">
         <!-- Logo y título - Enlace al index -->
-        <a href="/avisos-jardines/index.html" class="header-logo" style="text-decoration: none;">
+        <a href="/avisos-jardines/index.html" class="header-logo">
             <div class="logo-icon">🏘️</div>
             <div class="logo-texto">
                 <h1>Avisos Colonia Jardines PVR</h1>
@@ -24,10 +24,9 @@
 </header>
 
 <style>
-    /* ========== HEADER ========== */
+    /* ========== HEADER SIN HOVER NI BORDES ========== */
     .header {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: white;
         padding: 20px 0;
         position: sticky;
         top: 0;
@@ -40,6 +39,9 @@
         align-items: center;
         flex-wrap: wrap;
         gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
     }
 
     /* Logo y título */
@@ -96,8 +98,6 @@
         border-radius: 30px;
         font-weight: 600;
         font-size: 0.9rem;
-        border: none;
-        cursor: pointer;
     }
 
     .btn-icon {
