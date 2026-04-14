@@ -265,7 +265,7 @@
   <div id="footer-container"></div>
 
   <!-- ================= SCRIPTS ================= -->
-  
+
   <!-- Cargar header correctamente -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -276,12 +276,12 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-          // ✅ Esperar a que el DOM del header se actualice y llamar a la función global
+          // ✅ Llamar a la función global después de inyectar el HTML
           setTimeout(() => {
             if (typeof window.inicializarHeaderAuth === 'function') {
               window.inicializarHeaderAuth();
             } else {
-              console.log('inicializarHeaderAuth no disponible aún');
+              console.warn('⚠️ window.inicializarHeaderAuth no está definida');
             }
           }, 100);
         })
@@ -319,18 +319,18 @@
 
   <!-- Inicialización final -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Pequeña pausa para asegurar que todos los scripts cargaron
       setTimeout(() => {
         // Verificar si ya estamos en modo edición
         const urlParams = new URLSearchParams(window.location.search);
         const modoEdicion = urlParams.get('editar') === 'true';
-        
+
         // El aviso.js ya maneja la carga, solo aseguramos el header
         if (typeof window.actualizarHeaderSesion === 'function') {
           window.actualizarHeaderSesion();
         }
-        
+
         console.log('✅ aviso.html inicializado correctamente', modoEdicion ? '(modo edición)' : '(modo vista)');
       }, 200);
     });
