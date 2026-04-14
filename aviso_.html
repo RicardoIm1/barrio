@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <title>Aviso - Avisos Colonia Jardines PVR</title>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+
+  <!-- Meta -->
+  <meta name="theme-color" content="#2c3e50">
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <div id="header-container"></div>
+
+  <!-- ================= CONTENIDO ================= -->
+  <main class="contenedor-chico">
+
+    <!-- Mensajes del sistema -->
+    <div id="mensaje-container"></div>
+
+    <!-- Aquí se inyecta TODO el aviso desde aviso.js -->
+    <div id="aviso-detalle" class="cargando">
+      Cargando aviso...
+    </div>
+
+    <!-- Botón de regreso -->
+    <div style="margin-top: 24px;">
+      <a href="/avisos-jardines/index.html" class="boton boton-chico">
+        ← Volver a avisos
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <div id="footer-container"></div>
+
+  <!-- ================= SCRIPTS ================= -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // Cargar header
+      fetch('/avisos-jardines/common/header.html')
+        .then(res => {
+          if (!res.ok) throw new Error('Header no encontrado');
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+
+          // ⚡ IMPORTANTE: ejecutar lógica auth DESPUÉS de cargar el header
+          inicializarHeaderAuth();
+        })
+        .catch(err => console.error('Error cargando header:', err));
+
+    });
+  </script>
+
+  <script>
+    // 🔽 Cargar footer dinámico
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/avisos-jardines/common/footer.html')
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
+        .then(data => {
+          const footer = document.getElementById('footer-container');
+          if (footer) {
+            footer.innerHTML = data;
+
+            const anio = document.getElementById('anio-actual');
+            if (anio) {
+              anio.textContent = new Date().getFullYear();
+            }
+          }
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    });
+  </script>
+
+  <!-- Core -->
+  <script src="/avisos-jardines/js/api.js"></script>
+  <script src="/avisos-jardines/js/ui.js"></script>
+  <script src="/avisos-jardines/js/aviso.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      await UI.cargarHeader();
+    });
+  </script>
+
+</body>
+
+</html>

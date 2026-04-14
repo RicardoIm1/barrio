@@ -9,7 +9,185 @@
   <!-- Estilos -->
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
 
-  <!-- Meta -->
+  <!-- Estilos adicionales estilo periódico -->
+  <style>
+    /* ========== ESTILO PERIÓDICO IMPACTANTE ========== */
+    body {
+      background: #f5f0e8;
+      font-family: 'Georgia', 'Times New Roman', 'Playfair Display', serif;
+    }
+
+    /* Contenedor principal estilo periódico */
+    .contenedor-chico {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fffef7;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      padding: 0;
+      border-radius: 4px;
+    }
+
+    /* Header del periódico */
+    .periodico-header {
+      text-align: center;
+      padding: 30px 20px 20px;
+      border-bottom: 4px double #c0392b;
+      margin-bottom: 30px;
+      background: linear-gradient(to bottom, #fffef7, #faf6ed);
+    }
+
+    .periodico-titulo {
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #c0392b 50%, #f5b042 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      text-transform: uppercase;
+    }
+
+    .periodico-fecha {
+      color: #7f8c8d;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      margin-top: 10px;
+      font-family: monospace;
+    }
+
+    .periodico-edicion {
+      font-size: 0.7rem;
+      color: #c0392b;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 3px;
+    }
+
+    /* Contenido del aviso */
+    #aviso-detalle {
+      padding: 0 40px 40px;
+    }
+
+    /* Categoría badge estilo periódico */
+    .aviso-categoria {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: bold;
+      padding: 6px 12px;
+      background: #1a1a2e;
+      color: #f5b042;
+      margin-bottom: 20px;
+      font-family: monospace;
+    }
+
+    /* Título estilo titular */
+    .aviso-titulo {
+      font-size: 3.2rem;
+      font-weight: 900;
+      line-height: 1.2;
+      margin: 20px 0;
+      color: #1a1a2e;
+      font-family: 'Playfair Display', 'Georgia', serif;
+      border-left: 8px solid #f5b042;
+      padding-left: 25px;
+    }
+
+    /* Metadatos estilo periódico */
+    .aviso-meta {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      padding: 15px 0;
+      margin: 20px 0;
+      border-top: 1px solid #e0d5c0;
+      border-bottom: 1px solid #e0d5c0;
+      color: #5d4e37;
+      font-size: 0.85rem;
+      font-family: monospace;
+    }
+
+    .aviso-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Contenido principal */
+    .aviso-contenido {
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: #2c3e2f;
+      font-family: 'Georgia', serif;
+      margin: 30px 0;
+    }
+
+    .aviso-contenido p {
+      margin-bottom: 1.5em;
+    }
+
+    /* Información adicional estilo recuadro */
+    .aviso-info-adicional {
+      background: #faf6ed;
+      border-left: 4px solid #f5b042;
+      padding: 20px 25px;
+      margin: 30px 0;
+      font-family: monospace;
+    }
+
+    .aviso-info-adicional p {
+      margin: 10px 0;
+    }
+
+    /* Botón volver */
+    .boton-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #1a1a2e;
+      color: #f5b042;
+      text-decoration: none;
+      padding: 12px 24px;
+      font-weight: bold;
+      font-family: monospace;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      border: 2px solid #f5b042;
+    }
+
+    .boton-volver:hover {
+      background: #f5b042;
+      color: #1a1a2e;
+      border-color: #1a1a2e;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .periodico-titulo {
+        font-size: 2rem;
+      }
+      .aviso-titulo {
+        font-size: 1.8rem;
+        border-left-width: 4px;
+        padding-left: 15px;
+      }
+      #aviso-detalle {
+        padding: 0 20px 30px;
+      }
+      .aviso-contenido {
+        font-size: 1rem;
+      }
+      .periodico-header {
+        padding: 20px 15px;
+      }
+    }
+  </style>
+
   <meta name="theme-color" content="#2c3e50">
 </head>
 
@@ -21,18 +199,25 @@
   <!-- ================= CONTENIDO ================= -->
   <main class="contenedor-chico">
 
+    <!-- Header del periódico -->
+    <div class="periodico-header">
+      <div class="periodico-edicion">⭐ EDICIÓN ESPECIAL ⭐</div>
+      <h1 class="periodico-titulo">EL JARDINERO</h1>
+      <div class="periodico-fecha">PERIÓDICO VECINAL • FUNDADO EN 2024</div>
+    </div>
+
     <!-- Mensajes del sistema -->
     <div id="mensaje-container"></div>
 
     <!-- Aquí se inyecta TODO el aviso desde aviso.js -->
     <div id="aviso-detalle" class="cargando">
-      Cargando aviso...
+      📰 Cargando aviso...
     </div>
 
     <!-- Botón de regreso -->
-    <div style="margin-top: 24px;">
-      <a href="/avisos-jardines/index.html" class="boton boton-chico">
-        ← Volver a avisos
+    <div style="margin-top: 24px; padding: 0 40px 40px; text-align: center;">
+      <a href="/avisos-jardines/index.html" class="boton-volver">
+        ← Volver al periódico
       </a>
     </div>
 
@@ -45,8 +230,6 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-
-      // Cargar header
       fetch('/avisos-jardines/common/header.html')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
@@ -54,17 +237,13 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-
-          // ⚡ IMPORTANTE: ejecutar lógica auth DESPUÉS de cargar el header
           inicializarHeaderAuth();
         })
         .catch(err => console.error('Error cargando header:', err));
-
     });
   </script>
 
   <script>
-    // 🔽 Cargar footer dinámico
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
@@ -75,7 +254,6 @@
           const footer = document.getElementById('footer-container');
           if (footer) {
             footer.innerHTML = data;
-
             const anio = document.getElementById('anio-actual');
             if (anio) {
               anio.textContent = new Date().getFullYear();
