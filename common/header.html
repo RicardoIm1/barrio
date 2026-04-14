@@ -24,9 +24,9 @@
 </header>
 
 <style>
-    /* ========== HEADER SIN BORDES NI EFECTOS ========== */
+    /* ========== HEADER ========== */
     .header {
-        background: #1a1a2e;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         color: white;
         padding: 20px 0;
         position: sticky;
@@ -52,7 +52,7 @@
 
     .logo-icon {
         font-size: 3rem;
-        background: #f5b042;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
         border-radius: 50%;
         width: 60px;
         height: 60px;
@@ -65,7 +65,10 @@
         margin: 0;
         font-size: 1.8rem;
         font-weight: 700;
-        color: white;
+        background: linear-gradient(135deg, #ffffff, #f5b042);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
         letter-spacing: -0.5px;
     }
 
@@ -87,13 +90,14 @@
         align-items: center;
         gap: 8px;
         padding: 10px 20px;
-        background: #f5b042;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
         color: white;
         text-decoration: none;
         border-radius: 30px;
         font-weight: 600;
         font-size: 0.9rem;
         border: none;
+        cursor: pointer;
     }
 
     .btn-icon {
@@ -102,7 +106,7 @@
 
     /* Estilo específico para cerrar sesión */
     .btn-logout {
-        background: #dc3545;
+        background: linear-gradient(135deg, #dc3545, #c82333);
     }
 
     /* ========== RESPONSIVE ========== */
