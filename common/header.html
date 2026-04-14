@@ -24,150 +24,57 @@
 </header>
 
 <style>
-    /* ========== HEADER SIN NINGÚN BORDE ========== */
-    .header {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        padding: 20px 0;
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        border: none;
-        border-bottom: none;
-        box-shadow: none;
-        outline: none;
-    }
+.logo-texto h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #f5b042, #ff8c42);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    .header-contenido {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
+.logo-icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #f5b042, #ff8c42);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none; /* fuerza que no haya borde */
+}
 
-    /* Logo y título */
-    .header-logo {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        text-decoration: none;
-    }
+.header-logo:hover h1 {
+    background: linear-gradient(135deg, #f5b042, #ff8c42);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-    .logo-icon {
-        font-size: 3rem;
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.btn-login, .btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f5b042, #ff8c42);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none; /* asegura que no aparezca borde */
+}
 
-    .logo-texto h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ffffff, #f5b042);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: -0.5px;
-    }
+.btn-logout {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
 
-    .header-slogan {
-        margin: 5px 0 0;
-        font-size: 0.85rem;
-        color: #b0b0b0;
-        font-style: italic;
-    }
-
-    /* Acciones del usuario */
-    .header-acciones {
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn-login, .btn-logout {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border: none;
-        outline: none;
-    }
-
-    .btn-icon {
-        font-size: 1.1rem;
-    }
-
-    /* Estilo específico para cerrar sesión */
-    .btn-logout {
-        background: linear-gradient(135deg, #dc3545, #c82333);
-    }
-
-    /* ========== RESPONSIVE ========== */
-    @media (max-width: 768px) {
-        .header {
-            padding: 15px 0;
-        }
-
-        .header-contenido {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .header-logo {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            font-size: 2.5rem;
-        }
-
-        .logo-texto h1 {
-            font-size: 1.4rem;
-        }
-
-        .header-slogan {
-            font-size: 0.75rem;
-        }
-
-        .btn-login, .btn-logout {
-            padding: 8px 16px;
-            font-size: 0.85rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .logo-texto h1 {
-            font-size: 1.2rem;
-        }
-        
-        .btn-login span, .btn-logout span {
-            display: none;
-        }
-        
-        .btn-login, .btn-logout {
-            padding: 10px 12px;
-        }
-        
-        .btn-icon {
-            font-size: 1.2rem;
-        }
-    }
+.btn-login:hover, .btn-logout:hover {
+    filter: brightness(1.1);
+    color: white; /* evita que cambie a blanco por defecto */
+    text-decoration: none;
+}
 </style>
 
 <script>
