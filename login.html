@@ -94,8 +94,13 @@
 
         try {
           const res = await Auth.login(email, password);
-
           console.log('Login correcto:', res);
+
+          // ✅ SOLO AGREGA ESTAS 2 LÍNEAS:
+          // Forzar actualización del header
+          if (typeof window.actualizarHeaderSesion === 'function') {
+            window.actualizarHeaderSesion();
+          }
 
           window.location.href = '/avisos-jardines/admin.html';
 
@@ -103,7 +108,6 @@
           console.error('Error login:', error);
           alert('Credenciales incorrectas');
         }
-
       });
 
     });
