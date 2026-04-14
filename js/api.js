@@ -1,4 +1,4 @@
-// ==================== API CLIENT SIMPLIFICADO ====================
+// ==================== API CLIENT CON JSONP CORREGIDO ====================
 const API = {
   baseUrl: 'https://script.google.com/macros/s/AKfycby_68N-wRMXs0nA9khuOKWn2PJWKHX08g8UL1EMaWkCx84XL8H28F2G-ePc0IM-5KcJ/exec',
 
@@ -19,51 +19,58 @@ const API = {
     return usuario ? JSON.parse(usuario) : null;
   },
 
-  async peticion(accion, datos = {}) {
-    const payload = {
-      accion: accion,
-      ...datos,
-      api_key: this.apiKey
-    };
-    
-    console.log('📤 Enviando:', accion, payload);
-    
-    try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
+  peticionJSONP(accion, datos = {}) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
       
-      // Con no-cors no podemos leer la respuesta directamente
-      // Por ahora, asumimos éxito
-      console.log('📥 Petición enviada:', accion);
-      return { success: true };
+      const payload = {
+        accion: accion,
+        ...datos,
+        api_key: this.apiKey
+      };
       
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
-    }
+      const url = this.baseUrl + '?callback=' + callbackName + '&jsonp=' + encodeURIComponent(JSON.stringify(payload));
+      
+      window[callbackName] = function(respuesta) {
+        delete window[callbackName];
+        if (document.body.contains(script)) document.body.removeChild(script);
+        
+        console.log('📥 Respuesta:', respuesta);
+        
+        if (respuesta && respuesta.success === true) {
+          resolve(respuesta.data || respuesta);
+        } else {
+          reject(new Error(respuesta?.error || 'Error en la petición'));
+        }
+      };
+      
+      const script = document.createElement('script');
+      script.src = url;
+      script.onerror = () => {
+        delete window[callbackName];
+        reject(new Error('Error de conexión'));
+      };
+      document.body.appendChild(script);
+    });
   },
 
   async login(email, password) {
     try {
-      const resultado = await this.peticion('LOGIN', { email, password });
-      console.log('Login enviado');
+      const resultado = await this.peticionJSONP('LOGIN', { email, password });
+      console.log('Login exitoso:', resultado);
       
-      // Simular éxito para pruebas
-      localStorage.setItem('usuario', JSON.stringify({
-        id: '5',
-        email: email,
-        nombre: 'Administrador',
-        rol: 'admin'
-      }));
-      localStorage.setItem('api_key', 'simulated_key_' + Date.now());
+      if (resultado && resultado.api_key) {
+        this.apiKey = resultado.api_key;
+        localStorage.setItem('api_key', resultado.api_key);
+      }
+      if (resultado && resultado.usuario) {
+        localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
+      }
       
-      return { success: true };
+      // Disparar evento de actualización
+      window.dispatchEvent(new CustomEvent('login-status-changed'));
+      
+      return resultado;
     } catch (error) {
       console.error('Error login:', error);
       throw error;
@@ -71,24 +78,27 @@ const API = {
   },
 
   async listar(coleccion) {
-    return this.peticion('LISTAR', { coleccion });
+    const resultado = await this.peticionJSONP('LISTAR', { coleccion });
+    return resultado;
   },
 
   async crear(coleccion, datos) {
-    return this.peticion('CREAR', { coleccion, datos });
+    return this.peticionJSONP('CREAR', { coleccion, datos });
   },
 
   async actualizar(coleccion, id, datos) {
-    return this.peticion('ACTUALIZAR', { coleccion, id, datos });
+    return this.peticionJSONP('ACTUALIZAR', { coleccion, id, datos });
   },
 
   async eliminar(coleccion, id) {
-    return this.peticion('ELIMINAR', { coleccion, id });
+    return this.peticionJSONP('ELIMINAR', { coleccion, id });
   },
 
   cerrarSesion() {
+    this.apiKey = null;
     localStorage.removeItem('usuario');
     localStorage.removeItem('api_key');
+    window.dispatchEvent(new CustomEvent('login-status-changed'));
     window.location.href = '/avisos-jardines/login.html';
   },
 
@@ -102,7 +112,7 @@ const API = {
         }
       }, 5000);
     } else {
-      alert(mensaje);
+      console.error(mensaje);
     }
   },
 
@@ -121,10 +131,6 @@ const API = {
   }
 };
 
-// Evento cuando API está lista
-if (typeof window !== 'undefined') {
-  setTimeout(() => {
-    console.log('✅ API lista (modo simplificado)');
-    window.dispatchEvent(new CustomEvent('api-ready'));
-  }, 0);
-}
+// Evento de API lista
+window.dispatchEvent(new CustomEvent('api-ready'));
+console.log('✅ API lista');
