@@ -5,7 +5,7 @@
             <div class="logo-icon">🏘️</div>
             <div class="logo-texto">
                 <h1>Avisos Colonia Jardines PVR</h1>
-                <p class="header-slogan">El canal oficial donde los vecinos se enteran de lo que pasa</p>
+                <p class="header-slogan">Lo que pasa en la colonia, aquí se sabe</p>
             </div>
         </a>
 
@@ -28,184 +28,188 @@
 </header>
 
 <style>
-/* Header - logo y h1 uno al lado del otro */
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    text-decoration: none;
-}
-
-.logo-icon {
-    font-size: 3rem;
-    background: linear-gradient(135deg, #f5b042, #ff8c42);
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    flex-shrink: 0;
-}
-
-.logo-texto {
-    display: flex;
-    flex-direction: column;
-}
-
-.logo-texto h1 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #f5b042, #ff8c42);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    white-space: nowrap;
-}
-
-.header-slogan {
-    margin: 5px 0 0;
-    font-size: 0.85rem;
-    color: #b0b0b0;
-    font-style: italic;
-    white-space: nowrap;
-}
-
-.header-logo:hover h1 {
-    background: linear-gradient(135deg, #f5b042, #ff8c42);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-/* Botón Iniciar sesión - mantiene el estilo original */
-.btn-login {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #f5b042, #ff8c42);
-    color: white;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-login:hover {
-    background: linear-gradient(135deg, #e69a2e, #e67300);
-    transform: scale(1.02);
-}
-
-/* Botón Administrador - estilo elegante y profesional */
-.btn-admin {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: linear-gradient(135deg, #4a5568, #2d3748);
-    color: #e2e8f0;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-admin:hover {
-    background: linear-gradient(135deg, #5a6578, #3d4858);
-    color: white;
-    transform: scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Botón Cerrar sesión - minimalista y sutil */
-.btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    background: transparent;
-    color: #a0aec0;
-    text-decoration: none;
-    border-radius: 30px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border: 1px solid #4a5568;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-logout:hover {
-    background: rgba(160, 174, 192, 0.1);
-    color: #e2e8f0;
-    border-color: #718096;
-    transform: scale(1.02);
-}
-
-/* Grupo de botones para mejor espaciado */
-.header-acciones {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .logo-texto h1 {
-        font-size: 1.2rem;
-        white-space: normal;
+    /* Header - logo y h1 uno al lado del otro */
+    .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-decoration: none;
     }
-    .header-slogan {
-        font-size: 0.7rem;
-        white-space: normal;
-    }
+
     .logo-icon {
-        width: 45px;
-        height: 45px;
-        font-size: 2rem;
+        font-size: 3rem;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        flex-shrink: 0;
     }
-    
-    .btn-login, .btn-admin, .btn-logout {
-        padding: 8px 16px;
-        font-size: 0.8rem;
+
+    .logo-texto {
+        display: flex;
+        flex-direction: column;
     }
-}
+
+    .logo-texto h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
+    }
+
+    .header-slogan {
+        margin: 5px 0 0;
+        font-size: 0.85rem;
+        color: #b0b0b0;
+        font-style: italic;
+        white-space: nowrap;
+    }
+
+    .header-logo:hover h1 {
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* Botón Iniciar sesión - mantiene el estilo original */
+    .btn-login {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background: linear-gradient(135deg, #e69a2e, #e67300);
+        transform: scale(1.02);
+    }
+
+    /* Botón Administrador - estilo elegante y profesional */
+    .btn-admin {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #4a5568, #2d3748);
+        color: #e2e8f0;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-admin:hover {
+        background: linear-gradient(135deg, #5a6578, #3d4858);
+        color: white;
+        transform: scale(1.02);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Botón Cerrar sesión - minimalista y sutil */
+    .btn-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: transparent;
+        color: #a0aec0;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid #4a5568;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-logout:hover {
+        background: rgba(160, 174, 192, 0.1);
+        color: #e2e8f0;
+        border-color: #718096;
+        transform: scale(1.02);
+    }
+
+    /* Grupo de botones para mejor espaciado */
+    .header-acciones {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .logo-texto h1 {
+            font-size: 1.2rem;
+            white-space: normal;
+        }
+
+        .header-slogan {
+            font-size: 0.7rem;
+            white-space: normal;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            font-size: 2rem;
+        }
+
+        .btn-login,
+        .btn-admin,
+        .btn-logout {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+    }
 </style>
 
 <script>
     // Script para manejar el estado de sesión en el header
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const usuario = API?.getUsuarioActual ? API.getUsuarioActual() : null;
         const loginLink = document.getElementById('login-link');
         const adminLink = document.getElementById('admin-link');
         const cerrarSesion = document.getElementById('cerrar-sesion');
-        
+
         if (usuario && loginLink && adminLink && cerrarSesion) {
             loginLink.style.display = 'none';
             adminLink.style.display = 'inline-flex';
             cerrarSesion.style.display = 'inline-flex';
-            
+
             // Verificar si el usuario es administrador
             const esAdmin = usuario.rol === 'admin' || usuario.esAdmin;
             if (!esAdmin && adminLink) {
                 adminLink.style.display = 'none';
             }
-            
+
             if (adminLink) {
-                adminLink.addEventListener('click', function(e) {
+                adminLink.addEventListener('click', function (e) {
                     e.preventDefault();
                     window.location.href = '/avisos-jardines/admin.html';
                 });
             }
-            
-            cerrarSesion.addEventListener('click', function(e) {
+
+            cerrarSesion.addEventListener('click', function (e) {
                 e.preventDefault();
                 if (API && API.cerrarSesion) {
                     API.cerrarSesion();
