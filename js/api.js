@@ -33,10 +33,13 @@ const API = {
       const url = this.baseUrl + '?callback=' + callbackName + '&jsonp=' + encodeURIComponent(JSON.stringify(payload));
 
       window[callbackName] = function (respuesta) {
+        console.log('📥 RESPUESTA COMPLETA DEL SERVIDOR:', JSON.stringify(respuesta, null, 2));
+        console.log('📥 Tipo de respuesta:', typeof respuesta);
+        console.log('📥 success?:', respuesta?.success);
+        console.log('📥 error?:', respuesta?.error);
+
         delete window[callbackName];
         if (document.body.contains(script)) document.body.removeChild(script);
-
-        console.log('📥 Respuesta:', respuesta);
 
         if (respuesta && respuesta.success === true) {
           resolve(respuesta.data || respuesta);
