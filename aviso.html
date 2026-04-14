@@ -266,8 +266,7 @@
 
   <!-- ================= SCRIPTS ================= -->
 
-  <!-- Cargar header correctamente -->
-  // Cargar header correctamente
+  <!-- Cargar header  -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/avisos-jardines/common/header.html')
@@ -277,14 +276,22 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-          // ✅ Aumentar el tiempo de espera a 300ms
-          setTimeout(() => {
+
+          // ✅ Esperar a que la función exista (máximo 3 segundos)
+          let intentos = 0;
+          const maxIntentos = 30; // 30 * 100ms = 3 segundos
+
+          const esperarHeader = setInterval(() => {
+            intentos++;
             if (typeof window.inicializarHeaderAuth === 'function') {
+              clearInterval(esperarHeader);
               window.inicializarHeaderAuth();
-            } else {
-              console.warn('⚠️ window.inicializarHeaderAuth no está definida');
+              console.log('✅ Header inicializado después de', intentos * 100, 'ms');
+            } else if (intentos >= maxIntentos) {
+              clearInterval(esperarHeader);
+              console.warn('⚠️ No se pudo encontrar inicializarHeaderAuth');
             }
-          }, 300);  // ← Cambiado de 100 a 300
+          }, 100);
         })
         .catch(err => console.error('Error cargando header:', err));
     });
