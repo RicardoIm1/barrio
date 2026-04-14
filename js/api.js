@@ -1,6 +1,7 @@
 // ==================== API CLIENT CON JSONP CORREGIDO ====================
 const API = {
-  baseUrl: 'https://script.google.com/macros/s/AKfycby_68N-wRMXs0nA9khuOKWn2PJWKHX08g8UL1EMaWkCx84XL8H28F2G-ePc0IM-5KcJ/exec',
+  /* baseUrl: 'https://script.google.com/macros/s/AKfycby_68N-wRMXs0nA9khuOKWn2PJWKHX08g8UL1EMaWkCx84XL8H28F2G-ePc0IM-5KcJ/exec', */
+  baseUrl: 'https://script.google.com/macros/s/AKfycbzeN_KyMO_ttPK-4--VpvRtvVQU5MPSzWtCx48ZI7rzEm1vY8KqU6nGcF9wc2DM89t8/exec',
 
   get apiKey() {
     return localStorage.getItem('api_key');
@@ -22,28 +23,28 @@ const API = {
   peticionJSONP(accion, datos = {}) {
     return new Promise((resolve, reject) => {
       const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-      
+
       const payload = {
         accion: accion,
         ...datos,
         api_key: this.apiKey
       };
-      
+
       const url = this.baseUrl + '?callback=' + callbackName + '&jsonp=' + encodeURIComponent(JSON.stringify(payload));
-      
-      window[callbackName] = function(respuesta) {
+
+      window[callbackName] = function (respuesta) {
         delete window[callbackName];
         if (document.body.contains(script)) document.body.removeChild(script);
-        
+
         console.log('📥 Respuesta:', respuesta);
-        
+
         if (respuesta && respuesta.success === true) {
           resolve(respuesta.data || respuesta);
         } else {
           reject(new Error(respuesta?.error || 'Error en la petición'));
         }
       };
-      
+
       const script = document.createElement('script');
       script.src = url;
       script.onerror = () => {
@@ -58,7 +59,7 @@ const API = {
     try {
       const resultado = await this.peticionJSONP('LOGIN', { email, password });
       console.log('Login exitoso:', resultado);
-      
+
       if (resultado && resultado.api_key) {
         this.apiKey = resultado.api_key;
         localStorage.setItem('api_key', resultado.api_key);
@@ -66,10 +67,10 @@ const API = {
       if (resultado && resultado.usuario) {
         localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
       }
-      
+
       // Disparar evento de actualización
       window.dispatchEvent(new CustomEvent('login-status-changed'));
-      
+
       return resultado;
     } catch (error) {
       console.error('Error login:', error);
