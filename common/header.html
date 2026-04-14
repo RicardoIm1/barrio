@@ -1,5 +1,6 @@
 <header class="header">
     <div class="contenedor header-contenido">
+        <!-- Logo y título - Enlace al index -->
         <a href="/avisos-jardines/index.html" class="header-logo">
             <div class="logo-icon">🏘️</div>
             <div class="logo-texto">
@@ -7,6 +8,8 @@
                 <p class="header-slogan">El canal oficial donde los vecinos sí ven las cosas</p>
             </div>
         </a>
+
+        <!-- Acciones del usuario -->
         <div class="header-acciones" id="header-acciones">
             <a href="/avisos-jardines/login.html" id="login-link" class="btn-login">
                 <span class="btn-icon">🔐</span>
@@ -21,27 +24,17 @@
 </header>
 
 <style>
-    /* RESET completo */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        min-height: 100vh;
-    }
-
+    /* ========== HEADER SIN NINGÚN BORDE ========== */
     .header {
         background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         padding: 20px 0;
         position: sticky;
         top: 0;
         z-index: 1000;
-        margin: 0;
-        border: 0;
+        border: none;
+        border-bottom: none;
         box-shadow: none;
+        outline: none;
     }
 
     .header-contenido {
@@ -55,6 +48,7 @@
         padding: 0 20px;
     }
 
+    /* Logo y título */
     .header-logo {
         display: flex;
         align-items: center;
@@ -81,6 +75,7 @@
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
     }
 
     .header-slogan {
@@ -90,6 +85,7 @@
         font-style: italic;
     }
 
+    /* Acciones del usuario */
     .header-acciones {
         display: flex;
         gap: 12px;
@@ -106,33 +102,52 @@
         border-radius: 30px;
         font-weight: 600;
         font-size: 0.9rem;
+        border: none;
+        outline: none;
     }
 
+    .btn-icon {
+        font-size: 1.1rem;
+    }
+
+    /* Estilo específico para cerrar sesión */
     .btn-logout {
         background: linear-gradient(135deg, #dc3545, #c82333);
     }
 
+    /* ========== RESPONSIVE ========== */
     @media (max-width: 768px) {
         .header {
             padding: 15px 0;
         }
+
         .header-contenido {
             flex-direction: column;
             text-align: center;
         }
+
         .header-logo {
             flex-direction: column;
+            text-align: center;
         }
+
         .logo-icon {
             width: 50px;
             height: 50px;
             font-size: 2.5rem;
         }
+
         .logo-texto h1 {
             font-size: 1.4rem;
         }
+
+        .header-slogan {
+            font-size: 0.75rem;
+        }
+
         .btn-login, .btn-logout {
             padding: 8px 16px;
+            font-size: 0.85rem;
         }
     }
 
@@ -140,11 +155,42 @@
         .logo-texto h1 {
             font-size: 1.2rem;
         }
+        
         .btn-login span, .btn-logout span {
             display: none;
         }
+        
         .btn-login, .btn-logout {
             padding: 10px 12px;
         }
+        
+        .btn-icon {
+            font-size: 1.2rem;
+        }
     }
 </style>
+
+<script>
+    // Script para manejar el estado de sesión en el header
+    document.addEventListener('DOMContentLoaded', function() {
+        const usuario = API?.getUsuarioActual ? API.getUsuarioActual() : null;
+        const loginLink = document.getElementById('login-link');
+        const cerrarSesion = document.getElementById('cerrar-sesion');
+        
+        if (usuario && loginLink && cerrarSesion) {
+            loginLink.style.display = 'none';
+            cerrarSesion.style.display = 'inline-flex';
+            
+            cerrarSesion.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (API && API.cerrarSesion) {
+                    API.cerrarSesion();
+                }
+                window.location.href = '/avisos-jardines/login.html';
+            });
+        } else if (loginLink && cerrarSesion) {
+            loginLink.style.display = 'inline-flex';
+            cerrarSesion.style.display = 'none';
+        }
+    });
+</script>
