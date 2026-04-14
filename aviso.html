@@ -151,7 +151,8 @@
       background: #f9f9f9;
     }
 
-    .media-item img, .media-item video {
+    .media-item img,
+    .media-item video {
       max-width: 100%;
       max-height: 150px;
       object-fit: cover;
@@ -193,23 +194,46 @@
       border-color: #45a049;
     }
 
+    /* Botones de acción */
+    .boton {
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .boton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .contenedor-chico {
         margin: 15px;
       }
+
       .aviso-titulo {
         font-size: 1.8rem;
       }
+
       #aviso-detalle {
         padding: 0 20px 30px;
       }
+
       .aviso-contenido {
         font-size: 1rem;
       }
+
       .aviso-meta {
         gap: 15px;
       }
+
       .gallery {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       }
@@ -241,6 +265,8 @@
   <div id="footer-container"></div>
 
   <!-- ================= SCRIPTS ================= -->
+  
+  <!-- Cargar header correctamente -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/avisos-jardines/common/header.html')
@@ -250,12 +276,20 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-          if (typeof inicializarHeaderAuth === 'function') inicializarHeaderAuth();
+          // ✅ Esperar a que el DOM del header se actualice y llamar a la función global
+          setTimeout(() => {
+            if (typeof window.inicializarHeaderAuth === 'function') {
+              window.inicializarHeaderAuth();
+            } else {
+              console.log('inicializarHeaderAuth no disponible aún');
+            }
+          }, 100);
         })
         .catch(err => console.error('Error cargando header:', err));
     });
   </script>
 
+  <!-- Cargar footer -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/avisos-jardines/common/footer.html')
@@ -277,17 +311,28 @@
     });
   </script>
 
-  <!-- Core -->
+  <!-- Core Scripts -->
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
   <script src="/avisos-jardines/js/multimedia.js"></script>
   <script src="/avisos-jardines/js/aviso.js"></script>
 
+  <!-- Inicialización final -->
   <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-      if (typeof UI !== 'undefined' && UI.cargarHeader) {
-        await UI.cargarHeader();
-      }
+    document.addEventListener('DOMContentLoaded', function() {
+      // Pequeña pausa para asegurar que todos los scripts cargaron
+      setTimeout(() => {
+        // Verificar si ya estamos en modo edición
+        const urlParams = new URLSearchParams(window.location.search);
+        const modoEdicion = urlParams.get('editar') === 'true';
+        
+        // El aviso.js ya maneja la carga, solo aseguramos el header
+        if (typeof window.actualizarHeaderSesion === 'function') {
+          window.actualizarHeaderSesion();
+        }
+        
+        console.log('✅ aviso.html inicializado correctamente', modoEdicion ? '(modo edición)' : '(modo vista)');
+      }, 200);
     });
   </script>
 

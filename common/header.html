@@ -184,42 +184,107 @@
 </style>
 
 <script>
-    // Script para manejar el estado de sesión en el header
-    document.addEventListener('DOMContentLoaded', function () {
-        const usuario = API?.getUsuarioActual ? API.getUsuarioActual() : null;
+    // ✅ FUNCIÓN INICIALIZADORA EXPORTADA (para que la llamen desde afuera)
+    window.inicializarHeaderAuth = function() {
+        console.log('Inicializando header auth...');
+        
+        // Esperar un momento para que API esté disponible
+        setTimeout(() => {
+            actualizarEstadoSesion();
+        }, 100);
+    };
+    
+    // ✅ Función para actualizar el estado de sesión
+    function actualizarEstadoSesion() {
+        // Verificar si API existe
+        if (typeof API === 'undefined') {
+            console.warn('API no disponible aún, reintentando en 500ms...');
+            setTimeout(actualizarEstadoSesion, 500);
+            return;
+        }
+        
+        // Verificar si getUsuarioActual existe
+        if (typeof API.getUsuarioActual !== 'function') {
+            console.warn('API.getUsuarioActual no disponible');
+            return;
+        }
+        
+        const usuario = API.getUsuarioActual();
         const loginLink = document.getElementById('login-link');
         const adminLink = document.getElementById('admin-link');
         const cerrarSesion = document.getElementById('cerrar-sesion');
-
-        if (usuario && loginLink && adminLink && cerrarSesion) {
+        
+        console.log('Estado de sesión - Usuario:', usuario);
+        
+        if (!loginLink || !adminLink || !cerrarSesion) {
+            console.error('Elementos del header no encontrados');
+            return;
+        }
+        
+        if (usuario && usuario.email) {
+            // Usuario logueado
             loginLink.style.display = 'none';
             adminLink.style.display = 'inline-flex';
             cerrarSesion.style.display = 'inline-flex';
-
+            
             // Verificar si el usuario es administrador
-            const esAdmin = usuario.rol === 'admin' || usuario.esAdmin;
+            const esAdmin = usuario.rol === 'admin';
+            
             if (!esAdmin && adminLink) {
                 adminLink.style.display = 'none';
+                console.log('Usuario no admin, ocultando botón admin');
+            } else if (esAdmin) {
+                console.log('Admin detectado, mostrando panel admin');
             }
-
+            
+            // Configurar evento del botón admin
             if (adminLink) {
-                adminLink.addEventListener('click', function (e) {
+                // Remover eventos anteriores para evitar duplicados
+                const newAdminLink = adminLink.cloneNode(true);
+                adminLink.parentNode.replaceChild(newAdminLink, adminLink);
+                
+                newAdminLink.addEventListener('click', function(e) {
                     e.preventDefault();
                     window.location.href = '/avisos-jardines/admin.html';
                 });
             }
-
-            cerrarSesion.addEventListener('click', function (e) {
-                e.preventDefault();
-                if (API && API.cerrarSesion) {
-                    API.cerrarSesion();
-                }
-                window.location.href = '/avisos-jardines/login.html';
-            });
-        } else if (loginLink && adminLink && cerrarSesion) {
+            
+            // Configurar evento de cerrar sesión
+            if (cerrarSesion) {
+                const newCerrarSesion = cerrarSesion.cloneNode(true);
+                cerrarSesion.parentNode.replaceChild(newCerrarSesion, cerrarSesion);
+                
+                newCerrarSesion.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (API && API.cerrarSesion) {
+                        API.cerrarSesion();
+                    }
+                    window.location.href = '/avisos-jardines/login.html';
+                });
+            }
+        } else {
+            // Usuario no logueado
             loginLink.style.display = 'inline-flex';
             adminLink.style.display = 'none';
             cerrarSesion.style.display = 'none';
+            console.log('Usuario no logueado');
         }
+    }
+    
+    // ✅ Escuchar evento personalizado cuando API está lista
+    document.addEventListener('DOMContentLoaded', function() {
+        // Intentar actualizar inmediatamente
+        if (typeof API !== 'undefined') {
+            actualizarEstadoSesion();
+        }
+        
+        // También escuchar un evento personalizado que puede disparar api.js
+        window.addEventListener('api-ready', function() {
+            console.log('Evento api-ready recibido');
+            actualizarEstadoSesion();
+        });
     });
+    
+    // ✅ Exponer función global para actualizar desde fuera
+    window.actualizarHeaderSesion = actualizarEstadoSesion;
 </script>

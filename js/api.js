@@ -205,4 +205,12 @@ const API = {
       console.log(mensaje);
     }
   }
+
+  // Al final de api.js, después de todo el objeto API
+if (typeof window !== 'undefined') {
+    // Disparar evento cuando API está lista
+    setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('api-ready'));
+    }, 0);
+}
 };
