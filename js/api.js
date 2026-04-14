@@ -1,6 +1,6 @@
 // ==================== API CLIENT CON JSONP ====================
 const API = {
-  baseUrl: 'https://script.google.com/macros/s/AKfycbyIubfXTmz9TLNcaAoNPKmgn26xAAp-4txiF-HU56bqv0r81eNcfI0362hnVDT9UJ6X/exec',
+  baseUrl: 'https://script.google.com/macros/s/AKfycby_68N-wRMXs0nA9khuOKWn2PJWKHX08g8UL1EMaWkCx84XL8H28F2G-ePc0IM-5KcJ/exec',
 
   get apiKey() {
     return localStorage.getItem('api_key');
@@ -19,35 +19,44 @@ const API = {
     return usuario ? JSON.parse(usuario) : null;
   },
 
-  // Petición usando JSONP (evita CORS completamente)
+  // Petición usando JSONP
   peticionJSONP(accion, datos = {}) {
     return new Promise((resolve, reject) => {
       const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
 
       const payload = {
         accion: accion,
-        datos: datos,
-        coleccion: 'AVISOS',
-        consulta: datos.consulta || {},
-        paginacion: datos.paginacion || {},
+        ...datos,
         api_key: this.apiKey
       };
 
-      // Construir URL con JSONP
+      console.log('📤 Enviando petición:', accion, payload);
+
       const url = this.baseUrl + '?callback=' + callbackName + '&jsonp=' + encodeURIComponent(JSON.stringify(payload));
 
-      // Crear callback global
       window[callbackName] = function (respuesta) {
         delete window[callbackName];
         if (document.body.contains(script)) document.body.removeChild(script);
-        if (respuesta && respuesta.success) {
-          resolve(respuesta.data);
+        
+        console.log('📥 Respuesta recibida:', respuesta);
+        
+        // ✅ Manejar diferentes formatos de respuesta
+        if (respuesta && respuesta.success === true) {
+          resolve(respuesta.data || respuesta);
+        } else if (respuesta && respuesta.success === false) {
+          reject(new Error(respuesta.error || 'Error en la petición'));
+        } else if (respuesta && respuesta.data && respuesta.data.success !== undefined) {
+          // Respuesta anidada
+          if (respuesta.data.success) {
+            resolve(respuesta.data.data || respuesta.data);
+          } else {
+            reject(new Error(respuesta.data.error || 'Error en la petición'));
+          }
         } else {
-          reject(new Error(respuesta?.error || 'Error en la petición'));
+          reject(new Error(respuesta?.error || 'Respuesta inválida del servidor'));
         }
       };
 
-      // Crear y agregar script
       const script = document.createElement('script');
       script.src = url;
       script.onerror = () => {
@@ -59,7 +68,6 @@ const API = {
     });
   },
 
-  // Método genérico para cualquier petición
   async peticion(accion, datos = {}) {
     try {
       const resultado = await this.peticionJSONP(accion, datos);
@@ -85,7 +93,6 @@ const API = {
     }
   },
 
-  // Crear un nuevo registro
   async crear(coleccion, datos) {
     try {
       const resultado = await this.peticionJSONP('CREAR', {
@@ -100,23 +107,25 @@ const API = {
     }
   },
 
-  // Actualizar un registro
   async actualizar(coleccion, id, datos) {
     try {
+      console.log('🔄 Actualizando:', { coleccion, id, datos });
+      
       const resultado = await this.peticionJSONP('ACTUALIZAR', {
         coleccion,
         id,
         datos
       });
+      
+      console.log('✅ Actualización exitosa:', resultado);
       return resultado;
     } catch (error) {
-      console.error('Error en actualizar:', error);
+      console.error('❌ Error en actualizar:', error);
       this.mostrarError('Error al actualizar: ' + error.message);
       throw error;
     }
   },
 
-  // Eliminar un registro
   async eliminar(coleccion, id) {
     try {
       const resultado = await this.peticionJSONP('ELIMINAR', {
@@ -134,33 +143,18 @@ const API = {
   async login(email, password) {
     try {
       const resultado = await this.peticionJSONP('LOGIN', { email, password });
-
       console.log('Respuesta LOGIN:', resultado);
 
-      // 🔥 SIEMPRE guardar algo si hay respuesta
       if (resultado) {
-
-        // guardar api_key si existe
         if (resultado.api_key) {
           this.apiKey = resultado.api_key;
         }
-
-        // 🔥 CLAVE: guardar usuario aunque no venga api_key
         if (resultado.usuario) {
           localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
-        } else {
-          // fallback mínimo (para no romper flujo)
-          localStorage.setItem('usuario', JSON.stringify({
-            email: email,
-            nombre: 'Usuario'
-          }));
         }
-
         return resultado;
       }
-
       throw new Error('Respuesta vacía del servidor');
-
     } catch (error) {
       this.mostrarError('Error en login: ' + error.message);
       throw error;
@@ -205,14 +199,12 @@ const API = {
       console.log(mensaje);
     }
   }
+};
 
-}; // ← CIERRE CORRECTO DEL OBJETO API
-
-// ✅ EVENTO API-READY (FUERA DEL OBJETO)
+// Evento cuando API está lista
 if (typeof window !== 'undefined') {
-    // Disparar evento cuando API está lista
-    setTimeout(() => {
-        console.log('✅ API lista, disparando evento api-ready');
-        window.dispatchEvent(new CustomEvent('api-ready'));
-    }, 0);
+  setTimeout(() => {
+    console.log('✅ API lista');
+    window.dispatchEvent(new CustomEvent('api-ready'));
+  }, 0);
 }
