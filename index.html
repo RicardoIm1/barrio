@@ -54,9 +54,16 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-
-          // ⚡ IMPORTANTE: ejecutar lógica auth DESPUÉS de cargar el header
-          inicializarHeaderAuth();
+          
+          // ✅ Esperar un momento para que el DOM del header se actualice
+          setTimeout(() => {
+            // ⚡ Usar la función GLOBAL en lugar de la local
+            if (typeof window.inicializarHeaderAuth === 'function') {
+              window.inicializarHeaderAuth();
+            } else {
+              console.warn('⚠️ window.inicializarHeaderAuth no disponible');
+            }
+          }, 100);
         })
         .catch(err => console.error('Error cargando header:', err));
 
