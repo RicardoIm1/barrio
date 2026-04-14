@@ -224,7 +224,7 @@ function renderizarPaginacion(paginacion) {
 
 function registrarClickWhatsApp(idAviso) {
   try {
-    fetch("https://script.google.com/macros/s/AKfycbzPt4wVO0MOI9L2PkqkTdftlHcyBSh6d5-mpwZE-ColVxbb1CyBzD5oLotjcgcIlQ1t/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbwpgTkBdsGAVAD06qI1qHT-duQ28udXlKwhoD-TKkLK8PlRTY_GjQ1CansrCTd-5ojI/exec", {
       method: "POST",
       body: JSON.stringify({
         accion: "CLICK_WHATSAPP",
