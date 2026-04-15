@@ -137,7 +137,6 @@
       color: var(--text-dark);
     }
 
-    /* Galería */
     .gallery-section {
       margin: 2rem 0;
     }
@@ -186,7 +185,6 @@
       border-radius: 8px;
     }
 
-    /* Lightbox */
     .lightbox {
       display: none;
       position: fixed;
@@ -331,6 +329,7 @@
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
   <script src="/avisos-jardines/js/auth.js"></script>
+  <script src="/avisos-jardines/js/multimedia.js"></script>
 
   <script>
     // ========== FUNCIONES DE UTILIDAD ==========
@@ -392,8 +391,13 @@
           usuarioActual = null;
         }
 
-        // Inicializar MultimediaManager
-        multimediaManager = new MultimediaManager(API);
+        // Inicializar MultimediaManager si existe la clase
+        if (typeof MultimediaManager !== 'undefined') {
+          multimediaManager = new MultimediaManager(API);
+          console.log('MultimediaManager inicializado');
+        } else {
+          console.warn('MultimediaManager no disponible, las imágenes no se cargarán');
+        }
 
         // Obtener el aviso
         const resultado = await API.listar('AVISOS');
@@ -408,16 +412,18 @@
         avisoActual = aviso;
         console.log('Aviso cargado:', avisoActual);
 
-        // Obtener multimedia asociado
+        // Obtener multimedia asociado (solo si MultimediaManager existe)
         let multimediaItems = [];
-        try {
-          const multimediaResult = await multimediaManager.listarMultimedia(AVISO_ID);
-          if (multimediaResult.success && multimediaResult.data) {
-            multimediaItems = multimediaResult.data;
-            console.log('Multimedia cargado:', multimediaItems.length, 'items');
+        if (multimediaManager) {
+          try {
+            const multimediaResult = await multimediaManager.listarMultimedia(AVISO_ID);
+            if (multimediaResult.success && multimediaResult.data) {
+              multimediaItems = multimediaResult.data;
+              console.log('Multimedia cargado:', multimediaItems.length, 'items');
+            }
+          } catch (e) {
+            console.warn('Error cargando multimedia (puede que no exista aún):', e);
           }
-        } catch (e) {
-          console.warn('Error cargando multimedia (puede que no exista aún):', e);
         }
 
         renderizarAviso(multimediaItems);
@@ -481,14 +487,13 @@
         categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN';
       }
 
-      // Determinar imagen destacada (prioridad: 1. imagen_url, 2. primera imagen multimedia)
+      // Determinar imagen destacada
       let imagenDestacada = null;
       let imagenesGaleria = [];
       
       // Si hay imagen_url en el aviso (sistema viejo)
       if (avisoActual.imagen_url && avisoActual.imagen_url.trim() !== '') {
         imagenDestacada = avisoActual.imagen_url;
-        // Las imágenes multimedia se añaden después
         if (multimediaItems && multimediaItems.length > 0) {
           imagenesGaleria = multimediaItems.filter(m => m.tipo === 'image/jpeg' || m.tipo === 'image/png' || m.tipo === 'image/jpg');
         }
@@ -501,7 +506,6 @@
           imagenesGaleria = imagenes.slice(1);
         }
         
-        // Videos se muestran aparte
         const videos = multimediaItems.filter(m => m.tipo === 'video/mp4' || m.tipo === 'video/webm');
         imagenesGaleria.push(...videos);
       }
@@ -623,6 +627,7 @@
 
     // Cargar header, footer y el aviso
     document.addEventListener('DOMContentLoaded', function() {
+      // Header
       fetch('/avisos-jardines/common/header.html')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
@@ -638,6 +643,7 @@
         })
         .catch(err => console.error('Error cargando header:', err));
 
+      // Footer
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
@@ -653,6 +659,7 @@
         })
         .catch(error => console.error('Error cargando footer:', error));
 
+      // Cargar el aviso
       cargarAviso();
     });
   </script>
