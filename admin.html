@@ -1,153 +1,339 @@
 <!DOCTYPE html>
-<html lang="es">
-
+<html lang="es-MX">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-  <title>Administración - Avisos Colonia Jardines PVR</title>
+  <title>Administración | Avisos Colonia Jardines PVR</title>
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <link rel="manifest" href="/avisos-jardines/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
   <style>
-    /* Estilos adicionales para asegurar que los tabs funcionen */
-    .tab {
-      display: none;
+    /* Estilos específicos para admin */
+    .admin-container {
+      max-width: 1000px;
+      margin: 0 auto;
     }
 
-    .tab.activo {
+    /* Header con gradiente verde igual que las otras páginas */
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 1rem;
+      background: linear-gradient(135deg, #1e4620, #2b7a2b);
+      border-radius: 1rem;
+      color: white;
+    }
+
+    .admin-header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .admin-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* Tabs */
+    .admin-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid var(--color-borde);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--color-texto-claro);
+      border-radius: 2rem;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--color-fondo);
+      color: var(--color-primario);
+    }
+
+    .tab-btn.activo {
+      background: var(--color-primario);
+      color: white;
+    }
+
+    /* Contenido de pestañas */
+    .tab-panel {
+      display: none;
+      background: white;
+      border-radius: 1rem;
+      padding: 1.8rem;
+      border: 1px solid var(--color-borde);
+    }
+
+    .tab-panel.activo {
       display: block;
     }
 
-    .filtro.activo {
-      background: #007bff;
-      color: white;
-      border-color: #007bff;
+    .tab-panel h2 {
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      color: var(--color-primario);
+      font-size: 1.3rem;
     }
 
-    #admin-tabs {
-      margin-bottom: 30px;
-      border-bottom: 2px solid #e0e0e0;
+    .tab-panel h3 {
+      margin: 1.5rem 0 1rem;
+      font-weight: 600;
+      color: var(--color-primario);
+      font-size: 1.1rem;
     }
 
-    .filtro {
+    /* Grid de avisos en admin */
+    .admin-avisos-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .admin-aviso-card {
+      background: white;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: box-shadow 0.2s;
+    }
+
+    .admin-aviso-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .admin-aviso-card.urgente {
+      border-left: 4px solid #e67e22;
+    }
+
+    .admin-aviso-titulo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-primario);
+    }
+
+    .admin-aviso-fecha {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-aviso-contenido {
+      font-size: 0.85rem;
+      color: var(--color-texto);
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .admin-aviso-acciones {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .btn-editar, .btn-eliminar {
+      padding: 0.3rem 0.8rem;
+      border-radius: 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
       cursor: pointer;
+      border: none;
+    }
+
+    .btn-editar {
+      background: var(--color-acento);
+      color: white;
+    }
+
+    .btn-eliminar {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-editar:hover {
+      background: #2980b9;
+    }
+
+    .btn-eliminar:hover {
+      background: #c0392b;
+    }
+
+    /* Tabla de usuarios */
+    .tabla-usuarios {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .tabla-usuarios th, .tabla-usuarios td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    .tabla-usuarios th {
+      background: var(--color-fondo);
+      font-weight: 600;
+      color: var(--color-primario);
+    }
+
+    .badge-admin {
+      background: #fbbf24;
+      color: #7b2e00;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    .badge-usuario {
+      background: #cbd5e1;
+      color: #1e2a3e;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.7rem;
+    }
+
+    @media (min-width: 768px) {
+      .admin-avisos-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
-
 <body>
   <div id="header-container"></div>
 
   <main class="contenedor">
-    <div id="mensaje-container"></div>
+    <div class="admin-container">
 
-    <div class="filtros" id="admin-tabs">
-      <button class="filtro activo" data-tab="nuevo">Nuevo aviso</button>
-      <button class="filtro" data-tab="lista">Mis avisos</button>
-      <button class="filtro" data-tab="perfil">Mi perfil</button>
-      <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">Usuarios</button>
-    </div>
+      <!-- Header -->
+      <div class="admin-header">
+        <h1>👋 Panel de Administración</h1>
+        <p>Gestiona tus avisos, tu perfil y la comunidad</p>
+      </div>
 
-    <!-- Pestaña: Nuevo aviso -->
-    <div id="tab-nuevo" class="tab activo">
-      <form id="form-aviso" class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
+      <div id="mensaje-container"></div>
 
-        <div class="campo">
-          <label for="categoria">Categoría</label>
-          <select id="categoria" name="categoria" required>
-            <option value="">Seleccionar</option>
-            <option value="urgente">Urgente</option>
-            <option value="eventos">Eventos</option>
-            <option value="servicios">Servicios</option>
-            <option value="perdidos">Perdidos y encontrados</option>
-            <option value="clasificados">Clasificados</option>
-          </select>
+      <!-- Tabs -->
+      <div class="admin-tabs" id="admin-tabs">
+        <button class="tab-btn activo" data-tab="nuevo">📝 Nuevo aviso</button>
+        <button class="tab-btn" data-tab="lista">📋 Mis avisos</button>
+        <button class="tab-btn" data-tab="perfil">👤 Mi perfil</button>
+        <button class="tab-btn" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥 Usuarios</button>
+      </div>
+
+      <!-- Pestaña: Nuevo aviso -->
+      <div id="tab-nuevo" class="tab-panel activo">
+        <h2>Publicar nuevo aviso</h2>
+        <form id="form-aviso">
+          <div class="campo">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" name="categoria" required>
+              <option value="" disabled selected>Seleccionar</option>
+              <option value="urgente">🚨 Urgente</option>
+              <option value="eventos">📅 Eventos</option>
+              <option value="servicios">🛠️ Servicios</option>
+              <option value="perdidos">🐾 Perdidos y encontrados</option>
+              <option value="clasificados">📢 Clasificados</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="titulo">Título *</label>
+            <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
+          </div>
+
+          <div class="campo">
+            <label for="contenido">Descripción *</label>
+            <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+          </div>
+
+          <div class="campo">
+            <label for="ubicacion">Ubicación (opcional)</label>
+            <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
+          </div>
+
+          <div class="campo">
+            <label for="contacto">Contacto (opcional)</label>
+            <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
+          </div>
+
+          <div class="campo">
+            <label for="fecha_evento">Fecha del evento (opcional)</label>
+            <input type="date" id="fecha_evento" name="fecha_evento">
+          </div>
+
+          <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
+            <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+          </div>
+
+          <div class="grupo-botones">
+            <button type="submit" class="boton">Publicar aviso</button>
+            <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Pestaña: Lista de avisos -->
+      <div id="tab-lista" class="tab-panel">
+        <h2>Mis avisos</h2>
+        <div id="mis-avisos-container">
+          <div class="cargando">Cargando tus avisos...</div>
         </div>
+        <div id="paginacion-admin" class="paginacion"></div>
+      </div>
 
-        <div class="campo">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
-        </div>
-
-        <div class="campo">
-          <label for="contenido">Descripción</label>
-          <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
-        </div>
-
-        <div class="campo">
-          <label for="ubicacion">Ubicación (opcional)</label>
-          <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
-        </div>
-
-        <div class="campo">
-          <label for="contacto">Contacto (opcional)</label>
-          <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
-        </div>
-
-        <div class="campo">
-          <label for="fecha_evento">Fecha del evento (opcional)</label>
-          <input type="date" id="fecha_evento" name="fecha_evento">
-        </div>
-
-        <div class="campo" style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
-          <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
-        </div>
-
-        <div class="grupo-botones">
-          <button type="submit" class="boton">Publicar aviso</button>
-          <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Pestaña: Lista de avisos -->
-    <div id="tab-lista" class="tab">
-      <div id="mis-avisos-container"></div>
-      <div id="paginacion-admin" class="paginacion"></div>
-    </div>
-
-    <!-- Pestaña: Perfil -->
-    <div id="tab-perfil" class="tab">
-      <div class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
-
+      <!-- Pestaña: Perfil -->
+      <div id="tab-perfil" class="tab-panel">
+        <h2>Mi perfil</h2>
         <div id="perfil-info"></div>
 
-        <div style="margin-top: 32px;">
-          <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
+        <div style="margin-top: 2rem;">
+          <h3>Notificaciones</h3>
           <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
-            Activar notificaciones
+            🔔 Activar notificaciones
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Pestaña: Usuarios (solo admin) -->
-    <div id="tab-usuarios" class="tab">
-      <div class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
+      <!-- Pestaña: Usuarios (solo admin) -->
+      <div id="tab-usuarios" class="tab-panel">
+        <h2>Administrar usuarios</h2>
 
         <form id="form-usuario">
           <div class="campo">
-            <label for="user-email">Email</label>
+            <label for="user-email">Email *</label>
             <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
           </div>
 
           <div class="campo">
-            <label for="user-nombre">Nombre completo</label>
+            <label for="user-nombre">Nombre completo *</label>
             <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
           </div>
 
           <div class="campo">
-            <label for="user-rol">Rol</label>
+            <label for="user-rol">Rol *</label>
             <select id="user-rol" required>
-              <option value="usuario">Usuario</option>
+              <option value="usuario">Usuario normal</option>
               <option value="admin">Administrador</option>
             </select>
           </div>
 
           <div class="campo">
-            <label for="user-password">Contraseña</label>
+            <label for="user-password">Contraseña *</label>
             <input type="password" id="user-password" required placeholder="Contraseña temporal">
           </div>
 
@@ -168,33 +354,73 @@
           </div>
         </form>
 
-        <h3 style="margin: 32px 0 16px;">Usuarios registrados</h3>
-        <div id="lista-usuarios-container"></div>
+        <h3>Usuarios registrados</h3>
+        <div id="lista-usuarios-container">
+          <div class="cargando">Cargando usuarios...</div>
+        </div>
       </div>
     </div>
   </main>
 
+  <div id="footer-container"></div>
+
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
-  <script src="/avisos-jardines/js/auth.js"></script> <!-- 👈 ESTE FALTABA -->
+  <script src="/avisos-jardines/js/auth.js"></script>
   <script src="/avisos-jardines/js/admin.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async function () {
-      await UI.cargarHeader();
-    });
-  </script>
-
-  <script>
-    // Manejar cierre de sesión
-    document.getElementById('cerrar-sesion')?.addEventListener('click', function (e) {
-      e.preventDefault();
-      if (API.cerrarSesion) {
-        API.cerrarSesion();
+    // Cargar header y footer
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Cargar header
+      if (typeof UI !== 'undefined' && UI.cargarHeader) {
+        await UI.cargarHeader();
+      } else {
+        try {
+          const res = await fetch('/avisos-jardines/common/header.html');
+          if (res.ok) {
+            const html = await res.text();
+            document.getElementById('header-container').innerHTML = html;
+            setTimeout(() => {
+              if (typeof window.inicializarHeaderAuth === 'function') {
+                window.inicializarHeaderAuth();
+              }
+            }, 100);
+          }
+        } catch (err) {
+          console.error('Error cargando header:', err);
+        }
       }
-      window.location.href = '/avisos-jardines/login.html';
+
+      // Cargar footer
+      try {
+        const response = await fetch('/avisos-jardines/common/footer.html');
+        if (response.ok) {
+          const data = await response.text();
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            const anioElement = document.getElementById('anio-actual');
+            if (anioElement) {
+              anioElement.textContent = new Date().getFullYear();
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error cargando footer:', error);
+      }
+    });
+
+    // Manejar cierre de sesión
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'cerrar-sesion' || e.target.closest('#cerrar-sesion')) {
+        e.preventDefault();
+        if (API && API.cerrarSesion) {
+          API.cerrarSesion();
+        }
+        window.location.href = '/avisos-jardines/login.html';
+      }
     });
   </script>
 </body>
-
 </html>
