@@ -3,301 +3,462 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
-  <title>Administración | Avisos Colonia Jardines PVR</title>
+  <title>Aviso - Avisos Colonia Jardines PVR</title>
+
+  <!-- Estilos base -->
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
   <link rel="manifest" href="/avisos-jardines/manifest.json">
   <meta name="theme-color" content="#2c3e50">
+
   <style>
-    /* Estilos adicionales para asegurar que los tabs funcionen */
-    .tab {
-      display: none;
+    /* ========== ESTILO PERIÓDICO DIGITAL PREMIUM ========== */
+    :root {
+      --paper-bg: #faf8f5;
+      --paper-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+      --border-light: #e8e0d0;
+      --accent-gold: #d4a043;
+      --text-dark: #1a2a3a;
+      --text-muted: #5a6e7a;
     }
-    .tab.activo {
-      display: block;
+
+    body {
+      background: #e8e4dc;
+      font-family: 'Georgia', 'Times New Roman', Times, serif;
     }
-    .filtro.activo {
-      background: var(--color-primario);
-      color: white;
-      border-color: var(--color-primario);
+
+    /* Contenedor principal estilo periódico */
+    .aviso-paper {
+      max-width: 960px;
+      margin: 2rem auto;
+      background: var(--paper-bg);
+      border-radius: 4px;
+      box-shadow: var(--paper-shadow);
+      overflow: hidden;
+      border: 1px solid var(--border-light);
     }
-    #admin-tabs {
-      margin-bottom: 30px;
-      border-bottom: 2px solid var(--color-borde);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      padding-bottom: 0.5rem;
-    }
-    .filtro {
-      cursor: pointer;
-      background: transparent;
-      border: 1px solid var(--color-borde);
-      padding: 0.6rem 1.2rem;
-      border-radius: 2rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .filtro:hover {
-      background: var(--color-fondo);
-    }
-    .filtro.activo {
-      background: var(--color-primario);
-      color: white;
-      border-color: var(--color-primario);
-    }
-    /* Tarjeta de avisos en admin */
-    .tarjeta {
+
+    /* Header del artículo */
+    .article-header {
+      padding: 2rem 2.5rem 1rem;
+      border-bottom: 2px solid var(--accent-gold);
       background: white;
-      border: 1px solid var(--color-borde);
-      border-radius: 0.75rem;
-      padding: 1rem;
+    }
+
+    .article-category {
+      display: inline-block;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 700;
+      padding: 0.2rem 0.8rem;
+      background: var(--accent-gold);
+      color: white;
+      border-radius: 20px;
       margin-bottom: 1rem;
     }
-    .tarjeta-titulo {
+
+    .article-category.urgente {
+      background: #c0392b;
+    }
+
+    .article-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0.5rem 0 1rem;
+      color: var(--text-dark);
+      letter-spacing: -0.5px;
+      font-family: 'Georgia', 'Times New Roman', Times, serif;
+    }
+
+    /* Barra de metadatos (fecha, autor, etc) */
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 0.8rem 0;
+      margin: 0.5rem 0 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-family: system-ui, -apple-system, sans-serif;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .article-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Cuerpo del artículo */
+    .article-body {
+      padding: 2rem 2.5rem;
       font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 0.3rem;
+      line-height: 1.7;
+      color: #2c3e2f;
     }
-    .tarjeta-fecha {
-      font-size: 0.7rem;
-      color: var(--color-texto-claro);
-      margin-bottom: 0.5rem;
+
+    .article-body p {
+      margin-bottom: 1.3rem;
     }
-    .tarjeta-contenido {
-      font-size: 0.9rem;
-      color: var(--color-texto);
-      margin-bottom: 0.8rem;
+
+    /* Información adicional estilo "sidebar" */
+    .info-card {
+      background: #f0ede6;
+      border-left: 4px solid var(--accent-gold);
+      padding: 1.2rem 1.8rem;
+      margin: 1.5rem 0;
+      border-radius: 0 12px 12px 0;
     }
-    .tarjeta-meta {
+
+    .info-card p {
+      margin: 0.6rem 0;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      font-size: 0.75rem;
+      align-items: center;
+      gap: 0.6rem;
     }
-    .grupo-botones {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
+
+    .info-card strong {
+      min-width: 80px;
+      color: var(--text-dark);
     }
-    .boton-chico {
-      padding: 0.3rem 0.8rem;
-      font-size: 0.75rem;
-      width: auto;
+
+    /* Galería de imágenes/videos */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin: 1.8rem 0;
     }
-    .boton-secundario {
-      background: var(--color-fondo);
-      color: var(--color-primario);
-      border: 1px solid var(--color-borde);
-    }
-    .boton-secundario:hover {
-      background: var(--color-borde);
-    }
-    /* Paginación */
-    .paginacion {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    .paginacion-botones {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .pagina {
-      padding: 0.3rem 0.8rem;
-      border: 1px solid var(--color-borde);
+
+    .media-item {
       background: white;
-      border-radius: 0.5rem;
-      cursor: pointer;
-    }
-    .pagina.activa {
-      background: var(--color-primario);
-      color: white;
-      border-color: var(--color-primario);
-    }
-    /* Header decorativo */
-    .admin-header {
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 0.8rem;
       text-align: center;
-      margin-bottom: 2rem;
-      padding: 1.5rem 1rem;
-      background: linear-gradient(135deg, #1e4620, #2b7a2b);
-      border-radius: 1rem;
-      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .admin-header h1 {
-      font-size: 1.6rem;
-      margin-bottom: 0.3rem;
+
+    .media-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
-    .admin-header p {
+
+    .media-item img,
+    .media-item video {
+      max-width: 100%;
+      max-height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Botones de acción para edición (solo visible para admin/propietario) */
+    .article-actions {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid var(--border-light);
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
       font-size: 0.85rem;
-      opacity: 0.9;
+      font-weight: 600;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: #1e4620;
+      color: white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action.edit {
+      background: #d4a043;
+      color: #1a2a3a;
+    }
+
+    .btn-action.delete {
+      background: #c0392b;
+    }
+
+    .btn-action.back {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--text-dark);
+    }
+
+    .btn-action.back:hover {
+      background: var(--border-light);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    /* Estado de carga */
+    .loading-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    /* Mensajes de error */
+    .error-message {
+      background: #fef2e8;
+      border-left: 4px solid #c0392b;
+      padding: 1.2rem;
+      margin: 2rem;
+      border-radius: 8px;
+      color: #c0392b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .aviso-paper {
+        margin: 1rem;
+      }
+      .article-title {
+        font-size: 1.8rem;
+      }
+      .article-header,
+      .article-body {
+        padding: 1.2rem;
+      }
+      .article-meta {
+        gap: 1rem;
+        font-size: 0.7rem;
+      }
+      .info-card p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+      }
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- Header -->
   <div id="header-container"></div>
 
-  <main class="contenedor">
-    <!-- Header decorativo -->
-    <div class="admin-header">
-      <h1>👋 Panel de Administración</h1>
-      <p>Gestiona tus avisos, tu perfil y la comunidad</p>
-    </div>
-
-    <div id="mensaje-container"></div>
-
-    <!-- Tabs - Usando la estructura que espera admin.js -->
-    <div class="filtros" id="admin-tabs">
-      <button class="filtro activo" data-tab="nuevo">📝 Nuevo aviso</button>
-      <button class="filtro" data-tab="lista">📋 Mis avisos</button>
-      <button class="filtro" data-tab="perfil">👤 Mi perfil</button>
-      <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥 Usuarios</button>
-    </div>
-
-    <!-- Pestaña: Nuevo aviso -->
-    <div id="tab-nuevo" class="tab activo">
-      <form id="form-aviso" class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
-
-        <div class="campo">
-          <label for="categoria">Categoría</label>
-          <select id="categoria" name="categoria" required>
-            <option value="">Seleccionar</option>
-            <option value="urgente">Urgente</option>
-            <option value="eventos">Eventos</option>
-            <option value="servicios">Servicios</option>
-            <option value="perdidos">Perdidos y encontrados</option>
-            <option value="clasificados">Clasificados</option>
-          </select>
-        </div>
-
-        <div class="campo">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
-        </div>
-
-        <div class="campo">
-          <label for="contenido">Descripción</label>
-          <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
-        </div>
-
-        <div class="campo">
-          <label for="ubicacion">Ubicación (opcional)</label>
-          <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
-        </div>
-
-        <div class="campo">
-          <label for="contacto">Contacto (opcional)</label>
-          <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
-        </div>
-
-        <div class="campo">
-          <label for="fecha_evento">Fecha del evento (opcional)</label>
-          <input type="date" id="fecha_evento" name="fecha_evento">
-        </div>
-
-        <div class="campo" style="display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
-          <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
-        </div>
-
-        <div class="grupo-botones">
-          <button type="submit" class="boton">Publicar aviso</button>
-          <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
-        </div>
-      </form>
-    </div>
-
-    <!-- Pestaña: Lista de avisos (los filtros se generan dinámicamente desde admin.js) -->
-    <div id="tab-lista" class="tab">
-      <div id="mis-avisos-container"></div>
-      <div id="paginacion-admin" class="paginacion"></div>
-    </div>
-
-    <!-- Pestaña: Perfil -->
-    <div id="tab-perfil" class="tab">
-      <div class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
-        <div id="perfil-info"></div>
-        <div style="margin-top: 32px;">
-          <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
-          <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
-            🔔 Activar notificaciones
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Pestaña: Usuarios (solo admin) -->
-    <div id="tab-usuarios" class="tab">
-      <div class="formulario" style="max-width: 100%;">
-        <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
-
-        <form id="form-usuario">
-          <div class="campo">
-            <label for="user-email">Email</label>
-            <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
-          </div>
-
-          <div class="campo">
-            <label for="user-nombre">Nombre completo</label>
-            <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
-          </div>
-
-          <div class="campo">
-            <label for="user-rol">Rol</label>
-            <select id="user-rol" required>
-              <option value="usuario">Usuario</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </div>
-
-          <div class="campo">
-            <label for="user-password">Contraseña</label>
-            <input type="password" id="user-password" required placeholder="Contraseña temporal">
-          </div>
-
-          <div class="campo">
-            <label for="user-categorias">Categorías permitidas</label>
-            <select id="user-categorias">
-              <option value="todas">Todas las categorías</option>
-              <option value="urgente">Solo urgentes</option>
-              <option value="eventos">Solo eventos</option>
-              <option value="servicios">Solo servicios</option>
-              <option value="perdidos">Solo perdidos</option>
-              <option value="clasificados">Solo clasificados</option>
-            </select>
-          </div>
-
-          <div class="grupo-botones">
-            <button type="submit" class="boton">Crear usuario</button>
-          </div>
-        </form>
-
-        <h3 style="margin: 32px 0 16px;">Usuarios registrados</h3>
-        <div id="lista-usuarios-container"></div>
+  <!-- Contenido principal -->
+  <main>
+    <div id="aviso-container" class="aviso-paper">
+      <div class="loading-state">
+        📰 Cargando aviso... <span style="display: inline-block; animation: pulse 1s infinite;">⏳</span>
       </div>
     </div>
   </main>
 
+  <!-- Footer -->
   <div id="footer-container"></div>
 
+  <!-- Scripts -->
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
+  <script src="/avisos-jardines/js/multimedia.js"></script>
   <script src="/avisos-jardines/js/auth.js"></script>
-  <script src="/avisos-jardines/js/admin.js"></script>
 
   <script>
-    // Cargar header y footer
+    // ========== CARGA DEL AVISO ==========
+    const AVISO_ID = new URLSearchParams(window.location.search).get('id');
+    const ES_EDICION = new URLSearchParams(window.location.search).get('editar') === 'true';
+
+    let avisoActual = null;
+    let usuarioActual = null;
+
+    // Elemento contenedor
+    const container = document.getElementById('aviso-container');
+
+    // Función para obtener el aviso desde la API
+    async function cargarAviso() {
+      if (!AVISO_ID) {
+        mostrarError('No se especificó ningún aviso');
+        return;
+      }
+
+      try {
+        // Listar todos los avisos y filtrar por ID (porque la API no tiene getById directo)
+        const resultado = await API.listar('AVISOS');
+        const avisos = resultado.datos || [];
+        const aviso = avisos.find(a => a.id === AVISO_ID);
+
+        if (!aviso) {
+          mostrarError('El aviso no existe o fue eliminado');
+          return;
+        }
+
+        avisoActual = aviso;
+        usuarioActual = API.getUsuarioActual();
+        renderizarAviso();
+
+      } catch (error) {
+        console.error('Error cargando aviso:', error);
+        mostrarError('Error al cargar el aviso: ' + error.message);
+      }
+    }
+
+    function mostrarError(mensaje) {
+      container.innerHTML = `
+        <div class="error-message">
+          ❌ ${mensaje}
+          <div style="margin-top: 1rem;">
+            <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizarAviso() {
+      if (!avisoActual) return;
+
+      const fecha = avisoActual.created_at
+        ? new Date(avisoActual.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })
+        : 'Fecha no disponible';
+
+      const esUrgente = avisoActual.destacado === 'TRUE' || avisoActual.categoria === 'urgente';
+      const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
+      const esPropietario = usuarioActual && usuarioActual.id === avisoActual.created_by;
+      const puedeEditar = esAdmin || esPropietario;
+
+      // Categoría legible
+      const categoriaLegible = {
+        'urgente': 'URGENTE',
+        'eventos': 'EVENTOS',
+        'servicios': 'SERVICIOS',
+        'perdidos': 'PERDIDOS Y ENCONTRADOS',
+        'clasificados': 'CLASIFICADOS'
+      }[avisoActual.categoria] || avisoActual.categoria || 'GENERAL';
+
+      // Construir HTML
+      let html = `
+        <div class="article-header">
+          <div class="article-category ${esUrgente ? 'urgente' : ''}">${esUrgente ? '⚠️ URGENTE' : categoriaLegible}</div>
+          <h1 class="article-title">${escapeHTML(avisoActual.titulo || 'Sin título')}</h1>
+          <div class="article-meta">
+            <span>📅 ${fecha}</span>
+            <span>👤 Por: ${escapeHTML(avisoActual.created_by || 'Vecino')}</span>
+            <span>🏷️ ${categoriaLegible}</span>
+          </div>
+        </div>
+        <div class="article-body">
+          <div class="article-content">
+            ${formatearContenido(avisoActual.contenido || 'Sin contenido')}
+          </div>
+      `;
+
+      // Información adicional (ubicación, contacto, fecha del evento)
+      const tieneInfoAdicional = avisoActual.ubicacion || avisoActual.contacto || avisoActual.fecha_evento;
+      if (tieneInfoAdicional) {
+        html += `
+          <div class="info-card">
+            <p><strong>📍 Ubicación</strong> ${escapeHTML(avisoActual.ubicacion || 'No especificada')}</p>
+            <p><strong>📞 Contacto</strong> ${escapeHTML(avisoActual.contacto || 'No especificado')}</p>
+            ${avisoActual.fecha_evento ? `<p><strong>📅 Fecha del evento</strong> ${new Date(avisoActual.fecha_evento).toLocaleDateString('es-MX')}</p>` : ''}
+          </div>
+        `;
+      }
+
+      // Galería multimedia (si existe)
+      if (window.Multimedia && avisoActual.id) {
+        const multimedia = Multimedia.obtenerPorAviso(avisoActual.id);
+        if (multimedia && multimedia.length > 0) {
+          html += `<div class="gallery" id="gallery-container"></div>`;
+        }
+      }
+
+      // Botones de acción (solo si puede editar)
+      if (puedeEditar) {
+        html += `
+          <div class="article-actions">
+            <a href="/avisos-jardines/admin.html" class="btn-action back">← Volver al panel</a>
+            <button class="btn-action edit" onclick="irAEditar('${avisoActual.id}')">✏️ Editar aviso</button>
+            <button class="btn-action delete" onclick="eliminarAviso('${avisoActual.id}')">🗑️ Eliminar aviso</button>
+          </div>
+        `;
+      } else {
+        html += `
+          <div class="article-actions">
+            <a href="/avisos-jardines/index.html" class="btn-action back">← Volver al inicio</a>
+          </div>
+        `;
+      }
+
+      html += `</div></div>`;
+
+      container.innerHTML = html;
+
+      // Cargar galería después de renderizar
+      if (window.Multimedia && avisoActual.id) {
+        const multimedia = Multimedia.obtenerPorAviso(avisoActual.id);
+        if (multimedia && multimedia.length > 0) {
+          const galleryContainer = document.getElementById('gallery-container');
+          if (galleryContainer) {
+            Multimedia.renderGallery(galleryContainer, multimedia, avisoActual.id);
+          }
+        }
+      }
+    }
+
+    function formatearContenido(texto) {
+      if (!texto) return '';
+      // Convertir saltos de línea a <p>
+      const parrafos = texto.split(/\n\s*\n/);
+      return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Funciones globales para los botones
+    window.irAEditar = function(id) {
+      window.location.href = `/avisos-jardines/admin.html?editar=${id}`;
+    };
+
+    window.eliminarAviso = async function(id) {
+      if (!confirm('¿Estás seguro de que quieres eliminar este aviso? Esta acción no se puede deshacer.')) return;
+
+      try {
+        const resultado = await API.eliminar('AVISOS', id);
+        if (resultado.success) {
+          alert('✅ Aviso eliminado correctamente');
+          window.location.href = '/avisos-jardines/admin.html';
+        } else {
+          alert('❌ Error al eliminar: ' + (resultado.error || 'Error desconocido'));
+        }
+      } catch (error) {
+        console.error('Error eliminando aviso:', error);
+        alert('❌ Error al eliminar el aviso');
+      }
+    };
+
+    // Inicializar
     document.addEventListener('DOMContentLoaded', function() {
-      // Header
+      // Cargar header y footer
       fetch('/avisos-jardines/common/header.html')
-        .then(res => {
-          if (!res.ok) throw new Error('Header no encontrado');
-          return res.text();
-        })
+        .then(res => res.ok ? res.text() : Promise.reject('Header no encontrado'))
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
           setTimeout(() => {
@@ -308,23 +469,20 @@
         })
         .catch(err => console.error('Error cargando header:', err));
 
-      // Footer
       fetch('/avisos-jardines/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
+        .then(res => res.ok ? res.text() : Promise.reject('Footer no encontrado'))
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
           if (footerContainer) {
             footerContainer.innerHTML = data;
             const anioElement = document.getElementById('anio-actual');
-            if (anioElement) {
-              anioElement.textContent = new Date().getFullYear();
-            }
+            if (anioElement) anioElement.textContent = new Date().getFullYear();
           }
         })
-        .catch(error => console.error('Error cargando footer:', error));
+        .catch(err => console.error('Error cargando footer:', err));
+
+      // Cargar el aviso
+      cargarAviso();
     });
   </script>
 </body>
