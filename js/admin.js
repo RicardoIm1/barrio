@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const usuario = Auth.requireAuth();
   // Forzar actualización del header
   window.dispatchEvent(new CustomEvent('auth-change'));
-  
+
   function actualizarHeaderManual() {
     const usuario = API.getUsuarioActual();
     const loginLink = document.getElementById('login-link');
@@ -66,7 +66,8 @@ document.addEventListener('DOMContentLoaded', function () {
   if (cerrarSesionBtn) {
     cerrarSesionBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      API.cerrarSesion();
+      localStorage.removeItem('usuario');
+      localStorage.removeItem('api_key');
       window.location.href = '/avisos-jardines/login.html';
     });
   }
@@ -254,7 +255,7 @@ function configurarModalEdicion() {
       try {
         const resultado = await API.actualizarAviso(id, datos, apiKey);
         console.log('📡 Respuesta:', resultado);
-        
+
         if (resultado && resultado.success) {
           API.mostrarExito('✅ Aviso actualizado correctamente');
           document.getElementById('modal-editar').style.display = 'none';
@@ -275,7 +276,7 @@ function configurarModalEdicion() {
 function abrirEditor(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url) {
   console.log('=== ABRIR EDITOR ===');
   console.log('ID:', id);
-  
+
   document.getElementById('edit-id').value = id || '';
   document.getElementById('edit-titulo').value = titulo || '';
   document.getElementById('edit-contenido').value = contenido || '';
