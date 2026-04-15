@@ -3,35 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Publicidad en tu Colonia | Paquetes y Preguntas Frecuentes</title>
+  <title>Paquetes y Preguntas Frecuentes | Avisos Colonia Jardines PVR</title>
+  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <link rel="manifest" href="/avisos-jardines/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-      background: #f5f7fb;
-      color: #1e2a3e;
-      line-height: 1.5;
-      padding: 2rem 1rem;
-    }
-
-    .container {
+    /* Estilos específicos para esta página (complementan estilo.css) */
+    .faqs-container {
       max-width: 1280px;
       margin: 0 auto;
     }
 
-    /* ========== TIPOGRAFÍA Y ESPACIADOS ========== */
-    h1, h2, h3 {
-      font-weight: 700;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
+    /* Encabezado específico */
+    .faqs-header {
+      text-align: center;
+      margin-bottom: 2rem;
     }
 
-    h1 {
+    .faqs-header h1 {
       font-size: 2rem;
       margin-bottom: 0.5rem;
       background: linear-gradient(135deg, #1e4620, #2b7a2b);
@@ -40,43 +29,25 @@
       color: transparent;
     }
 
-    .subhead {
+    .faqs-subhead {
       font-size: 1.1rem;
       color: #2c3e50;
-      margin-bottom: 2rem;
-      border-left: 4px solid #2b7a2b;
-      padding-left: 1rem;
-    }
-
-    h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-      color: #1e4620;
-      text-align: center;
-    }
-
-    .section-sub {
-      text-align: center;
-      color: #4a627a;
-      margin-bottom: 2rem;
       max-width: 700px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 auto;
     }
 
-    /* ========== BOTONES Y ELEMENTOS DE CONFIANZA ========== */
+    /* Sellos de confianza (versión mejorada con tus colores) */
     .trust-badge {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
-      background: #ffffffdd;
-      backdrop-filter: blur(4px);
+      background: white;
       padding: 1rem 1.5rem;
       border-radius: 60px;
       margin: 1.5rem 0 2rem;
-      background: white;
       box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      border: 1px solid var(--color-borde);
     }
 
     .trust-item {
@@ -85,35 +56,35 @@
       gap: 0.5rem;
       font-size: 0.85rem;
       font-weight: 500;
-      color: #1e4620;
+      color: var(--color-primario);
     }
 
     .trust-item span:first-child {
       font-size: 1.3rem;
     }
 
-    /* ========== PAQUETES (TARJETAS) ========== */
+    /* Grid de paquetes */
     .packages-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.8rem;
       margin-bottom: 3rem;
     }
 
     .package-card {
       background: white;
-      border-radius: 1.5rem;
+      border-radius: 1rem;
       overflow: hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       transition: transform 0.2s ease, box-shadow 0.2s;
       display: flex;
       flex-direction: column;
-      border: 1px solid #e9edf2;
+      border: 1px solid var(--color-borde);
     }
 
     .package-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 24px 40px rgba(0,0,0,0.12);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     }
 
     .card-header {
@@ -125,6 +96,7 @@
       font-size: 1.6rem;
       font-weight: 800;
       margin-bottom: 0.25rem;
+      color: var(--color-primario);
     }
 
     .price {
@@ -137,13 +109,7 @@
     .price small {
       font-size: 0.9rem;
       font-weight: 400;
-      color: #5b6e8c;
-    }
-
-    .old-price {
-      text-decoration: line-through;
-      color: #94a3b8;
-      font-size: 0.9rem;
+      color: var(--color-texto-claro);
     }
 
     .badge-popular {
@@ -182,17 +148,17 @@
 
     .card-footer {
       padding: 1.2rem;
-      border-top: 1px solid #eef2f8;
+      border-top: 1px solid var(--color-borde);
       background: #fafcff;
     }
 
     .btn-primary {
-      background: #1e4620;
+      background: var(--color-primario);
       color: white;
       border: none;
       width: 100%;
       padding: 0.8rem;
-      border-radius: 60px;
+      border-radius: 4px;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
@@ -202,16 +168,16 @@
     }
 
     .btn-primary:hover {
-      background: #2b6e2b;
+      background: var(--color-secundario);
     }
 
     .btn-outline {
       background: transparent;
-      border: 2px solid #1e4620;
-      color: #1e4620;
+      border: 2px solid var(--color-primario);
+      color: var(--color-primario);
       width: 100%;
       padding: 0.7rem;
-      border-radius: 60px;
+      border-radius: 4px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -220,10 +186,9 @@
     }
 
     .btn-outline:hover {
-      background: #eef5e9;
+      background: var(--color-borde);
     }
 
-    /* Destacado: paquete recomendado */
     .package-card.recommended {
       border: 2px solid #fbbf24;
       position: relative;
@@ -242,66 +207,10 @@
       border-radius: 30px 0 0 30px;
     }
 
-    /* ========== FAQ (acordeón) ========== */
-    .faq-section {
-      background: white;
-      border-radius: 2rem;
-      padding: 2rem 1.5rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-      margin: 2rem 0;
-    }
-
-    .faq-item {
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .faq-question {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 0;
-      font-weight: 700;
-      font-size: 1.05rem;
-      cursor: pointer;
-      color: #1e2a3e;
-      transition: color 0.2s;
-    }
-
-    .faq-question:hover {
-      color: #2b7a2b;
-    }
-
-    .faq-icon {
-      font-size: 1.5rem;
-      font-weight: 300;
-      transition: transform 0.2s;
-    }
-
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease-out;
-      color: #2c3e50;
-      padding-right: 1rem;
-    }
-
-    .faq-answer-inner {
-      padding-bottom: 1.2rem;
-      line-height: 1.6;
-    }
-
-    .faq-item.active .faq-answer {
-      max-height: 500px;
-    }
-
-    .faq-item.active .faq-icon {
-      transform: rotate(45deg);
-    }
-
-    /* ========== CÓMO CONTRATAR (pasos) ========== */
+    /* Sección Cómo contratar */
     .howto-section {
       background: #eef2e6;
-      border-radius: 2rem;
+      border-radius: 1rem;
       padding: 2rem 1.5rem;
       margin: 2rem 0;
       text-align: center;
@@ -317,14 +226,14 @@
 
     .step {
       background: white;
-      border-radius: 1.5rem;
+      border-radius: 1rem;
       padding: 1.2rem;
       width: 180px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
 
     .step-number {
-      background: #1e4620;
+      background: var(--color-primario);
       color: white;
       width: 40px;
       height: 40px;
@@ -353,7 +262,64 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    /* ========== SELLOS DE CONFIANZA ========== */
+    /* FAQ Acordeón */
+    .faq-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      margin: 2rem 0;
+      border: 1px solid var(--color-borde);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 0;
+      font-weight: 700;
+      font-size: 1.05rem;
+      cursor: pointer;
+      color: var(--color-primario);
+      transition: color 0.2s;
+    }
+
+    .faq-question:hover {
+      color: var(--color-acento);
+    }
+
+    .faq-icon {
+      font-size: 1.5rem;
+      font-weight: 300;
+      transition: transform 0.2s;
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+      color: var(--color-texto);
+      padding-right: 1rem;
+    }
+
+    .faq-answer-inner {
+      padding-bottom: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .faq-item.active .faq-answer {
+      max-height: 500px;
+    }
+
+    .faq-item.active .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    /* Grid de confianza */
     .confidence-grid {
       display: flex;
       flex-wrap: wrap;
@@ -366,9 +332,10 @@
     .confidence-card {
       background: white;
       padding: 1.2rem;
-      border-radius: 1.2rem;
+      border-radius: 1rem;
       width: 200px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid var(--color-borde);
     }
 
     .confidence-card .emoji-big {
@@ -376,11 +343,11 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ========== FOOTER / CONTACTO ========== */
+    /* Barra de contacto */
     .contact-bar {
-      background: #1e2a3e;
+      background: var(--color-primario);
       color: white;
-      border-radius: 2rem;
+      border-radius: 1rem;
       padding: 1.5rem;
       text-align: center;
       margin-top: 2rem;
@@ -392,291 +359,319 @@
       font-weight: bold;
     }
 
-    hr {
-      margin: 2rem 0;
-      border-color: #ddd;
-    }
-
-    @media (max-width: 640px) {
-      .packages-grid {
-        gap: 1rem;
-      }
-      .step {
-        width: 140px;
-      }
-      .trust-badge {
-        border-radius: 30px;
-        gap: 0.8rem;
-      }
+    .contact-bar a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  
-  <!-- Encabezado + sellos de confianza visual -->
-  <div style="text-align: center;">
-    <h1>Publicidad que conecta con tu colonia</h1>
-    <div class="subhead" style="border-left: none; text-align: center;">Lleva tu negocio a cada vecino · Precios justos · Resultados reales</div>
-  </div>
+  <div id="header-container"></div>
 
-  <!-- Micro sellos de confianza -->
-  <div class="trust-badge">
-    <div class="trust-item"><span>✅</span> Más de 50 negocios locales</div>
-    <div class="trust-item"><span>📍</span> Solo en tu colonia, público real</div>
-    <div class="trust-item"><span>📸</span> Sin anualidades, paga por mes</div>
-    <div class="trust-item"><span>🛡️</span> Aviso legal y protección de datos</div>
-  </div>
+  <main class="contenedor">
+    <div class="faqs-container">
 
-  <!-- PAQUETES (el más alto sugerido = SOCIO COMERCIAL $1,299) -->
-  <h2>🎯 Paquetes diseñados para ti</h2>
-  <div class="section-sub">Desde presencia básica hasta exposición total. ¡Elige el que más impulse tu negocio!</div>
+      <!-- Encabezado -->
+      <div class="faqs-header">
+        <h1>Publicidad que conecta con tu colonia</h1>
+        <div class="faqs-subhead">Lleva tu negocio a cada vecino · Precios justos · Resultados reales</div>
+      </div>
 
-  <div class="packages-grid">
-    <!-- Paquete 1: Tiendita (149) -->
-    <div class="package-card">
-      <div class="card-header">
-        <div class="package-name">Tiendita</div>
-        <div class="price">$149 <small>MXN</small></div>
-        <div class="old-price"></div>
-        <div style="font-size: 0.8rem; color: #2b6e2b;">3 meses · Ideal para empezar</div>
+      <!-- Sellos de confianza -->
+      <div class="trust-badge">
+        <div class="trust-item"><span>✅</span> Más de 50 negocios locales</div>
+        <div class="trust-item"><span>📍</span> Solo en tu colonia, público real</div>
+        <div class="trust-item"><span>📸</span> Sin anualidades, paga por mes</div>
+        <div class="trust-item"><span>🛡️</span> Aviso legal y protección de datos</div>
       </div>
-      <div class="card-features">
-        <ul>
-          <li><span class="check">✓</span> Directorio básico por 90 días</li>
-          <li><span class="check">✓</span> Dirección y teléfono</li>
-          <li><span class="check">✓</span> Sin comisiones ocultas</li>
-          <li><span class="check">✓</span> Ideal para negocios de casa</li>
-        </ul>
-      </div>
-      <div class="card-footer">
-        <button class="btn-outline contratar-btn" data-paquete="Tiendita - $149">Lo quiero</button>
-      </div>
-    </div>
 
-    <!-- Paquete 2: Vecino Anunciante (299) -->
-    <div class="package-card">
-      <div class="card-header">
-        <div class="package-name">Vecino Anunciante</div>
-        <div class="price">$299 <small>MXN</small></div>
-        <div style="font-size: 0.8rem;">30 días · Banner lateral + destacado</div>
-      </div>
-      <div class="card-features">
-        <ul>
-          <li><span class="check">✓</span> Perfil completo en directorio</li>
-          <li><span class="check">✓</span> Banner lateral (estático)</li>
-          <li><span class="check">✓</span> 1 publicación destacada en avisos</li>
-          <li><span class="check">✓</span> Soporte para foto del negocio</li>
-        </ul>
-      </div>
-      <div class="card-footer">
-        <button class="btn-outline contratar-btn" data-paquete="Vecino Anunciante - $299">Seleccionar</button>
-      </div>
-    </div>
+      <!-- Paquetes -->
+      <h2 style="text-align: center; color: var(--color-primario); margin-bottom: 0.5rem;">🎯 Paquetes diseñados para ti</h2>
+      <p style="text-align: center; color: var(--color-texto-claro); margin-bottom: 2rem;">Desde presencia básica hasta exposición total. ¡Elige el que más impulse tu negocio!</p>
 
-    <!-- Paquete 3: Negocio Destacado (599) popular -->
-    <div class="package-card">
-      <div class="card-header">
-        <div class="package-name">Negocio Destacado</div>
-        <div class="price">$599 <small>MXN</small></div>
-        <div class="badge-popular">⭐ Más elegido</div>
-      </div>
-      <div class="card-features">
-        <ul>
-          <li><span class="check">✓</span> Banner rotativo (parte superior)</li>
-          <li><span class="check">✓</span> Perfil con galería + botón WhatsApp</li>
-          <li><span class="check">✓</span> 3 publicaciones destacadas</li>
-          <li><span class="check">✓</span> 1 envío masivo por WhatsApp</li>
-        </ul>
-      </div>
-      <div class="card-footer">
-        <button class="btn-primary contratar-btn" data-paquete="Negocio Destacado - $599">Contratar ahora</button>
-      </div>
-    </div>
+      <div class="packages-grid">
+        <!-- Tiendita -->
+        <div class="package-card">
+          <div class="card-header">
+            <div class="package-name">Tiendita</div>
+            <div class="price">$149 <small>MXN</small></div>
+            <div style="font-size: 0.8rem; color: #2b6e2b;">3 meses · Ideal para empezar</div>
+          </div>
+          <div class="card-features">
+            <ul>
+              <li><span class="check">✓</span> Directorio básico por 90 días</li>
+              <li><span class="check">✓</span> Dirección y teléfono</li>
+              <li><span class="check">✓</span> Sin comisiones ocultas</li>
+              <li><span class="check">✓</span> Ideal para negocios de casa</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn-outline contratar-btn" data-paquete="Tiendita - $149">Lo quiero</button>
+          </div>
+        </div>
 
-    <!-- PAQUETE PREMIUM: SOCIO COMERCIAL $1,299 (más alto sugerido) -->
-    <div class="package-card recommended">
-      <div class="recommended-ribbon">🌟 Patrocinador oficial</div>
-      <div class="card-header">
-        <div class="package-name">Socio Comercial</div>
-        <div class="price">$799 <small>MXN</small></div>
-        <div style="font-size: 0.75rem;">30 días · Exposición máxima</div>
-      </div>
-      <div class="card-features">
-        <ul>
-          <li><span class="check">✓</span> Banner exclusivo (zona principal, sin rotación)</li>
-          <li><span class="check">✓</span> Perfil premium con video promocional</li>
-          <li><span class="check">✓</span> Publicaciones destacadas ILIMITADAS</li>
-          <li><span class="check">✓</span> 2 envíos masivos WhatsApp/correo</li>
-          <li><span class="check">✓</span> Logo como patrocinador en toda la plataforma</li>
-          <li><span class="check">✓</span> Menciones en eventos vecinales</li>
-        </ul>
-      </div>
-      <div class="card-footer">
-        <button class="btn-primary contratar-btn" data-paquete="Socio Comercial - $1,299 (Premium)">Quiero visibilidad total</button>
-      </div>
-    </div>
-  </div>
+        <!-- Vecino Anunciante -->
+        <div class="package-card">
+          <div class="card-header">
+            <div class="package-name">Vecino Anunciante</div>
+            <div class="price">$299 <small>MXN</small></div>
+            <div style="font-size: 0.8rem;">30 días · Banner lateral + destacado</div>
+          </div>
+          <div class="card-features">
+            <ul>
+              <li><span class="check">✓</span> Perfil completo en directorio</li>
+              <li><span class="check">✓</span> Banner lateral (estático)</li>
+              <li><span class="check">✓</span> 1 publicación destacada en avisos</li>
+              <li><span class="check">✓</span> Soporte para foto del negocio</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn-outline contratar-btn" data-paquete="Vecino Anunciante - $299">Seleccionar</button>
+          </div>
+        </div>
 
-  <!-- ¿CÓMO CONTRATAR? sección clara y detallada -->
-  <div class="howto-section">
-    <h2 style="margin-bottom: 0.2rem;">📋 ¿Cómo contratar tu espacio?</h2>
-    <p style="margin-bottom: 1rem;">Sencillo, rápido y con acompañamiento personal</p>
-    <div class="steps">
-      <div class="step"><div class="step-number">1</div> <strong>Elige tu paquete</strong><br>Compara beneficios</div>
-      <div class="step"><div class="step-number">2</div> <strong>Comparte tus datos</strong><br>WhatsApp o formulario</div>
-      <div class="step"><div class="step-number">3</div> <strong>Envía foto o te visitamos</strong><br>Sin costo extra</div>
-      <div class="step"><div class="step-number">4</div> <strong>¡Paga fácil!</strong><br>Efectivo, transferencia, Oxxo</div>
-    </div>
-    <div class="payment-methods">
-      <span>💵 Efectivo directo</span>
-      <span>📲 Transferencia (Banco Azteca, Oxxo Spin, Mercado Pago)</span>
-      <span>🏪 Depósito Oxxo / 7-Eleven</span>
-      <span>📱 Código QR (Clip / Mercado Pago)</span>
-    </div>
-    <p style="margin-top: 1rem; background: #fff3cf; display: inline-block; padding: 0.4rem 1rem; border-radius: 40px;">✅ Paga hasta en 2 parcialidades en paquetes mayores a $599</p>
-  </div>
+        <!-- Negocio Destacado -->
+        <div class="package-card">
+          <div class="card-header">
+            <div class="package-name">Negocio Destacado</div>
+            <div class="price">$599 <small>MXN</small></div>
+            <div class="badge-popular">⭐ Más elegido</div>
+          </div>
+          <div class="card-features">
+            <ul>
+              <li><span class="check">✓</span> Banner rotativo (parte superior)</li>
+              <li><span class="check">✓</span> Perfil con galería + botón WhatsApp</li>
+              <li><span class="check">✓</span> 3 publicaciones destacadas</li>
+              <li><span class="check">✓</span> 1 envío masivo por WhatsApp</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary contratar-btn" data-paquete="Negocio Destacado - $599">Contratar ahora</button>
+          </div>
+        </div>
 
-  <!-- FAQ (Preguntas frecuentes) generadoras de confianza -->
-  <div class="faq-section">
-    <h2>Preguntas frecuentes</h2>
-    <div class="section-sub">Resolvemos tus dudas para que te sientas seguro</div>
-
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>🤔 ¿Realmente funciona la publicidad en la plataforma vecinal?</span>
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Sí, porque los vecinos entran a diario para consultar avisos de la colonia, eventos de la escuela o información municipal. Además, contamos con escuelas y oficinas públicas que generan tráfico orgánico constante. Tu negocio aparecerá justo donde tu cliente potencial ya está buscando.
+        <!-- Socio Comercial (Premium) -->
+        <div class="package-card recommended">
+          <div class="recommended-ribbon">🌟 Patrocinador oficial</div>
+          <div class="card-header">
+            <div class="package-name">Socio Comercial</div>
+            <div class="price">$1,299 <small>MXN</small></div>
+            <div style="font-size: 0.75rem;">30 días · Exposición máxima</div>
+          </div>
+          <div class="card-features">
+            <ul>
+              <li><span class="check">✓</span> Banner exclusivo (zona principal, sin rotación)</li>
+              <li><span class="check">✓</span> Perfil premium con video promocional</li>
+              <li><span class="check">✓</span> Publicaciones destacadas ILIMITADAS</li>
+              <li><span class="check">✓</span> 2 envíos masivos WhatsApp/correo</li>
+              <li><span class="check">✓</span> Logo como patrocinador en toda la plataforma</li>
+              <li><span class="check">✓</span> Menciones en eventos vecinales</li>
+            </ul>
+          </div>
+          <div class="card-footer">
+            <button class="btn-primary contratar-btn" data-paquete="Socio Comercial - $1,299 (Premium)">Quiero visibilidad total</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>🔒 ¿Es seguro pagar por adelantado? ¿Hay contrato?</span>
-        <span class="faq-icon">+</span>
+      <!-- Cómo contratar -->
+      <div class="howto-section">
+        <h2 style="margin-bottom: 0.2rem; color: var(--color-primario);">📋 ¿Cómo contratar tu espacio?</h2>
+        <p style="margin-bottom: 1rem;">Sencillo, rápido y con acompañamiento personal</p>
+        <div class="steps">
+          <div class="step"><div class="step-number">1</div> <strong>Elige tu paquete</strong><br>Compara beneficios</div>
+          <div class="step"><div class="step-number">2</div> <strong>Comparte tus datos</strong><br>WhatsApp o formulario</div>
+          <div class="step"><div class="step-number">3</div> <strong>Envía foto o te visitamos</strong><br>Sin costo extra</div>
+          <div class="step"><div class="step-number">4</div> <strong>¡Paga fácil!</strong><br>Efectivo, transferencia, Oxxo</div>
+        </div>
+        <div class="payment-methods">
+          <span>💵 Efectivo directo</span>
+          <span>📲 Transferencia (Banco Azteca, Oxxo Spin, Mercado Pago)</span>
+          <span>🏪 Depósito Oxxo / 7-Eleven</span>
+          <span>📱 Código QR (Clip / Mercado Pago)</span>
+        </div>
+        <p style="margin-top: 1rem; background: #fff3cf; display: inline-block; padding: 0.4rem 1rem; border-radius: 40px;">✅ Paga hasta en 2 parcialidades en paquetes mayores a $599</p>
       </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Absolutamente. Contamos con Aviso Legal, Política de Privacidad y Términos de Publicidad. Al contratar te entregamos recibo oficial y en caso de paquetes destacados firmamos un formato de pedido. Somos vecinos de la colonia y cumplimos con transparencia.
+
+      <!-- FAQ -->
+      <div class="faq-section">
+        <h2 style="text-align: center; color: var(--color-primario);">Preguntas frecuentes</h2>
+        <p style="text-align: center; color: var(--color-texto-claro); margin-bottom: 2rem;">Resolvemos tus dudas para que te sientas seguro</p>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>🤔 ¿Realmente funciona la publicidad en la plataforma vecinal?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Sí, porque los vecinos entran a diario para consultar avisos de la colonia, eventos de la escuela o información municipal. Además, contamos con escuelas y oficinas públicas que generan tráfico orgánico constante. Tu negocio aparecerá justo donde tu cliente potencial ya está buscando.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>🔒 ¿Es seguro pagar por adelantado? ¿Hay contrato?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Absolutamente. Contamos con Aviso Legal, Política de Privacidad y Términos de Publicidad. Al contratar te entregamos recibo oficial y en caso de paquetes destacados firmamos un formato de pedido. Somos vecinos de la colonia y cumplimos con transparencia.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>📸 ¿Necesito saber diseñar mi anuncio?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Para nada. Con que nos envíes una foto clara de tu local, producto o logotipo, nosotros lo adaptamos a los formatos de banner. También podemos ir a tomarte una foto sin costo si estás dentro de la colonia.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>⏳ ¿Cuánto tarda en activarse mi publicidad?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Una vez confirmado el pago, máximo 2 días hábiles. Te enviaremos una captura de pantalla y el enlace directo a tu perfil para que lo compartas.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>🔄 ¿Puedo cancelar o cambiar de paquete?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Sí. Puedes actualizar a un paquete mayor en cualquier momento (solo pagas la diferencia proporcional). Si cancelas antes de finalizar el mes, no hay reembolso, pero puedes transferir los días restantes a otro negocio que recomiendes.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-question">
+            <span>🏆 ¿Qué me respalda como anunciante?</span>
+            <span class="faq-icon">+</span>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">
+              Contamos con el respaldo de la Asociación de Colonos, convenios con escuelas y oficinas municipales, y una plataforma con Aviso Legal registrado. Además, cada semana publicamos reportes de vistas y compartimos casos de éxito de negocios que ya aumentaron sus ventas.
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>📸 ¿Necesito saber diseñar mi anuncio?</span>
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Para nada. Con que nos envíes una foto clara de tu local, producto o logotipo, nosotros lo adaptamos a los formatos de banner. También podemos ir a tomarte una foto sin costo si estás dentro de la colonia.
+      <!-- Elementos de confianza -->
+      <div class="confidence-grid">
+        <div class="confidence-card">
+          <div class="emoji-big">📈</div>
+          <strong>+35%</strong> de clientes nuevos en los primeros 30 días (promedio)
+        </div>
+        <div class="confidence-card">
+          <div class="emoji-big">👥</div>
+          <strong>+2,500</strong> visitas mensuales a la plataforma
+        </div>
+        <div class="confidence-card">
+          <div class="emoji-big">🤝</div>
+          <strong>8 escuelas</strong> y 4 oficinas municipales ya publican aquí
+        </div>
+        <div class="confidence-card">
+          <div class="emoji-big">⭐</div>
+          <strong>4.9/5</strong> satisfacción de negocios anunciantes
         </div>
       </div>
-    </div>
 
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>⏳ ¿Cuánto tarda en activarse mi publicidad?</span>
-        <span class="faq-icon">+</span>
+      <!-- Contacto -->
+      <div class="contact-bar">
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📢 ¿Listo para que toda la colonia te conozca?</p>
+        <p>Contáctanos por WhatsApp o correo y en menos de 24 horas comenzamos.</p>
+        <p style="margin-top: 0.8rem;">
+          <a href="https://wa.me/3222354331?text=Hola%2C%20quiero%20anunciar%20mi%20negocio%20en%20la%20colonia" target="_blank">📲 Enviar mensaje por WhatsApp</a> &nbsp;|&nbsp;
+          <a href="mailto:jeronimoricardo1@gmail.com">✉️ publicidad@coloniajardines.com</a>
+        </p>
+        <p style="font-size: 0.8rem; margin-top: 1rem;">🔒 Aviso legal, políticas de privacidad y términos de publicidad disponibles en todo momento.</p>
       </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Una vez confirmado el pago, máximo 2 días hábiles. Te enviaremos una captura de pantalla y el enlace directo a tu perfil para que lo compartas.
-        </div>
+
+      <hr style="margin: 2rem 0; border-color: var(--color-borde);">
+      <div style="text-align: center; font-size: 0.75rem; color: var(--color-texto-claro);">
+        Plataforma de Avisos de la Colonia Jardines · Apoyando el comercio local y la comunicación vecinal.
       </div>
-    </div>
 
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>🔄 ¿Puedo cancelar o cambiar de paquete?</span>
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Sí. Puedes actualizar a un paquete mayor en cualquier momento (solo pagas la diferencia proporcional). Si cancelas antes de finalizar el mes, no hay reembolso, pero puedes transferir los días restantes a otro negocio que recomiendes.
-        </div>
-      </div>
     </div>
+  </main>
 
-    <div class="faq-item">
-      <div class="faq-question">
-        <span>🏆 ¿Qué me respalda como anunciante?</span>
-        <span class="faq-icon">+</span>
-      </div>
-      <div class="faq-answer">
-        <div class="faq-answer-inner">
-          Contamos con el respaldo de la Asociación de Colonos, convenios con escuelas y oficinas municipales, y una plataforma con Aviso Legal registrado. Además, cada semana publicamos reportes de vistas y compartimos casos de éxito de negocios que ya aumentaron sus ventas.
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="footer-container"></div>
 
-  <!-- Elementos extra de confianza: testimonios simulados + datos reales -->
-  <div class="confidence-grid">
-    <div class="confidence-card">
-      <div class="emoji-big">📈</div>
-      <strong>+35%</strong> de clientes nuevos en los primeros 30 días (promedio)
-    </div>
-    <div class="confidence-card">
-      <div class="emoji-big">👥</div>
-      <strong>+2,500</strong> visitas mensuales a la plataforma
-    </div>
-    <div class="confidence-card">
-      <div class="emoji-big">🤝</div>
-      <strong>8 escuelas</strong> y 4 oficinas municipales ya publican aquí
-    </div>
-    <div class="confidence-card">
-      <div class="emoji-big">⭐</div>
-      <strong>4.9/5</strong> satisfacción de negocios anunciantes
-    </div>
-  </div>
+  <script src="/avisos-jardines/js/api.js"></script>
+  <script src="/avisos-jardines/js/auth.js"></script>
 
-  <!-- Forma de contacto directo (para que contraten) -->
-  <div class="contact-bar">
-    <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">📢 ¿Listo para que toda la colonia te conozca?</p>
-    <p>Contáctanos por WhatsApp o correo y en menos de 24 horas comenzamos.</p>
-    <p style="margin-top: 0.8rem;">
-      <a href="https://wa.me/3222354331?text=Hola%2C%20quiero%20anunciar%20mi%20negocio%20en%20la%20colonia" target="_blank">📲 Enviar mensaje por WhatsApp</a> &nbsp;|&nbsp; 
-      <a href="mailto:jeronimoricardo1@gmail.com">✉️ publicidad@coloniajardines.com</a>
-    </p>
-    <p style="font-size: 0.8rem; margin-top: 1rem;">🔒 Aviso legal, políticas de privacidad y términos de publicidad disponibles en todo momento.</p>
-  </div>
+  <script>
+    // Cargar header
+    document.addEventListener('DOMContentLoaded', function() {
+      fetch('/avisos-jardines/common/header.html')
+        .then(res => {
+          if (!res.ok) throw new Error('Header no encontrado');
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(() => {
+            if (typeof window.inicializarHeaderAuth === 'function') {
+              window.inicializarHeaderAuth();
+            }
+          }, 100);
+        })
+        .catch(err => console.error('Error cargando header:', err));
 
-  <hr>
-  <div style="text-align: center; font-size: 0.75rem; color: #5b6e8c;">
-    Plataforma de Avisos de la Colonia Jardines · Apoyando el comercio local y la comunicación vecinal.
-  </div>
-</div>
+      // Cargar footer
+      fetch('/avisos-jardines/common/footer.html')
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
+        .then(data => {
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            const anioElement = document.getElementById('anio-actual');
+            if (anioElement) {
+              anioElement.textContent = new Date().getFullYear();
+            }
+          }
+        })
+        .catch(error => console.error('Error cargando footer:', error));
 
-<!-- Script para acordeón FAQ y simular contratación (acción de confianza) -->
-<script>
-  // ----- Acordeón FAQ -----
-  const faqItems = document.querySelectorAll('.faq-item');
-  faqItems.forEach(item => {
-    const questionDiv = item.querySelector('.faq-question');
-    questionDiv.addEventListener('click', () => {
-      // Cierra otros si quieres efecto exclusivo? (opcional, dejamos multi)
-      item.classList.toggle('active');
+      // Acordeón FAQ
+      const faqItems = document.querySelectorAll('.faq-item');
+      faqItems.forEach(item => {
+        const questionDiv = item.querySelector('.faq-question');
+        questionDiv.addEventListener('click', () => {
+          item.classList.toggle('active');
+        });
+      });
+
+      // Botones de contratación
+      const contratarBtns = document.querySelectorAll('.contratar-btn');
+      contratarBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const paqueteInfo = btn.getAttribute('data-paquete') || btn.innerText;
+          const mensaje = `Hola, estoy interesado en el paquete ${paqueteInfo} para anunciar mi negocio en la colonia. ¿Me pueden dar más información y formas de pago?`;
+          const numeroWhatsApp = "3222354331";
+          const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+          window.open(url, '_blank');
+        });
+      });
     });
-  });
-
-  // ----- Botones de contratación (muestra mensaje simulando gestión pero genera confianza) -----
-  const contratarBtns = document.querySelectorAll('.contratar-btn');
-  contratarBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      const paqueteInfo = btn.getAttribute('data-paquete') || btn.innerText;
-      // Simular una ventana de contacto (puedes reemplazar con redirección real a WhatsApp)
-      const mensaje = `Hola, estoy interesado en el paquete ${paqueteInfo} para anunciar mi negocio en la colonia. ¿Me pueden dar más información y formas de pago?`;
-      const numeroWhatsApp = "3222354331"; // Reemplaza con el número real de la colonia
-      const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-      window.open(url, '_blank');
-    });
-  });
-</script>
+  </script>
 </body>
 </html>
