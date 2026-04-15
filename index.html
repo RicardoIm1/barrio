@@ -613,7 +613,7 @@
                 commentsList.innerHTML = '<div style="text-align:center; color:#e74c3c;">❌ Error al cargar comentarios</div>';
             }
         }
-        
+
         // Enviar comentario
         window.enviarComentario = async function () {
             const input = document.getElementById('comment-input');
@@ -694,11 +694,11 @@
             container.innerHTML = '<div class="cargando">📰 Cargando avisos...</div>';
 
             try {
-                // ✅ Usar API.listar (método estático, sin new)
                 const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 100 });
 
                 if (resultado && resultado.datos) {
                     todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
+                    // ✅ Ahora sí existe esta función
                     filtrarYAplicarPaginacion();
                 } else {
                     container.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
@@ -709,6 +709,22 @@
                 container.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos</div>';
             }
         }
+
+        // ✅ Agrega ESTA función si no existe
+        function filtrarYAplicarPaginacion() {
+            let avisosFiltrados = todosLosAvisos;
+
+            if (categoriaActual !== 'todos') {
+                avisosFiltrados = todosLosAvisos.filter(a => a.categoria === categoriaActual);
+            }
+
+            const inicio = (paginaActual - 1) * AVISOS_POR_PAGINA;
+            const avisosPaginados = avisosFiltrados.slice(inicio, inicio + AVISOS_POR_PAGINA);
+            totalPaginas = Math.ceil(avisosFiltrados.length / AVISOS_POR_PAGINA);
+
+            renderizarAvisos(avisosPaginados, paginaActual, totalPaginas);
+        }
+
         function renderizarAvisos(avisos) {
             const container = document.getElementById('avisos-container');
             const categoriaActiva = document.querySelector('.filtro.activo')?.dataset.categoria || 'todos';
