@@ -21,13 +21,19 @@ class API {
             
             // Para datos complejos, los enviamos como JSON string
             if (datos && Object.keys(datos).length > 0) {
-                params.append('jsonp', JSON.stringify(datos));
+                // En lugar de anidar, enviar cada propiedad directamente
+                for (const [key, value] of Object.entries(datos)) {
+                    if (value !== undefined && value !== null) {
+                        params.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
+                    }
+                }
             }
             
             const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
             const url = `${API_BASE_URL}?callback=${callbackName}&${params.toString()}`;
             
-            // Timeout por si falla
+            console.log('📡 Petición URL:', url);
+            
             const timeout = setTimeout(() => {
                 if (window[callbackName]) {
                     delete window[callbackName];
@@ -38,6 +44,7 @@ class API {
             window[callbackName] = function(response) {
                 clearTimeout(timeout);
                 delete window[callbackName];
+                console.log('📡 Respuesta:', response);
                 resolve(response);
             };
             
@@ -60,14 +67,10 @@ class API {
             const resultado = await API.peticion('LOGIN', { email: email, password: password });
             
             if (resultado && resultado.success && resultado.data && resultado.data.api_key) {
-                // Guardar en localStorage
                 localStorage.setItem('api_key', resultado.data.api_key);
                 localStorage.setItem('usuario', JSON.stringify(resultado.data.usuario));
-                
-                // Disparar evento para actualizar UI
                 window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: resultado.data.usuario } }));
                 window.dispatchEvent(new Event('storage'));
-                
                 return resultado.data;
             } else {
                 throw new Error(resultado?.error || 'Credenciales inválidas');
@@ -84,14 +87,10 @@ class API {
             const resultado = await API.peticion('REGISTRO', { datos: datos });
             
             if (resultado && resultado.success && resultado.data && resultado.data.api_key) {
-                // Guardar en localStorage
                 localStorage.setItem('api_key', resultado.data.api_key);
                 localStorage.setItem('usuario', JSON.stringify(resultado.data.usuario));
-                
-                // Disparar evento
                 window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: resultado.data.usuario } }));
                 window.dispatchEvent(new Event('storage'));
-                
                 return resultado.data;
             } else {
                 throw new Error(resultado?.error || 'Error en registro');
@@ -106,17 +105,12 @@ class API {
     static logout() {
         const apiKey = localStorage.getItem('api_key');
         if (apiKey) {
-            // Notificar al servidor (opcional, no crítico)
             API.peticion('LOGOUT', {}, apiKey).catch(() => {});
         }
-        
         localStorage.removeItem('api_key');
         localStorage.removeItem('usuario');
-        
-        // Disparar evento
         window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: null } }));
         window.dispatchEvent(new Event('storage'));
-        
         console.log('🔓 Sesión cerrada');
     }
 
@@ -138,19 +132,25 @@ class API {
 
     // ==================== MÉTODOS DE AVISOS ====================
 
-    // Listar avisos
+    // Listar avisos - CORREGIDO: envía coleccion como parámetro directo
     static async listar(coleccion, filtros = {}, paginacion = {}) {
-        const datos = {
+        // Construir parámetros directamente, no anidados
+        const params = {
             coleccion: coleccion,
             ...filtros,
             ...paginacion
         };
-        const resultado = await API.peticion('LISTAR', datos);
+        const resultado = await API.peticion('LISTAR', params);
         
-        // Normalizar respuesta
         if (resultado && resultado.success) {
             return resultado.data || { datos: [], total: 0 };
         }
+        
+        // Si no tiene success pero tiene datos directamente (como en listarAvisosPublico)
+        if (resultado && resultado.datos) {
+            return resultado;
+        }
+        
         return { datos: [], total: 0 };
     }
 
@@ -273,14 +273,12 @@ class API {
 
 // ==================== FUNCIÓN DE RESPALDO ====================
 
-// Esta función permite llamadas directas sin usar la clase
 window.llamarAPI = async function(accion, datos = {}, apiKey = null) {
     return await API.peticion(accion, datos, apiKey);
 };
 
 // ==================== INICIALIZACIÓN ====================
 
-// Disparar evento cuando API está lista
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
@@ -295,10 +293,8 @@ if (document.readyState === 'loading') {
     }, 100);
 }
 
-// Hacer disponible globalmente
 window.API = API;
 
-// Escuchar cambios en localStorage para sincronizar entre pestañas
 window.addEventListener('storage', (e) => {
     if (e.key === 'api_key' || e.key === 'usuario') {
         console.log('🔄 Cambio de sesión detectado en otra pestaña');
@@ -307,7 +303,5 @@ window.addEventListener('storage', (e) => {
         }));
     }
 });
-
-// ==================== DEPURACIÓN ====================
 
 console.log('📡 API Client cargado. API_BASE_URL:', API_BASE_URL);
