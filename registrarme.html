@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Registro - Plataforma de la Colonia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+            background: #eef2e6;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .header {
+            background: #1e4620;
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .badge {
+            background: #fbbf24;
+            color: #1e4620;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        .form-body {
+            padding: 1.8rem;
+        }
+
+        .campo {
+            margin-bottom: 1.2rem;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            color: #1e2a3e;
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 1rem;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .campo input:focus,
+        .campo select:focus,
+        .campo textarea:focus {
+            outline: none;
+            border-color: #1e4620;
+            box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .ayuda {
+            font-size: 0.7rem;
+            color: #6b7280;
+            margin-top: 0.3rem;
+        }
+
+        .info-visibilidad {
+            background: #f0fdf4;
+            border-left: 4px solid #1e4620;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+        }
+
+        .checkbox-acuerdo {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            margin: 1.2rem 0;
+            cursor: pointer;
+        }
+
+        .checkbox-acuerdo input {
+            width: 20px;
+            height: 20px;
+            margin-top: 0.1rem;
+            accent-color: #1e4620;
+        }
+
+        .checkbox-acuerdo label {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            cursor: pointer;
+        }
+
+        .btn {
+            background: #1e4620;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.9rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #2b6e2b;
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .mensaje-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .mensaje-exito {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>📋 Formar parte</h1>
+                <p>Regístrate y publica avisos en tu colonia</p>
+                <div class="badge">✨ Entre vecinos, sin letras chiquitas</div>
+            </div>
+
+            <div class="form-body" id="formularioRegistro">
+                <div id="mensajeGlobal"></div>
+
+                <!-- Datos de usuario -->
+                <div class="campo">
+                    <label>Tu nombre completo *</label>
+                    <input type="text" id="nombre" placeholder="Ej: María de la Luz Gutiérrez">
+                </div>
+
+                <div class="campo">
+                    <label>Correo electrónico *</label>
+                    <input type="email" id="email" placeholder="Ej: maria@ejemplo.com">
+                    <div class="ayuda">Lo usarás para iniciar sesión</div>
+                </div>
+
+                <div class="campo">
+                    <label>Contraseña *</label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <div class="campo">
+                    <label>Teléfono o WhatsApp *</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 55 1234 5678">
+                    <div class="ayuda">Para que los vecinos te contacten</div>
+                </div>
+
+                <div class="campo">
+                    <label>Dirección o referencia en la colonia *</label>
+                    <input type="text" id="direccion" placeholder="Ej: Calle Juárez #45, atrás de la tortillería">
+                </div>
+
+                <div class="campo">
+                    <label>¿Qué oficio o profesión tienes? *</label>
+                    <select id="oficio">
+                        <option value="" disabled selected>Selecciona una opción</option>
+                        <option value="Electricista">⚡ Electricista</option>
+                        <option value="Plomero">🔧 Plomero</option>
+                        <option value="Carpintero">🪚 Carpintero</option>
+                        <option value="Mecánico">🚗 Mecánico</option>
+                        <option value="Estilista">✂️ Estilista / Barbería</option>
+                        <option value="Costurera">🧵 Costurera / Modista</option>
+                        <option value="Pintor">🎨 Pintor</option>
+                        <option value="Albañil">🧱 Albañil</option>
+                        <option value="Panadero / Bizcocho">🍞 Panadero / Bizcocho</option>
+                        <option value="Comida casera">🍲 Comida casera / Fonda</option>
+                        <option value="Otro">📝 Otro (escríbelo)</option>
+                    </select>
+                </div>
+
+                <div class="campo" id="otroOficioContainer" style="display: none;">
+                    <label>Escribe tu oficio</label>
+                    <input type="text" id="otroOficio" placeholder="Ej: Soldador, Afilador, Lavandera...">
+                </div>
+
+                <div class="campo">
+                    <label>Cuéntanos un poco sobre ti o tu negocio (opcional)</label>
+                    <textarea id="descripcion"
+                        placeholder="Ej: Hago reparaciones eléctricas a domicilio, voy a toda la colonia, precios económicos."></textarea>
+                </div>
+
+                <!-- Primer aviso (opcional pero recomendado) -->
+                <div class="info-visibilidad">
+                    📢 <strong>¿Quieres publicar tu primer aviso ahora?</strong> Cuéntale a los vecinos lo que ofreces.
+                </div>
+
+                <div class="campo">
+                    <label>Título del aviso (opcional)</label>
+                    <input type="text" id="avisoTitulo" placeholder="Ej: Reparaciones eléctricas a domicilio">
+                </div>
+
+                <div class="campo">
+                    <label>Contenido del aviso (opcional)</label>
+                    <textarea id="avisoContenido"
+                        placeholder="Ej: Ofrezco servicio de plomería económica, atiendo toda la colonia, llamar al WhatsApp."></textarea>
+                </div>
+
+                <!-- Compromiso de confianza -->
+                <div class="checkbox-acuerdo">
+                    <input type="checkbox" id="acepto">
+                    <label>
+                        Acepto el <strong>Compromiso de Confianza Vecinal</strong>. Sé que mis datos se usarán solo para
+                        el directorio y avisos de la colonia, y que <strong>no se compartirán con bancos ni empresas
+                            externas</strong>.
+                    </label>
+                </div>
+
+                <button class="btn" id="btnRegistrar">Registrarme y publicar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === CONFIGURACIÓN ===
+        // CAMBIA ESTA URL POR LA DE TU GOOGLE APPS SCRIPT DESPLEGADO
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbz3eGCWH3tNFuJGsV4B0mqEf3vwAh7z26mO4J2hwNZtXwtizYQr458sQ7GyxkgziNXs/exec';
+
+        // Mostrar/ocultar campo "otro oficio"
+        const oficioSelect = document.getElementById('oficio');
+        const otroContainer = document.getElementById('otroOficioContainer');
+
+        oficioSelect.addEventListener('change', () => {
+            if (oficioSelect.value === 'Otro') {
+                otroContainer.style.display = 'block';
+            } else {
+                otroContainer.style.display = 'none';
+            }
+        });
+
+        // Función para llamar a la API
+        async function llamarAPI(accion, datos = {}, apiKey = null) {
+            const params = {
+                accion: accion,
+                ...datos
+            };
+
+            if (apiKey) {
+                params.api_key = apiKey;
+            }
+
+            // Para GET con JSONP, usamos fetch con POST (más limpio)
+            const url = `${API_BASE_URL}?callback=handleCallback`;
+
+            return new Promise((resolve, reject) => {
+                window.handleCallback = function (respuesta) {
+                    delete window.handleCallback;
+                    if (respuesta.success) {
+                        resolve(respuesta);
+                    } else {
+                        reject(new Error(respuesta.error || 'Error desconocido'));
+                    }
+                };
+
+                const script = document.createElement('script');
+                script.src = `${API_BASE_URL}?callback=handleCallback&jsonp=${encodeURIComponent(JSON.stringify(params))}`;
+                script.onerror = () => {
+                    delete window.handleCallback;
+                    reject(new Error('Error de conexión con el servidor'));
+                };
+                document.body.appendChild(script);
+                document.body.removeChild(script);
+            });
+        }
+
+        // Función para registrar usuario (usa tu endpoint REGISTRO)
+        async function registrarUsuario(datosUsuario) {
+            return llamarAPI('REGISTRO', { datos: datosUsuario });
+        }
+
+        // Función para crear aviso (usa tu endpoint CREAR)
+        async function crearAviso(apiKey, datosAviso) {
+            return llamarAPI('CREAR', {
+                coleccion: 'AVISOS',
+                datos: datosAviso
+            }, apiKey);
+        }
+
+        // Botón de registro
+        const btn = document.getElementById('btnRegistrar');
+        const mensajeDiv = document.getElementById('mensajeGlobal');
+
+        function mostrarMensaje(texto, esError = true) {
+            mensajeDiv.innerHTML = `<div class="${esError ? 'mensaje-error' : 'mensaje-exito'}">${texto}</div>`;
+            setTimeout(() => {
+                if (mensajeDiv.innerHTML.includes(texto)) {
+                    mensajeDiv.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        btn.addEventListener('click', async () => {
+            // Validar campos obligatorios
+            const nombre = document.getElementById('nombre').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const telefono = document.getElementById('telefono').value.trim();
+            const direccion = document.getElementById('direccion').value.trim();
+            let oficio = oficioSelect.value;
+
+            if (oficio === 'Otro') {
+                oficio = document.getElementById('otroOficio').value.trim();
+                if (!oficio) {
+                    mostrarMensaje('Por favor escribe tu oficio en el campo "Otro"');
+                    return;
+                }
+            }
+
+            if (!nombre || !email || !password || !telefono || !direccion || !oficio) {
+                mostrarMensaje('Por favor completa todos los campos marcados con *');
+                return;
+            }
+
+            if (password.length < 6) {
+                mostrarMensaje('La contraseña debe tener al menos 6 caracteres');
+                return;
+            }
+
+            if (!document.getElementById('acepto').checked) {
+                mostrarMensaje('Debes aceptar el Compromiso de Confianza Vecinal');
+                return;
+            }
+
+            // Deshabilitar botón mientras se procesa
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span> Registrando...';
+
+            try {
+                // 1. Registrar al usuario
+                const usuarioData = {
+                    nombre: nombre,
+                    email: email,
+                    password: password,
+                    telefono: telefono,
+                    rol: 'usuario',
+                    categorias: oficio
+                };
+
+                const registroResp = await registrarUsuario(usuarioData);
+                const apiKey = registroResp.data.api_key;
+
+                // 2. Si el usuario puso título y contenido, crear un aviso automáticamente
+                const avisoTitulo = document.getElementById('avisoTitulo').value.trim();
+                const avisoContenido = document.getElementById('avisoContenido').value.trim();
+
+                if (avisoTitulo && avisoContenido) {
+                    const descripcion = document.getElementById('descripcion').value;
+
+                    const avisoData = {
+                        titulo: avisoTitulo,
+                        contenido: avisoContenido + (descripcion ? '\n\n' + descripcion : ''),
+                        categoria: oficio.toLowerCase(),
+                        ubicacion: direccion,
+                        contacto: telefono,
+                        status: 'activo',
+                        destacado: 'no',
+                        created_by: email
+                    };
+
+                    try {
+                        await crearAviso(apiKey, avisoData);
+                    } catch (errorAviso) {
+                        console.warn('No se pudo crear el aviso automático:', errorAviso);
+                    }
+                }
+
+                // Éxito
+                mostrarMensaje(`✅ ¡Bienvenido/a ${nombre}! Tu registro fue exitoso. Ya puedes iniciar sesión.`, false);
+
+                // Limpiar formulario
+                document.getElementById('nombre').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('telefono').value = '';
+                document.getElementById('direccion').value = '';
+                document.getElementById('descripcion').value = '';
+                document.getElementById('avisoTitulo').value = '';
+                document.getElementById('avisoContenido').value = '';
+                document.getElementById('acepto').checked = false;
+                oficioSelect.value = '';
+                document.getElementById('otroOficio').value = '';
+                otroContainer.style.display = 'none';
+
+                // Opcional: redirigir al login después de 2 segundos
+                setTimeout(() => {
+                    window.location.href = '/login.html'; // Cambia por tu página de login
+                }, 2000);
+
+            } catch (error) {
+                mostrarMensaje('Error: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Registrarme y publicar';
+            }
+        });
+    </script>
+</body>
+
+</html>

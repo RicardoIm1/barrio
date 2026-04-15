@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Registro - Plataforma de la Colonia</title>
+    <title>Compromiso de Confianza Vecinal | Plataforma de la Colonia</title>
     <style>
         * {
             margin: 0;
@@ -13,177 +13,231 @@
         }
 
         body {
-            font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
             background: #eef2e6;
-            padding: 1.5rem;
+            padding: 2rem 1rem;
             min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        .card {
+        /* Tarjeta principal */
+        .compromiso-card {
             background: white;
             border-radius: 2rem;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            margin-bottom: 1.5rem;
         }
 
+        /* Encabezado */
         .header {
-            background: #1e4620;
+            background: linear-gradient(135deg, #1e4620, #2b6e2b);
             color: white;
-            padding: 1.5rem;
+            padding: 2rem 2rem 1.5rem;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 1.6rem;
-            margin-bottom: 0.3rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
         }
 
-        .badge {
-            background: #fbbf24;
-            color: #1e4620;
-            font-size: 0.7rem;
-            padding: 0.2rem 0.8rem;
-            border-radius: 2rem;
-            display: inline-block;
+        .header .sub {
+            font-size: 0.9rem;
+            opacity: 0.9;
             margin-top: 0.5rem;
         }
 
-        .form-body {
-            padding: 1.8rem;
+        .sello {
+            display: inline-block;
+            background: #fbbf24;
+            color: #1e4620;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            margin-top: 1rem;
+            letter-spacing: 1px;
         }
 
-        .campo {
-            margin-bottom: 1.2rem;
+        /* Cuerpo */
+        .cuerpo {
+            padding: 2rem;
         }
 
-        .campo label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 0.4rem;
+        /* Introducción */
+        .intro {
+            background: #f0fdf4;
+            border-left: 5px solid #1e4620;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.5;
             color: #1e2a3e;
         }
 
-        .campo input,
-        .campo select,
-        .campo textarea {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #d1d5db;
-            border-radius: 1rem;
-            font-size: 0.95rem;
-            font-family: inherit;
+        /* Secciones */
+        .seccion {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 1.5rem;
         }
 
-        .campo input:focus,
-        .campo select:focus,
-        .campo textarea:focus {
-            outline: none;
-            border-color: #1e4620;
-            box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
+        .seccion:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .ayuda {
-            font-size: 0.7rem;
-            color: #6b7280;
-            margin-top: 0.3rem;
-        }
-
-        .info-visibilidad {
-            background: #f0fdf4;
-            border-left: 4px solid #1e4620;
-            padding: 0.8rem 1rem;
-            border-radius: 1rem;
-            margin: 1rem 0;
-            font-size: 0.8rem;
-        }
-
-        .checkbox-acuerdo {
+        .seccion h2 {
             display: flex;
-            align-items: flex-start;
-            gap: 0.7rem;
-            margin: 1.2rem 0;
-            cursor: pointer;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 1.3rem;
+            color: #1e4620;
+            margin-bottom: 1rem;
+            font-weight: 700;
         }
 
-        .checkbox-acuerdo input {
-            width: 20px;
-            height: 20px;
-            margin-top: 0.1rem;
-            accent-color: #1e4620;
+        .seccion h2 .emoji {
+            font-size: 1.5rem;
         }
 
-        .checkbox-acuerdo label {
-            font-size: 0.85rem;
-            line-height: 1.4;
-            cursor: pointer;
+        .seccion p {
+            color: #2c3e50;
+            line-height: 1.6;
+            margin-bottom: 0.8rem;
         }
 
-        .btn {
+        .seccion ul {
+            margin: 0.8rem 0 0.8rem 1.5rem;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        .seccion li {
+            margin-bottom: 0.4rem;
+        }
+
+        /* Tabla de lo que NO hacemos */
+        .no-hacemos {
+            background: #fef2e8;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .no-hacemos-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid #fde3c5;
+        }
+
+        .no-hacemos-item:last-child {
+            border-bottom: none;
+        }
+
+        .no-icon {
+            font-size: 1.3rem;
+        }
+
+        /* Recuadro de datos */
+        .datos-box {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .datos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .dato-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Botones de aceptación */
+        .acciones {
+            background: #f9fafb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn-aceptar {
             background: #1e4620;
             color: white;
             border: none;
-            width: 100%;
-            padding: 0.9rem;
-            border-radius: 2rem;
-            font-weight: 700;
+            padding: 0.9rem 2rem;
+            border-radius: 3rem;
             font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            margin: 0.5rem;
         }
 
-        .btn:hover {
+        .btn-aceptar:hover {
             background: #2b6e2b;
+            transform: scale(1.02);
         }
 
-        .btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
+        .btn-regresar {
+            background: transparent;
+            border: 2px solid #1e4620;
+            color: #1e4620;
+            padding: 0.9rem 2rem;
+            border-radius: 3rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0.5rem;
         }
 
-        .mensaje-error {
-            background: #fee2e2;
-            color: #b91c1c;
-            padding: 0.8rem;
-            border-radius: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
+        .btn-regresar:hover {
+            background: #eef5e9;
         }
 
-        .mensaje-exito {
-            background: #d1fae5;
-            color: #065f46;
-            padding: 0.8rem;
-            border-radius: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.85rem;
+        /* Fecha */
+        .fecha {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #9ca3af;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
         }
 
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin-right: 0.5rem;
-        }
+        /* Responsive */
+        @media (max-width: 600px) {
+            .cuerpo {
+                padding: 1.5rem;
+            }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
+            .seccion h2 {
+                font-size: 1.1rem;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -191,285 +245,137 @@
 
 <body>
     <div class="container">
-        <div class="card">
+        <div class="compromiso-card">
             <div class="header">
-                <h1>📋 Formar parte</h1>
-                <p>Regístrate y publica avisos en tu colonia</p>
-                <div class="badge">✨ Entre vecinos, sin letras chiquitas</div>
+                <h1>🤝 Compromiso de Confianza Vecinal</h1>
+                <div class="sub">Así cuidamos tus datos y tu confianza</div>
+                <div class="sello">SIN LETRAS CHIQUITAS · SIN SORPRESAS</div>
             </div>
 
-            <div class="form-body" id="formularioRegistro">
-                <div id="mensajeGlobal"></div>
-
-                <!-- Datos de usuario -->
-                <div class="campo">
-                    <label>Tu nombre completo *</label>
-                    <input type="text" id="nombre" placeholder="Ej: María de la Luz Gutiérrez">
+            <div class="cuerpo">
+                <!-- Intro -->
+                <div class="intro">
+                    📢 <strong>Esto no es un documento de abogados.</strong> Somos vecinos, no un banco ni una empresa
+                    grande. Aquí solo queremos ayudarnos mutuamente.
                 </div>
 
-                <div class="campo">
-                    <label>Correo electrónico *</label>
-                    <input type="email" id="email" placeholder="Ej: maria@ejemplo.com">
-                    <div class="ayuda">Lo usarás para iniciar sesión</div>
+                <!-- Sección 1: Qué somos -->
+                <div class="seccion">
+                    <h2><span class="emoji">🏠</span> 1. ¿Qué somos?</h2>
+                    <p>Somos una <strong>plataforma vecinal</strong> donde los residentes de la colonia compartimos
+                        avisos, servicios y oficios. No vendemos nada, no financiamos nada. Solo ponemos en contacto a
+                        los vecinos.</p>
                 </div>
 
-                <div class="campo">
-                    <label>Contraseña *</label>
-                    <input type="password" id="password" placeholder="Mínimo 6 caracteres">
+                <!-- Sección 2: Qué datos pedimos -->
+                <div class="seccion">
+                    <h2><span class="emoji">📋</span> 2. ¿Qué datos pedimos y por qué?</h2>
+                    <div class="datos-box">
+                        <div class="datos-grid">
+                            <div class="dato-item"><strong>📛 Nombre</strong> → Para que te conozcan</div>
+                            <div class="dato-item"><strong>📞 Teléfono/WhatsApp</strong> → Para que te contacten</div>
+                            <div class="dato-item"><strong>📍 Dirección general</strong> → Para saber tu ubicación en la
+                                colonia</div>
+                            <div class="dato-item"><strong>🔧 Oficio o profesión</strong> → Para agruparte en el
+                                directorio</div>
+                            <div class="dato-item"><strong>📸 Fotos (opcional)</strong> → Para mostrar tu trabajo</div>
+                        </div>
+                    </div>
+                    <p><strong>No pedimos</strong> tu CURP, RFC (a menos que pidas factura), ni datos bancarios. Solo lo
+                        necesario para que los vecinos te encuentren.</p>
                 </div>
 
-                <div class="campo">
-                    <label>Teléfono o WhatsApp *</label>
-                    <input type="tel" id="telefono" placeholder="Ej: 55 1234 5678">
-                    <div class="ayuda">Para que los vecinos te contacten</div>
+                <!-- Sección 3: Quién ve tus datos -->
+                <div class="seccion">
+                    <h2><span class="emoji">👁️</span> 3. ¿Quién ve tu información?</h2>
+                    <p><strong>Todos los vecinos que usan la plataforma</strong> pueden ver tu nombre, teléfono,
+                        dirección general y oficio. Así pueden contactarte si necesitan algo.</p>
+                    <p>Tu correo electrónico (si lo das) solo lo ve el administrador, por si necesitamos avisarte algo
+                        importante.</p>
                 </div>
 
-                <div class="campo">
-                    <label>Dirección o referencia en la colonia *</label>
-                    <input type="text" id="direccion" placeholder="Ej: Calle Juárez #45, atrás de la tortillería">
+                <!-- Sección 4: Lo que NO hacemos (importante para generar confianza) -->
+                <div class="seccion">
+                    <h2><span class="emoji">🚫</span> 4. Lo que NO hacemos con tus datos</h2>
+                    <div class="no-hacemos">
+                        <div class="no-hacemos-item">
+                            <span class="no-icon">❌</span>
+                            <span><strong>No los vendemos</strong> — No somos una empresa de publicidad.</span>
+                        </div>
+                        <div class="no-hacemos-item">
+                            <span class="no-icon">❌</span>
+                            <span><strong>No los compartimos con bancos</strong> — No te van a llegar ofertas de
+                                préstamos.</span>
+                        </div>
+                        <div class="no-hacemos-item">
+                            <span class="no-icon">❌</span>
+                            <span><strong>No los damos a proveedores externos</strong> — Nadie te va a molestar para
+                                venderte nada.</span>
+                        </div>
+                        <div class="no-hacemos-item">
+                            <span class="no-icon">❌</span>
+                            <span><strong>No los usamos fuera de esta plataforma</strong> — Solo sirven aquí, entre
+                                vecinos.</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="campo">
-                    <label>¿Qué oficio o profesión tienes? *</label>
-                    <select id="oficio">
-                        <option value="" disabled selected>Selecciona una opción</option>
-                        <option value="Electricista">⚡ Electricista</option>
-                        <option value="Plomero">🔧 Plomero</option>
-                        <option value="Carpintero">🪚 Carpintero</option>
-                        <option value="Mecánico">🚗 Mecánico</option>
-                        <option value="Estilista">✂️ Estilista / Barbería</option>
-                        <option value="Costurera">🧵 Costurera / Modista</option>
-                        <option value="Pintor">🎨 Pintor</option>
-                        <option value="Albañil">🧱 Albañil</option>
-                        <option value="Panadero / Bizcocho">🍞 Panadero / Bizcocho</option>
-                        <option value="Comida casera">🍲 Comida casera / Fonda</option>
-                        <option value="Otro">📝 Otro (escríbelo)</option>
-                    </select>
+                <!-- Sección 5: Cómo borrar tus datos -->
+                <div class="seccion">
+                    <h2><span class="emoji">🗑️</span> 5. ¿Qué hago si quiero borrar mis datos?</h2>
+                    <p>Es muy fácil. Solo mándanos un <strong>WhatsApp</strong> pidiendo que te borremos. Sin trámites,
+                        sin formatos, sin explicaciones.</p>
+                    <p>En menos de <strong>3 días</strong>, tu información desaparece por completo de la plataforma.</p>
+                    <p><strong>WhatsApp:</strong> 📞 <a href="#"
+                            style="color:#1e4620; text-decoration:none; font-weight:bold;">[tu número aquí]</a></p>
                 </div>
 
-                <div class="campo" id="otroOficioContainer" style="display: none;">
-                    <label>Escribe tu oficio</label>
-                    <input type="text" id="otroOficio" placeholder="Ej: Soldador, Afilador, Lavandera...">
+                <!-- Sección 6: Regla de oro -->
+                <div class="seccion">
+                    <h2><span class="emoji">💛</span> 6. Una regla de oro</h2>
+                    <p>La plataforma es para ayudarnos, no para molestar. Si alguien usa tus datos para acosarte,
+                        enviarte spam o algo que no te gusta, <strong>avísanos</strong> y esa persona será eliminada de
+                        la comunidad.</p>
                 </div>
 
-                <div class="campo">
-                    <label>Cuéntanos un poco sobre ti o tu negocio (opcional)</label>
-                    <textarea id="descripcion"
-                        placeholder="Ej: Hago reparaciones eléctricas a domicilio, voy a toda la colonia, precios económicos."></textarea>
+                <!-- Sección 7: Aceptación -->
+                <div class="seccion">
+                    <h2><span class="emoji">✅</span> 7. Aceptación</h2>
+                    <p>Cuando te registras o publicas un aviso, nos estás diciendo que <strong>confías en
+                            nosotros</strong> para manejar tus datos como está escrito aquí.</p>
+                    <p>Si no confías, no te registres. Así de simple. No hay trampa.</p>
                 </div>
 
-                <!-- Primer aviso (opcional pero recomendado) -->
-                <div class="info-visibilidad">
-                    📢 <strong>¿Quieres publicar tu primer aviso ahora?</strong> Cuéntale a los vecinos lo que ofreces.
+                <!-- Botones de acción -->
+                <div class="acciones">
+                    <button class="btn-aceptar" id="btnAceptar">✔️ Acepto el compromiso</button>
+                    <button class="btn-regresar" id="btnRegresar">← Regresar</button>
                 </div>
 
-                <div class="campo">
-                    <label>Título del aviso (opcional)</label>
-                    <input type="text" id="avisoTitulo" placeholder="Ej: Reparaciones eléctricas a domicilio">
+                <div class="fecha">
+                    Última actualización: [fecha actual] · Plataforma de la Colonia [Nombre]
                 </div>
-
-                <div class="campo">
-                    <label>Contenido del aviso (opcional)</label>
-                    <textarea id="avisoContenido"
-                        placeholder="Ej: Ofrezco servicio de plomería económica, atiendo toda la colonia, llamar al WhatsApp."></textarea>
-                </div>
-
-                <!-- Compromiso de confianza -->
-                <div class="checkbox-acuerdo">
-                    <input type="checkbox" id="acepto">
-                    <label>
-                        Acepto el <strong>Compromiso de Confianza Vecinal</strong>. Sé que mis datos se usarán solo para
-                        el directorio y avisos de la colonia, y que <strong>no se compartirán con bancos ni empresas
-                            externas</strong>.
-                    </label>
-                </div>
-
-                <button class="btn" id="btnRegistrar">Registrarme y publicar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // === CONFIGURACIÓN ===
-        // CAMBIA ESTA URL POR LA DE TU GOOGLE APPS SCRIPT DESPLEGADO
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbz3eGCWH3tNFuJGsV4B0mqEf3vwAh7z26mO4J2hwNZtXwtizYQr458sQ7GyxkgziNXs/exec';
+        // Botón de aceptar: guarda en localStorage que el usuario aceptó y cierra o redirige
+        document.getElementById('btnAceptar').addEventListener('click', () => {
+            // Guardar aceptación (por si lo necesitas en el registro)
+            localStorage.setItem('compromiso_aceptado', 'true');
+            localStorage.setItem('fecha_aceptacion', new Date().toISOString());
 
-        // Mostrar/ocultar campo "otro oficio"
-        const oficioSelect = document.getElementById('oficio');
-        const otroContainer = document.getElementById('otroOficioContainer');
+            // Mostrar mensaje de confirmación
+            alert('Gracias por tu confianza. Ya puedes continuar con tu registro.');
 
-        oficioSelect.addEventListener('change', () => {
-            if (oficioSelect.value === 'Otro') {
-                otroContainer.style.display = 'block';
-            } else {
-                otroContainer.style.display = 'none';
-            }
+            // Redirigir al formulario de registro (cambia la URL si es necesario)
+            window.location.href = '/registro.html'; // Ajusta a tu página de registro
         });
 
-        // Función para llamar a la API
-        async function llamarAPI(accion, datos = {}, apiKey = null) {
-            const params = {
-                accion: accion,
-                ...datos
-            };
-
-            if (apiKey) {
-                params.api_key = apiKey;
-            }
-
-            // Para GET con JSONP, usamos fetch con POST (más limpio)
-            const url = `${API_BASE_URL}?callback=handleCallback`;
-
-            return new Promise((resolve, reject) => {
-                window.handleCallback = function (respuesta) {
-                    delete window.handleCallback;
-                    if (respuesta.success) {
-                        resolve(respuesta);
-                    } else {
-                        reject(new Error(respuesta.error || 'Error desconocido'));
-                    }
-                };
-
-                const script = document.createElement('script');
-                script.src = `${API_BASE_URL}?callback=handleCallback&jsonp=${encodeURIComponent(JSON.stringify(params))}`;
-                script.onerror = () => {
-                    delete window.handleCallback;
-                    reject(new Error('Error de conexión con el servidor'));
-                };
-                document.body.appendChild(script);
-                document.body.removeChild(script);
-            });
-        }
-
-        // Función para registrar usuario (usa tu endpoint REGISTRO)
-        async function registrarUsuario(datosUsuario) {
-            return llamarAPI('REGISTRO', { datos: datosUsuario });
-        }
-
-        // Función para crear aviso (usa tu endpoint CREAR)
-        async function crearAviso(apiKey, datosAviso) {
-            return llamarAPI('CREAR', {
-                coleccion: 'AVISOS',
-                datos: datosAviso
-            }, apiKey);
-        }
-
-        // Botón de registro
-        const btn = document.getElementById('btnRegistrar');
-        const mensajeDiv = document.getElementById('mensajeGlobal');
-
-        function mostrarMensaje(texto, esError = true) {
-            mensajeDiv.innerHTML = `<div class="${esError ? 'mensaje-error' : 'mensaje-exito'}">${texto}</div>`;
-            setTimeout(() => {
-                if (mensajeDiv.innerHTML.includes(texto)) {
-                    mensajeDiv.innerHTML = '';
-                }
-            }, 5000);
-        }
-
-        btn.addEventListener('click', async () => {
-            // Validar campos obligatorios
-            const nombre = document.getElementById('nombre').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const telefono = document.getElementById('telefono').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
-            let oficio = oficioSelect.value;
-
-            if (oficio === 'Otro') {
-                oficio = document.getElementById('otroOficio').value.trim();
-                if (!oficio) {
-                    mostrarMensaje('Por favor escribe tu oficio en el campo "Otro"');
-                    return;
-                }
-            }
-
-            if (!nombre || !email || !password || !telefono || !direccion || !oficio) {
-                mostrarMensaje('Por favor completa todos los campos marcados con *');
-                return;
-            }
-
-            if (password.length < 6) {
-                mostrarMensaje('La contraseña debe tener al menos 6 caracteres');
-                return;
-            }
-
-            if (!document.getElementById('acepto').checked) {
-                mostrarMensaje('Debes aceptar el Compromiso de Confianza Vecinal');
-                return;
-            }
-
-            // Deshabilitar botón mientras se procesa
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner"></span> Registrando...';
-
-            try {
-                // 1. Registrar al usuario
-                const usuarioData = {
-                    nombre: nombre,
-                    email: email,
-                    password: password,
-                    telefono: telefono,
-                    rol: 'usuario',
-                    categorias: oficio
-                };
-
-                const registroResp = await registrarUsuario(usuarioData);
-                const apiKey = registroResp.data.api_key;
-
-                // 2. Si el usuario puso título y contenido, crear un aviso automáticamente
-                const avisoTitulo = document.getElementById('avisoTitulo').value.trim();
-                const avisoContenido = document.getElementById('avisoContenido').value.trim();
-
-                if (avisoTitulo && avisoContenido) {
-                    const descripcion = document.getElementById('descripcion').value;
-
-                    const avisoData = {
-                        titulo: avisoTitulo,
-                        contenido: avisoContenido + (descripcion ? '\n\n' + descripcion : ''),
-                        categoria: oficio.toLowerCase(),
-                        ubicacion: direccion,
-                        contacto: telefono,
-                        status: 'activo',
-                        destacado: 'no',
-                        created_by: email
-                    };
-
-                    try {
-                        await crearAviso(apiKey, avisoData);
-                    } catch (errorAviso) {
-                        console.warn('No se pudo crear el aviso automático:', errorAviso);
-                    }
-                }
-
-                // Éxito
-                mostrarMensaje(`✅ ¡Bienvenido/a ${nombre}! Tu registro fue exitoso. Ya puedes iniciar sesión.`, false);
-
-                // Limpiar formulario
-                document.getElementById('nombre').value = '';
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                document.getElementById('telefono').value = '';
-                document.getElementById('direccion').value = '';
-                document.getElementById('descripcion').value = '';
-                document.getElementById('avisoTitulo').value = '';
-                document.getElementById('avisoContenido').value = '';
-                document.getElementById('acepto').checked = false;
-                oficioSelect.value = '';
-                document.getElementById('otroOficio').value = '';
-                otroContainer.style.display = 'none';
-
-                // Opcional: redirigir al login después de 2 segundos
-                setTimeout(() => {
-                    window.location.href = '/login.html'; // Cambia por tu página de login
-                }, 2000);
-
-            } catch (error) {
-                mostrarMensaje('Error: ' + error.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = 'Registrarme y publicar';
-            }
+        // Botón regresar
+        document.getElementById('btnRegresar').addEventListener('click', () => {
+            window.history.back();
         });
     </script>
 </body>
