@@ -585,23 +585,25 @@
         // Cargar comentarios desde tu API
         async function cargarComentarios(avisoId) {
             const commentsList = document.getElementById('comments-list');
+            if (!commentsList) return;
+
             commentsList.innerHTML = '<div class="cargando">💬 Cargando comentarios...</div>';
 
             try {
-                const api = new API();
-                const result = await api.llamar('LISTAR_COMENTARIOS', { avisoId: avisoId });
+                // ✅ Solo cargar comentarios - una sola responsabilidad
+                const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
 
-                if (result && result.success && Array.isArray(result.data)) {
-                    if (result.data.length === 0) {
+                if (resultado && resultado.success && Array.isArray(resultado.data)) {
+                    if (resultado.data.length === 0) {
                         commentsList.innerHTML = '<div style="text-align:center; color:#888;">📝 No hay comentarios aún. ¡Sé el primero!</div>';
                     } else {
-                        commentsList.innerHTML = result.data.map(com => `
-              <div class="comment-item">
-                <div class="comment-author">${escapeHtml(com.autor || 'Anónimo')}</div>
-                <div class="comment-text">${escapeHtml(com.texto)}</div>
-                <div class="comment-date">${formatearFecha(com.fecha)}</div>
-              </div>
-            `).join('');
+                        commentsList.innerHTML = resultado.data.map(com => `
+                    <div class="comment-item">
+                        <div class="comment-author">${escapeHtml(com.autor || 'Anónimo')}</div>
+                        <div class="comment-text">${escapeHtml(com.texto)}</div>
+                        <div class="comment-date">${formatearFecha(com.fecha)}</div>
+                    </div>
+                `).join('');
                     }
                 } else {
                     commentsList.innerHTML = '<div style="text-align:center; color:#888;">💬 No hay comentarios aún</div>';
@@ -611,7 +613,7 @@
                 commentsList.innerHTML = '<div style="text-align:center; color:#e74c3c;">❌ Error al cargar comentarios</div>';
             }
         }
-
+        
         // Enviar comentario
         window.enviarComentario = async function () {
             const input = document.getElementById('comment-input');

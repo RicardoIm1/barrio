@@ -271,6 +271,22 @@
       filter: brightness(1.05);
     }
 
+    .stats-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #f0ede6;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
     .loading-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -339,21 +355,7 @@
   <script src="/avisos-jardines/js/multimedia.js"></script>
 
   <script>
-    // Registrar vista al cargar el aviso
-    async function registrarVista() {
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        await API.peticion('REGISTRAR_VISTA', { id: AVISO_ID }, apiKey);
-        console.log('Vista registrada');
-      } catch (e) {
-        console.warn('No se pudo registrar vista:', e);
-      }
-    }
-
-    // Llamar a registrarVista después de cargar el aviso
-    // En la función cargarAviso(), después de renderizar:
-    registrarVista();
-    // ========== FUNCIONES DE UTILIDAD ==========
+    // ========== UTILIDADES ==========
     function escapeHTML(str) {
       if (str === null || str === undefined) return '';
       return String(str)
@@ -371,10 +373,7 @@
       return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
     }
 
-    let multimediaManager = null;
-    let avisoActual = null;
-    let usuarioActual = null;
-
+    // ========== LIGHTBOX ==========
     function abrirLightbox(url, tipo) {
       const lightbox = document.getElementById('lightbox');
       const content = document.getElementById('lightbox-content');
@@ -394,18 +393,44 @@
       document.getElementById('lightbox-content').innerHTML = '';
     }
 
+    // ========== REGISTRAR VISTA ==========
+    async function registrarVista(avisoId) {
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        const resultado = await API.peticion('REGISTRAR_VISTA', { id: avisoId }, apiKey);
+        if (resultado && resultado.success) {
+          console.log(`✅ Vista registrada para aviso ${avisoId}`);
+        }
+      } catch (e) {
+        console.warn('No se pudo registrar vista:', e);
+      }
+    }
+
     // ========== CARGA DEL AVISO ==========
     const AVISO_ID = new URLSearchParams(window.location.search).get('id');
+    let multimediaManager = null;
+    let avisoActual = null;
+    let usuarioActual = null;
 
     async function cargarAviso() {
+      const container = document.getElementById('aviso-container');
+      
       if (!AVISO_ID) {
-        mostrarError('No se especificó ningún aviso');
+        container.innerHTML = `
+          <div class="error-message">
+            ❌ No se especificó ningún aviso
+            <div style="margin-top: 1rem;">
+              <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
+            </div>
+          </div>
+        `;
         return;
       }
 
       try {
         console.log('Cargando aviso ID:', AVISO_ID);
 
+        // Obtener usuario actual
         try {
           usuarioActual = API.getUsuarioActual();
         } catch (e) {
@@ -416,34 +441,52 @@
         if (typeof MultimediaManager !== 'undefined') {
           multimediaManager = new MultimediaManager(API);
           console.log('MultimediaManager inicializado');
-        } else {
-          console.warn('MultimediaManager no disponible, las imágenes no se cargarán');
         }
 
-        // Obtener el aviso
+        // Obtener el aviso - Usar listar correctamente
         const resultado = await API.listar('AVISOS');
-        const avisos = resultado.datos || [];
+        
+        // Normalizar respuesta (API.listar devuelve { datos: [] } o directamente el array)
+        let avisos = [];
+        if (resultado && resultado.datos && Array.isArray(resultado.datos)) {
+          avisos = resultado.datos;
+        } else if (Array.isArray(resultado)) {
+          avisos = resultado;
+        } else if (resultado && resultado.data && Array.isArray(resultado.data)) {
+          avisos = resultado.data;
+        }
+        
         const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
 
         if (!aviso) {
-          mostrarError('El aviso no existe o fue eliminado');
+          container.innerHTML = `
+            <div class="error-message">
+              ❌ El aviso no existe o fue eliminado
+              <div style="margin-top: 1rem;">
+                <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
+              </div>
+            </div>
+          `;
           return;
         }
 
         avisoActual = aviso;
         console.log('Aviso cargado:', avisoActual);
 
-        // Obtener multimedia asociado (solo si MultimediaManager existe)
+        // ✅ REGISTRAR VISTA (después de cargar el aviso)
+        await registrarVista(AVISO_ID);
+
+        // Obtener multimedia asociado
         let multimediaItems = [];
         if (multimediaManager) {
           try {
             const multimediaResult = await multimediaManager.listarMultimedia(AVISO_ID);
-            if (multimediaResult.success && multimediaResult.data) {
+            if (multimediaResult && multimediaResult.success && multimediaResult.data) {
               multimediaItems = multimediaResult.data;
               console.log('Multimedia cargado:', multimediaItems.length, 'items');
             }
           } catch (e) {
-            console.warn('Error cargando multimedia (puede que no exista aún):', e);
+            console.warn('Error cargando multimedia:', e);
           }
         }
 
@@ -451,20 +494,15 @@
 
       } catch (error) {
         console.error('Error cargando aviso:', error);
-        mostrarError('Error al cargar el aviso: ' + (error.message || 'Error desconocido'));
-      }
-    }
-
-    function mostrarError(mensaje) {
-      const container = document.getElementById('aviso-container');
-      container.innerHTML = `
-        <div class="error-message">
-          ❌ ${escapeHTML(mensaje)}
-          <div style="margin-top: 1rem;">
-            <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
+        container.innerHTML = `
+          <div class="error-message">
+            ❌ Error al cargar el aviso: ${escapeHTML(error.message || 'Error desconocido')}
+            <div style="margin-top: 1rem;">
+              <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
+            </div>
           </div>
-        </div>
-      `;
+        `;
+      }
     }
 
     function renderizarAviso(multimediaItems) {
@@ -490,12 +528,19 @@
       const esPropietario = usuarioActual && String(usuarioActual.id) === String(avisoActual.created_by);
       const puedeEditar = esAdmin || esPropietario;
 
+      // Estadísticas
+      const vistas = avisoActual.vistas || 0;
+      const clicksWhatsApp = avisoActual.clicks_whatsapp || 0;
+      const intereses = avisoActual.intereses || 0;
+
       const categoriaLegible = {
         'urgente': 'URGENTE',
-        'eventos': 'EVENTOS',
+        'escuelas': 'ESCUELAS',
         'servicios': 'SERVICIOS',
-        'perdidos': 'PERDIDOS Y ENCONTRADOS',
-        'clasificados': 'CLASIFICADOS'
+        'comercios': 'COMERCIOS',
+        'eventos': 'EVENTOS',
+        'gobierno': 'GOBIERNO',
+        'varios': 'VARIOS'
       }[avisoActual.categoria] || avisoActual.categoria || 'GENERAL';
 
       let categoriaClase = '';
@@ -512,21 +557,17 @@
       let imagenDestacada = null;
       let imagenesGaleria = [];
 
-      // Si hay imagen_url en el aviso (sistema viejo)
       if (avisoActual.imagen_url && avisoActual.imagen_url.trim() !== '') {
         imagenDestacada = avisoActual.imagen_url;
         if (multimediaItems && multimediaItems.length > 0) {
           imagenesGaleria = multimediaItems.filter(m => m.tipo === 'image/jpeg' || m.tipo === 'image/png' || m.tipo === 'image/jpg');
         }
-      }
-      // Si no hay imagen_url, usar multimedia (sistema nuevo)
-      else if (multimediaItems && multimediaItems.length > 0) {
+      } else if (multimediaItems && multimediaItems.length > 0) {
         const imagenes = multimediaItems.filter(m => m.tipo === 'image/jpeg' || m.tipo === 'image/png' || m.tipo === 'image/jpg');
         if (imagenes.length > 0) {
           imagenDestacada = imagenes[0].url;
           imagenesGaleria = imagenes.slice(1);
         }
-
         const videos = multimediaItems.filter(m => m.tipo === 'video/mp4' || m.tipo === 'video/webm');
         imagenesGaleria.push(...videos);
       }
@@ -557,6 +598,15 @@
       html += `<div class="article-body">`;
       html += `<div class="article-content">${formatearContenido(avisoActual.contenido)}</div>`;
 
+      // Estadísticas visibles
+      html += `
+        <div class="stats-row">
+          <span class="stat-item">👁️ ${vistas} vistas</span>
+          <span class="stat-item">💬 ${clicksWhatsApp} contactos WhatsApp</span>
+          <span class="stat-item">❤️ ${intereses} personas interesadas</span>
+        </div>
+      `;
+
       // Información adicional
       const tieneUbicacion = avisoActual.ubicacion && String(avisoActual.ubicacion).trim() !== '';
       const tieneContacto = avisoActual.contacto && String(avisoActual.contacto).trim() !== '';
@@ -565,7 +615,10 @@
       if (tieneUbicacion || tieneContacto || tieneFechaEvento) {
         html += `<div class="info-card">`;
         if (tieneUbicacion) html += `<p><strong>📍 Ubicación</strong> ${escapeHTML(avisoActual.ubicacion)}</p>`;
-        if (tieneContacto) html += `<p><strong>📞 Contacto</strong> ${escapeHTML(avisoActual.contacto)}</p>`;
+        if (tieneContacto) {
+          const contacto = escapeHTML(avisoActual.contacto);
+          html += `<p><strong>📞 Contacto</strong> ${contacto}</p>`;
+        }
         if (tieneFechaEvento) {
           try {
             const fechaEvento = new Date(avisoActual.fecha_evento).toLocaleDateString('es-MX');
@@ -577,12 +630,12 @@
         html += `</div>`;
       }
 
-      // Galería de imágenes y videos
+      // Galería
       if (imagenesGaleria.length > 0) {
         html += `
           <div class="gallery-section">
             <div class="gallery-title">📸 Galería multimedia</div>
-            <div class="gallery" id="gallery-container">
+            <div class="gallery">
         `;
 
         imagenesGaleria.forEach(item => {
@@ -616,9 +669,26 @@
         html += `<a href="/avisos-jardines/index.html" class="btn-action back">← Volver al inicio</a>`;
       }
 
+      // Botón WhatsApp si hay contacto
+      if (tieneContacto) {
+        const numero = String(avisoActual.contacto).replace(/[^0-9]/g, '');
+        const mensaje = encodeURIComponent(`Hola, vi tu aviso "${avisoActual.titulo}" en la plataforma de la colonia. Me interesa más información.`);
+        html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="btn-action" target="_blank" onclick="registrarClickWhatsApp('${avisoActual.id}')">💬 Contactar por WhatsApp</a>`;
+      }
+
       html += `</div></div></div>`;
 
       container.innerHTML = html;
+    }
+
+    // Registrar click WhatsApp
+    async function registrarClickWhatsApp(id) {
+      try {
+        await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id: id });
+        console.log('✅ Click WhatsApp registrado');
+      } catch (e) {
+        console.warn('No se pudo registrar click:', e);
+      }
     }
 
     // Funciones globales
@@ -630,10 +700,11 @@
       if (!confirm('¿Estás seguro de que quieres eliminar este aviso? Esta acción no se puede deshacer.')) return;
 
       try {
-        const resultado = await API.eliminar('AVISOS', id);
+        const apiKey = localStorage.getItem('api_key');
+        const resultado = await API.peticion('ELIMINAR', { coleccion: 'AVISOS', id: id }, apiKey);
         if (resultado && resultado.success) {
           alert('✅ Aviso eliminado correctamente');
-          window.location.href = '/avisos-jardines/admin.html';
+          window.location.href = '/avisos-jardines/index.html';
         } else {
           alert('❌ Error al eliminar: ' + (resultado?.error || 'Error desconocido'));
         }
@@ -643,12 +714,13 @@
       }
     };
 
+    window.registrarClickWhatsApp = registrarClickWhatsApp;
     window.abrirLightbox = abrirLightbox;
     window.cerrarLightbox = cerrarLightbox;
 
-    // Cargar header, footer y el aviso
+    // ========== INICIALIZACIÓN ==========
     document.addEventListener('DOMContentLoaded', function () {
-      // Header
+      // Cargar header
       fetch('/avisos-jardines/common/header.html')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
@@ -664,7 +736,7 @@
         })
         .catch(err => console.error('Error cargando header:', err));
 
-      // Footer
+      // Cargar footer
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
