@@ -8,6 +8,221 @@
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
   <link rel="manifest" href="/avisos-jardines/manifest.json">
   <meta name="theme-color" content="#2c3e50">
+  <style>
+    /* ========== ESTILOS PREMIUM PARA EL INDEX ========== */
+    
+    /* Tarjetas cliqueables */
+    .aviso-card {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .aviso-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+    
+    /* Badge de categoría más elegante */
+    .categoria-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2;
+      font-size: 0.7rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      backdrop-filter: blur(4px);
+    }
+    
+    /* Botón de WhatsApp sutil */
+    .whatsapp-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: #25D366;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      z-index: 3;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .whatsapp-btn:hover {
+      transform: scale(1.1);
+      background: #128C7E;
+    }
+    
+    /* Botón de teléfono sutil */
+    .phone-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 56px;
+      background: var(--color-acento);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      z-index: 3;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .phone-btn:hover {
+      transform: scale(1.1);
+      background: var(--color-secundario);
+    }
+    
+    /* Fecha más elegante */
+    .aviso-fecha {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Contenido con límite de líneas */
+    .aviso-contenido-preview {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--color-texto);
+    }
+    
+    /* Pie de tarjeta con metadatos */
+    .aviso-footer {
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--color-borde);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+    }
+    
+    /* Urgente: borde rojo y fondo suave */
+    .aviso-card.urgente {
+      border-left: 4px solid #dc3545;
+      background: linear-gradient(135deg, #fff5f5 0%, white 100%);
+    }
+    
+    /* Imagen en la tarjeta (si tiene) */
+    .aviso-imagen {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px 8px 0 0;
+      margin-bottom: 0.8rem;
+      background: var(--color-fondo);
+    }
+    
+    /* Estado pendiente */
+    .aviso-card.pendiente {
+      opacity: 0.85;
+      filter: grayscale(0.1);
+      border-left: 4px solid #f39c12;
+    }
+    
+    .pendiente-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #f39c12;
+      color: white;
+      font-size: 0.6rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-weight: 600;
+      z-index: 2;
+    }
+    
+    /* Mejora en los filtros */
+    .filtros {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .filtro {
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .filtro:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Grid responsivo mejorado */
+    .grid-avisos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    /* Paginación mejorada */
+    .paginacion {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .pagina {
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .pagina:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Mensaje de carga */
+    .cargando {
+      text-align: center;
+      padding: 3rem;
+      color: var(--color-texto-claro);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .grid-avisos {
+        grid-template-columns: 1fr;
+      }
+      .filtro {
+        padding: 0.4rem 1rem;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -16,12 +231,12 @@
   <main class="contenedor">
     <!-- Filtros de categorías -->
     <div class="filtros" id="filtros">
-      <button class="filtro activo" data-categoria="todos">Todos</button>
-      <button class="filtro" data-categoria="urgente">Urgente</button>
-      <button class="filtro" data-categoria="eventos">Eventos</button>
-      <button class="filtro" data-categoria="servicios">Servicios</button>
-      <button class="filtro" data-categoria="perdidos">Perdidos</button>
-      <button class="filtro" data-categoria="clasificados">Clasificados</button>
+      <button class="filtro activo" data-categoria="todos">📋 Todos</button>
+      <button class="filtro" data-categoria="urgente">⚠️ Urgente</button>
+      <button class="filtro" data-categoria="eventos">🎉 Eventos</button>
+      <button class="filtro" data-categoria="servicios">🔧 Servicios</button>
+      <button class="filtro" data-categoria="perdidos">🔍 Perdidos</button>
+      <button class="filtro" data-categoria="clasificados">💰 Clasificados</button>
     </div>
 
     <!-- Mensajes de error/info -->
@@ -29,7 +244,7 @@
 
     <!-- Avisos -->
     <div id="avisos-container" class="grid-avisos">
-      <div class="cargando">Cargando avisos...</div>
+      <div class="cargando">📰 Cargando avisos...</div>
     </div>
 
     <!-- Paginación -->
@@ -44,8 +259,28 @@
   <script src="/avisos-jardines/js/app.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-
+    // ========== FUNCIONES GLOBALES PARA INTERACCIÓN ==========
+    
+    // Redirigir al detalle del aviso
+    window.verAviso = function(id) {
+      window.location.href = `/avisos-jardines/aviso.html?id=${id}`;
+    };
+    
+    // Abrir WhatsApp (evita propagación para no abrir también el aviso)
+    window.abrirWhatsApp = function(numero, texto, event) {
+      if (event) event.stopPropagation();
+      const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+    };
+    
+    // Abrir teléfono
+    window.abrirTelefono = function(numero, event) {
+      if (event) event.stopPropagation();
+      window.open(`tel:${numero}`, '_blank');
+    };
+    
+    // ========== CARGA DE HEADER Y FOOTER ==========
+    document.addEventListener('DOMContentLoaded', function() {
       // Cargar header
       fetch('/avisos-jardines/common/header.html')
         .then(res => {
@@ -54,25 +289,15 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-
-          // ✅ Esperar un momento para que el DOM del header se actualice
           setTimeout(() => {
-            // ⚡ Usar la función GLOBAL en lugar de la local
             if (typeof window.inicializarHeaderAuth === 'function') {
               window.inicializarHeaderAuth();
-            } else {
-              console.warn('⚠️ window.inicializarHeaderAuth no disponible');
             }
           }, 100);
         })
         .catch(err => console.error('Error cargando header:', err));
 
-    });
-  </script>
-
-  <script>
-    // Cargar footer dinámico
-    document.addEventListener('DOMContentLoaded', function () {
+      // Cargar footer
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
@@ -92,7 +317,7 @@
     });
   </script>
 
-  <!-- Este código va en tu página principal (index.html) -->
+  <!-- Cookie Banner -->
   <div id="cookieBanner"
     style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e4620; color: white; padding: 1rem; text-align: center; z-index: 1000; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
     <span>🍪 Usamos cookies para que la plataforma funcione bien. No vendemos tus datos.</span>

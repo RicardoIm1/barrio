@@ -2,25 +2,21 @@
 
 function normalizarTelefono(input) {
   if (!input) return null;
-
-  // Convertir a string siempre
   let num = String(input).replace(/\D/g, '');
-
   if (num.length === 10) return '521' + num;
   if (num.startsWith('52') && num.length === 12) return num;
   if (num.startsWith('521') && num.length === 13) return num;
-
   return null;
 }
 
 function generarLinkWhatsApp(numero, aviso) {
-  const mensaje = `Hola, vi tu anuncio (${aviso.id}) de ${aviso.titulo} en Jardines Vallarta. ¿Sigue disponible?`;
+  const mensaje = `Hola, vi tu anuncio "${aviso.titulo}" en Jardines Vallarta. ¿Me puedes dar más información?`;
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 }
 
 function escapeHTML(str) {
   if (!str) return '';
-  return str
+  return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -33,6 +29,8 @@ function escapeHTML(str) {
 let paginaActual = 1;
 let categoriaActual = 'todos';
 let todosLosAvisos = [];
+let totalPaginas = 1;
+const AVISOS_POR_PAGINA = 6;
 
 // ==================== INICIO ====================
 
@@ -46,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.classList.add('activo');
       categoriaActual = this.dataset.categoria;
       paginaActual = 1;
-      filtrarYAplicarPaginacion();
+      cargarAvisos();
     });
   });
 });
@@ -57,7 +55,7 @@ async function cargarAvisos() {
   const contenedor = document.getElementById('avisos-container');
   if (!contenedor) return;
 
-  contenedor.innerHTML = '<div class="cargando">Cargando avisos...</div>';
+  contenedor.innerHTML = '<div class="cargando">📰 Cargando avisos...</div>';
 
   try {
     const consulta = {};
@@ -66,20 +64,21 @@ async function cargarAvisos() {
     }
 
     const resultado = await API.listar('AVISOS', consulta, {
-      pagina: paginaActual,
-      limite: 12
+      pagina: 1,
+      limite: 100
     });
 
     if (resultado && resultado.datos) {
-      todosLosAvisos = resultado.datos;
+      // Solo mostrar avisos activos (no pendientes para usuarios normales)
+      todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
       filtrarYAplicarPaginacion();
     } else {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos disponibles</div>';
+      contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
     }
 
   } catch (error) {
     console.error('Error cargando avisos:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">Error al cargar avisos: ' + error.message + '</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos: ' + error.message + '</div>';
   }
 }
 
@@ -92,135 +91,208 @@ function filtrarYAplicarPaginacion() {
     avisosFiltrados = todosLosAvisos.filter(a => a.categoria === categoriaActual);
   }
 
-  const limite = 6;
-  const inicio = (paginaActual - 1) * limite;
-  const avisosPaginados = avisosFiltrados.slice(inicio, inicio + limite);
+  const inicio = (paginaActual - 1) * AVISOS_POR_PAGINA;
+  const avisosPaginados = avisosFiltrados.slice(inicio, inicio + AVISOS_POR_PAGINA);
+  totalPaginas = Math.ceil(avisosFiltrados.length / AVISOS_POR_PAGINA);
 
-  const contenedor = document.getElementById('avisos-container');
-
-  if (avisosFiltrados.length === 0) {
-    contenedor.innerHTML = '<div class="mensaje mensaje-info">No hay avisos en esta categoría</div>';
-  } else {
-    contenedor.innerHTML = avisosPaginados.map(aviso => crearTarjetaAviso(aviso)).join('');
-  }
-
-  const paginacion = {
-    pagina: paginaActual,
-    total: avisosFiltrados.length,
-    paginas: Math.ceil(avisosFiltrados.length / limite)
-  };
-
-  renderizarPaginacion(paginacion);
+  renderizarAvisos(avisosPaginados, paginaActual, totalPaginas);
 }
 
-// ==================== TARJETA ====================
+// ==================== RENDERIZADO DE AVISOS (VERSIÓN PREMIUM) ====================
 
-function crearTarjetaAviso(aviso) {
-  const telefono = normalizarTelefono(aviso.contacto || '');
+function renderizarAvisos(avisos, pagina, totalPaginas) {
+  const container = document.getElementById('avisos-container');
+  if (!container) return;
 
-  const fecha = aviso.created_at
-    ? new Date(aviso.created_at).toLocaleDateString('es-MX', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      })
-    : 'Fecha no disponible';
-
-  const claseUrgente = aviso.categoria === 'urgente' ? 'urgente' : '';
-  const titulo = aviso.titulo || 'Sin título';
-  const contenido = aviso.contenido || '';
-
-  const nombresCategoria = {
-    'urgente': '⚠️ Urgente',
-    'eventos': '🎉 Eventos',
-    'servicios': '🛠️ Servicios',
-    'perdidos': '🐾 Perdidos',
-    'clasificados': '📢 Clasificados'
-  };
-
-  const categoriaNombre = nombresCategoria[aviso.categoria] || aviso.categoria || 'General';
-  const clicks = aviso.clicks || 0;
-
-  let botonWhatsApp = '';
-
-  if (telefono) {
-    const link = generarLinkWhatsApp(telefono, aviso);
-
-    botonWhatsApp = `
-      <a href="${link}" 
-         target="_blank" 
-         class="boton boton-chico"
-         onclick="registrarClickWhatsApp('${aviso.id}')"
-         style="margin-top: 8px; background:#F9BF24; color:white;">
-         📲 Contactar
-      </a>
-    `;
-  }
-
-  return `
-    <div class="tarjeta ${claseUrgente}">
-      <div class="tarjeta-titulo">${escapeHTML(titulo)}</div>
-      <div class="tarjeta-fecha">📅 ${fecha}</div>
-
-      <div class="tarjeta-contenido">
-        ${escapeHTML(contenido.substring(0, 150))}
-        ${contenido.length > 150 ? '...' : ''}
-      </div>
-
-      <div class="tarjeta-meta">
-        <span>${categoriaNombre}</span>
-        ${aviso.ubicacion ? `<span>📍 ${escapeHTML(aviso.ubicacion)}</span>` : ''}
-        <span>👁️ ${clicks} interesados</span>
-      </div>
-
-      ${botonWhatsApp}
-
-      <a href="/avisos-jardines/aviso.html?id=${aviso.id}" 
-         class="boton boton-chico" 
-         style="margin-top: 8px;">
-         Ver detalles →
-      </a>
-    </div>
-  `;
-}
-
-// ==================== PAGINACIÓN ====================
-
-function renderizarPaginacion(paginacion) {
-  const contenedor = document.getElementById('paginacion');
-  if (!contenedor) return;
-
-  if (paginacion.paginas <= 1) {
-    contenedor.innerHTML = '';
+  if (!avisos || avisos.length === 0) {
+    container.innerHTML = '<div class="cargando">📭 No hay avisos para mostrar</div>';
+    renderizarPaginacion(pagina, totalPaginas);
     return;
   }
 
   let html = '';
-
-  for (let i = 1; i <= paginacion.paginas; i++) {
-    if (
-      i === 1 ||
-      i === paginacion.paginas ||
-      (i >= paginaActual - 2 && i <= paginaActual + 2)
-    ) {
-      html += `<button class="pagina ${i === paginaActual ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
-    } else if (i === paginaActual - 3 || i === paginaActual + 3) {
-      html += `<span class="pagina" style="background: none;">...</span>`;
+  
+  avisos.forEach(aviso => {
+    const fecha = aviso.created_at 
+      ? new Date(aviso.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+      : 'Fecha no disponible';
+    
+    const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
+    const esPendiente = aviso.status === 'pendiente';
+    
+    // Limpiar número de teléfono
+    let numeroWhatsApp = '';
+    let numeroTelefono = '';
+    if (aviso.contacto) {
+      const numeros = aviso.contacto.match(/\d+/g);
+      if (numeros) {
+        const telefonoLimpio = numeros.join('');
+        if (telefonoLimpio.length >= 10) {
+          numeroWhatsApp = telefonoLimpio;
+          numeroTelefono = telefonoLimpio;
+        }
+      }
     }
+    
+    // Texto para WhatsApp
+    const whatsappText = `Hola, vi tu aviso "${aviso.titulo}" en la plataforma de la colonia. Me interesa más información.`;
+    
+    // Categoría legible
+    const categoriaNombre = {
+      'urgente': '⚠️ URGENTE',
+      'eventos': '🎉 EVENTO',
+      'servicios': '🔧 SERVICIO',
+      'perdidos': '🔍 PERDIDO',
+      'clasificados': '💰 CLASIFICADO'
+    }[aviso.categoria] || aviso.categoria || '📢 AVISO';
+    
+    const categoriaColor = {
+      'urgente': '#dc3545',
+      'eventos': '#28a745',
+      'servicios': '#17a2b8',
+      'perdidos': '#ffc107',
+      'clasificados': '#6c757d'
+    }[aviso.categoria] || '#6c757d';
+    
+    html += `
+      <div class="tarjeta aviso-card ${esUrgente ? 'urgente' : ''} ${esPendiente ? 'pendiente' : ''}" onclick="verAviso('${aviso.id}')">
+        ${esPendiente ? '<div class="pendiente-badge">⏳ Pendiente</div>' : ''}
+        <div class="categoria-badge" style="background: ${categoriaColor}; color: white;">
+          ${categoriaNombre}
+        </div>
+        
+        ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" alt="${aviso.titulo}" class="aviso-imagen" loading="lazy">` : ''}
+        
+        <div style="padding: 1rem;">
+          <h3 class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</h3>
+          
+          <div class="aviso-fecha">
+            <span>📅</span> ${fecha}
+          </div>
+          
+          <div class="aviso-contenido-preview">
+            ${escapeHTML(aviso.contenido ? aviso.contenido.substring(0, 120) : 'Sin contenido')}${aviso.contenido && aviso.contenido.length > 120 ? '...' : ''}
+          </div>
+          
+          <div class="aviso-footer">
+            <span>📍 ${escapeHTML(aviso.ubicacion || 'Colonia Jardines')}</span>
+          </div>
+        </div>
+        
+        ${numeroWhatsApp ? `
+          <a href="https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(whatsappText)}" 
+             class="whatsapp-btn" 
+             onclick="event.stopPropagation(); abrirWhatsApp('${numeroWhatsApp}', '${whatsappText}', event)"
+             title="Contactar por WhatsApp">
+            💬
+          </a>
+        ` : ''}
+        
+        ${numeroTelefono && !numeroWhatsApp ? `
+          <a href="tel:${numeroTelefono}" 
+             class="phone-btn" 
+             onclick="event.stopPropagation(); abrirTelefono('${numeroTelefono}', event)"
+             title="Llamar">
+            📞
+          </a>
+        ` : ''}
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  renderizarPaginacion(pagina, totalPaginas);
+}
+
+// ==================== PAGINACIÓN ====================
+
+function renderizarPaginacion(paginaActual, totalPaginas) {
+  const pagContainer = document.getElementById('paginacion');
+  if (!pagContainer) return;
+  
+  if (totalPaginas <= 1) {
+    pagContainer.innerHTML = '';
+    return;
   }
-
-  contenedor.innerHTML = html;
-
-  contenedor.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
-    btn.addEventListener('click', function () {
-      paginaActual = parseInt(this.dataset.pagina);
-      filtrarYAplicarPaginacion();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  let html = '';
+  
+  // Anterior
+  if (paginaActual > 1) {
+    html += `<button class="pagina" data-pagina="${paginaActual - 1}">« Anterior</button>`;
+  }
+  
+  // Números de página
+  const inicio = Math.max(1, paginaActual - 2);
+  const fin = Math.min(totalPaginas, paginaActual + 2);
+  
+  if (inicio > 1) {
+    html += `<button class="pagina" data-pagina="1">1</button>`;
+    if (inicio > 2) html += `<span class="paginacion-puntos">...</span>`;
+  }
+  
+  for (let i = inicio; i <= fin; i++) {
+    html += `<button class="pagina ${i === paginaActual ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
+  }
+  
+  if (fin < totalPaginas) {
+    if (fin < totalPaginas - 1) html += `<span class="paginacion-puntos">...</span>`;
+    html += `<button class="pagina" data-pagina="${totalPaginas}">${totalPaginas}</button>`;
+  }
+  
+  // Siguiente
+  if (paginaActual < totalPaginas) {
+    html += `<button class="pagina" data-pagina="${paginaActual + 1}">Siguiente »</button>`;
+  }
+  
+  pagContainer.innerHTML = html;
+  
+  // Eventos de paginación
+  pagContainer.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const pagina = parseInt(btn.dataset.pagina);
+      if (!isNaN(pagina)) {
+        paginaActual = pagina;
+        filtrarYAplicarPaginacion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     });
   });
 }
 
-// ==================== TRACKING ====================
+// ==================== FUNCIONES GLOBALES PARA EL INDEX ====================
+
+window.verAviso = function(id) {
+  window.location.href = `/avisos-jardines/aviso.html?id=${id}`;
+};
+
+window.abrirWhatsApp = function(numero, texto, event) {
+  if (event) event.stopPropagation();
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
+  window.open(url, '_blank');
+  
+  // Registrar el click (opcional)
+  try {
+    fetch("https://script.google.com/macros/s/AKfycbxs5MreHswFIgRkQhDtCQ_uTqkj1qNd3NT4wYBA-6XhcChEZg4o22ufPJ_YxyOiymc/exec", {
+      method: "POST",
+      body: JSON.stringify({
+        accion: "CLICK_WHATSAPP",
+        id: id,
+        timestamp: new Date().toISOString()
+      })
+    });
+  } catch (e) {
+    console.error("Error registrando click", e);
+  }
+};
+
+window.abrirTelefono = function(numero, event) {
+  if (event) event.stopPropagation();
+  window.open(`tel:${numero}`, '_blank');
+};
+
+// ==================== TRACKING (opcional) ====================
 
 function registrarClickWhatsApp(idAviso) {
   try {
