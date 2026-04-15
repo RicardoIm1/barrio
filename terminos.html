@@ -1,510 +1,535 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Términos y Condiciones para Publicidad | Plataforma Vecinal</title>
-    <meta name="description" content="Términos y Condiciones para la contratación de espacios publicitarios en la plataforma vecinal. Obligaciones, precios, responsabilidades y orden de compra.">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Términos y Condiciones para Publicidad | Avisos Colonia Jardines PVR</title>
+  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <link rel="manifest" href="/avisos-jardines/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+  <meta name="description" content="Términos y Condiciones para la contratación de espacios publicitarios en la plataforma vecinal. Obligaciones, precios, responsabilidades y orden de compra.">
+  <style>
+    /* Estilos específicos para términos */
+    .terminos-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
 
-        body {
-            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-            background: #eef2f5;
-            color: #1a2c3e;
-            line-height: 1.5;
-            padding: 2rem 1rem;
-        }
+    /* Header con gradiente verde igual que las otras páginas */
+    .terminos-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, #1e4620, #2b7a2b);
+      border-radius: 1rem;
+      color: white;
+    }
 
-        .tyc-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 32px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12);
-            overflow: hidden;
-        }
+    .terminos-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
 
-        /* Header */
-        .tyc-header {
-            background: linear-gradient(135deg, #1e3c2c 0%, #2a5a3a 100%);
-            padding: 2rem 2rem 1.8rem;
-            color: white;
-            border-bottom: 4px solid #f5b042;
-        }
+    .terminos-header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
 
-        .tyc-header h1 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            margin-bottom: 0.5rem;
-        }
+    .badge-date {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+    }
 
-        .tyc-header p {
-            font-size: 1rem;
-            opacity: 0.85;
-            max-width: 90%;
-        }
+    /* Contenido principal */
+    .terminos-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      border: 1px solid var(--color-borde);
+      margin-bottom: 2rem;
+    }
 
-        .badge-date {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(4px);
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            margin-top: 0.75rem;
-        }
+    /* Secciones */
+    .tyc-section {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--color-borde);
+      padding-bottom: 1.5rem;
+    }
 
-        /* Contenido */
-        .tyc-content {
-            padding: 2rem 2rem 1.5rem;
-        }
+    .tyc-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
 
-        /* Secciones */
-        .tyc-section {
-            margin-bottom: 2.2rem;
-            border-bottom: 1px solid #e2e9f0;
-            padding-bottom: 1.8rem;
-        }
+    .tyc-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-primario);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
 
-        .tyc-section:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
+    .tyc-section h2::before {
+      content: "📋";
+      font-size: 1.5rem;
+      font-weight: normal;
+    }
 
-        .tyc-section h2 {
-            font-size: 1.65rem;
-            font-weight: 600;
-            color: #1f543b;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
+    .tyc-section h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1rem 0 0.6rem 0;
+      color: var(--color-secundario);
+    }
 
-        .tyc-section h2::before {
-            content: "📋";
-            font-size: 1.5rem;
-        }
+    .tyc-section p, .tyc-section li {
+      color: var(--color-texto);
+      margin-bottom: 0.6rem;
+      line-height: 1.6;
+    }
 
-        .tyc-section h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 1rem 0 0.6rem 0;
-            color: #2c6e49;
-        }
+    .tyc-section ul, .tyc-section ol {
+      margin: 0.7rem 0 0.7rem 1.8rem;
+    }
 
-        .tyc-section p, .tyc-section li {
-            color: #2c3e4e;
-            margin-bottom: 0.6rem;
-        }
+    .tyc-section li {
+      margin-bottom: 0.4rem;
+    }
 
-        .tyc-section ul, .tyc-section ol {
-            margin: 0.7rem 0 0.7rem 1.8rem;
-        }
+    /* Tabla de definiciones */
+    .def-table {
+      overflow-x: auto;
+      margin: 1.2rem 0;
+    }
 
-        .tyc-section li {
-            margin-bottom: 0.4rem;
-        }
+    .def-table table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-fondo);
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
 
-        .def-table {
-            overflow-x: auto;
-            margin: 1.2rem 0;
-        }
+    .def-table th, .def-table td {
+      border: 1px solid var(--color-borde);
+      padding: 0.8rem 1rem;
+      text-align: left;
+      vertical-align: top;
+    }
 
-        .def-table table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #f9fbfd;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
+    .def-table th {
+      background: #eef3ea;
+      font-weight: 700;
+      color: var(--color-primario);
+      width: 30%;
+    }
 
-        .def-table th, .def-table td {
-            border: 1px solid #dce5ec;
-            padding: 0.8rem 1rem;
-            text-align: left;
-            vertical-align: top;
-        }
+    .highlight-note {
+      background: #fef7e0;
+      border-left: 4px solid #fbbf24;
+      padding: 1rem 1.3rem;
+      border-radius: 0.75rem;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
 
-        .def-table th {
-            background: #eef3ea;
-            font-weight: 700;
-            color: #1f543b;
-            width: 30%;
-        }
+    .two-columns-sign {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      justify-content: space-between;
+    }
 
-        .highlight-note {
-            background: #fef7e0;
-            border-left: 5px solid #f5b042;
-            padding: 1rem 1.3rem;
-            border-radius: 16px;
-            margin: 1rem 0;
-            font-size: 0.95rem;
-        }
+    .sign-box {
+      flex: 1;
+      min-width: 200px;
+      border-top: 1px dashed var(--color-borde);
+      padding-top: 1rem;
+    }
 
-        .two-columns-sign {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-            margin-top: 1.5rem;
-            justify-content: space-between;
-        }
+    .sign-box p {
+      margin: 0.3rem 0;
+    }
 
-        .sign-box {
-            flex: 1;
-            min-width: 200px;
-            border-top: 1px dashed #b9cfdf;
-            padding-top: 1rem;
-        }
+    /* Orden de compra */
+    .purchase-order {
+      background: var(--color-fondo);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 2rem 0 1rem;
+      border: 1px solid var(--color-borde);
+    }
 
-        .sign-box p {
-            margin: 0.3rem 0;
-        }
+    .purchase-order h3 {
+      font-size: 1.3rem;
+      color: var(--color-primario);
+      margin-bottom: 1rem;
+      border-left: 4px solid #fbbf24;
+      padding-left: 1rem;
+    }
 
-        /* Orden de compra */
-        .purchase-order {
-            background: #f4faf5;
-            border-radius: 28px;
-            padding: 1.5rem;
-            margin: 2rem 0 1rem;
-            border: 1px solid #cde0d4;
-            box-shadow: 0 6px 12px -8px rgba(0,0,0,0.05);
-        }
+    .order-form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      align-items: baseline;
+    }
 
-        .purchase-order h3 {
-            font-size: 1.5rem;
-            color: #1f543b;
-            margin-bottom: 1rem;
-            border-left: 5px solid #f5b042;
-            padding-left: 1rem;
-        }
+    .order-field {
+      flex: 1;
+      min-width: 180px;
+    }
 
-        .order-form-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            align-items: baseline;
-        }
+    .order-field label {
+      font-weight: 600;
+      display: block;
+      font-size: 0.8rem;
+      color: var(--color-primario);
+      margin-bottom: 4px;
+    }
 
-        .order-field {
-            flex: 1;
-            min-width: 180px;
-        }
+    .order-field input, .order-field select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--color-borde);
+      background: white;
+      font-family: inherit;
+    }
 
-        .order-field label {
-            font-weight: 600;
-            display: block;
-            font-size: 0.8rem;
-            color: #2a5a3a;
-            margin-bottom: 4px;
-        }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 0.8rem 0;
+    }
 
-        .order-field input, .order-field select {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 14px;
-            border: 1px solid #cbdcd0;
-            background: white;
-            font-family: inherit;
-        }
+    .checkbox-group label {
+      font-weight: normal;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-        .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin: 0.8rem 0;
-        }
+    .signature-line {
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--color-borde);
+      padding-top: 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
 
-        .checkbox-group label {
-            font-weight: normal;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
+    .btn-print {
+      background: var(--color-primario);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        .signature-line {
-            margin-top: 1.5rem;
-            border-top: 1px solid #cbdcd0;
-            padding-top: 1.2rem;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
+    .btn-print:hover {
+      background: var(--color-secundario);
+    }
 
-        .btn-print {
-            background: #2a5a3a;
-            color: white;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            border-radius: 40px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: 0.2s;
-        }
-
-        .btn-print:hover {
-            background: #1e452c;
-        }
-
-        @media (max-width: 700px) {
-            .tyc-header h1 {
-                font-size: 1.7rem;
-            }
-            .tyc-content {
-                padding: 1.3rem;
-            }
-            .tyc-section h2 {
-                font-size: 1.4rem;
-            }
-        }
-    </style>
+    @media (max-width: 700px) {
+      .terminos-content {
+        padding: 1.5rem;
+      }
+      .terminos-header h1 {
+        font-size: 1.5rem;
+      }
+      .tyc-section h2 {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="tyc-container">
-    <div class="tyc-header">
-        <h1>Términos y Condiciones para Publicidad</h1>
+  <div id="header-container"></div>
+
+  <main class="contenedor">
+    <div class="terminos-container">
+
+      <!-- Header -->
+      <div class="terminos-header">
+        <h1>📋 Términos y Condiciones para Publicidad</h1>
         <p>Plataforma Vecinal - Contratación de espacios promocionales para negocios locales</p>
         <div class="badge-date">
-            📅 Fecha de vigencia: <span id="fechaVigencia">[Fecha]</span>
+          📅 Fecha de vigencia: <span id="fechaVigencia">[Fecha]</span>
         </div>
-    </div>
+      </div>
 
-    <div class="tyc-content">
+      <!-- Contenido -->
+      <div class="terminos-content">
         <!-- 1. Objeto -->
         <div class="tyc-section">
-            <h2>1. Objeto</h2>
-            <p>Los presentes Términos y Condiciones regulan la contratación, publicación y operación de espacios publicitarios (incluyendo pero no limitándose a banners, secciones destacadas, patrocinios y anuncios patrocinados) dentro de la plataforma digital de la colonia <strong><span id="coloniaNombre">[Nombre de la colonia]</span></strong> operada por <strong><span id="titularNombre">[Nombre del titular o Asociación de Colonos]</span></strong> (en adelante, "la Plataforma").</p>
-            <p>La contratación de cualquier espacio publicitario implica la aceptación plena e incondicional de estas disposiciones por parte del anunciante.</p>
+          <h2>1. Objeto</h2>
+          <p>Los presentes Términos y Condiciones regulan la contratación, publicación y operación de espacios publicitarios (incluyendo pero no limitándose a banners, secciones destacadas, patrocinios y anuncios patrocinados) dentro de la plataforma digital de la colonia <strong><span id="coloniaNombre">[Nombre de la colonia]</span></strong> operada por <strong><span id="titularNombre">[Nombre del titular o Asociación de Colonos]</span></strong> (en adelante, "la Plataforma").</p>
+          <p>La contratación de cualquier espacio publicitario implica la aceptación plena e incondicional de estas disposiciones por parte del anunciante.</p>
         </div>
 
-        <!-- 2. Definiciones (tabla) -->
+        <!-- 2. Definiciones -->
         <div class="tyc-section">
-            <h2>2. Definiciones</h2>
-            <div class="def-table">
-                <table>
-                    <thead>
-                        <tr><th>Término</th><th>Definición</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Anunciante</td><td>Persona física o moral, propietaria o representante legal de un negocio o comercio ubicado preferentemente en la colonia <span id="coloniaDef">[Nombre de la colonia]</span> o sus alrededores, que contrata un espacio publicitario en la Plataforma.</td></tr>
-                        <tr><td>Espacio Publicitario</td><td>Cualquier área visible dentro de la Plataforma destinada a la promoción de productos, servicios, marcas o eventos, incluyendo banners gráficos, textos patrocinados, videos, publicaciones destacadas, y cualquier otro formato acordado por las partes.</td></tr>
-                        <tr><td>Campaña Publicitaria</td><td>Período de tiempo contratado durante el cual el Espacio Publicitario se encontrará activo y visible en la Plataforma.</td></tr>
-                        <tr><td>Material Publicitario</td><td>Todo contenido creativo (imágenes, textos, logotipos, videos, enlaces, códigos de seguimiento, etc.) proporcionado por el Anunciante para ser exhibido en el Espacio Publicitario.</td></tr>
-                    </tbody>
-                </table>
-            </div>
+          <h2>2. Definiciones</h2>
+          <div class="def-table">
+            <table>
+              <thead>
+                <tr><th>Término</th><th>Definición</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Anunciante</td><td>Persona física o moral, propietaria o representante legal de un negocio o comercio ubicado preferentemente en la colonia <span id="coloniaDef">[Nombre de la colonia]</span> o sus alrededores, que contrata un espacio publicitario en la Plataforma.</td></tr>
+                <tr><td>Espacio Publicitario</td><td>Cualquier área visible dentro de la Plataforma destinada a la promoción de productos, servicios, marcas o eventos, incluyendo banners gráficos, textos patrocinados, videos, publicaciones destacadas, y cualquier otro formato acordado por las partes.</td></tr>
+                <tr><td>Campaña Publicitaria</td><td>Período de tiempo contratado durante el cual el Espacio Publicitario se encontrará activo y visible en la Plataforma.</td></tr>
+                <tr><td>Material Publicitario</td><td>Todo contenido creativo (imágenes, textos, logotipos, videos, enlaces, códigos de seguimiento, etc.) proporcionado por el Anunciante para ser exhibido en el Espacio Publicitario.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- 3. Contratación y Vigencia -->
         <div class="tyc-section">
-            <h2>3. Contratación y Vigencia</h2>
-            <h3>3.1. Formalización</h3>
-            <p>La contratación se formalizará mediante: la aceptación expresa de estos Términos y Condiciones, y la firma de la Orden de Compra o Contrato de Publicidad correspondiente, o en su defecto, mediante el intercambio de correos electrónicos que especifiquen: ubicación del espacio, duración de la campaña, costo total y fecha de inicio.</p>
-            <h3>3.2. Vigencia</h3>
-            <p>La campaña tendrá la duración expresamente pactada. Al término de la misma, el Espacio Publicitario será desactivado automáticamente, sin necesidad de notificación previa, salvo que se acuerde una renovación expresa por ambas partes.</p>
-            <h3>3.3. Renovación</h3>
-            <p>La renovación no es automática. El Anunciante deberá manifestar su intención de renovar al menos con <strong>5 días naturales</strong> de anticipación a la fecha de término de la campaña vigente, sujeto a disponibilidad del espacio y a los precios y condiciones vigentes en ese momento.</p>
+          <h2>3. Contratación y Vigencia</h2>
+          <h3>3.1. Formalización</h3>
+          <p>La contratación se formalizará mediante: la aceptación expresa de estos Términos y Condiciones, y la firma de la Orden de Compra o Contrato de Publicidad correspondiente, o en su defecto, mediante el intercambio de correos electrónicos que especifiquen: ubicación del espacio, duración de la campaña, costo total y fecha de inicio.</p>
+          <h3>3.2. Vigencia</h3>
+          <p>La campaña tendrá la duración expresamente pactada. Al término de la misma, el Espacio Publicitario será desactivado automáticamente, sin necesidad de notificación previa, salvo que se acuerde una renovación expresa por ambas partes.</p>
+          <h3>3.3. Renovación</h3>
+          <p>La renovación no es automática. El Anunciante deberá manifestar su intención de renovar al menos con <strong>5 días naturales</strong> de anticipación a la fecha de término de la campaña vigente, sujeto a disponibilidad del espacio y a los precios y condiciones vigentes en ese momento.</p>
         </div>
 
         <!-- 4. Precios y Condiciones de Pago -->
         <div class="tyc-section">
-            <h2>4. Precios y Condiciones de Pago</h2>
-            <h3>4.1. Tarifas</h3>
-            <p>Las tarifas aplicables son las vigentes al momento de la contratación y se especifican en la Orden de Compra. El titular se reserva el derecho de modificar las tarifas para futuras renovaciones o contrataciones, notificando con al menos 10 días de anticipación.</p>
-            <h3>4.2. Forma de pago</h3>
-            <p>El pago deberá cubrirse por adelantado, en su totalidad, mediante: transferencia bancaria, depósito en cuenta, efectivo (previa entrega de recibo oficial) o pago con tarjeta de crédito/débito.</p>
-            <h3>4.3. Facturación</h3>
-            <p>Se emitirá Comprobante Fiscal Digital por Internet (CFDI) conforme a los requisitos fiscales aplicables, siempre que el Anunciante proporcione oportunamente sus datos fiscales completos y vigentes.</p>
-            <h3>4.4. Devoluciones</h3>
-            <p>No se realizarán devoluciones, reembolsos ni prorrateos una vez iniciada la campaña, salvo que la cancelación sea imputable al titular por causas graves debidamente acreditadas.</p>
+          <h2>4. Precios y Condiciones de Pago</h2>
+          <h3>4.1. Tarifas</h3>
+          <p>Las tarifas aplicables son las vigentes al momento de la contratación y se especifican en la Orden de Compra. El titular se reserva el derecho de modificar las tarifas para futuras renovaciones o contrataciones, notificando con al menos 10 días de anticipación.</p>
+          <h3>4.2. Forma de pago</h3>
+          <p>El pago deberá cubrirse por adelantado, en su totalidad, mediante: transferencia bancaria, depósito en cuenta, efectivo (previa entrega de recibo oficial) o pago con tarjeta de crédito/débito.</p>
+          <h3>4.3. Facturación</h3>
+          <p>Se emitirá Comprobante Fiscal Digital por Internet (CFDI) conforme a los requisitos fiscales aplicables, siempre que el Anunciante proporcione oportunamente sus datos fiscales completos y vigentes.</p>
+          <h3>4.4. Devoluciones</h3>
+          <p>No se realizarán devoluciones, reembolsos ni prorrateos una vez iniciada la campaña, salvo que la cancelación sea imputable al titular por causas graves debidamente acreditadas.</p>
         </div>
 
         <!-- 5. Obligaciones del Anunciante -->
         <div class="tyc-section">
-            <h2>5. Obligaciones del Anunciante</h2>
-            <p>El Anunciante se obliga a:</p>
-            <h3>5.1. Material Publicitario</h3>
-            <ul><li>Entregar el Material Publicitario en los formatos y especificaciones técnicas indicadas por el titular, al menos 5 días hábiles antes del inicio de la campaña.</li><li>Asegurar que el Material Publicitario no contenga virus, códigos maliciosos, enlaces rotos o contenido técnicamente defectuoso.</li><li>Garantizar que el Material Publicitario cumple con las leyes aplicables en materia de propiedad intelectual, derechos de autor, derechos de imagen, y no infringe derechos de terceros.</li></ul>
-            <h3>5.2. Contenido prohibido</h3>
-            <ul><li>Promueva productos o servicios ilegales (sustancias prohibidas, apuestas no autorizadas, piratería, armas sin licencia).</li><li>Contenga lenguaje discriminatorio, ofensivo, violento, obsceno o que atente contra la dignidad de las personas.</li><li>Realice afirmaciones falsas, engañosas o no sustentadas sobre productos o servicios.</li><li>Promueva esquemas piramidales, fraudes o actividades financieras no reguladas.</li></ul>
-            <h3>5.3. Veracidad de la información</h3>
-            <p>El Anunciante es el único responsable de la veracidad, exactitud y licitud de toda la información contenida en su Material Publicitario, así como de cumplir con todas las disposiciones legales aplicables a su actividad comercial.</p>
-            <h3>5.4. Indemnidad</h3>
-            <p>El Anunciante se obliga a mantener indemne al titular y a sus representantes, empleados y colaboradores, de cualquier reclamación, demanda, multa, sanción o gasto que pudiera derivarse del incumplimiento de estas obligaciones.</p>
+          <h2>5. Obligaciones del Anunciante</h2>
+          <p>El Anunciante se obliga a:</p>
+          <h3>5.1. Material Publicitario</h3>
+          <ul><li>Entregar el Material Publicitario en los formatos y especificaciones técnicas indicadas por el titular, al menos 5 días hábiles antes del inicio de la campaña.</li><li>Asegurar que el Material Publicitario no contenga virus, códigos maliciosos, enlaces rotos o contenido técnicamente defectuoso.</li><li>Garantizar que el Material Publicitario cumple con las leyes aplicables en materia de propiedad intelectual, derechos de autor, derechos de imagen, y no infringe derechos de terceros.</li></ul>
+          <h3>5.2. Contenido prohibido</h3>
+          <ul><li>Promueva productos o servicios ilegales (sustancias prohibidas, apuestas no autorizadas, piratería, armas sin licencia).</li><li>Contenga lenguaje discriminatorio, ofensivo, violento, obsceno o que atente contra la dignidad de las personas.</li><li>Realice afirmaciones falsas, engañosas o no sustentadas sobre productos o servicios.</li><li>Promueva esquemas piramidales, fraudes o actividades financieras no reguladas.</li></ul>
+          <h3>5.3. Veracidad de la información</h3>
+          <p>El Anunciante es el único responsable de la veracidad, exactitud y licitud de toda la información contenida en su Material Publicitario, así como de cumplir con todas las disposiciones legales aplicables a su actividad comercial.</p>
+          <h3>5.4. Indemnidad</h3>
+          <p>El Anunciante se obliga a mantener indemne al titular y a sus representantes, empleados y colaboradores, de cualquier reclamación, demanda, multa, sanción o gasto que pudiera derivarse del incumplimiento de estas obligaciones.</p>
         </div>
 
         <!-- 6. Obligaciones del Titular -->
         <div class="tyc-section">
-            <h2>6. Obligaciones del Titular</h2>
-            <p>El titular se obliga a: Publicar y mantener activo el Espacio Publicitario durante la vigencia de la campaña; realizar sus mejores esfuerzos para garantizar la disponibilidad; brindar soporte técnico razonable; y, si se pactó expresamente, proporcionar reportes periódicos de impresiones o clics.</p>
+          <h2>6. Obligaciones del Titular</h2>
+          <p>El titular se obliga a: Publicar y mantener activo el Espacio Publicitario durante la vigencia de la campaña; realizar sus mejores esfuerzos para garantizar la disponibilidad; brindar soporte técnico razonable; y, si se pactó expresamente, proporcionar reportes periódicos de impresiones o clics.</p>
         </div>
 
         <!-- 7. Limitación de Responsabilidad -->
         <div class="tyc-section">
-            <h2>7. Limitación de Responsabilidad</h2>
-            <div class="highlight-note">El titular NO garantiza resultados específicos en términos de clics, visitas, ventas o retorno de inversión. Tampoco será responsable por daños derivados de interrupciones por fuerza mayor, fallos técnicos ajenos a su control, o cualquier transacción comercial entre usuarios y el Anunciante.</div>
-            <p>En caso de fuerza mayor debidamente acreditada, ninguna de las partes será responsable por incumplimientos.</p>
+          <h2>7. Limitación de Responsabilidad</h2>
+          <div class="highlight-note">El titular NO garantiza resultados específicos en términos de clics, visitas, ventas o retorno de inversión. Tampoco será responsable por daños derivados de interrupciones por fuerza mayor, fallos técnicos ajenos a su control, o cualquier transacción comercial entre usuarios y el Anunciante.</div>
+          <p>En caso de fuerza mayor debidamente acreditada, ninguna de las partes será responsable por incumplimientos.</p>
         </div>
 
         <!-- 8. Propiedad Intelectual -->
         <div class="tyc-section">
-            <h2>8. Propiedad Intelectual</h2>
-            <p>El Anunciante retiene todos los derechos sobre su Material Publicitario, otorgando una licencia limitada a la Plataforma durante la campaña. Los derechos sobre diseño, código y contenido general de la Plataforma pertenecen al titular.</p>
+          <h2>8. Propiedad Intelectual</h2>
+          <p>El Anunciante retiene todos los derechos sobre su Material Publicitario, otorgando una licencia limitada a la Plataforma durante la campaña. Los derechos sobre diseño, código y contenido general de la Plataforma pertenecen al titular.</p>
         </div>
 
-        <!-- 9. Cancelación, 10. Datos, 11. Confidencialidad ... resumido pero completo -->
+        <!-- 9-15. Secciones consolidadas -->
         <div class="tyc-section">
-            <h2>9. Cancelación</h2>
-            <p>Por el Anunciante: podrá cancelar antes del inicio con reembolso del 100%. Iniciada la campaña no se aceptan cancelaciones ni reembolsos. Por el titular: podrá suspender o cancelar sin reembolso en caso de incumplimiento del anunciante o contenido prohibido. Por fallos técnicos ajenos se compensará con días adicionales equivalentes.</p>
-            <h2>10. Protección de Datos Personales</h2>
-            <p>Los datos del Anunciante serán tratados conforme a la <a href="#">Política de Privacidad</a> de la Plataforma, exclusivamente para gestionar la contratación, facturación y obligaciones legales. No se cederán a terceros salvo obligación legal.</p>
-            <h2>11. Confidencialidad</h2>
-            <p>Ambas partes mantendrán confidencialidad sobre la información comercial intercambiada, excepto cuando sea de dominio público o requerida por autoridad competente.</p>
-            <h2>12. Relación Independiente</h2>
-            <p>No existe relación laboral, de sociedad, agencia ni franquicia entre el titular y el Anunciante. Este actúa como contratista independiente.</p>
-            <h2>13. Notificaciones</h2>
-            <p>Las comunicaciones serán por correo electrónico: titular <strong id="emailTitularDisplay">[correo@dominio.com]</strong> / anunciante al correo proporcionado. Se consideran válidas 24h después del envío.</p>
-            <h2>14. Modificaciones</h2>
-            <p>El titular puede modificar estos Términos. Las modificaciones entran en vigor desde su publicación en la Plataforma. En caso de cambios sustanciales durante una campaña en curso, se notificará con al menos 10 días de anticipación; el anunciante podrá terminar la campaña sin penalización con reembolso prorrateado.</p>
-            <h2>15. Legislación Aplicable y Jurisdicción</h2>
-            <p>Estos Términos se rigen por las leyes de los Estados Unidos Mexicanos. Para cualquier controversia, las partes se someten a los tribunales de <strong><span id="jurisdiccionTexto">[Ciudad, Estado]</span></strong>, renunciando a cualquier otro fuero.</p>
+          <h2>9. Cancelación</h2>
+          <p>Por el Anunciante: podrá cancelar antes del inicio con reembolso del 100%. Iniciada la campaña no se aceptan cancelaciones ni reembolsos. Por el titular: podrá suspender o cancelar sin reembolso en caso de incumplimiento del anunciante o contenido prohibido. Por fallos técnicos ajenos se compensará con días adicionales equivalentes.</p>
+          
+          <h2>10. Protección de Datos Personales</h2>
+          <p>Los datos del Anunciante serán tratados conforme a la <a href="/avisos-jardines/confianza.html">Política de Privacidad</a> de la Plataforma, exclusivamente para gestionar la contratación, facturación y obligaciones legales. No se cederán a terceros salvo obligación legal.</p>
+          
+          <h2>11. Confidencialidad</h2>
+          <p>Ambas partes mantendrán confidencialidad sobre la información comercial intercambiada, excepto cuando sea de dominio público o requerida por autoridad competente.</p>
+          
+          <h2>12. Relación Independiente</h2>
+          <p>No existe relación laboral, de sociedad, agencia ni franquicia entre el titular y el Anunciante. Este actúa como contratista independiente.</p>
+          
+          <h2>13. Notificaciones</h2>
+          <p>Las comunicaciones serán por correo electrónico: titular <strong id="emailTitularDisplay">[correo@dominio.com]</strong> / anunciante al correo proporcionado. Se consideran válidas 24h después del envío.</p>
+          
+          <h2>14. Modificaciones</h2>
+          <p>El titular puede modificar estos Términos. Las modificaciones entran en vigor desde su publicación en la Plataforma. En caso de cambios sustanciales durante una campaña en curso, se notificará con al menos 10 días de anticipación; el anunciante podrá terminar la campaña sin penalización con reembolso prorrateado.</p>
+          
+          <h2>15. Legislación Aplicable y Jurisdicción</h2>
+          <p>Estos Términos se rigen por las leyes de los Estados Unidos Mexicanos. Para cualquier controversia, las partes se someten a los tribunales de <strong><span id="jurisdiccionTexto">[Ciudad, Estado]</span></strong>, renunciando a cualquier otro fuero.</p>
         </div>
 
         <!-- Aceptación (firmas) -->
         <div class="tyc-section">
-            <h2>Aceptación</h2>
-            <p>En prueba de aceptación de los presentes Términos y Condiciones, el Anunciante firma electrónicamente al momento de contratar el Espacio Publicitario, o bien, suscribe el presente documento junto con el titular.</p>
-            <div class="two-columns-sign">
-                <div class="sign-box"><strong>Por el titular</strong><br>Nombre: <span id="firmaTitularNombre">[Nombre representante]</span><br>Cargo: <span id="cargoFirmaTitular">[Cargo]</span><br>Fecha: <span id="fechaFirmaTitular">_______________</span></div>
-                <div class="sign-box"><strong>Por el anunciante</strong><br>Nombre: ___________________________<br>Cargo / Representante legal: _________________<br>Fecha: _________________</div>
-            </div>
+          <h2>Aceptación</h2>
+          <p>En prueba de aceptación de los presentes Términos y Condiciones, el Anunciante firma electrónicamente al momento de contratar el Espacio Publicitario, o bien, suscribe el presente documento junto con el titular.</p>
+          <div class="two-columns-sign">
+            <div class="sign-box"><strong>Por el titular</strong><br>Nombre: <span id="firmaTitularNombre">[Nombre representante]</span><br>Cargo: <span id="cargoFirmaTitular">[Cargo]</span><br>Fecha: <span id="fechaFirmaTitular">_______________</span></div>
+            <div class="sign-box"><strong>Por el anunciante</strong><br>Nombre: ___________________________<br>Cargo / Representante legal: _________________<br>Fecha: _________________</div>
+          </div>
         </div>
 
-        <!-- ORDEN DE COMPRA simplificada (formato interactivo para rellenar e imprimir) -->
+        <!-- Orden de Compra -->
         <div class="purchase-order" id="ordenCompraBlock">
-            <h3>📄 Orden de Compra - Publicidad en Plataforma Vecinal</h3>
-            <div class="order-form-group">
-                <div class="order-field"><label>📅 Fecha</label><input type="text" id="ordenFecha" placeholder="DD/MM/AAAA" value="_______________"></div>
-                <div class="order-field"><label>🏢 Anunciante / Negocio</label><input type="text" id="ordenAnunciante" placeholder="Nombre o razón social"></div>
-                <div class="order-field"><label>✉️ Correo de contacto</label><input type="email" id="ordenCorreo" placeholder="negocio@ejemplo.com"></div>
-                <div class="order-field"><label>📞 Teléfono</label><input type="text" id="ordenTelefono" placeholder="55XXXXXXXX"></div>
-            </div>
-            <div><label>📌 Espacio contratado:</label></div>
-            <div class="checkbox-group" id="espaciosCheck">
-                <label><input type="checkbox" value="Banner superior - $XXX por 30 días"> Banner superior - $XXX por 30 días</label>
-                <label><input type="checkbox" value="Banner lateral - $XXX por 30 días"> Banner lateral - $XXX por 30 días</label>
-                <label><input type="checkbox" value="Sección 'Negocios recomendados' - $XXX por 30 días"> Sección "Negocios recomendados" - $XXX por 30 días</label>
-                <label><input type="checkbox" value="Publicación destacada en avisos - $XXX por 15 días"> Publicación destacada - $XXX por 15 días</label>
-                <label><input type="text" placeholder="Otro: descripción" id="otroEspacio" style="width:auto;"> - $<input type="text" placeholder="precio" id="otroPrecio" style="width:80px;"> por <input type="text" placeholder="días" id="otroDias" style="width:70px;"></label>
-            </div>
-            <div class="order-form-group">
-                <div class="order-field"><label>📅 Duración de la campaña</label><input type="text" id="duracionInicio" placeholder="Inicio (dd/mm/aaaa)"> a <input type="text" id="duracionFin" placeholder="Fin (dd/mm/aaaa)"></div>
-                <div class="order-field"><label>💰 Costo total (M.N.)</label><input type="text" id="costoTotal" placeholder="$0.00"></div>
-                <div class="order-field"><label>💳 Forma de pago</label><select id="formaPago"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Tarjeta</option></select></div>
-            </div>
-            <div class="order-form-group">
-                <div class="order-field"><label>📎 Material publicitario</label><select id="materialStatus"><option>Entregado en formato requerido</option><option>Se entregará a más tardar el: ______________</option></select></div>
-                <div class="order-field"><label>✍️ Comentarios adicionales</label><input type="text" id="comentariosAdicionales" placeholder="Opcional"></div>
-            </div>
-            <div class="signature-line">
-                <span><strong>Acepto los Términos y Condiciones para Publicidad adjuntos.</strong><br>Firma del anunciante: _________________________</span>
-                <button type="button" class="btn-print" id="printOrderBtn">🖨️ Imprimir Orden de Compra</button>
-            </div>
-            <p style="font-size:0.7rem; margin-top:0.8rem; color:#4e6b5c;">*Este formato es complementario a los Términos y Condiciones. Al llenarlo y proceder con el pago, el anunciante acepta las condiciones establecidas.</p>
+          <h3>📄 Orden de Compra - Publicidad en Plataforma Vecinal</h3>
+          <div class="order-form-group">
+            <div class="order-field"><label>📅 Fecha</label><input type="text" id="ordenFecha" placeholder="DD/MM/AAAA" value="_______________"></div>
+            <div class="order-field"><label>🏢 Anunciante / Negocio</label><input type="text" id="ordenAnunciante" placeholder="Nombre o razón social"></div>
+            <div class="order-field"><label>✉️ Correo de contacto</label><input type="email" id="ordenCorreo" placeholder="negocio@ejemplo.com"></div>
+            <div class="order-field"><label>📞 Teléfono</label><input type="text" id="ordenTelefono" placeholder="55XXXXXXXX"></div>
+          </div>
+          <div><label>📌 Espacio contratado:</label></div>
+          <div class="checkbox-group" id="espaciosCheck">
+            <label><input type="checkbox" value="Banner superior - $XXX por 30 días"> Banner superior - $XXX por 30 días</label>
+            <label><input type="checkbox" value="Banner lateral - $XXX por 30 días"> Banner lateral - $XXX por 30 días</label>
+            <label><input type="checkbox" value="Sección 'Negocios recomendados' - $XXX por 30 días"> Sección "Negocios recomendados" - $XXX por 30 días</label>
+            <label><input type="checkbox" value="Publicación destacada en avisos - $XXX por 15 días"> Publicación destacada - $XXX por 15 días</label>
+            <label><input type="text" placeholder="Otro: descripción" id="otroEspacio" style="width:auto;"> - $<input type="text" placeholder="precio" id="otroPrecio" style="width:80px;"> por <input type="text" placeholder="días" id="otroDias" style="width:70px;"></label>
+          </div>
+          <div class="order-form-group">
+            <div class="order-field"><label>📅 Duración de la campaña</label><input type="text" id="duracionInicio" placeholder="Inicio (dd/mm/aaaa)"> a <input type="text" id="duracionFin" placeholder="Fin (dd/mm/aaaa)"></div>
+            <div class="order-field"><label>💰 Costo total (M.N.)</label><input type="text" id="costoTotal" placeholder="$0.00"></div>
+            <div class="order-field"><label>💳 Forma de pago</label><select id="formaPago"><option>Transferencia</option><option>Depósito</option><option>Efectivo</option><option>Tarjeta</option></select></div>
+          </div>
+          <div class="order-form-group">
+            <div class="order-field"><label>📎 Material publicitario</label><select id="materialStatus"><option>Entregado en formato requerido</option><option>Se entregará a más tardar el: ______________</option></select></div>
+            <div class="order-field"><label>✍️ Comentarios adicionales</label><input type="text" id="comentariosAdicionales" placeholder="Opcional"></div>
+          </div>
+          <div class="signature-line">
+            <span><strong>Acepto los Términos y Condiciones para Publicidad adjuntos.</strong><br>Firma del anunciante: _________________________</span>
+            <button type="button" class="btn-print" id="printOrderBtn">🖨️ Imprimir Orden de Compra</button>
+          </div>
+          <p style="font-size:0.7rem; margin-top:0.8rem; color: var(--color-texto-claro);">*Este formato es complementario a los Términos y Condiciones. Al llenarlo y proceder con el pago, el anunciante acepta las condiciones establecidas.</p>
         </div>
-
-        <div class="highlight-note" style="margin-top: 1rem;">
-            📌 Nota: Todos los campos con corchetes [ ] son editables mediante el script. Por favor verifique la información antes de su uso.
-        </div>
+      </div>
     </div>
-</div>
+  </main>
 
-<script>
-    (function() {
-        // ----- CONFIGURACIÓN DINÁMICA (CAMBIAR DATOS REALES AQUÍ) -----
-        const config = {
-            colonia: "Jardines",
-            titularAsociacion: "Jerónimo Ricardo Ramírez Torres'",
-            emailContacto: "jeronimoricardo1@gmail.com",
-            jurisdiccion: "Puerto Vallarta JAL",
-            fechaVigenciaTexto: "01 de abril de 2026",
-            firmaTitularNombre: "Lic. Jerónimo Ricardo Ramírez Torres",
-            cargoTitular: "Coordinador de Operaciones"
-        };
+  <div id="footer-container"></div>
 
-        // funciones helper
-        function setText(id, value) {
-            const el = document.getElementById(id);
-            if (el) el.textContent = value;
-        }
+  <script src="/avisos-jardines/js/api.js"></script>
+  <script src="/avisos-jardines/js/auth.js"></script>
 
-        setText("coloniaNombre", config.colonia);
-        setText("titularNombre", config.titularAsociacion);
-        setText("coloniaDef", config.colonia);
-        setText("emailTitularDisplay", config.emailContacto);
-        setText("jurisdiccionTexto", config.jurisdiccion);
-        setText("fechaVigencia", config.fechaVigenciaTexto);
-        setText("firmaTitularNombre", config.firmaTitularNombre);
-        setText("cargoFirmaTitular", config.cargoTitular);
+  <script>
+    // Configuración dinámica
+    const config = {
+      colonia: "Jardines",
+      titularAsociacion: "Jerónimo Ricardo Ramírez Torres",
+      emailContacto: "jeronimoricardo1@gmail.com",
+      jurisdiccion: "Puerto Vallarta, Jalisco",
+      fechaVigenciaTexto: "14 de abril de 2026",
+      firmaTitularNombre: "Jerónimo Ricardo Ramírez Torres",
+      cargoTitular: "Administrador de la Plataforma"
+    };
 
-        // también actualizar correo del titular en notificaciones y enlaces extra
-        const anyEmailLink = document.querySelector('#emailTitularDisplay');
-        if (anyEmailLink && anyEmailLink.tagName === 'SPAN') {
-            // ya se asignó texto, pero adicional si se requiere como mailto invisible.
-        }
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
 
-        // Si se desea fecha dinámica automática (opcional)
-        if(config.fechaVigenciaTexto === "[Fecha]") {
-            const hoy = new Date();
-            const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-            setText("fechaVigencia", hoy.toLocaleDateString('es-MX', opciones));
-        }
+    setText("coloniaNombre", config.colonia);
+    setText("titularNombre", config.titularAsociacion);
+    setText("coloniaDef", config.colonia);
+    setText("emailTitularDisplay", config.emailContacto);
+    setText("jurisdiccionTexto", config.jurisdiccion);
+    setText("fechaVigencia", config.fechaVigenciaTexto);
+    setText("firmaTitularNombre", config.firmaTitularNombre);
+    setText("cargoFirmaTitular", config.cargoTitular);
 
-        // ----- Impresión de la orden de compra (solo la sección .purchase-order) -----
-        const printBtn = document.getElementById("printOrderBtn");
-        if(printBtn) {
-            printBtn.addEventListener("click", () => {
-                const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
-                // remover el botón de impresión del clon para evitar duplicados
-                const btnClone = orderContent.querySelector("#printOrderBtn");
-                if(btnClone) btnClone.remove();
-                const ventana = window.open('', '_blank');
-                ventana.document.write(`
-                    <html>
-                    <head><title>Orden de Compra - Publicidad Vecinal</title>
-                    <style>
-                        body { font-family: system-ui, sans-serif; padding: 2rem; }
-                        .purchase-order { border: 1px solid #ccc; padding: 1.5rem; border-radius: 20px; }
-                        .signature-line { margin-top: 1.5rem; border-top: 1px solid #aaa; padding-top: 1rem; }
-                        .btn-print { display: none; }
-                        .order-field input, select { border: none; background: transparent; font-weight: normal; }
-                        .checkbox-group label { display: block; }
-                    </style>
-                    </head>
-                    <body>${orderContent.outerHTML}</body>
-                    </html>
-                `);
-                ventana.document.close();
-                ventana.print();
-            });
-        }
+    // Cargar header y footer
+    document.addEventListener('DOMContentLoaded', function() {
+      // Header
+      fetch('/avisos-jardines/common/header.html')
+        .then(res => {
+          if (!res.ok) throw new Error('Header no encontrado');
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(() => {
+            if (typeof window.inicializarHeaderAuth === 'function') {
+              window.inicializarHeaderAuth();
+            }
+          }, 100);
+        })
+        .catch(err => console.error('Error cargando header:', err));
 
-        // pequeños detalles: precargar algunos placeholders en la orden
-        const fechaOrdenInput = document.getElementById("ordenFecha");
-        if(fechaOrdenInput && fechaOrdenInput.value === "_______________") {
-            const hoy = new Date().toLocaleDateString('es-MX');
-            fechaOrdenInput.value = hoy;
-        }
-    })();
-</script>
+      // Footer
+      fetch('/avisos-jardines/common/footer.html')
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
+        .then(data => {
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            const anioElement = document.getElementById('anio-actual');
+            if (anioElement) {
+              anioElement.textContent = new Date().getFullYear();
+            }
+          }
+        })
+        .catch(error => console.error('Error cargando footer:', error));
+    });
+
+    // Impresión de orden de compra
+    const printBtn = document.getElementById("printOrderBtn");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
+        const btnClone = orderContent.querySelector("#printOrderBtn");
+        if (btnClone) btnClone.remove();
+        const ventana = window.open('', '_blank');
+        ventana.document.write(`
+          <html>
+          <head><title>Orden de Compra - Publicidad Vecinal</title>
+          <style>
+            body { font-family: system-ui, sans-serif; padding: 2rem; }
+            .purchase-order { border: 1px solid #ccc; padding: 1.5rem; border-radius: 20px; }
+            .signature-line { margin-top: 1.5rem; border-top: 1px solid #aaa; padding-top: 1rem; }
+            .btn-print { display: none; }
+            .order-field input, select { border: none; background: transparent; font-weight: normal; }
+            .checkbox-group label { display: block; }
+          </style>
+          </head>
+          <body>${orderContent.outerHTML}</body>
+          </html>
+        `);
+        ventana.document.close();
+        ventana.print();
+      });
+    }
+
+    // Fecha automática en la orden
+    const fechaOrdenInput = document.getElementById("ordenFecha");
+    if (fechaOrdenInput && fechaOrdenInput.value === "_______________") {
+      const hoy = new Date().toLocaleDateString('es-MX');
+      fechaOrdenInput.value = hoy;
+    }
+  </script>
 </body>
 </html>
