@@ -54,7 +54,7 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-          
+
           // ✅ Esperar un momento para que el DOM del header se actualice
           setTimeout(() => {
             // ⚡ Usar la función GLOBAL en lugar de la local
@@ -89,6 +89,29 @@
           }
         })
         .catch(error => console.error('Error cargando el footer:', error));
+    });
+  </script>
+
+  <!-- Este código va en tu página principal (index.html) -->
+  <div id="cookieBanner"
+    style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e4620; color: white; padding: 1rem; text-align: center; z-index: 1000; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+    <span>🍪 Usamos cookies para que la plataforma funcione bien. No vendemos tus datos.</span>
+    <div>
+      <button id="aceptarCookies"
+        style="background: #fbbf24; border: none; padding: 0.4rem 1.2rem; border-radius: 2rem; cursor: pointer;">Aceptar</button>
+      <a href="/avisos-jardines/cookies.html"
+        style="background: transparent; border: 1px solid white; color: white; padding: 0.4rem 1.2rem; border-radius: 2rem; text-decoration: none; margin-left: 0.5rem;">Configurar</a>
+    </div>
+  </div>
+
+  <script>
+    if (localStorage.getItem('cookie_consent') === 'aceptadas') {
+      document.getElementById('cookieBanner').style.display = 'none';
+    }
+
+    document.getElementById('aceptarCookies').addEventListener('click', () => {
+      localStorage.setItem('cookie_consent', 'aceptadas');
+      document.getElementById('cookieBanner').style.display = 'none';
     });
   </script>
 </body>
