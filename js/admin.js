@@ -3,7 +3,7 @@
 let paginaAdmin = 1;
 let avisosActuales = [];
 let filtroCategoriaAdmin = 'todos';
-let filtroStatusAdmin = 'todos'; // Nuevo filtro para status: todos, pendiente, activo
+let filtroStatusAdmin = 'todos';
 
 document.addEventListener('DOMContentLoaded', function () {
   console.log('Admin.js cargado correctamente');
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         contacto: document.getElementById('contacto').value || '',
         fecha_evento: document.getElementById('fecha_evento').value || '',
         destacado: document.getElementById('urgente').checked ? 'TRUE' : 'FALSE',
-        status: 'activo', // El backend lo cambiará a 'pendiente' si no es admin
+        status: 'activo',
         created_by: usuarioActual.id,
       };
 
@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const resultado = await API.crear('AVISOS', datos);
         console.log('Respuesta del servidor:', resultado);
         
-        // Mensaje diferente si el aviso quedó pendiente
         const usuarioActualRol = API.getUsuarioActual()?.rol;
         if (usuarioActualRol !== 'admin') {
           API.mostrarExito('✅ Aviso enviado para revisión. El administrador lo publicará en breve.');
@@ -131,6 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  // Configurar modal de edición
+  configurarModalEdicion();
+
   // Cargar avisos iniciales
   cargarMisAvisos();
 });
@@ -164,6 +166,87 @@ function configurarTabs() {
   });
 }
 
+// ==================== CONFIGURAR MODAL DE EDICIÓN ====================
+
+function configurarModalEdicion() {
+  // Cerrar modal con botón X
+  const cerrarModal = document.getElementById('cerrar-modal');
+  if (cerrarModal) {
+    cerrarModal.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+  }
+  
+  // Cerrar modal con botón Cancelar
+  const cancelarEditar = document.getElementById('cancelar-editar');
+  if (cancelarEditar) {
+    cancelarEditar.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+  }
+  
+  // Cerrar modal al hacer click fuera
+  const modalEditar = document.getElementById('modal-editar');
+  if (modalEditar) {
+    modalEditar.addEventListener('click', (e) => {
+      if (e.target === modalEditar) {
+        modalEditar.style.display = 'none';
+      }
+    });
+  }
+  
+  // Enviar formulario de edición
+  const formEditar = document.getElementById('form-editar');
+  if (formEditar) {
+    formEditar.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const id = document.getElementById('edit-id').value;
+      const apiKey = localStorage.getItem('api_key');
+      
+      const datos = {
+        titulo: document.getElementById('edit-titulo').value,
+        contenido: document.getElementById('edit-contenido').value,
+        categoria: document.getElementById('edit-categoria').value,
+        ubicacion: document.getElementById('edit-ubicacion').value,
+        contacto: document.getElementById('edit-contacto').value,
+        fecha_evento: document.getElementById('edit-fecha_evento').value,
+        imagen_url: document.getElementById('edit-imagen_url').value
+      };
+      
+      try {
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
+        if (resultado && resultado.success) {
+          API.mostrarExito('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+          cargarMisAvisos();
+        } else {
+          API.mostrarError('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
+        }
+      } catch (error) {
+        console.error('Error al actualizar:', error);
+        API.mostrarError('❌ Error al actualizar el aviso');
+      }
+    });
+  }
+}
+
+// ==================== ABRIR MODAL DE EDICIÓN ====================
+
+function abrirEditor(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url) {
+  document.getElementById('edit-id').value = id || '';
+  document.getElementById('edit-titulo').value = titulo || '';
+  document.getElementById('edit-contenido').value = contenido || '';
+  document.getElementById('edit-categoria').value = categoria || 'eventos';
+  document.getElementById('edit-ubicacion').value = ubicacion || '';
+  document.getElementById('edit-contacto').value = contacto || '';
+  document.getElementById('edit-fecha_evento').value = fecha_evento || '';
+  document.getElementById('edit-imagen_url').value = imagen_url || '';
+  document.getElementById('modal-editar').style.display = 'flex';
+}
+
+// ==================== CARGAR MIS AVISOS ====================
+
 async function cargarMisAvisos() {
   const contenedor = document.getElementById('mis-avisos-container');
   if (!contenedor) return;
@@ -171,7 +254,6 @@ async function cargarMisAvisos() {
   contenedor.innerHTML = '<div class="cargando">🔄 Cargando avisos...</div>';
 
   try {
-    // Verificar si el usuario es admin para mostrar filtros de status
     const usuarioActual = API.getUsuarioActual();
     const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
     
@@ -188,7 +270,6 @@ async function cargarMisAvisos() {
         </div>
       `;
       
-      // Si es admin, agregar filtros de status
       if (esAdmin) {
         filtrosHTML += `
           <div class="filtros filtros-status" style="margin-bottom: 20px; justify-content: flex-start; flex-wrap: wrap; border-top: 1px solid #ddd; padding-top: 10px;">
@@ -202,7 +283,6 @@ async function cargarMisAvisos() {
       
       contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
 
-      // Eventos para filtros de categoría
       document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
         btn.addEventListener('click', function () {
           document.querySelectorAll('[data-filtro-cat]').forEach(b => b.classList.remove('activo'));
@@ -213,7 +293,6 @@ async function cargarMisAvisos() {
         });
       });
       
-      // Eventos para filtros de status (solo admin)
       if (esAdmin) {
         document.querySelectorAll('[data-filtro-status]').forEach(btn => {
           btn.addEventListener('click', function () {
@@ -227,15 +306,10 @@ async function cargarMisAvisos() {
       }
     }
 
-    // Construir consulta
     let consulta = {};
-    
-    // Filtro por categoría
     if (filtroCategoriaAdmin !== 'todos') {
       consulta.categoria = filtroCategoriaAdmin;
     }
-    
-    // Filtro por status (solo si es admin y no es 'todos')
     if (esAdmin && filtroStatusAdmin !== 'todos') {
       consulta.status = filtroStatusAdmin;
     }
@@ -264,7 +338,6 @@ async function cargarMisAvisos() {
       const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
       const esPendiente = aviso.status === 'pendiente';
       
-      // Estilo diferente para avisos pendientes
       let cardStyle = '';
       let statusBadge = '';
       
@@ -292,20 +365,17 @@ async function cargarMisAvisos() {
             <button class="boton boton-chico" onclick="verAviso('${aviso.id}')">👁️ Ver</button>
       `;
       
-      // Si es admin y el aviso está pendiente, mostrar botones de aprobar/rechazar
       if (esAdmin && esPendiente) {
         html += `
             <button class="boton boton-chico" style="background: #28a745; color: white;" onclick="aprobarAviso('${aviso.id}')">✅ Aprobar</button>
             <button class="boton boton-chico" style="background: #dc3545; color: white;" onclick="rechazarAviso('${aviso.id}')">❌ Rechazar</button>
         `;
-      } else {
-        html += `
-            <button class="boton boton-chico boton-secundario" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
-            <button class="boton boton-chico boton-secundario" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
-        `;
       }
       
+      // Botón Editar para todos (usa el modal)
       html += `
+            <button class="boton boton-chico boton-secundario" onclick="abrirEditor('${aviso.id}', '${escapeHTML(aviso.titulo || '')}', '${escapeHTML(aviso.contenido || '')}', '${aviso.categoria || ''}', '${escapeHTML(aviso.ubicacion || '')}', '${escapeHTML(aviso.contacto || '')}', '${aviso.fecha_evento || ''}', '${escapeHTML(aviso.imagen_url || '')}')">✏️ Editar</button>
+            <button class="boton boton-chico boton-secundario" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
           </div>
         </div>
       `;
@@ -313,7 +383,6 @@ async function cargarMisAvisos() {
 
     contenedor.innerHTML = html;
 
-    // Paginación
     if (paginacion.paginas > 1) {
       let pagHtml = '<div class="paginacion-botones" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px; flex-wrap: wrap;">';
       if (paginaAdmin > 1) {
@@ -350,7 +419,8 @@ async function cargarMisAvisos() {
   }
 }
 
-// NUEVA FUNCIÓN: Aprobar aviso
+// ==================== FUNCIONES AUXILIARES ====================
+
 async function aprobarAviso(id) {
   if (!confirm('¿Aprobar este aviso? Se publicará automáticamente en la página principal.')) return;
   
@@ -366,7 +436,6 @@ async function aprobarAviso(id) {
   }
 }
 
-// NUEVA FUNCIÓN: Rechazar aviso
 async function rechazarAviso(id) {
   if (!confirm('¿Rechazar este aviso? El usuario será notificado y el aviso no se publicará.')) return;
   
@@ -448,10 +517,6 @@ async function cargarUsuarios() {
     console.error('Error cargando usuarios:', error);
     contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar usuarios</div>';
   }
-}
-
-async function editarAviso(id) {
-  window.location.href = `/avisos-jardines/aviso.html?id=${id}&editar=true`;
 }
 
 async function eliminarAviso(id) {
