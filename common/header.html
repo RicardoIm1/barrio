@@ -1,6 +1,5 @@
 <header class="header">
     <div class="contenedor header-contenido">
-        <!-- Logo y título - Enlace al index -->
         <a href="/avisos-jardines/index.html" class="header-logo">
             <div class="logo-icon">🏘️</div>
             <div class="logo-texto">
@@ -9,549 +8,70 @@
             </div>
         </a>
 
-        <!-- Reputación Widget (solo visible cuando hay sesión) -->
-        <div id="reputacion-widget"
-            style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
-            <div style="display: flex; align-items: center; gap: 4px;">
-                ⭐ <span id="puntos-valor">0</span>
+        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
+            <div>⭐ <span id="puntos-valor">0</span></div>
+            <div>🏆 <span id="nivel-valor">cargando</span></div>
+            <div>📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span></div>
+            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
+                <div id="reputacion-barra" style="width:0%; height:100%; background:#fbbf24;"></div>
             </div>
-            <div style="display: flex; align-items: center; gap: 4px;">
-                🏆 <span id="nivel-valor">cargando</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 4px;">
-                📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span>
-            </div>
-            <div
-                style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
-                <div id="reputacion-barra"
-                    style="width: 0%; height: 100%; background: #fbbf24; border-radius: 2px; transition: width 0.3s;">
-                </div>
-            </div>
-            <button id="btn-ver-reputacion"
-                style="background: none; border: none; color: white; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 20px;"
-                title="Ver mi reputación">📊</button>
+            <button id="btn-ver-reputacion" style="background:none; border:none; color:white; cursor:pointer;">📊</button>
         </div>
 
-        <!-- Acciones del usuario -->
         <div class="header-acciones" id="header-acciones">
-            <a href="/avisos-jardines/login.html" id="login-link" class="btn-login">
-                <span class="btn-icon">🔐</span>
-                <span>Iniciar sesión</span>
-            </a>
-            <a href="#" id="admin-link" class="btn-admin" style="display:none;">
-                <span class="btn-icon">⚙️</span>
-                <span>Administrador</span>
-            </a>
-            <a href="#" id="cerrar-sesion" class="btn-logout" style="display:none;">
-                <span class="btn-icon">🚪</span>
-                <span>Cerrar sesión</span>
-            </a>
+            <a href="/avisos-jardines/login.html" id="login-link" class="btn-login">🔐 Iniciar sesión</a>
+            <a href="#" id="admin-link" class="btn-admin" style="display:none;">⚙️ Administrador</a>
+            <a href="#" id="cerrar-sesion" class="btn-logout" style="display:none;">🚪 Cerrar sesión</a>
         </div>
     </div>
 </header>
 
-<!-- Modal de reputación (inicialmente oculto) -->
-<div id="reputacion-modal"
-    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center;">
-    <div
-        style="background: white; max-width: 500px; width: 90%; border-radius: 24px; padding: 24px; max-height: 80vh; overflow-y: auto; position: relative;">
-        <button id="cerrar-reputacion-modal"
-            style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">✕</button>
-
-        <div id="reputacion-detalle">
-            <div style="text-align: center; padding: 40px;">
-                <div class="cargando">Cargando...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de verificación de teléfono -->
-<div id="verif-telefono-modal"
-    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center;">
-    <div style="background: white; max-width: 400px; width: 90%; border-radius: 24px; padding: 24px;">
-        <h3 style="margin: 0 0 8px 0;">📱 Verificar teléfono</h3>
-        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Gana <strong style="color: #27ae60;">+20
-                puntos</strong> de confianza al verificar tu número.</p>
-
-        <input type="tel" id="telefono-input" placeholder="Ej: 3221234567"
-            style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
-
-        <div id="codigo-section" style="display: none;">
-            <input type="text" id="codigo-input" placeholder="Código de 6 dígitos"
-                style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
-        </div>
-
-        <div id="verif-mensaje" style="font-size: 13px; margin: 8px 0; min-height: 40px;"></div>
-
-        <div style="display: flex; gap: 10px; margin-top: 16px;">
-            <button id="btn-enviar-codigo" class="btn-login" style="flex: 1; justify-content: center;">📤 Enviar
-                código</button>
-            <button id="btn-verificar-codigo"
-                style="display: none; flex: 1; background: #27ae60; color: white; border: none; border-radius: 30px; padding: 10px; cursor: pointer;">✅
-                Verificar</button>
-            <button id="cerrar-verif-modal"
-                style="background: #e74c3c; color: white; border: none; border-radius: 30px; padding: 10px 20px; cursor: pointer;">Cancelar</button>
-        </div>
-    </div>
-</div>
-
 <style>
-    /* Header - logo y h1 uno al lado del otro */
-    .header-logo {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        text-decoration: none;
-    }
-
-    .logo-icon {
-        font-size: 3rem;
-        background: linear-gradient(135deg, #2b7a2b, #1e4620);
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        flex-shrink: 0;
-    }
-
-    .logo-texto {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .logo-texto h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #2b7a2b, #d4a043);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        white-space: nowrap;
-    }
-
-    .header-slogan {
-        margin: 5px 0 0;
-        font-size: 0.85rem;
-        color: #b0b0b0;
-        font-style: italic;
-        white-space: nowrap;
-    }
-
-    .header-logo:hover h1 {
-        background: linear-gradient(135deg, #3a9a3a, #e0b052);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    /* Botón Iniciar sesión - Verde colonia */
-    .btn-login {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #2b7a2b, #1e4620);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-login:hover {
-        background: linear-gradient(135deg, #3a9a3a, #2b7a2b);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(43, 122, 43, 0.3);
-    }
-
-    /* Botón Administrador - Dorado */
-    .btn-admin {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: linear-gradient(135deg, #d4a043, #b8860b);
-        color: white;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-admin:hover {
-        background: linear-gradient(135deg, #e0b052, #d4a043);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(212, 160, 67, 0.3);
-    }
-
-    /* Botón Cerrar sesión - Borde dorado */
-    .btn-logout {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background: transparent;
-        color: #d4a043;
-        text-decoration: none;
-        border-radius: 30px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        border: 2px solid #d4a043;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-logout:hover {
-        background: #d4a043;
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(212, 160, 67, 0.3);
-    }
-
-    .header-acciones {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-    }
-
-    /* Reputación widget responsive */
-    @media (max-width: 900px) {
-        #reputacion-widget {
-            display: none !important;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .logo-texto h1 {
-            font-size: 1.2rem;
-            white-space: normal;
-        }
-
-        .header-slogan {
-            font-size: 0.7rem;
-            white-space: normal;
-        }
-
-        .logo-icon {
-            width: 45px;
-            height: 45px;
-            font-size: 2rem;
-        }
-
-        .btn-login,
-        .btn-admin,
-        .btn-logout {
-            padding: 8px 16px;
-            font-size: 0.8rem;
-        }
-    }
+    /* Tus estilos aquí */
+    .header-logo { display: flex; align-items: center; gap: 15px; text-decoration: none; }
+    .logo-icon { font-size: 3rem; background: linear-gradient(135deg, #2b7a2b, #1e4620); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
+    .logo-texto h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(135deg, #2b7a2b, #d4a043); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .btn-login { background: linear-gradient(135deg, #f5b042, #ff8c42); color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; }
+    .btn-admin { background: linear-gradient(135deg, #d4a043, #b8860b); color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; }
+    .btn-logout { border: 2px solid #d4a043; color: #d4a043; padding: 10px 20px; border-radius: 30px; text-decoration: none; background: transparent; }
+    .header-acciones { display: flex; gap: 12px; align-items: center; }
 </style>
 
 <script>
-    // ==================== HEADER CON SESIÓN ====================
-    
-    let headerInicializado = false;
-
-    function inicializarHeaderUnaSolaVez() {
-        if (headerInicializado) return;
-        headerInicializado = true;
-        console.log('🚀 Header inicializado por primera vez');
-        actualizarHeaderUI();
-    }
-
-    function actualizarHeaderUI() {
-        console.log('🔄 Actualizando header UI...');
-
-        if (typeof API === 'undefined' || !API.getUsuarioActual) {
-            console.log('⏳ API no disponible, reintentando en 300ms...');
-            setTimeout(actualizarHeaderUI, 300);
-            return;
-        }
-
-        const usuario = API.getUsuarioActual();
-        const loginLink = document.getElementById('login-link');
-        const adminLink = document.getElementById('admin-link');
-        const cerrarSesion = document.getElementById('cerrar-sesion');
-
-        if (!loginLink || !adminLink || !cerrarSesion) {
-            console.error('❌ Elementos del header no encontrados');
-            return;
-        }
-
-        console.log('👤 Usuario detectado:', usuario ? usuario.email : 'No logueado');
-
-        if (usuario && usuario.email) {
-            loginLink.style.display = 'none';
-            cerrarSesion.style.display = 'inline-flex';
-
-            if (usuario.rol === 'admin') {
-                adminLink.style.display = 'inline-flex';
-                adminLink.onclick = function(e) {
+    // Solo la lógica para mostrar/ocultar botones según sesión
+    (function() {
+        function actualizarHeader() {
+            const usuario = localStorage.getItem('usuario');
+            const apiKey = localStorage.getItem('api_key');
+            const loginLink = document.getElementById('login-link');
+            const adminLink = document.getElementById('admin-link');
+            const cerrarSesion = document.getElementById('cerrar-sesion');
+            
+            if (usuario && apiKey) {
+                const user = JSON.parse(usuario);
+                loginLink.style.display = 'none';
+                cerrarSesion.style.display = 'inline-flex';
+                if (user.rol === 'admin') {
+                    adminLink.style.display = 'inline-flex';
+                    adminLink.onclick = (e) => { e.preventDefault(); window.location.href = '/avisos-jardines/admin.html'; };
+                }
+                cerrarSesion.onclick = (e) => {
                     e.preventDefault();
-                    window.location.href = '/avisos-jardines/admin.html';
+                    localStorage.removeItem('usuario');
+                    localStorage.removeItem('api_key');
+                    window.location.href = '/avisos-jardines/login.html';
                 };
             } else {
+                loginLink.style.display = 'inline-flex';
                 adminLink.style.display = 'none';
+                cerrarSesion.style.display = 'none';
             }
-
-            cerrarSesion.onclick = function(e) {
-                e.preventDefault();
-                console.log('🚪 Cerrando sesión...');
-                localStorage.removeItem('usuario');
-                localStorage.removeItem('api_key');
-                window.location.href = '/avisos-jardines/login.html';
-            };
-
-            cargarReputacion();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', actualizarHeader);
         } else {
-            loginLink.style.display = 'inline-flex';
-            adminLink.style.display = 'none';
-            cerrarSesion.style.display = 'none';
-            const widget = document.getElementById('reputacion-widget');
-            if (widget) widget.style.display = 'none';
-            console.log('👤 Modo invitado');
+            actualizarHeader();
         }
-    }
-
-    // ==================== SISTEMA DE REPUTACIÓN ====================
-
-    let reputacionInterval = null;
-
-    async function cargarReputacion() {
-        const apiKey = localStorage.getItem('api_key');
-        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-
-        if (!apiKey || !usuario.email) {
-            const widget = document.getElementById('reputacion-widget');
-            if (widget) widget.style.display = 'none';
-            return;
-        }
-
-        try {
-            const result = await API.miReputacion(apiKey);
-
-            if (result && result.success && result.data) {
-                const data = result.data;
-                const widget = document.getElementById('reputacion-widget');
-                if (widget) widget.style.display = 'flex';
-
-                document.getElementById('puntos-valor').textContent = data.puntos || 0;
-                document.getElementById('nivel-valor').textContent = getNivelEmoji(data.nivel) + ' ' + (data.nivel || 'nuevo');
-                document.getElementById('avisos-restantes').textContent = data.disponibles || 0;
-                document.getElementById('avisos-limite').textContent = data.limite || 1;
-
-                const porcentaje = Math.min(100, ((data.puntos || 0) / 100) * 100);
-                const barra = document.getElementById('reputacion-barra');
-                if (barra) barra.style.width = `${porcentaje}%`;
-
-                if (data.nivel === 'nuevo') barra.style.background = '#95a5a6';
-                else if (data.nivel === 'verificado') barra.style.background = '#3498db';
-                else if (data.nivel === 'confiable') barra.style.background = '#2ecc71';
-                else if (data.nivel === 'premium') barra.style.background = '#9b59b6';
-
-                window.reputacionActual = data;
-            }
-        } catch (e) {
-            console.error('Error cargando reputación:', e);
-        }
-    }
-
-    function getNivelEmoji(nivel) {
-        const emojis = {
-            'nuevo': '🟢',
-            'verificado': '🔵',
-            'confiable': '🟡',
-            'premium': '🟣'
-        };
-        return emojis[nivel] || '🟢';
-    }
-
-    function getNivelInfo(nivel) {
-        const niveles = {
-            'nuevo': { nombre: 'Nuevo Vecino', icono: '🟢', color: '#6c757d', bg: '#f0f2f5', texto: '1 aviso/semana, requiere aprobación' },
-            'verificado': { nombre: 'Verificado', icono: '🔵', color: '#3498db', bg: '#e8f4fd', texto: '5 avisos/semana, publicación directa' },
-            'confiable': { nombre: 'Confiable', icono: '🟡', color: '#2ecc71', bg: '#e8f8f0', texto: '15 avisos/semana, publicación directa' },
-            'premium': { nombre: 'Premium', icono: '🟣', color: '#9b59b6', bg: '#f4e8f8', texto: 'Avisos ilimitados, publicación directa' }
-        };
-        return niveles[nivel] || niveles['nuevo'];
-    }
-
-    async function mostrarDetalleReputacion() {
-        const modal = document.getElementById('reputacion-modal');
-        const detalleDiv = document.getElementById('reputacion-detalle');
-        const apiKey = localStorage.getItem('api_key');
-
-        if (!modal) return;
-        modal.style.display = 'flex';
-        if (detalleDiv) detalleDiv.innerHTML = '<div style="text-align: center; padding: 40px;">Cargando detalles...</div>';
-
-        try {
-            const result = await API.miReputacion(apiKey);
-
-            if (result && result.success && result.data) {
-                const data = result.data;
-                const nivelInfo = getNivelInfo(data.nivel);
-
-                detalleDiv.innerHTML = `
-                    <div style="text-align: center; margin-bottom: 24px;">
-                        <div style="font-size: 48px;">${nivelInfo.icono}</div>
-                        <div style="font-size: 32px; font-weight: bold; margin: 8px 0;">${data.puntos || 0}</div>
-                        <div style="font-size: 18px; font-weight: bold; color: ${nivelInfo.color};">${nivelInfo.nombre}</div>
-                        <div style="font-size: 13px; color: #666; margin-top: 4px;">${nivelInfo.texto}</div>
-                    </div>
-                    <div style="background: ${nivelInfo.bg}; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
-                        <h3 style="margin: 0 0 12px 0; font-size: 16px;">📊 Estadísticas</h3>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>📝 Avisos esta semana:</span>
-                            <strong>${data.publicados || 0} / ${data.limite || 1}</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span>✅ Aprobación requerida:</span>
-                            <strong>${data.requiereAprobacion ? 'Sí (pendiente de revisión)' : 'No (publicación directa)'}</strong>
-                        </div>
-                    </div>
-                    <div style="background: #e8f8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
-                        <h3 style="margin: 0 0 12px 0; font-size: 16px;">🎯 Cómo ganar puntos</h3>
-                        <div style="font-size: 13px;">
-                            <div>✅ Verificar teléfono: <strong>+20 pts</strong></div>
-                            <div>📝 Publicar aviso útil: <strong>+5 pts</strong></div>
-                            <div>👍 Recibir voto positivo: <strong>+1 pt</strong></div>
-                            <div>🏆 Reporte útil confirmado: <strong>+3 pts</strong></div>
-                        </div>
-                    </div>
-                    <div style="background: #fdf0ef; border-radius: 16px; padding: 16px; margin-bottom: 16px;">
-                        <h3 style="margin: 0 0 12px 0; font-size: 16px;">⚠️ Cómo perder puntos</h3>
-                        <div style="font-size: 13px;">
-                            <div>🚫 Spam confirmado: <strong>-25 pts</strong></div>
-                            <div>📢 Reporte válido recibido: <strong>-10 pts</strong></div>
-                            <div>👎 Voto negativo recibido: <strong>-1 pt</strong></div>
-                            <div>❌ Reporte falso: <strong>-5 pts</strong></div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 20px; text-align: center;">
-                        <button id="btn-verificar-telefono-modal" style="background: linear-gradient(135deg, #2b7a2b, #1e4620); color: white; border: none; border-radius: 30px; padding: 12px 24px; cursor: pointer; font-weight: 600;">
-                            📱 Verificar mi teléfono (+20 pts)
-                        </button>
-                    </div>
-                `;
-
-                document.getElementById('btn-verificar-telefono-modal')?.addEventListener('click', () => {
-                    modal.style.display = 'none';
-                    abrirModalVerificacionTelefono();
-                });
-            }
-        } catch (e) {
-            if (detalleDiv) detalleDiv.innerHTML = '<div style="text-align: center; color: #e74c3c;">Error cargando detalles</div>';
-        }
-    }
-
-    function abrirModalVerificacionTelefono() {
-        const modal = document.getElementById('verif-telefono-modal');
-        const telefonoInput = document.getElementById('telefono-input');
-        const codigoSection = document.getElementById('codigo-section');
-        const codigoInput = document.getElementById('codigo-input');
-        const btnEnviar = document.getElementById('btn-enviar-codigo');
-        const btnVerificar = document.getElementById('btn-verificar-codigo');
-        const mensajeDiv = document.getElementById('verif-mensaje');
-
-        if (!modal) return;
-
-        telefonoInput.value = '';
-        codigoInput.value = '';
-        codigoSection.style.display = 'none';
-        btnEnviar.style.display = 'block';
-        btnVerificar.style.display = 'none';
-        mensajeDiv.innerHTML = '';
-
-        modal.style.display = 'flex';
-
-        const newBtnEnviar = btnEnviar.cloneNode(true);
-        const newBtnVerificar = btnVerificar.cloneNode(true);
-        btnEnviar.parentNode.replaceChild(newBtnEnviar, btnEnviar);
-        btnVerificar.parentNode.replaceChild(newBtnVerificar, btnVerificar);
-
-        newBtnEnviar.onclick = async () => {
-            const telefono = telefonoInput.value.trim();
-            if (!telefono || telefono.length < 10) {
-                mensajeDiv.innerHTML = '<span style="color:#e74c3c;">📱 Ingresa un número válido (10 dígitos)</span>';
-                return;
-            }
-
-            mensajeDiv.innerHTML = '<span>📤 Enviando código...</span>';
-            const apiKey = localStorage.getItem('api_key');
-            const result = await API.solicitarVerificacionTelefono(telefono, apiKey);
-
-            if (result && result.success) {
-                mensajeDiv.innerHTML = '<span style="color:#27ae60;">✅ Código enviado. Revisa tu teléfono.</span>';
-                codigoSection.style.display = 'block';
-                newBtnEnviar.style.display = 'none';
-                newBtnVerificar.style.display = 'block';
-            } else {
-                mensajeDiv.innerHTML = `<span style="color:#e74c3c;">❌ ${result.error || 'Error al enviar'}</span>`;
-            }
-        };
-
-        newBtnVerificar.onclick = async () => {
-            const codigo = codigoInput.value.trim();
-            if (!codigo) {
-                mensajeDiv.innerHTML = '<span style="color:#e74c3c;">Ingresa el código recibido</span>';
-                return;
-            }
-
-            mensajeDiv.innerHTML = '<span>🔍 Verificando...</span>';
-            const apiKey = localStorage.getItem('api_key');
-            const result = await API.confirmarVerificacionTelefono(codigo, apiKey);
-
-            if (result && result.success) {
-                mensajeDiv.innerHTML = '<span style="color:#27ae60;">✅ Teléfono verificado! +20 puntos</span>';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    cargarReputacion();
-                }, 2000);
-            } else {
-                mensajeDiv.innerHTML = `<span style="color:#e74c3c;">❌ ${result.error || 'Código incorrecto'}</span>`;
-            }
-        };
-    }
-
-    function iniciarActualizacionReputacion() {
-        if (reputacionInterval) clearInterval(reputacionInterval);
-        cargarReputacion();
-        reputacionInterval = setInterval(cargarReputacion, 30000);
-    }
-
-    // Configurar eventos UNA SOLA VEZ
-    document.addEventListener('DOMContentLoaded', function() {
-        inicializarHeaderUnaSolaVez();
-        iniciarActualizacionReputacion();
-
-        document.getElementById('btn-ver-reputacion')?.addEventListener('click', mostrarDetalleReputacion);
-        document.getElementById('cerrar-reputacion-modal')?.addEventListener('click', () => {
-            document.getElementById('reputacion-modal').style.display = 'none';
-        });
-        document.getElementById('cerrar-verif-modal')?.addEventListener('click', () => {
-            document.getElementById('verif-telefono-modal').style.display = 'none';
-        });
-
-        document.getElementById('reputacion-modal')?.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('reputacion-modal')) {
-                document.getElementById('reputacion-modal').style.display = 'none';
-            }
-        });
-        document.getElementById('verif-telefono-modal')?.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('verif-telefono-modal')) {
-                document.getElementById('verif-telefono-modal').style.display = 'none';
-            }
-        });
-    });
+    })();
 </script>
