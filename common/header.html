@@ -27,6 +27,28 @@
     </div>
 </header>
 
+<div id="reputacion-widget" style="display: flex; align-items: center; gap: 8px;">
+  <span>⭐ <span id="puntos-confianza">0</span> pts</span>
+  <span>🏆 <span id="nivel-usuario">cargando...</span></span>
+  <span>📊 <span id="avisos-restantes">-</span> avisos/semana</span>
+</div>
+
+<script>
+async function cargarReputacion() {
+  const apiKey = localStorage.getItem('api_key');
+  if (!apiKey) return;
+  
+  const api = new API();
+  const result = await api.llamar('MI_REPUTACION', {}, apiKey);
+  if (result && result.success) {
+    document.getElementById('puntos-confianza').textContent = result.data.puntos;
+    document.getElementById('nivel-usuario').textContent = result.data.nivel;
+    document.getElementById('avisos-restantes').textContent = result.data.disponibles || 0;
+  }
+}
+cargarReputacion();
+</script>
+
 <style>
     /* Header - logo y h1 uno al lado del otro */
     .header-logo {
