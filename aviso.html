@@ -62,6 +62,10 @@
       background: #c0392b;
     }
 
+    .article-category.pendiente {
+      background: #f39c12;
+    }
+
     .article-title {
       font-size: 2.8rem;
       font-weight: 800;
@@ -72,7 +76,7 @@
       font-family: 'Georgia', 'Times New Roman', Times, serif;
     }
 
-    /* Barra de metadatos (fecha, autor, etc) */
+    /* Barra de metadatos */
     .article-meta {
       display: flex;
       flex-wrap: wrap;
@@ -104,7 +108,7 @@
       margin-bottom: 1.3rem;
     }
 
-    /* Información adicional estilo "sidebar" */
+    /* Información adicional */
     .info-card {
       background: #f0ede6;
       border-left: 4px solid var(--accent-gold);
@@ -118,6 +122,7 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
     .info-card strong {
@@ -125,7 +130,7 @@
       color: var(--text-dark);
     }
 
-    /* Galería de imágenes/videos */
+    /* Galería */
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -155,7 +160,7 @@
       border-radius: 8px;
     }
 
-    /* Botones de acción para edición (solo visible para admin/propietario) */
+    /* Botones de acción */
     .article-actions {
       display: flex;
       gap: 1rem;
@@ -206,7 +211,7 @@
       filter: brightness(1.05);
     }
 
-    /* Estado de carga */
+    /* Estados */
     .loading-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -214,7 +219,6 @@
       font-size: 1.1rem;
     }
 
-    /* Mensajes de error */
     .error-message {
       background: #fef2e8;
       border-left: 4px solid #c0392b;
@@ -260,7 +264,7 @@
   <main>
     <div id="aviso-container" class="aviso-paper">
       <div class="loading-state">
-        📰 Cargando aviso... <span style="display: inline-block; animation: pulse 1s infinite;">⏳</span>
+        📰 Cargando aviso... ⏳
       </div>
     </div>
   </main>
@@ -275,6 +279,28 @@
   <script src="/avisos-jardines/js/auth.js"></script>
 
   <script>
+    // ========== FUNCIÓN ESCAPE HTML CORREGIDA ==========
+    function escapeHTML(str) {
+      // Si es null, undefined, o no es string, retornar string vacío
+      if (str === null || str === undefined) return '';
+      // Convertir a string por si acaso
+      const stringValue = String(str);
+      return stringValue
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // Función para formatear contenido con párrafos
+    function formatearContenido(texto) {
+      if (!texto) return '<p>Sin contenido</p>';
+      const stringTexto = String(texto);
+      const parrafos = stringTexto.split(/\n\s*\n/);
+      return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
+    }
+
     // ========== CARGA DEL AVISO ==========
     const AVISO_ID = new URLSearchParams(window.location.search).get('id');
     const ES_EDICION = new URLSearchParams(window.location.search).get('editar') === 'true';
@@ -282,10 +308,8 @@
     let avisoActual = null;
     let usuarioActual = null;
 
-    // Elemento contenedor
     const container = document.getElementById('aviso-container');
 
-    // Función para obtener el aviso desde la API
     async function cargarAviso() {
       if (!AVISO_ID) {
         mostrarError('No se especificó ningún aviso');
@@ -293,10 +317,22 @@
       }
 
       try {
-        // Listar todos los avisos y filtrar por ID (porque la API no tiene getById directo)
+        console.log('Cargando aviso ID:', AVISO_ID);
+
+        // Intentar obtener usuario actual
+        try {
+          usuarioActual = API.getUsuarioActual();
+        } catch (e) {
+          console.log('Usuario no logueado o error:', e);
+          usuarioActual = null;
+        }
+
+        // Obtener todos los avisos (la API no tiene getById directo)
         const resultado = await API.listar('AVISOS');
+        console.log('Resultado API:', resultado);
+        
         const avisos = resultado.datos || [];
-        const aviso = avisos.find(a => a.id === AVISO_ID);
+        const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
 
         if (!aviso) {
           mostrarError('El aviso no existe o fue eliminado');
@@ -304,19 +340,19 @@
         }
 
         avisoActual = aviso;
-        usuarioActual = API.getUsuarioActual();
+        console.log('Aviso cargado:', avisoActual);
         renderizarAviso();
 
       } catch (error) {
         console.error('Error cargando aviso:', error);
-        mostrarError('Error al cargar el aviso: ' + error.message);
+        mostrarError('Error al cargar el aviso: ' + (error.message || 'Error desconocido'));
       }
     }
 
     function mostrarError(mensaje) {
       container.innerHTML = `
         <div class="error-message">
-          ❌ ${mensaje}
+          ❌ ${escapeHTML(mensaje)}
           <div style="margin-top: 1rem;">
             <a href="/avisos-jardines/index.html" class="btn-action back" style="display: inline-block;">← Volver al inicio</a>
           </div>
@@ -327,13 +363,24 @@
     function renderizarAviso() {
       if (!avisoActual) return;
 
-      const fecha = avisoActual.created_at
-        ? new Date(avisoActual.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' })
-        : 'Fecha no disponible';
+      // Manejo seguro de fechas
+      let fechaTexto = 'Fecha no disponible';
+      if (avisoActual.created_at) {
+        try {
+          fechaTexto = new Date(avisoActual.created_at).toLocaleDateString('es-MX', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        } catch (e) {
+          fechaTexto = String(avisoActual.created_at);
+        }
+      }
 
       const esUrgente = avisoActual.destacado === 'TRUE' || avisoActual.categoria === 'urgente';
+      const esPendiente = avisoActual.status === 'pendiente';
       const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
-      const esPropietario = usuarioActual && usuarioActual.id === avisoActual.created_by;
+      const esPropietario = usuarioActual && String(usuarioActual.id) === String(avisoActual.created_by);
       const puedeEditar = esAdmin || esPropietario;
 
       // Categoría legible
@@ -345,94 +392,95 @@
         'clasificados': 'CLASIFICADOS'
       }[avisoActual.categoria] || avisoActual.categoria || 'GENERAL';
 
+      // Determinar clase y texto de categoría
+      let categoriaClase = '';
+      let categoriaTexto = categoriaLegible;
+      if (esUrgente) {
+        categoriaClase = 'urgente';
+        categoriaTexto = '⚠️ URGENTE';
+      } else if (esPendiente) {
+        categoriaClase = 'pendiente';
+        categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN';
+      }
+
       // Construir HTML
       let html = `
         <div class="article-header">
-          <div class="article-category ${esUrgente ? 'urgente' : ''}">${esUrgente ? '⚠️ URGENTE' : categoriaLegible}</div>
+          <div class="article-category ${categoriaClase}">${categoriaTexto}</div>
           <h1 class="article-title">${escapeHTML(avisoActual.titulo || 'Sin título')}</h1>
           <div class="article-meta">
-            <span>📅 ${fecha}</span>
+            <span>📅 ${escapeHTML(fechaTexto)}</span>
             <span>👤 Por: ${escapeHTML(avisoActual.created_by || 'Vecino')}</span>
-            <span>🏷️ ${categoriaLegible}</span>
+            <span>🏷️ ${escapeHTML(categoriaLegible)}</span>
           </div>
         </div>
         <div class="article-body">
           <div class="article-content">
-            ${formatearContenido(avisoActual.contenido || 'Sin contenido')}
+            ${formatearContenido(avisoActual.contenido)}
           </div>
       `;
 
-      // Información adicional (ubicación, contacto, fecha del evento)
-      const tieneInfoAdicional = avisoActual.ubicacion || avisoActual.contacto || avisoActual.fecha_evento;
-      if (tieneInfoAdicional) {
-        html += `
-          <div class="info-card">
-            <p><strong>📍 Ubicación</strong> ${escapeHTML(avisoActual.ubicacion || 'No especificada')}</p>
-            <p><strong>📞 Contacto</strong> ${escapeHTML(avisoActual.contacto || 'No especificado')}</p>
-            ${avisoActual.fecha_evento ? `<p><strong>📅 Fecha del evento</strong> ${new Date(avisoActual.fecha_evento).toLocaleDateString('es-MX')}</p>` : ''}
-          </div>
-        `;
-      }
+      // Información adicional
+      const tieneUbicacion = avisoActual.ubicacion && String(avisoActual.ubicacion).trim() !== '';
+      const tieneContacto = avisoActual.contacto && String(avisoActual.contacto).trim() !== '';
+      const tieneFechaEvento = avisoActual.fecha_evento && String(avisoActual.fecha_evento).trim() !== '';
 
-      // Galería multimedia (si existe)
-      if (window.Multimedia && avisoActual.id) {
-        const multimedia = Multimedia.obtenerPorAviso(avisoActual.id);
-        if (multimedia && multimedia.length > 0) {
-          html += `<div class="gallery" id="gallery-container"></div>`;
+      if (tieneUbicacion || tieneContacto || tieneFechaEvento) {
+        html += `<div class="info-card">`;
+        if (tieneUbicacion) {
+          html += `<p><strong>📍 Ubicación</strong> ${escapeHTML(avisoActual.ubicacion)}</p>`;
         }
+        if (tieneContacto) {
+          html += `<p><strong>📞 Contacto</strong> ${escapeHTML(avisoActual.contacto)}</p>`;
+        }
+        if (tieneFechaEvento) {
+          try {
+            const fechaEvento = new Date(avisoActual.fecha_evento).toLocaleDateString('es-MX');
+            html += `<p><strong>📅 Fecha del evento</strong> ${escapeHTML(fechaEvento)}</p>`;
+          } catch (e) {
+            html += `<p><strong>📅 Fecha del evento</strong> ${escapeHTML(avisoActual.fecha_evento)}</p>`;
+          }
+        }
+        html += `</div>`;
       }
 
-      // Botones de acción (solo si puede editar)
+      // Galería multimedia (placeholder - se puede implementar después)
+      if (window.Multimedia && avisoActual.id) {
+        html += `<div class="gallery" id="gallery-container"></div>`;
+      }
+
+      // Botones de acción
+      html += `<div class="article-actions">`;
+      
       if (puedeEditar) {
-        html += `
-          <div class="article-actions">
-            <a href="/avisos-jardines/admin.html" class="btn-action back">← Volver al panel</a>
-            <button class="btn-action edit" onclick="irAEditar('${avisoActual.id}')">✏️ Editar aviso</button>
-            <button class="btn-action delete" onclick="eliminarAviso('${avisoActual.id}')">🗑️ Eliminar aviso</button>
-          </div>
-        `;
+        html += `<a href="/avisos-jardines/admin.html" class="btn-action back">← Volver al panel</a>`;
+        html += `<button class="btn-action edit" onclick="irAEditar('${avisoActual.id}')">✏️ Editar aviso</button>`;
+        html += `<button class="btn-action delete" onclick="eliminarAviso('${avisoActual.id}')">🗑️ Eliminar aviso</button>`;
       } else {
-        html += `
-          <div class="article-actions">
-            <a href="/avisos-jardines/index.html" class="btn-action back">← Volver al inicio</a>
-          </div>
-        `;
+        html += `<a href="/avisos-jardines/index.html" class="btn-action back">← Volver al inicio</a>`;
       }
-
-      html += `</div></div>`;
+      
+      html += `</div></div></div>`;
 
       container.innerHTML = html;
 
-      // Cargar galería después de renderizar
-      if (window.Multimedia && avisoActual.id) {
-        const multimedia = Multimedia.obtenerPorAviso(avisoActual.id);
-        if (multimedia && multimedia.length > 0) {
-          const galleryContainer = document.getElementById('gallery-container');
-          if (galleryContainer) {
-            Multimedia.renderGallery(galleryContainer, multimedia, avisoActual.id);
+      // Cargar galería multimedia si existe
+      if (window.Multimedia && avisoActual.id && typeof Multimedia.obtenerPorAviso === 'function') {
+        try {
+          const multimedia = Multimedia.obtenerPorAviso(avisoActual.id);
+          if (multimedia && multimedia.length > 0) {
+            const galleryContainer = document.getElementById('gallery-container');
+            if (galleryContainer && typeof Multimedia.renderGallery === 'function') {
+              Multimedia.renderGallery(galleryContainer, multimedia, avisoActual.id);
+            }
           }
+        } catch (e) {
+          console.warn('Error cargando multimedia:', e);
         }
       }
     }
 
-    function formatearContenido(texto) {
-      if (!texto) return '';
-      // Convertir saltos de línea a <p>
-      const parrafos = texto.split(/\n\s*\n/);
-      return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
-    }
-
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    // Funciones globales para los botones
+    // Funciones globales
     window.irAEditar = function(id) {
       window.location.href = `/avisos-jardines/admin.html?editar=${id}`;
     };
@@ -442,11 +490,11 @@
 
       try {
         const resultado = await API.eliminar('AVISOS', id);
-        if (resultado.success) {
+        if (resultado && resultado.success) {
           alert('✅ Aviso eliminado correctamente');
           window.location.href = '/avisos-jardines/admin.html';
         } else {
-          alert('❌ Error al eliminar: ' + (resultado.error || 'Error desconocido'));
+          alert('❌ Error al eliminar: ' + (resultado?.error || 'Error desconocido'));
         }
       } catch (error) {
         console.error('Error eliminando aviso:', error);
@@ -454,11 +502,14 @@
       }
     };
 
-    // Inicializar
+    // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function() {
-      // Cargar header y footer
+      // Header
       fetch('/avisos-jardines/common/header.html')
-        .then(res => res.ok ? res.text() : Promise.reject('Header no encontrado'))
+        .then(res => {
+          if (!res.ok) throw new Error('Header no encontrado');
+          return res.text();
+        })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
           setTimeout(() => {
@@ -469,17 +520,23 @@
         })
         .catch(err => console.error('Error cargando header:', err));
 
+      // Footer
       fetch('/avisos-jardines/common/footer.html')
-        .then(res => res.ok ? res.text() : Promise.reject('Footer no encontrado'))
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
           if (footerContainer) {
             footerContainer.innerHTML = data;
             const anioElement = document.getElementById('anio-actual');
-            if (anioElement) anioElement.textContent = new Date().getFullYear();
+            if (anioElement) {
+              anioElement.textContent = new Date().getFullYear();
+            }
           }
         })
-        .catch(err => console.error('Error cargando footer:', err));
+        .catch(error => console.error('Error cargando footer:', error));
 
       // Cargar el aviso
       cargarAviso();
