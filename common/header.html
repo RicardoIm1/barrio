@@ -107,7 +107,7 @@
 
     .logo-icon {
         font-size: 3rem;
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        background: linear-gradient(135deg, #2b7a2b, #1e4620);
         border-radius: 50%;
         width: 60px;
         height: 60px;
@@ -127,7 +127,7 @@
         margin: 0;
         font-size: 1.8rem;
         font-weight: 700;
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        background: linear-gradient(135deg, #2b7a2b, #d4a043);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -143,12 +143,12 @@
     }
 
     .header-logo:hover h1 {
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        background: linear-gradient(135deg, #3a9a3a, #e0b052);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    /* Botón Iniciar sesión */
+    /* Botón Iniciar sesión - Verde colonia */
     .btn-login {
         display: inline-flex;
         align-items: center;
@@ -167,11 +167,11 @@
 
     .btn-login:hover {
         background: linear-gradient(135deg, #3a9a3a, #2b7a2b);
-        transform: scale(1.02);
+        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(43, 122, 43, 0.3);
     }
 
-    /* Botón Administrador */
+    /* Botón Administrador - Dorado */
     .btn-admin {
         display: inline-flex;
         align-items: center;
@@ -190,11 +190,11 @@
 
     .btn-admin:hover {
         background: linear-gradient(135deg, #e0b052, #d4a043);
-        transform: scale(1.02);
+        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(212, 160, 67, 0.3);
     }
 
-    /* Botón Cerrar sesión */
+    /* Botón Cerrar sesión - Borde dorado */
     .btn-logout {
         display: inline-flex;
         align-items: center;
@@ -214,7 +214,7 @@
     .btn-logout:hover {
         background: #d4a043;
         color: white;
-        transform: scale(1.02);
+        transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(212, 160, 67, 0.3);
     }
 
@@ -259,8 +259,16 @@
 
 <script>
     // ==================== HEADER CON SESIÓN ====================
+    
+    let headerInicializado = false;
 
-    // Función para actualizar la UI del header
+    function inicializarHeaderUnaSolaVez() {
+        if (headerInicializado) return;
+        headerInicializado = true;
+        console.log('🚀 Header inicializado por primera vez');
+        actualizarHeaderUI();
+    }
+
     function actualizarHeaderUI() {
         console.log('🔄 Actualizando header UI...');
 
@@ -288,14 +296,15 @@
 
             if (usuario.rol === 'admin') {
                 adminLink.style.display = 'inline-flex';
-                console.log('✅ Admin detectado');
+                adminLink.onclick = function(e) {
+                    e.preventDefault();
+                    window.location.href = '/avisos-jardines/admin.html';
+                };
             } else {
                 adminLink.style.display = 'none';
             }
 
-            cargarReputacion();
-
-            cerrarSesion.onclick = function (e) {
+            cerrarSesion.onclick = function(e) {
                 e.preventDefault();
                 console.log('🚪 Cerrando sesión...');
                 localStorage.removeItem('usuario');
@@ -303,12 +312,7 @@
                 window.location.href = '/avisos-jardines/login.html';
             };
 
-            if (usuario.rol === 'admin') {
-                adminLink.onclick = function (e) {
-                    e.preventDefault();
-                    window.location.href = '/avisos-jardines/admin.html';
-                };
-            }
+            cargarReputacion();
         } else {
             loginLink.style.display = 'inline-flex';
             adminLink.style.display = 'none';
@@ -334,7 +338,6 @@
         }
 
         try {
-            // ✅ CORREGIDO: usar API.miReputacion directamente
             const result = await API.miReputacion(apiKey);
 
             if (result && result.success && result.data) {
@@ -393,7 +396,6 @@
         if (detalleDiv) detalleDiv.innerHTML = '<div style="text-align: center; padding: 40px;">Cargando detalles...</div>';
 
         try {
-            // ✅ CORREGIDO: usar API.miReputacion directamente
             const result = await API.miReputacion(apiKey);
 
             if (result && result.success && result.data) {
@@ -437,7 +439,7 @@
                         </div>
                     </div>
                     <div style="margin-top: 20px; text-align: center;">
-                        <button id="btn-verificar-telefono-modal" style="background: linear-gradient(135deg, #f5b042, #ff8c42); color: white; border: none; border-radius: 30px; padding: 12px 24px; cursor: pointer; font-weight: 600;">
+                        <button id="btn-verificar-telefono-modal" style="background: linear-gradient(135deg, #2b7a2b, #1e4620); color: white; border: none; border-radius: 30px; padding: 12px 24px; cursor: pointer; font-weight: 600;">
                             📱 Verificar mi teléfono (+20 pts)
                         </button>
                     </div>
@@ -487,7 +489,6 @@
 
             mensajeDiv.innerHTML = '<span>📤 Enviando código...</span>';
             const apiKey = localStorage.getItem('api_key');
-            // ✅ CORREGIDO: usar API.solicitarVerificacionTelefono
             const result = await API.solicitarVerificacionTelefono(telefono, apiKey);
 
             if (result && result.success) {
@@ -509,7 +510,6 @@
 
             mensajeDiv.innerHTML = '<span>🔍 Verificando...</span>';
             const apiKey = localStorage.getItem('api_key');
-            // ✅ CORREGIDO: usar API.confirmarVerificacionTelefono
             const result = await API.confirmarVerificacionTelefono(codigo, apiKey);
 
             if (result && result.success) {
@@ -530,14 +530,10 @@
         reputacionInterval = setInterval(cargarReputacion, 30000);
     }
 
-    window.inicializarHeaderAuth = function () {
-        console.log('🚀 Inicializando header auth...');
-        actualizarHeaderUI();
+    // Configurar eventos UNA SOLA VEZ
+    document.addEventListener('DOMContentLoaded', function() {
+        inicializarHeaderUnaSolaVez();
         iniciarActualizacionReputacion();
-    };
-
-    document.addEventListener('DOMContentLoaded', function () {
-        setTimeout(actualizarHeaderUI, 200);
 
         document.getElementById('btn-ver-reputacion')?.addEventListener('click', mostrarDetalleReputacion);
         document.getElementById('cerrar-reputacion-modal')?.addEventListener('click', () => {
@@ -558,24 +554,4 @@
             }
         });
     });
-
-    window.addEventListener('api-ready', function () {
-        actualizarHeaderUI();
-    });
-
-    window.addEventListener('storage', function (e) {
-        if (e.key === 'usuario' || e.key === 'api_key') {
-            actualizarHeaderUI();
-        }
-    });
-
-    window.actualizarHeaderSesion = function () {
-        actualizarHeaderUI();
-    };
-
-    window.addEventListener('auth-change', function () {
-        actualizarHeaderUI();
-    });
-
-    window.actualizarHeaderUI = actualizarHeaderUI;
 </script>
