@@ -26,7 +26,6 @@
       font-family: 'Georgia', 'Times New Roman', Times, serif;
     }
 
-    /* Contenedor principal estilo periódico */
     .aviso-paper {
       max-width: 960px;
       margin: 2rem auto;
@@ -37,7 +36,6 @@
       border: 1px solid var(--border-light);
     }
 
-    /* Header del artículo */
     .article-header {
       padding: 2rem 2.5rem 1rem;
       border-bottom: 2px solid var(--accent-gold);
@@ -76,7 +74,6 @@
       font-family: 'Georgia', 'Times New Roman', Times, serif;
     }
 
-    /* Imagen destacada */
     .featured-image {
       width: 100%;
       max-height: 500px;
@@ -89,16 +86,6 @@
       background: #1a1a2e;
     }
 
-    .image-caption {
-      padding: 0.5rem 1rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      background: white;
-      border-top: 1px solid var(--border-light);
-      font-style: italic;
-    }
-
-    /* Barra de metadatos */
     .article-meta {
       display: flex;
       flex-wrap: wrap;
@@ -118,7 +105,6 @@
       gap: 0.4rem;
     }
 
-    /* Cuerpo del artículo */
     .article-body {
       padding: 2rem 2.5rem;
       font-size: 1.1rem;
@@ -130,7 +116,6 @@
       margin-bottom: 1.3rem;
     }
 
-    /* Información adicional */
     .info-card {
       background: #f0ede6;
       border-left: 4px solid var(--accent-gold);
@@ -152,7 +137,7 @@
       color: var(--text-dark);
     }
 
-    /* Galería de imágenes */
+    /* Galería */
     .gallery-section {
       margin: 2rem 0;
     }
@@ -169,7 +154,7 @@
 
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 1rem;
     }
 
@@ -189,12 +174,19 @@
 
     .gallery-item img {
       width: 100%;
-      height: 140px;
+      height: 120px;
       object-fit: cover;
       border-radius: 8px;
     }
 
-    /* Lightbox para ver imagen grande */
+    .gallery-item video {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Lightbox */
     .lightbox {
       display: none;
       position: fixed;
@@ -202,7 +194,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 1000;
       cursor: pointer;
       align-items: center;
@@ -213,7 +205,7 @@
       display: flex;
     }
 
-    .lightbox img {
+    .lightbox img, .lightbox video {
       max-width: 90%;
       max-height: 90%;
       object-fit: contain;
@@ -229,7 +221,6 @@
       font-family: system-ui;
     }
 
-    /* Botones de acción */
     .article-actions {
       display: flex;
       gap: 1rem;
@@ -280,7 +271,6 @@
       filter: brightness(1.05);
     }
 
-    /* Estados */
     .loading-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -297,7 +287,6 @@
       color: #c0392b;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .aviso-paper {
         margin: 1rem;
@@ -313,11 +302,6 @@
         gap: 1rem;
         font-size: 0.7rem;
       }
-      .info-card p {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.2rem;
-      }
       .gallery {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
       }
@@ -326,10 +310,8 @@
 </head>
 <body>
 
-  <!-- Header -->
   <div id="header-container"></div>
 
-  <!-- Contenido principal -->
   <main>
     <div id="aviso-container" class="aviso-paper">
       <div class="loading-state">
@@ -338,27 +320,23 @@
     </div>
   </main>
 
-  <!-- Lightbox para imágenes -->
+  <!-- Lightbox -->
   <div id="lightbox" class="lightbox" onclick="cerrarLightbox()">
     <span class="lightbox-close">&times;</span>
-    <img id="lightbox-img" src="" alt="Imagen ampliada">
+    <div id="lightbox-content"></div>
   </div>
 
-  <!-- Footer -->
   <div id="footer-container"></div>
 
-  <!-- Scripts -->
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
-  <script src="/avisos-jardines/js/multimedia.js"></script>
   <script src="/avisos-jardines/js/auth.js"></script>
 
   <script>
     // ========== FUNCIONES DE UTILIDAD ==========
     function escapeHTML(str) {
       if (str === null || str === undefined) return '';
-      const stringValue = String(str);
-      return stringValue
+      return String(str)
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
@@ -373,26 +351,31 @@
       return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
     }
 
-    // Lightbox
-    function abrirLightbox(src) {
+    let multimediaManager = null;
+    let avisoActual = null;
+    let usuarioActual = null;
+
+    function abrirLightbox(url, tipo) {
       const lightbox = document.getElementById('lightbox');
-      const img = document.getElementById('lightbox-img');
-      img.src = src;
+      const content = document.getElementById('lightbox-content');
+      
+      if (tipo === 'video') {
+        content.innerHTML = `<video controls autoplay style="max-width:90%; max-height:90%;"><source src="${escapeHTML(url)}" type="video/mp4"></video>`;
+      } else {
+        content.innerHTML = `<img src="${escapeHTML(url)}" alt="Imagen ampliada">`;
+      }
+      
       lightbox.classList.add('active');
     }
 
     function cerrarLightbox() {
       const lightbox = document.getElementById('lightbox');
       lightbox.classList.remove('active');
+      document.getElementById('lightbox-content').innerHTML = '';
     }
 
     // ========== CARGA DEL AVISO ==========
     const AVISO_ID = new URLSearchParams(window.location.search).get('id');
-    let avisoActual = null;
-    let usuarioActual = null;
-    let multimediaItems = [];
-
-    const container = document.getElementById('aviso-container');
 
     async function cargarAviso() {
       if (!AVISO_ID) {
@@ -409,6 +392,10 @@
           usuarioActual = null;
         }
 
+        // Inicializar MultimediaManager
+        multimediaManager = new MultimediaManager(API);
+
+        // Obtener el aviso
         const resultado = await API.listar('AVISOS');
         const avisos = resultado.datos || [];
         const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
@@ -421,10 +408,19 @@
         avisoActual = aviso;
         console.log('Aviso cargado:', avisoActual);
 
-        // Cargar multimedia asociado
-        await cargarMultimedia();
+        // Obtener multimedia asociado
+        let multimediaItems = [];
+        try {
+          const multimediaResult = await multimediaManager.listarMultimedia(AVISO_ID);
+          if (multimediaResult.success && multimediaResult.data) {
+            multimediaItems = multimediaResult.data;
+            console.log('Multimedia cargado:', multimediaItems.length, 'items');
+          }
+        } catch (e) {
+          console.warn('Error cargando multimedia (puede que no exista aún):', e);
+        }
 
-        renderizarAviso();
+        renderizarAviso(multimediaItems);
 
       } catch (error) {
         console.error('Error cargando aviso:', error);
@@ -432,18 +428,8 @@
       }
     }
 
-    async function cargarMultimedia() {
-      if (!window.Multimedia || !AVISO_ID) return;
-      try {
-        multimediaItems = await Multimedia.obtenerPorAviso(AVISO_ID) || [];
-        console.log('Multimedia cargado:', multimediaItems.length, 'items');
-      } catch (e) {
-        console.warn('Error cargando multimedia:', e);
-        multimediaItems = [];
-      }
-    }
-
     function mostrarError(mensaje) {
+      const container = document.getElementById('aviso-container');
       container.innerHTML = `
         <div class="error-message">
           ❌ ${escapeHTML(mensaje)}
@@ -454,7 +440,7 @@
       `;
     }
 
-    function renderizarAviso() {
+    function renderizarAviso(multimediaItems) {
       if (!avisoActual) return;
 
       // Fecha
@@ -495,10 +481,33 @@
         categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN';
       }
 
-      // Obtener imagen destacada (primera imagen de la galería)
-      const imagenDestacada = multimediaItems.length > 0 ? multimediaItems[0].url : null;
+      // Determinar imagen destacada (prioridad: 1. imagen_url, 2. primera imagen multimedia)
+      let imagenDestacada = null;
+      let imagenesGaleria = [];
+      
+      // Si hay imagen_url en el aviso (sistema viejo)
+      if (avisoActual.imagen_url && avisoActual.imagen_url.trim() !== '') {
+        imagenDestacada = avisoActual.imagen_url;
+        // Las imágenes multimedia se añaden después
+        if (multimediaItems && multimediaItems.length > 0) {
+          imagenesGaleria = multimediaItems.filter(m => m.tipo === 'image/jpeg' || m.tipo === 'image/png' || m.tipo === 'image/jpg');
+        }
+      } 
+      // Si no hay imagen_url, usar multimedia (sistema nuevo)
+      else if (multimediaItems && multimediaItems.length > 0) {
+        const imagenes = multimediaItems.filter(m => m.tipo === 'image/jpeg' || m.tipo === 'image/png' || m.tipo === 'image/jpg');
+        if (imagenes.length > 0) {
+          imagenDestacada = imagenes[0].url;
+          imagenesGaleria = imagenes.slice(1);
+        }
+        
+        // Videos se muestran aparte
+        const videos = multimediaItems.filter(m => m.tipo === 'video/mp4' || m.tipo === 'video/webm');
+        imagenesGaleria.push(...videos);
+      }
 
-      // Construir HTML
+      const container = document.getElementById('aviso-container');
+      
       let html = `
         <div class="article-header">
           <div class="article-category ${categoriaClase}">${categoriaTexto}</div>
@@ -507,7 +516,6 @@
             <span>📅 ${escapeHTML(fechaTexto)}</span>
             <span>👤 Por: ${escapeHTML(avisoActual.created_by || 'Vecino')}</span>
             <span>🏷️ ${escapeHTML(categoriaLegible)}</span>
-            ${avisoActual.visitas ? `<span>👁️ ${avisoActual.visitas} vistas</span>` : ''}
           </div>
         </div>
       `;
@@ -516,12 +524,11 @@
       if (imagenDestacada) {
         html += `
           <div class="featured-image-container">
-            <img src="${escapeHTML(imagenDestacada)}" alt="${escapeHTML(avisoActual.titulo || 'Imagen destacada')}" class="featured-image" onclick="abrirLightbox('${escapeHTML(imagenDestacada)}')">
+            <img src="${escapeHTML(imagenDestacada)}" alt="${escapeHTML(avisoActual.titulo || 'Imagen destacada')}" class="featured-image" onclick="abrirLightbox('${escapeHTML(imagenDestacada)}', 'imagen')">
           </div>
         `;
       }
 
-      // Cuerpo
       html += `<div class="article-body">`;
       html += `<div class="article-content">${formatearContenido(avisoActual.contenido)}</div>`;
 
@@ -545,21 +552,30 @@
         html += `</div>`;
       }
 
-      // Galería de imágenes (todas las imágenes excepto la primera que ya es destacada)
-      const imagenesGaleria = multimediaItems.slice(1);
+      // Galería de imágenes y videos
       if (imagenesGaleria.length > 0) {
         html += `
           <div class="gallery-section">
-            <div class="gallery-title">📸 Galería de imágenes</div>
+            <div class="gallery-title">📸 Galería multimedia</div>
             <div class="gallery" id="gallery-container">
         `;
         
-        imagenesGaleria.forEach(img => {
-          html += `
-            <div class="gallery-item" onclick="abrirLightbox('${escapeHTML(img.url)}')">
-              <img src="${escapeHTML(img.url)}" alt="Imagen del aviso" loading="lazy">
-            </div>
-          `;
+        imagenesGaleria.forEach(item => {
+          const esVideo = item.tipo === 'video/mp4' || item.tipo === 'video/webm';
+          if (esVideo) {
+            html += `
+              <div class="gallery-item" onclick="abrirLightbox('${escapeHTML(item.url)}', 'video')">
+                <video src="${escapeHTML(item.url)}" preload="metadata"></video>
+                <div style="text-align: center; font-size: 0.7rem; margin-top: 0.3rem;">🎬 Video</div>
+              </div>
+            `;
+          } else {
+            html += `
+              <div class="gallery-item" onclick="abrirLightbox('${escapeHTML(item.url)}', 'imagen')">
+                <img src="${escapeHTML(item.url)}" alt="Multimedia" loading="lazy">
+              </div>
+            `;
+          }
         });
         
         html += `</div></div>`;
@@ -601,6 +617,9 @@
         alert('❌ Error al eliminar el aviso');
       }
     };
+
+    window.abrirLightbox = abrirLightbox;
+    window.cerrarLightbox = cerrarLightbox;
 
     // Cargar header, footer y el aviso
     document.addEventListener('DOMContentLoaded', function() {
