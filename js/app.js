@@ -1,14 +1,5 @@
 // ==================== UTILIDADES ====================
 
-function normalizarTelefono(input) {
-  if (!input) return null;
-  let num = String(input).replace(/\D/g, '');
-  if (num.length === 10) return '521' + num;
-  if (num.startsWith('52') && num.length === 12) return num;
-  if (num.startsWith('521') && num.length === 13) return num;
-  return null;
-}
-
 function escapeHTML(str) {
   if (!str) return '';
   return String(str)
@@ -25,6 +16,7 @@ let paginaActual = 1;
 let categoriaActual = 'todos';
 let todosLosAvisos = [];
 let totalPaginas = 1;
+let avisoComentariosActual = null;
 const AVISOS_POR_PAGINA = 6;
 
 // ==================== INICIO ====================
@@ -53,15 +45,7 @@ async function cargarAvisos() {
   contenedor.innerHTML = '<div class="cargando">📰 Cargando avisos...</div>';
 
   try {
-    const consulta = {};
-    if (categoriaActual !== 'todos') {
-      consulta.categoria = categoriaActual;
-    }
-
-    const resultado = await API.listar('AVISOS', consulta, {
-      pagina: 1,
-      limite: 100
-    });
+    const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 100 });
 
     if (resultado && resultado.datos) {
       todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
@@ -72,11 +56,9 @@ async function cargarAvisos() {
 
   } catch (error) {
     console.error('Error cargando avisos:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos: ' + error.message + '</div>';
+    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos</div>';
   }
 }
-
-// ==================== FILTRO + PAGINACIÓN ====================
 
 function filtrarYAplicarPaginacion() {
   let avisosFiltrados = todosLosAvisos;
@@ -92,7 +74,7 @@ function filtrarYAplicarPaginacion() {
   renderizarAvisos(avisosPaginados, paginaActual, totalPaginas);
 }
 
-// ==================== REGISTRO DE ESTADÍSTICAS ====================
+// ==================== ESTADÍSTICAS ====================
 
 async function registrarEstadistica(accion, id) {
   try {
@@ -103,6 +85,116 @@ async function registrarEstadistica(accion, id) {
   } catch (error) {
     console.warn(`No se pudo registrar ${accion}:`, error);
     return null;
+  }
+}
+
+// ==================== COMENTARIOS ====================
+
+let comentariosCache = {};
+
+async function cargarComentarios(avisoId) {
+  try {
+    const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+    if (resultado.success) {
+      comentariosCache[avisoId] = resultado.data || [];
+    }
+    return comentariosCache[avisoId] || [];
+  } catch (error) {
+    console.error('Error cargando comentarios:', error);
+    return [];
+  }
+}
+
+async function agregarComentario(avisoId, texto) {
+  const usuario = API.getUsuarioActual();
+  if (!usuario) {
+    alert('Debes iniciar sesión para comentar');
+    return false;
+  }
+
+  if (!texto.trim()) {
+    alert('Escribe un comentario');
+    return false;
+  }
+
+  try {
+    const resultado = await API.peticion('AGREGAR_COMENTARIO', {
+      avisoId: avisoId,
+      texto: texto.trim(),
+      autor: usuario.nombre || usuario.email
+    });
+    
+    if (resultado.success) {
+      // Actualizar caché
+      if (!comentariosCache[avisoId]) comentariosCache[avisoId] = [];
+      comentariosCache[avisoId].unshift({
+        id: Date.now(),
+        texto: texto.trim(),
+        autor: usuario.nombre || usuario.email,
+        fecha: new Date().toISOString()
+      });
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error agregando comentario:', error);
+    alert('Error al enviar comentario');
+    return false;
+  }
+}
+
+function mostrarPanelComentarios(avisoId, avisoTitulo) {
+  const panel = document.getElementById('comments-panel');
+  if (!panel) {
+    console.error('Panel de comentarios no encontrado');
+    return;
+  }
+
+  avisoComentariosActual = avisoId;
+  document.getElementById('comments-title').textContent = `💬 Comentarios: ${escapeHTML(avisoTitulo)}`;
+  
+  cargarYMostrarComentarios(avisoId);
+  panel.classList.add('open');
+}
+
+async function cargarYMostrarComentarios(avisoId) {
+  const container = document.getElementById('comments-list');
+  if (!container) return;
+
+  container.innerHTML = '<div class="cargando" style="padding: 1rem;">Cargando comentarios...</div>';
+  
+  const comentarios = await cargarComentarios(avisoId);
+  
+  if (comentarios.length === 0) {
+    container.innerHTML = '<div style="text-align: center; padding: 1rem; color: var(--color-texto-claro);">💬 No hay comentarios aún. ¡Sé el primero!</div>';
+    return;
+  }
+  
+  container.innerHTML = comentarios.map(com => `
+    <div class="comment-item">
+      <div class="comment-author">${escapeHTML(com.autor)}</div>
+      <div class="comment-text">${escapeHTML(com.texto)}</div>
+      <div class="comment-date">${new Date(com.fecha).toLocaleString('es-MX')}</div>
+    </div>
+  `).join('');
+}
+
+function cerrarPanelComentarios() {
+  const panel = document.getElementById('comments-panel');
+  if (panel) panel.classList.remove('open');
+  avisoComentariosActual = null;
+}
+
+async function enviarComentario() {
+  const input = document.getElementById('comment-input');
+  const texto = input.value;
+  
+  if (!avisoComentariosActual) return;
+  
+  const success = await agregarComentario(avisoComentariosActual, texto);
+  if (success) {
+    input.value = '';
+    cargarYMostrarComentarios(avisoComentariosActual);
   }
 }
 
@@ -119,29 +211,24 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
   }
 
   let html = '';
-
+  
   avisos.forEach(aviso => {
-    const fecha = aviso.created_at
+    const fecha = aviso.created_at 
       ? new Date(aviso.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
       : 'Fecha no disponible';
-
+    
     const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
-    const esPendiente = aviso.status === 'pendiente';
-
-    // ========== ESTADÍSTICAS DEL AVISO ==========
+    
+    // Estadísticas (valores por defecto si no existen)
     const vistas = aviso.vistas || 0;
     const clicksWhatsApp = aviso.clicks_whatsapp || 0;
     const intereses = aviso.intereses || 0;
-
-    // Calcular interacciones totales
-    const totalInteracciones = vistas + clicksWhatsApp + intereses;
-
-    // ========== VALIDACIÓN SEGURA PARA CONTACTO ==========
+    
+    // Contacto
     let numeroWhatsApp = '';
     let numeroTelefono = '';
-
     const contactoStr = aviso.contacto ? String(aviso.contacto) : '';
-
+    
     if (contactoStr) {
       const numeros = contactoStr.match(/\d+/g);
       if (numeros && numeros.length > 0) {
@@ -152,10 +239,10 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
         }
       }
     }
-
+    
     const whatsappText = `Hola, vi tu aviso "${aviso.titulo}" en la plataforma de la colonia. Me interesa más información.`;
-
-    // Categoría legible y colores
+    
+    // Categoría
     const categoriasMap = {
       'urgente': { nombre: '🚨 URGENTE', color: '#dc3545' },
       'escuelas': { nombre: '🏫 ESCUELAS', color: '#2563eb' },
@@ -165,16 +252,13 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
       'gobierno': { nombre: '🏛️ GOBIERNO', color: '#4b5563' },
       'varios': { nombre: '📢 VARIOS', color: '#6b7280' }
     };
-
+    
     const categoriaInfo = categoriasMap[aviso.categoria] || { nombre: '📢 AVISO', color: '#6c757d' };
-    const categoriaNombre = categoriaInfo.nombre;
-    const categoriaColor = categoriaInfo.color;
-
+    
     html += `
-      <div class="tarjeta aviso-card ${esUrgente ? 'urgente' : ''} ${esPendiente ? 'pendiente' : ''}" onclick="verAviso('${aviso.id}')">
-        ${esPendiente ? '<div class="pendiente-badge">⏳ Pendiente</div>' : ''}
-        <div class="categoria-badge" style="background: ${categoriaColor}; color: white;">
-          ${categoriaNombre}
+      <div class="tarjeta aviso-card ${esUrgente ? 'urgente' : ''}" onclick="verAviso('${aviso.id}')">
+        <div class="categoria-badge" style="background: ${categoriaInfo.color}; color: white;">
+          ${categoriaInfo.nombre}
         </div>
         
         ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" alt="${aviso.titulo}" class="aviso-imagen" loading="lazy">` : ''}
@@ -194,26 +278,27 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
             <span>📍 ${escapeHTML(aviso.ubicacion || 'Colonia Jardines')}</span>
           </div>
           
-          <!-- ESTADÍSTICAS DEL AVISO -->
-          <div style="display: flex; gap: 1rem; margin-top: 0.8rem; font-size: 0.7rem; color: var(--color-texto-claro); border-top: 1px solid var(--color-borde); padding-top: 0.6rem;">
-            <span title="Veces que se ha visto este aviso">👁️ ${vistas}</span>
-            <span title="Personas que contactaron por WhatsApp">💬 ${clicksWhatsApp}</span>
-            <span title="Personas que marcaron 'Me interesa'">❤️ ${intereses}</span>
-            ${totalInteracciones > 0 ? `<span title="Interacciones totales">📊 ${totalInteracciones}</span>` : ''}
+          <!-- ESTADÍSTICAS -->
+          <div class="aviso-stats">
+            <span class="stat-item" title="Veces visto" onclick="event.stopPropagation()">
+              👁️ ${vistas}
+            </span>
+            <span class="stat-item" title="Contactos por WhatsApp" onclick="event.stopPropagation()">
+              💬 ${clicksWhatsApp}
+            </span>
+            <span class="stat-item like-btn" onclick="event.stopPropagation(); registrarInteres('${aviso.id}', this)" title="Me interesa">
+              ❤️ ${intereses}
+            </span>
+            <span class="stat-item" onclick="event.stopPropagation(); mostrarPanelComentarios('${aviso.id}', '${escapeHTML(aviso.titulo)}')" title="Comentarios">
+              💬
+            </span>
           </div>
         </div>
-        
-        <!-- Botón "Me interesa" -->
-        <button class="interes-btn" 
-                onclick="event.stopPropagation(); registrarInteres('${aviso.id}', this)"
-                title="Me interesa este aviso">
-          ❤️
-        </button>
         
         ${numeroWhatsApp ? `
           <a href="https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(whatsappText)}" 
              class="whatsapp-btn" 
-             onclick="event.stopPropagation(); registrarClickWhatsApp('${aviso.id}'); abrirWhatsApp('${numeroWhatsApp}', '${whatsappText}', event)"
+             onclick="event.stopPropagation(); registrarClickWhatsApp('${aviso.id}')"
              title="Contactar por WhatsApp">
             💬
           </a>
@@ -221,9 +306,31 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
       </div>
     `;
   });
-
+  
   container.innerHTML = html;
   renderizarPaginacion(pagina, totalPaginas);
+}
+
+// ==================== INTERACCIONES ====================
+
+async function registrarClickWhatsApp(id) {
+  await registrarEstadistica('REGISTRAR_CLICK_WHATSAPP', id);
+  // Recargar avisos para actualizar el contador
+  setTimeout(() => cargarAvisos(), 500);
+}
+
+async function registrarInteres(id, btnElement) {
+  const resultado = await registrarEstadistica('REGISTRAR_INTERES', id);
+  if (resultado && resultado.success) {
+    if (btnElement) {
+      btnElement.style.transform = 'scale(1.2)';
+      setTimeout(() => {
+        btnElement.style.transform = 'scale(1)';
+      }, 300);
+    }
+    // Recargar avisos para actualizar el contador
+    setTimeout(() => cargarAvisos(), 500);
+  }
 }
 
 // ==================== PAGINACIÓN ====================
@@ -231,41 +338,41 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
 function renderizarPaginacion(paginaActual, totalPaginas) {
   const pagContainer = document.getElementById('paginacion');
   if (!pagContainer) return;
-
+  
   if (totalPaginas <= 1) {
     pagContainer.innerHTML = '';
     return;
   }
-
+  
   let html = '';
-
+  
   if (paginaActual > 1) {
     html += `<button class="pagina" data-pagina="${paginaActual - 1}">« Anterior</button>`;
   }
-
+  
   const inicio = Math.max(1, paginaActual - 2);
   const fin = Math.min(totalPaginas, paginaActual + 2);
-
+  
   if (inicio > 1) {
     html += `<button class="pagina" data-pagina="1">1</button>`;
     if (inicio > 2) html += `<span class="paginacion-puntos">...</span>`;
   }
-
+  
   for (let i = inicio; i <= fin; i++) {
     html += `<button class="pagina ${i === paginaActual ? 'activa' : ''}" data-pagina="${i}">${i}</button>`;
   }
-
+  
   if (fin < totalPaginas) {
     if (fin < totalPaginas - 1) html += `<span class="paginacion-puntos">...</span>`;
     html += `<button class="pagina" data-pagina="${totalPaginas}">${totalPaginas}</button>`;
   }
-
+  
   if (paginaActual < totalPaginas) {
     html += `<button class="pagina" data-pagina="${paginaActual + 1}">Siguiente »</button>`;
   }
-
+  
   pagContainer.innerHTML = html;
-
+  
   pagContainer.querySelectorAll('.pagina[data-pagina]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -281,49 +388,12 @@ function renderizarPaginacion(paginaActual, totalPaginas) {
 
 // ==================== FUNCIONES GLOBALES ====================
 
-window.verAviso = function (id) {
+window.verAviso = function(id) {
   window.location.href = `/avisos-jardines/aviso.html?id=${id}`;
 };
 
-window.registrarClickWhatsApp = async function (id) {
-  await registrarEstadistica('REGISTRAR_CLICK_WHATSAPP', id);
-};
-
-window.registrarInteres = async function (id, btnElement) {
-  const resultado = await registrarEstadistica('REGISTRAR_INTERES', id);
-  if (resultado && resultado.success) {
-    // Mostrar animación de confirmación
-    if (btnElement) {
-      btnElement.style.transform = 'scale(1.2)';
-      setTimeout(() => {
-        btnElement.style.transform = 'scale(1)';
-      }, 300);
-    }
-    // Opcional: mostrar mensaje flotante
-    const toast = document.createElement('div');
-    toast.textContent = '❤️ ¡Gracias por tu interés!';
-    toast.style.position = 'fixed';
-    toast.style.bottom = '20px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.background = '#1e4620';
-    toast.style.color = 'white';
-    toast.style.padding = '0.5rem 1rem';
-    toast.style.borderRadius = '2rem';
-    toast.style.zIndex = '1000';
-    toast.style.fontSize = '0.8rem';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-  }
-};
-
-window.abrirWhatsApp = function (numero, texto, event) {
-  if (event) event.stopPropagation();
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
-  window.open(url, '_blank');
-};
-
-window.abrirTelefono = function (numero, event) {
-  if (event) event.stopPropagation();
-  window.open(`tel:${numero}`, '_blank');
-};
+window.registrarClickWhatsApp = registrarClickWhatsApp;
+window.registrarInteres = registrarInteres;
+window.mostrarPanelComentarios = mostrarPanelComentarios;
+window.cerrarPanelComentarios = cerrarPanelComentarios;
+window.enviarComentario = enviarComentario;
