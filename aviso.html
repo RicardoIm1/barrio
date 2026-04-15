@@ -1,35 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
-
+<html lang="es-MX">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
   <title>Aviso - Avisos Colonia Jardines PVR</title>
 
-  <!-- Estilos -->
+  <!-- Estilos base -->
   <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <link rel="manifest" href="/avisos-jardines/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
 
-  <!-- Estilos adicionales formato periódico digital -->
+  <!-- Estilos específicos para la vista de aviso individual (estilo periódico digital) -->
   <style>
-    /* ========== ESTILO PERIÓDICO DIGITAL / SITIO DE NOTICIAS ========== */
+    /* ========== ESTILO PERIÓDICO DIGITAL ========== */
     body {
       background: #f5f5f0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
 
     /* Contenedor principal estilo artículo */
-    .contenedor-chico {
+    .aviso-contenedor {
       max-width: 880px;
-      margin: 30px auto;
-      background: #ffffff;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 1rem;
       box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-      border-radius: 12px;
       overflow: hidden;
+      border: 1px solid var(--color-borde);
     }
 
     /* Contenido del aviso */
     #aviso-detalle {
-      padding: 0 35px 40px;
+      padding: 2rem 2rem 2.5rem;
     }
 
     /* Categoría - etiqueta de sección */
@@ -39,99 +40,99 @@
       text-transform: uppercase;
       letter-spacing: 2px;
       font-weight: 700;
-      padding: 5px 12px;
-      background: #1a1a2e;
+      padding: 0.3rem 0.8rem;
+      background: var(--color-primario);
       color: #f5b042;
-      border-radius: 20px;
-      margin-bottom: 20px;
+      border-radius: 2rem;
+      margin-bottom: 1.2rem;
     }
 
     /* Título principal del aviso */
     .aviso-titulo {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       font-weight: 800;
       line-height: 1.2;
-      margin: 15px 0 20px;
-      color: #1a1a2e;
+      margin: 0.5rem 0 1rem;
+      color: var(--color-primario);
       letter-spacing: -0.5px;
     }
 
     /* Barra de metadatos */
     .aviso-meta {
       display: flex;
-      gap: 25px;
+      gap: 1.5rem;
       flex-wrap: wrap;
-      padding: 15px 0;
-      margin: 15px 0 25px;
-      border-top: 1px solid #e8e0d0;
-      border-bottom: 1px solid #e8e0d0;
-      color: #6b5b4a;
-      font-size: 0.8rem;
+      padding: 0.8rem 0;
+      margin: 1rem 0 1.5rem;
+      border-top: 1px solid var(--color-borde);
+      border-bottom: 1px solid var(--color-borde);
+      color: var(--color-texto-claro);
+      font-size: 0.85rem;
     }
 
     .aviso-meta span {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 0.4rem;
     }
 
     /* Contenido del artículo */
     .aviso-contenido {
       font-size: 1.1rem;
       line-height: 1.7;
-      color: #2c3e2f;
-      margin: 30px 0;
+      color: var(--color-texto);
+      margin: 1.8rem 0;
     }
 
     .aviso-contenido p {
-      margin-bottom: 1.3em;
+      margin-bottom: 1.2rem;
     }
 
     /* Recuadro de información adicional */
     .aviso-info-adicional {
       background: #faf8f2;
       border-left: 4px solid #f5b042;
-      padding: 18px 24px;
-      margin: 30px 0;
-      border-radius: 8px;
+      padding: 1rem 1.5rem;
+      margin: 1.8rem 0;
+      border-radius: 0.75rem;
     }
 
     .aviso-info-adicional p {
-      margin: 10px 0;
+      margin: 0.6rem 0;
       font-size: 0.95rem;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 0.6rem;
     }
 
     /* Botón volver */
     .boton-volver {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: #f5f5f0;
-      color: #1a1a2e;
+      gap: 0.5rem;
+      background: var(--color-fondo);
+      color: var(--color-primario);
       text-decoration: none;
-      padding: 10px 22px;
-      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
       font-size: 0.85rem;
-      border-radius: 40px;
+      border-radius: 2rem;
       transition: all 0.2s ease;
-      border: 1px solid #e0d5c0;
-      margin-top: 30px;
+      border: 1px solid var(--color-borde);
+      margin-top: 1.5rem;
     }
 
     .boton-volver:hover {
-      background: #1a1a2e;
-      color: #f5b042;
-      border-color: #1a1a2e;
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
     }
 
     /* Estado de carga */
     .cargando {
       text-align: center;
-      padding: 60px 20px;
-      color: #888;
+      padding: 3rem 1rem;
+      color: var(--color-texto-claro);
       font-size: 1rem;
     }
 
@@ -139,16 +140,16 @@
     .gallery {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      margin: 30px 0;
+      gap: 1rem;
+      margin: 1.8rem 0;
     }
 
     .media-item {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 0.8rem;
       text-align: center;
-      background: #f9f9f9;
+      background: var(--color-fondo);
     }
 
     .media-item img,
@@ -156,18 +157,18 @@
       max-width: 100%;
       max-height: 150px;
       object-fit: cover;
-      border-radius: 4px;
+      border-radius: 0.5rem;
     }
 
     .btn-eliminar-media {
-      margin-top: 8px;
+      margin-top: 0.5rem;
       background: #dc3545;
       color: white;
       border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
+      padding: 0.3rem 0.8rem;
+      border-radius: 1.5rem;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 0.7rem;
     }
 
     .btn-eliminar-media:hover {
@@ -177,11 +178,11 @@
     /* Subida de archivos */
     .upload-area {
       border: 2px dashed #4CAF50;
-      padding: 20px;
+      padding: 1rem;
       text-align: center;
-      margin: 20px 0;
+      margin: 1rem 0;
       cursor: pointer;
-      border-radius: 8px;
+      border-radius: 0.75rem;
       transition: all 0.3s;
     }
 
@@ -194,88 +195,56 @@
       border-color: #45a049;
     }
 
-    /* Botones de acción */
-    .boton {
-      display: inline-block;
-      padding: 10px 20px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      font-size: 14px;
-      transition: all 0.3s;
-    }
-
-    .boton:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Responsive */
     @media (max-width: 768px) {
-      .contenedor-chico {
-        margin: 15px;
+      .aviso-contenedor {
+        margin: 1rem;
       }
-
       .aviso-titulo {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
       }
-
       #aviso-detalle {
-        padding: 0 20px 30px;
+        padding: 1.2rem;
       }
-
       .aviso-contenido {
         font-size: 1rem;
       }
-
       .aviso-meta {
-        gap: 15px;
+        gap: 1rem;
       }
-
       .gallery {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       }
     }
   </style>
-
-  <meta name="theme-color" content="#2c3e50">
 </head>
 
 <body>
-
-  <!-- ================= HEADER ================= -->
+  <!-- Header -->
   <div id="header-container"></div>
 
-  <!-- ================= CONTENIDO ================= -->
-  <main class="contenedor-chico">
-
-    <!-- Mensajes del sistema -->
-    <div id="mensaje-container"></div>
-
-    <!-- Aquí se inyecta TODO el aviso desde aviso.js -->
-    <div id="aviso-detalle" class="cargando">
-      📰 Cargando aviso...
+  <!-- Contenido principal -->
+  <main>
+    <div class="aviso-contenedor">
+      <div id="mensaje-container"></div>
+      <div id="aviso-detalle" class="cargando">
+        📰 Cargando aviso...
+      </div>
     </div>
-
   </main>
 
-  <!-- ================= FOOTER ================= -->
+  <!-- Footer -->
   <div id="footer-container"></div>
 
-  <!-- ================= SCRIPTS ================= -->
-  
-  <!-- Core Scripts - El ORDEN es IMPORTANTE -->
+  <!-- Scripts -->
   <script src="/avisos-jardines/js/api.js"></script>
   <script src="/avisos-jardines/js/ui.js"></script>
   <script src="/avisos-jardines/js/multimedia.js"></script>
   <script src="/avisos-jardines/js/aviso.js"></script>
 
-  <!-- Cargar header y footer después de los scripts -->
   <script>
-    // Función para cargar el header
-    function cargarHeader() {
+    // Cargar header y footer
+    document.addEventListener('DOMContentLoaded', function() {
+      // Header
       fetch('/avisos-jardines/common/header.html')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
@@ -283,12 +252,10 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
-          // Esperar a que el DOM se actualice y la función esté disponible
           setTimeout(() => {
             if (typeof window.inicializarHeaderAuth === 'function') {
               window.inicializarHeaderAuth();
             } else {
-              console.warn('⚠️ inicializarHeaderAuth no disponible, reintentando...');
               setTimeout(() => {
                 if (typeof window.inicializarHeaderAuth === 'function') {
                   window.inicializarHeaderAuth();
@@ -298,10 +265,8 @@
           }, 200);
         })
         .catch(err => console.error('Error cargando header:', err));
-    }
 
-    // Función para cargar el footer
-    function cargarFooter() {
+      // Footer
       fetch('/avisos-jardines/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
@@ -317,16 +282,8 @@
             }
           }
         })
-        .catch(error => console.error('Error cargando el footer:', error));
-    }
-
-    // Inicializar todo cuando el DOM esté listo
-    document.addEventListener('DOMContentLoaded', function() {
-      cargarHeader();
-      cargarFooter();
+        .catch(error => console.error('Error cargando footer:', error));
     });
   </script>
-
 </body>
-
 </html>
