@@ -559,7 +559,8 @@ async function activarNotificaciones() {
 }
 
 function escapeHTML(str) {
-  if (!str) return '';
+  if (str === undefined || str === null) return '';
+  if (typeof str !== 'string') str = String(str);
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
