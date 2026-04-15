@@ -425,41 +425,14 @@
   <script src="/avisos-jardines/js/admin.js"></script>
 
   <script>
-    // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function () {
-      // Header
-      fetch('/avisos-jardines/common/header.html')
-        .then(res => {
-          if (!res.ok) throw new Error('Header no encontrado');
-          return res.text();
-        })
-        .then(html => {
-          document.getElementById('header-container').innerHTML = html;
-          setTimeout(() => {
-            if (typeof window.inicializarHeaderAuth === 'function') {
-              window.inicializarHeaderAuth();
-            }
-          }, 100);
-        })
-        .catch(err => console.error('Error cargando header:', err));
+      UI.cargarHeader();  // ← Agregar esta línea
 
-      // Footer
       fetch('/avisos-jardines/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
+        .then(response => response.text())
         .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const anioElement = document.getElementById('anio-actual');
-            if (anioElement) {
-              anioElement.textContent = new Date().getFullYear();
-            }
-          }
-        })
-        .catch(error => console.error('Error cargando footer:', error));
+          document.getElementById('footer-container').innerHTML = data;
+        });
     });
   </script>
 
