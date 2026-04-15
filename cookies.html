@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Política de Cookies | Plataforma de la Colonia</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #eef2e6;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    .cookie-card {
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1e4620, #2b6e2b);
+      color: white;
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .header .sub {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-top: 0.5rem;
+    }
+
+    .sello {
+      display: inline-block;
+      background: #fbbf24;
+      color: #1e4620;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      margin-top: 1rem;
+    }
+
+    .cuerpo {
+      padding: 2rem;
+    }
+
+    .intro {
+      background: #fef9e3;
+      border-left: 5px solid #fbbf24;
+      padding: 1.2rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #7b5e00;
+    }
+
+    .seccion {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 1.5rem;
+    }
+
+    .seccion:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .seccion h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 1.3rem;
+      color: #1e4620;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+
+    .seccion h2 .emoji {
+      font-size: 1.5rem;
+    }
+
+    .seccion p {
+      color: #2c3e50;
+      line-height: 1.6;
+      margin-bottom: 0.8rem;
+    }
+
+    .cookie-tipos {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+
+    .cookie-item {
+      background: #f8fafc;
+      border-radius: 1rem;
+      padding: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .cookie-icon {
+      font-size: 1.8rem;
+    }
+
+    .cookie-info {
+      flex: 1;
+    }
+
+    .cookie-info strong {
+      color: #1e4620;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .cookie-info p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #4a5568;
+    }
+
+    .btn-aceptar {
+      background: #1e4620;
+      color: white;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0.5rem;
+    }
+
+    .btn-aceptar:hover {
+      background: #2b6e2b;
+      transform: scale(1.02);
+    }
+
+    .btn-configurar {
+      background: transparent;
+      border: 2px solid #1e4620;
+      color: #1e4620;
+      padding: 0.9rem 2rem;
+      border-radius: 3rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0.5rem;
+    }
+
+    .btn-configurar:hover {
+      background: #eef5e9;
+    }
+
+    .acciones {
+      background: #f9fafb;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .fecha {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .mini-texto {
+      font-size: 0.7rem;
+      color: #6b7280;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .cuerpo {
+        padding: 1.5rem;
+      }
+      .seccion h2 {
+        font-size: 1.1rem;
+      }
+      .header h1 {
+        font-size: 1.4rem;
+      }
+      .cookie-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="cookie-card">
+    <div class="header">
+      <h1>🍪 Política de Cookies</h1>
+      <div class="sub">(Sí, como las galletas, pero digitales)</div>
+      <div class="sello">TRANSPARENTES · SIN MIGAS · SIN MIEDO</div>
+    </div>
+
+    <div class="cuerpo">
+      <!-- Intro con humor -->
+      <div class="intro">
+        🍪 ¡No te preocupes! Nuestras cookies no se comen, no engordan y no te espían.
+        Solo nos ayudan a que la plataforma funcione mejor para ti.
+      </div>
+
+      <!-- ¿Qué son las cookies? -->
+      <div class="seccion">
+        <h2><span class="emoji">🤔</span> 1. ¿Qué son estas "cookies"?</h2>
+        <p>Son pequeñas archivos que tu navegador guarda cuando visitas nuestra página. No son virus, no son programas malignos. Son como un <strong>post-it</strong> que la página pega en tu navegador para recordar cosas útiles.</p>
+      </div>
+
+      <!-- Tipos de cookies que usamos -->
+      <div class="seccion">
+        <h2><span class="emoji">📦</span> 2. ¿Qué cookies usamos?</h2>
+        <div class="cookie-tipos">
+          <div class="cookie-item">
+            <div class="cookie-icon">🔐</div>
+            <div class="cookie-info">
+              <strong>Cookies técnicas (obligatorias)</strong>
+              <p>Sirven para que puedas iniciar sesión, mantenerte identificado, y que la página funcione sin problemas. Sin estas, no podrías publicar avisos ni ver tu perfil.</p>
+            </div>
+          </div>
+          <div class="cookie-item">
+            <div class="cookie-icon">🎨</div>
+            <div class="cookie-info">
+              <strong>Cookies de preferencias</strong>
+              <p>Recuerdan cosas como tu colonia, tus categorías favoritas o si ya viste un aviso importante. Así no tienes que decírnoslo cada vez que entras.</p>
+            </div>
+          </div>
+          <div class="cookie-item">
+            <div class="cookie-icon">📊</div>
+            <div class="cookie-info">
+              <strong>Cookies de análisis (Google Analytics)</strong>
+              <p>Nos ayudan a saber cuántas personas nos visitan, qué avisos son más populares y cómo mejorar la plataforma. Nunca sabemos quién eres tú específicamente, solo números.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Qué NO hacemos -->
+      <div class="seccion">
+        <h2><span class="emoji">🚫</span> 3. Lo que NO hacemos con las cookies</h2>
+        <div style="background: #f0fdf4; border-radius: 1rem; padding: 1rem;">
+          <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid #d1fae5;">
+            <span>❌</span> <strong>No rastreamos tus movimientos fuera de la plataforma</strong>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid #d1fae5;">
+            <span>❌</span> <strong>No vendemos tus datos a anunciantes</strong>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.5rem 0;">
+            <span>❌</span> <strong>No usamos cookies para mostrarte publicidad invasiva</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cómo controlarlas -->
+      <div class="seccion">
+        <h2><span class="emoji">⚙️</span> 4. ¿Puedo desactivarlas?</h2>
+        <p>Sí, claro. Puedes desactivar las cookies desde la configuración de tu navegador (Chrome, Firefox, Safari, etc.).</p>
+        <p><strong>Pero ojo:</strong> Si las desactivas, algunas cosas dejarán de funcionar bien. Por ejemplo, tendrías que iniciar sesión cada vez que entres, y no recordaremos tu colonia favorita.</p>
+        <div style="background: #eef2ff; border-radius: 1rem; padding: 0.8rem; margin-top: 0.8rem; font-size: 0.85rem;">
+          🔧 <strong>¿Cómo hacerlo?</strong> Busca en la configuración de tu navegador "cookies" o "privacidad". Si necesitas ayuda, pregúntanos y te orientamos.
+        </div>
+      </div>
+
+      <!-- Cookies de terceros -->
+      <div class="seccion">
+        <h2><span class="emoji">👥</span> 5. Cookies de terceros</h2>
+        <p>Usamos <strong>Google Analytics</strong> para ver estadísticas. Google también puede poner sus propias cookies, pero nosotros no tenemos acceso a ellas ni a tu información personal.</p>
+        <p>Si quieres, puedes desactivar Google Analytics con este <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color:#1e4620;">complemento oficial</a>.</p>
+      </div>
+
+      <!-- Resumen rápido -->
+      <div class="seccion">
+        <h2><span class="emoji">📝</span> 6. En resumen (por si no te gusta leer mucho)</h2>
+        <div style="background: #fef9e3; border-radius: 1rem; padding: 1rem; text-align: center;">
+          🍪 Usamos cookies para que la página funcione bien.<br>
+          🔒 No vendemos tus datos.<br>
+          ⚙️ Puedes desactivarlas, pero la página se pondrá un poco tonta.<br>
+          🤝 Somos vecinos, no una empresa rara.
+        </div>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="acciones">
+        <button class="btn-aceptar" id="btnAceptar">🍪 Acepto las cookies</button>
+        <button class="btn-configurar" id="btnConfigurar">⚙️ Configurar preferencias</button>
+        <button class="btn-regresar" id="btnRegresar" style="background:transparent; border:none; color:#6b7280; cursor:pointer; margin-left:1rem;">← Regresar</button>
+      </div>
+
+      <div class="mini-texto">
+        Si sigues navegando sin cambiar la configuración, entendemos que aceptas el uso de cookies.
+      </div>
+
+      <div class="fecha">
+        Última actualización: [fecha actual] · Plataforma de la Colonia [Nombre]
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Guardar preferencia de cookies en localStorage
+  const COOKIE_CONSENT_KEY = 'cookie_consent';
+  
+  function guardarPreferenciaCookies(valor) {
+    localStorage.setItem(COOKIE_CONSENT_KEY, valor);
+    localStorage.setItem('cookie_fecha', new Date().toISOString());
+    
+    if (valor === 'aceptadas') {
+      // Aquí podrías cargar Google Analytics u otras cookies de terceros
+      console.log('Cookies aceptadas por el usuario');
+    } else if (valor === 'rechazadas') {
+      // Aquí podrías bloquear cookies de terceros
+      console.log('Usuario rechazó cookies no esenciales');
+    }
+  }
+  
+  document.getElementById('btnAceptar').addEventListener('click', () => {
+    guardarPreferenciaCookies('aceptadas');
+    alert('🍪 Gracias. Ahora la página recordará tus preferencias.');
+    window.location.href = '/'; // Redirige a la página principal o a donde quieras
+  });
+  
+  document.getElementById('btnConfigurar').addEventListener('click', () => {
+    const respuesta = confirm('¿Quieres rechazar las cookies no esenciales?\n\nEsto significa que no podremos recordar tus preferencias ni usar Google Analytics.\n\n¿Continuar?');
+    if (respuesta) {
+      guardarPreferenciaCookies('rechazadas');
+      alert('✅ Guardado. Solo usaremos cookies esenciales.');
+    } else {
+      guardarPreferenciaCookies('aceptadas');
+      alert('🍪 Perfecto. Usamos cookies para mejorar tu experiencia.');
+    }
+  });
+  
+  document.getElementById('btnRegresar').addEventListener('click', () => {
+    window.history.back();
+  });
+  
+  // Si ya aceptó antes, no volver a preguntar (para usar en tu página principal)
+  // Puedes revisar localStorage.getItem('cookie_consent')
+</script>
+</body>
+</html>
