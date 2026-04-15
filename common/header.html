@@ -10,7 +10,8 @@
         </a>
 
         <!-- Reputación Widget (solo visible cuando hay sesión) -->
-        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
+        <div id="reputacion-widget"
+            style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
             <div style="display: flex; align-items: center; gap: 4px;">
                 ⭐ <span id="puntos-valor">0</span>
             </div>
@@ -20,10 +21,15 @@
             <div style="display: flex; align-items: center; gap: 4px;">
                 📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span>
             </div>
-            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
-                <div id="reputacion-barra" style="width: 0%; height: 100%; background: #fbbf24; border-radius: 2px; transition: width 0.3s;"></div>
+            <div
+                style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
+                <div id="reputacion-barra"
+                    style="width: 0%; height: 100%; background: #fbbf24; border-radius: 2px; transition: width 0.3s;">
+                </div>
             </div>
-            <button id="btn-ver-reputacion" style="background: none; border: none; color: white; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 20px;" title="Ver mi reputación">📊</button>
+            <button id="btn-ver-reputacion"
+                style="background: none; border: none; color: white; cursor: pointer; font-size: 1rem; padding: 4px 8px; border-radius: 20px;"
+                title="Ver mi reputación">📊</button>
         </div>
 
         <!-- Acciones del usuario -->
@@ -45,10 +51,13 @@
 </header>
 
 <!-- Modal de reputación (inicialmente oculto) -->
-<div id="reputacion-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center;">
-    <div style="background: white; max-width: 500px; width: 90%; border-radius: 24px; padding: 24px; max-height: 80vh; overflow-y: auto; position: relative;">
-        <button id="cerrar-reputacion-modal" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">✕</button>
-        
+<div id="reputacion-modal"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center;">
+    <div
+        style="background: white; max-width: 500px; width: 90%; border-radius: 24px; padding: 24px; max-height: 80vh; overflow-y: auto; position: relative;">
+        <button id="cerrar-reputacion-modal"
+            style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666;">✕</button>
+
         <div id="reputacion-detalle">
             <div style="text-align: center; padding: 40px;">
                 <div class="cargando">Cargando...</div>
@@ -58,23 +67,31 @@
 </div>
 
 <!-- Modal de verificación de teléfono -->
-<div id="verif-telefono-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center;">
+<div id="verif-telefono-modal"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10001; justify-content: center; align-items: center;">
     <div style="background: white; max-width: 400px; width: 90%; border-radius: 24px; padding: 24px;">
         <h3 style="margin: 0 0 8px 0;">📱 Verificar teléfono</h3>
-        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Gana <strong style="color: #27ae60;">+20 puntos</strong> de confianza al verificar tu número.</p>
-        
-        <input type="tel" id="telefono-input" placeholder="Ej: 3221234567" style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
-        
+        <p style="margin: 0 0 16px 0; color: #666; font-size: 14px;">Gana <strong style="color: #27ae60;">+20
+                puntos</strong> de confianza al verificar tu número.</p>
+
+        <input type="tel" id="telefono-input" placeholder="Ej: 3221234567"
+            style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
+
         <div id="codigo-section" style="display: none;">
-            <input type="text" id="codigo-input" placeholder="Código de 6 dígitos" style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
+            <input type="text" id="codigo-input" placeholder="Código de 6 dígitos"
+                style="width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 12px; font-size: 16px;">
         </div>
-        
+
         <div id="verif-mensaje" style="font-size: 13px; margin: 8px 0; min-height: 40px;"></div>
-        
+
         <div style="display: flex; gap: 10px; margin-top: 16px;">
-            <button id="btn-enviar-codigo" class="btn-login" style="flex: 1; justify-content: center;">📤 Enviar código</button>
-            <button id="btn-verificar-codigo" style="display: none; flex: 1; background: #27ae60; color: white; border: none; border-radius: 30px; padding: 10px; cursor: pointer;">✅ Verificar</button>
-            <button id="cerrar-verif-modal" style="background: #e74c3c; color: white; border: none; border-radius: 30px; padding: 10px 20px; cursor: pointer;">Cancelar</button>
+            <button id="btn-enviar-codigo" class="btn-login" style="flex: 1; justify-content: center;">📤 Enviar
+                código</button>
+            <button id="btn-verificar-codigo"
+                style="display: none; flex: 1; background: #27ae60; color: white; border: none; border-radius: 30px; padding: 10px; cursor: pointer;">✅
+                Verificar</button>
+            <button id="cerrar-verif-modal"
+                style="background: #e74c3c; color: white; border: none; border-radius: 30px; padding: 10px 20px; cursor: pointer;">Cancelar</button>
         </div>
     </div>
 </div>
@@ -316,40 +333,40 @@
     async function cargarReputacion() {
         const apiKey = localStorage.getItem('api_key');
         const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-        
+
         if (!apiKey || !usuario.email) {
             document.getElementById('reputacion-widget').style.display = 'none';
             return;
         }
-        
+
         try {
             const api = new API();
             const result = await api.llamar('MI_REPUTACION', {}, apiKey);
-            
+
             if (result && result.success && result.data) {
                 const data = result.data;
                 const widget = document.getElementById('reputacion-widget');
                 widget.style.display = 'flex';
-                
+
                 document.getElementById('puntos-valor').textContent = data.puntos || 0;
                 document.getElementById('nivel-valor').textContent = getNivelEmoji(data.nivel) + ' ' + (data.nivel || 'nuevo');
                 document.getElementById('avisos-restantes').textContent = data.disponibles || 0;
                 document.getElementById('avisos-limite').textContent = data.limite || 1;
-                
+
                 // Actualizar barra de progreso (0-100 puntos)
                 const porcentaje = Math.min(100, ((data.puntos || 0) / 100) * 100);
                 const barra = document.getElementById('reputacion-barra');
                 barra.style.width = `${porcentaje}%`;
-                
+
                 // Cambiar color según nivel
                 if (data.nivel === 'nuevo') barra.style.background = '#95a5a6';
                 else if (data.nivel === 'verificado') barra.style.background = '#3498db';
                 else if (data.nivel === 'confiable') barra.style.background = '#2ecc71';
                 else if (data.nivel === 'premium') barra.style.background = '#9b59b6';
-                
+
                 window.reputacionActual = data;
             }
-        } catch(e) {
+        } catch (e) {
             console.error('Error cargando reputación:', e);
         }
     }
@@ -379,18 +396,18 @@
         const modal = document.getElementById('reputacion-modal');
         const detalleDiv = document.getElementById('reputacion-detalle');
         const apiKey = localStorage.getItem('api_key');
-        
+
         modal.style.display = 'flex';
         detalleDiv.innerHTML = '<div style="text-align: center; padding: 40px;">Cargando detalles...</div>';
-        
+
         try {
             const api = new API();
             const result = await api.llamar('MI_REPUTACION', {}, apiKey);
-            
+
             if (result && result.success && result.data) {
                 const data = result.data;
                 const nivelInfo = getNivelInfo(data.nivel);
-                
+
                 detalleDiv.innerHTML = `
                     <div style="text-align: center; margin-bottom: 24px;">
                         <div style="font-size: 48px;">${nivelInfo.icono}</div>
@@ -437,13 +454,13 @@
                         </button>
                     </div>
                 `;
-                
+
                 document.getElementById('btn-verificar-telefono-modal')?.addEventListener('click', () => {
                     modal.style.display = 'none';
                     abrirModalVerificacionTelefono();
                 });
             }
-        } catch(e) {
+        } catch (e) {
             detalleDiv.innerHTML = '<div style="text-align: center; color: #e74c3c;">Error cargando detalles</div>';
         }
     }
@@ -457,7 +474,7 @@
         const btnEnviar = document.getElementById('btn-enviar-codigo');
         const btnVerificar = document.getElementById('btn-verificar-codigo');
         const mensajeDiv = document.getElementById('verif-mensaje');
-        
+
         // Resetear formulario
         telefonoInput.value = '';
         codigoInput.value = '';
@@ -465,27 +482,27 @@
         btnEnviar.style.display = 'block';
         btnVerificar.style.display = 'none';
         mensajeDiv.innerHTML = '';
-        
+
         modal.style.display = 'flex';
-        
+
         // Limpiar eventos anteriores
         const newBtnEnviar = btnEnviar.cloneNode(true);
         const newBtnVerificar = btnVerificar.cloneNode(true);
         btnEnviar.parentNode.replaceChild(newBtnEnviar, btnEnviar);
         btnVerificar.parentNode.replaceChild(newBtnVerificar, btnVerificar);
-        
+
         newBtnEnviar.onclick = async () => {
             const telefono = telefonoInput.value.trim();
             if (!telefono || telefono.length < 10) {
                 mensajeDiv.innerHTML = '<span style="color:#e74c3c;">📱 Ingresa un número válido (10 dígitos)</span>';
                 return;
             }
-            
+
             mensajeDiv.innerHTML = '<span>📤 Enviando código...</span>';
             const api = new API();
             const apiKey = localStorage.getItem('api_key');
             const result = await api.llamar('VERIFICAR_TELEFONO_SOLICITAR', { telefono: telefono }, apiKey);
-            
+
             if (result && result.success) {
                 mensajeDiv.innerHTML = '<span style="color:#27ae60;">✅ Código enviado. Revisa tu teléfono.</span>';
                 codigoSection.style.display = 'block';
@@ -495,19 +512,19 @@
                 mensajeDiv.innerHTML = `<span style="color:#e74c3c;">❌ ${result.error || 'Error al enviar'}</span>`;
             }
         };
-        
+
         newBtnVerificar.onclick = async () => {
             const codigo = codigoInput.value.trim();
             if (!codigo) {
                 mensajeDiv.innerHTML = '<span style="color:#e74c3c;">Ingresa el código recibido</span>';
                 return;
             }
-            
+
             mensajeDiv.innerHTML = '<span>🔍 Verificando...</span>';
             const api = new API();
             const apiKey = localStorage.getItem('api_key');
             const result = await api.llamar('VERIFICAR_TELEFONO_CONFIRMAR', { codigo: codigo }, apiKey);
-            
+
             if (result && result.success) {
                 mensajeDiv.innerHTML = '<span style="color:#27ae60;">✅ Teléfono verificado! +20 puntos</span>';
                 setTimeout(() => {
@@ -535,9 +552,9 @@
     };
 
     // Configurar eventos después de cargar el DOM
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         setTimeout(actualizarHeaderUI, 200);
-        
+
         // Eventos de modales
         document.getElementById('btn-ver-reputacion')?.addEventListener('click', mostrarDetalleReputacion);
         document.getElementById('cerrar-reputacion-modal')?.addEventListener('click', () => {
@@ -546,7 +563,7 @@
         document.getElementById('cerrar-verif-modal')?.addEventListener('click', () => {
             document.getElementById('verif-telefono-modal').style.display = 'none';
         });
-        
+
         // Cerrar modales al hacer click fuera
         document.getElementById('reputacion-modal')?.addEventListener('click', (e) => {
             if (e.target === document.getElementById('reputacion-modal')) {
@@ -578,4 +595,12 @@
         console.log('🔄 Actualizando header manualmente');
         actualizarHeaderUI();
     };
+
+    // Evento para actualizar header desde cualquier página
+    window.addEventListener('auth-change', function () {
+        actualizarHeaderUI();
+    });
+
+    // También exportar la función globalmente
+    window.actualizarHeaderUI = actualizarHeaderUI;
 </script>

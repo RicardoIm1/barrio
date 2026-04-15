@@ -9,6 +9,44 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Admin.js cargado correctamente');
 
   const usuario = Auth.requireAuth();
+  // Forzar actualización del header
+  function actualizarHeaderManual() {
+    const usuario = API.getUsuarioActual();
+    const loginLink = document.getElementById('login-link');
+    const adminLink = document.getElementById('admin-link');
+    const cerrarSesion = document.getElementById('cerrar-sesion');
+
+    if (!loginLink) return;
+
+    if (usuario && usuario.email) {
+      loginLink.style.display = 'none';
+      cerrarSesion.style.display = 'inline-flex';
+
+      if (usuario.rol === 'admin') {
+        adminLink.style.display = 'inline-flex';
+        adminLink.onclick = (e) => {
+          e.preventDefault();
+          window.location.href = '/avisos-jardines/admin.html';
+        };
+      } else {
+        adminLink.style.display = 'none';
+      }
+
+      cerrarSesion.onclick = (e) => {
+        e.preventDefault();
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('api_key');
+        window.location.href = '/avisos-jardines/login.html';
+      };
+    } else {
+      loginLink.style.display = 'inline-flex';
+      adminLink.style.display = 'none';
+      cerrarSesion.style.display = 'none';
+    }
+  }
+
+  // Llamarla después de Auth.requireAuth()
+  setTimeout(actualizarHeaderManual, 100);
   if (!usuario) return;
 
   console.log('Usuario logueado:', usuario);
@@ -62,14 +100,14 @@ document.addEventListener('DOMContentLoaded', function () {
       try {
         const resultado = await API.crear('AVISOS', datos);
         console.log('Respuesta del servidor:', resultado);
-        
+
         const usuarioActualRol = API.getUsuarioActual()?.rol;
         if (usuarioActualRol !== 'admin') {
           API.mostrarExito('✅ Aviso enviado para revisión. El administrador lo publicará en breve.');
         } else {
           API.mostrarExito('✅ Aviso publicado correctamente');
         }
-        
+
         formAviso.reset();
         document.getElementById('urgente').checked = false;
 
@@ -176,7 +214,7 @@ function configurarModalEdicion() {
       document.getElementById('modal-editar').style.display = 'none';
     });
   }
-  
+
   // Cerrar modal con botón Cancelar
   const cancelarEditar = document.getElementById('cancelar-editar');
   if (cancelarEditar) {
@@ -184,7 +222,7 @@ function configurarModalEdicion() {
       document.getElementById('modal-editar').style.display = 'none';
     });
   }
-  
+
   // Cerrar modal al hacer click fuera
   const modalEditar = document.getElementById('modal-editar');
   if (modalEditar) {
@@ -194,16 +232,16 @@ function configurarModalEdicion() {
       }
     });
   }
-  
+
   // Enviar formulario de edición
   const formEditar = document.getElementById('form-editar');
   if (formEditar) {
     formEditar.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const id = document.getElementById('edit-id').value;
       const apiKey = localStorage.getItem('api_key');
-      
+
       const datos = {
         titulo: document.getElementById('edit-titulo').value,
         contenido: document.getElementById('edit-contenido').value,
@@ -213,7 +251,7 @@ function configurarModalEdicion() {
         fecha_evento: document.getElementById('edit-fecha_evento').value,
         imagen_url: document.getElementById('edit-imagen_url').value
       };
-      
+
       try {
         const resultado = await API.actualizarAviso(id, datos, apiKey);
         if (resultado && resultado.success) {
@@ -256,7 +294,7 @@ async function cargarMisAvisos() {
   try {
     const usuarioActual = API.getUsuarioActual();
     const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
-    
+
     // Crear filtros de categorías y status (solo para admin)
     if (!document.querySelector('.filtros-categorias')) {
       let filtrosHTML = `
@@ -269,7 +307,7 @@ async function cargarMisAvisos() {
           <button class="filtro ${filtroCategoriaAdmin === 'clasificados' ? 'activo' : ''}" data-filtro-cat="clasificados">💰 Clasificados</button>
         </div>
       `;
-      
+
       if (esAdmin) {
         filtrosHTML += `
           <div class="filtros filtros-status" style="margin-bottom: 20px; justify-content: flex-start; flex-wrap: wrap; border-top: 1px solid #ddd; padding-top: 10px;">
@@ -280,7 +318,7 @@ async function cargarMisAvisos() {
           </div>
         `;
       }
-      
+
       contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
 
       document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
@@ -292,7 +330,7 @@ async function cargarMisAvisos() {
           cargarMisAvisos();
         });
       });
-      
+
       if (esAdmin) {
         document.querySelectorAll('[data-filtro-status]').forEach(btn => {
           btn.addEventListener('click', function () {
@@ -337,10 +375,10 @@ async function cargarMisAvisos() {
       const contenidoPreview = aviso.contenido ? aviso.contenido.substring(0, 100) : '';
       const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
       const esPendiente = aviso.status === 'pendiente';
-      
+
       let cardStyle = '';
       let statusBadge = '';
-      
+
       if (esPendiente) {
         cardStyle = 'border-left: 4px solid #fbbf24; background: #fffbeb;';
         statusBadge = '<span style="background: #fbbf24; color: #7b2e00; padding: 2px 8px; border-radius: 20px; font-size: 11px; margin-left: 8px;">⏳ Pendiente de aprobación</span>';
@@ -364,14 +402,14 @@ async function cargarMisAvisos() {
           <div class="grupo-botones" style="margin-top: 16px;">
             <button class="boton boton-chico" onclick="verAviso('${aviso.id}')">👁️ Ver</button>
       `;
-      
+
       if (esAdmin && esPendiente) {
         html += `
             <button class="boton boton-chico" style="background: #28a745; color: white;" onclick="aprobarAviso('${aviso.id}')">✅ Aprobar</button>
             <button class="boton boton-chico" style="background: #dc3545; color: white;" onclick="rechazarAviso('${aviso.id}')">❌ Rechazar</button>
         `;
       }
-      
+
       // Botón Editar para todos (usa el modal)
       html += `
             <button class="boton boton-chico boton-secundario" onclick="abrirEditor('${aviso.id}', '${escapeHTML(aviso.titulo || '')}', '${escapeHTML(aviso.contenido || '')}', '${aviso.categoria || ''}', '${escapeHTML(aviso.ubicacion || '')}', '${escapeHTML(aviso.contacto || '')}', '${aviso.fecha_evento || ''}', '${escapeHTML(aviso.imagen_url || '')}')">✏️ Editar</button>
@@ -423,7 +461,7 @@ async function cargarMisAvisos() {
 
 async function aprobarAviso(id) {
   if (!confirm('¿Aprobar este aviso? Se publicará automáticamente en la página principal.')) return;
-  
+
   try {
     const apiKey = localStorage.getItem('api_key');
     const resultado = await API.peticion('APROBAR_AVISO', { id: id }, apiKey);
@@ -438,7 +476,7 @@ async function aprobarAviso(id) {
 
 async function rechazarAviso(id) {
   if (!confirm('¿Rechazar este aviso? El usuario será notificado y el aviso no se publicará.')) return;
-  
+
   try {
     const apiKey = localStorage.getItem('api_key');
     const resultado = await API.peticion('RECHAZAR_AVISO', { id: id }, apiKey);
