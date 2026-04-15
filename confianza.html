@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Registro - Avisos Colonia Jardines</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #eef2e6;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Tarjeta principal */
+    .register-card {
+      background: white;
+      border-radius: 2rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    /* Cabecera */
+    .header {
+      background: #1e4620;
+      color: white;
+      padding: 1.8rem 1.8rem 1.2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+
+    .badge-vecinal {
+      display: inline-block;
+      background: #fbbf24;
+      color: #1e4620;
+      font-size: 0.7rem;
+      font-weight: bold;
+      padding: 0.2rem 0.8rem;
+      border-radius: 2rem;
+      margin-top: 0.8rem;
+    }
+
+    /* Cuerpo del formulario */
+    .form-body {
+      padding: 1.8rem;
+    }
+
+    /* Campos */
+    .campo {
+      margin-bottom: 1.2rem;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.4rem;
+      color: #1e2a3e;
+    }
+
+    .campo input, .campo select, .campo textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 1rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fefefe;
+      transition: all 0.2s;
+    }
+
+    .campo input:focus, .campo select:focus, .campo textarea:focus {
+      outline: none;
+      border-color: #1e4620;
+      box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .ayuda {
+      font-size: 0.7rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+
+    /* Dónde aparece la información (aviso transparente) */
+    .info-visibilidad {
+      background: #f0fdf4;
+      border-left: 4px solid #1e4620;
+      padding: 0.8rem 1rem;
+      border-radius: 1rem;
+      margin: 1rem 0;
+      font-size: 0.8rem;
+    }
+
+    /* Checkbox bonito */
+    .checkbox-acuerdo {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      margin: 1.2rem 0;
+      cursor: pointer;
+    }
+
+    .checkbox-acuerdo input {
+      width: 20px;
+      height: 20px;
+      margin-top: 0.1rem;
+      accent-color: #1e4620;
+      cursor: pointer;
+    }
+
+    .checkbox-acuerdo label {
+      font-size: 0.85rem;
+      color: #1e2a3e;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .checkbox-acuerdo a {
+      color: #1e4620;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dashed #1e4620;
+    }
+
+    /* Botones */
+    .btn-registrar {
+      background: #1e4620;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+
+    .btn-registrar:hover {
+      background: #2b6e2b;
+    }
+
+    /* Enlace a compromiso completo (modal o sección) */
+    .compromiso-resumen {
+      background: #faf9f2;
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: #5b5b3e;
+      text-align: center;
+      border: 1px solid #ece8d5;
+    }
+
+    .compromiso-resumen a {
+      color: #1e4620;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    hr {
+      margin: 1rem 0;
+      border: none;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Modal para ver el compromiso completo (sin salir de la página) */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 500px;
+      margin: 1rem;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h4 {
+      color: #1e4620;
+      margin-bottom: 1rem;
+    }
+
+    .close-modal {
+      background: #1e4620;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      margin-top: 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="register-card">
+    <div class="header">
+      <h1>📋 Formar parte</h1>
+      <p>Regístrate y aparece en el directorio de la colonia</p>
+      <div class="badge-vecinal">✨ Entre vecinos, sin letras chiquitas</div>
+    </div>
+
+    <div class="form-body">
+      <!-- Nombre -->
+      <div class="campo">
+        <label>Tu nombre completo *</label>
+        <input type="text" id="nombre" placeholder="Ej: María de la Luz Gutiérrez" value="">
+        <div class="ayuda">Así te conocerán los vecinos</div>
+      </div>
+
+      <!-- Teléfono / WhatsApp -->
+      <div class="campo">
+        <label>Teléfono o WhatsApp *</label>
+        <input type="tel" id="telefono" placeholder="Ej: 55 1234 5678" value="">
+        <div class="ayuda">Para que puedan contactarte directamente</div>
+      </div>
+
+      <!-- Dirección o referencia -->
+      <div class="campo">
+        <label>Dirección o referencia en la colonia *</label>
+        <input type="text" id="direccion" placeholder="Ej: Calle Juárez #45, atrás de la tortillería" value="">
+        <div class="ayuda">Solo la calle y una referencia, no tu número exacto si no quieres</div>
+      </div>
+
+      <!-- Profesión / oficio (clave para el directorio) -->
+      <div class="campo">
+        <label>¿Qué sabes hacer? (profesión u oficio) *</label>
+        <select id="oficio">
+          <option value="" disabled selected>Selecciona o escribe tu oficio</option>
+          <option value="Electricista">⚡ Electricista</option>
+          <option value="Plomero">🔧 Plomero</option>
+          <option value="Carpintero">🪚 Carpintero</option>
+          <option value="Mecánico">🚗 Mecánico</option>
+          <option value="Estilista / Barbería">✂️ Estilista / Barbería</option>
+          <option value="Costurera / Modista">🧵 Costurera / Modista</option>
+          <option value="Pintor">🎨 Pintor</option>
+          <option value="Albañil">🧱 Albañil</option>
+          <option value="Panadero / Bizcocho">🍞 Panadero / Bizcocho</option>
+          <option value="Comida casera / Fonda">🍲 Comida casera / Fonda</option>
+          <option value="Otro (escríbelo abajo)">📝 Otro</option>
+        </select>
+        <div class="ayuda">Elige el que mejor describa lo que ofreces. Así los vecinos te encontrarán.</div>
+      </div>
+
+      <!-- Campo para "otro" oficio -->
+      <div class="campo" id="otroOficioContainer" style="display: none;">
+        <label>Escribe tu oficio</label>
+        <input type="text" id="otroOficio" placeholder="Ej: Soldador, Lavadora de ropa, Afilador...">
+      </div>
+
+      <!-- Descripción breve (opcional) -->
+      <div class="campo">
+        <label>Cuéntanos un poco (opcional)</label>
+        <textarea id="descripcion" placeholder="Ej: Hago reparaciones eléctricas a domicilio, cobro económico y voy a toda la colonia."></textarea>
+        <div class="ayuda">Aparecerá en tu perfil. Los vecinos confían más cuando saben quién eres.</div>
+      </div>
+
+      <!-- Subtipo de usuario (para clasificar) -->
+      <div class="campo">
+        <label>¿Cómo quieres aparecer?</label>
+        <select id="tipoUsuario">
+          <option value="vecino">👥 Vecino (ofrezco servicios particulares)</option>
+          <option value="negocio">🏪 Negocio establecido (tienda, taller, consultorio)</option>
+          <option value="ambulante">🚶 Ambulante / a domicilio (Bizcocho, tamalero, afilador)</option>
+        </select>
+      </div>
+
+      <!-- Aviso de visibilidad (transparencia) -->
+      <div class="info-visibilidad">
+        📢 <strong>Estos datos serán visibles para todos los vecinos de la colonia:</strong> tu nombre, teléfono, dirección general, oficio y descripción. Así podrán contactarte si necesitan algo.
+      </div>
+
+      <!-- CHECKBOX DEL COMPROMISO DE CONFIANZA VECINAL -->
+      <div class="checkbox-acuerdo" id="checkboxWrapper">
+        <input type="checkbox" id="aceptoCompromiso">
+        <label for="aceptoCompromiso">
+          Acepto el <a href="#" id="verCompromisoLink">Compromiso de Confianza Vecinal</a>. Sé que mis datos se usarán solo para el directorio y avisos de la colonia, y que <strong>no se compartirán con bancos ni empresas externas</strong>.
+        </label>
+      </div>
+
+      <!-- Botón principal -->
+      <button class="btn-registrar" id="registrarBtn">Registrarme en la plataforma</button>
+
+      <!-- Resumen del compromiso siempre visible -->
+      <div class="compromiso-resumen">
+        📜 <strong>En resumen:</strong> Tus datos solo sirven para que los vecinos te encuentren. No los vendemos, no los prestamos. Si quieres borrarte, mandas un WhatsApp y listo.
+        <br><a href="#" id="verCompromisoResumen">Leer compromiso completo</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar el compromiso completo sin salir de la página -->
+<div id="modalCompromiso" class="modal">
+  <div class="modal-content">
+    <h4>📜 Compromiso de Confianza Vecinal</h4>
+    <div style="font-size: 0.85rem; line-height: 1.5;">
+      <p><strong>1. ¿Qué somos?</strong> Una herramienta entre vecinos. Compartimos avisos y oficios para ayudarnos mutuamente. No somos un banco ni una empresa grande.</p>
+      <p><strong>2. Datos que pedimos:</strong> nombre, teléfono, dirección general, oficio y una breve descripción. Solo para que los vecinos te ubiquen y sepan qué haces.</p>
+      <p><strong>3. ¿Quién ve tus datos?</strong> Todos los vecinos que usen la plataforma. Así pueden contactarte si necesitan algo.</p>
+      <p><strong>4. ¿Qué NO hacemos?</strong> No vendemos tus datos, no los compartimos con bancos, no los damos a proveedores externos, no te llegará spam de préstamos.</p>
+      <p><strong>5. Borrar tus datos:</strong> Mándanos un WhatsApp y en menos de 3 días desapareces de la plataforma. Sin trámites.</p>
+      <p><strong>6. Confianza:</strong> Si alguien usa mal tus datos, avísanos y lo eliminamos de la comunidad.</p>
+      <p><strong>¿Preguntas?</strong> WhatsApp: [tu número]</p>
+    </div>
+    <button class="close-modal">Cerrar</button>
+  </div>
+</div>
+
+<script>
+  // Mostrar/ocultar campo "otro oficio"
+  const oficioSelect = document.getElementById('oficio');
+  const otroContainer = document.getElementById('otroOficioContainer');
+  
+  oficioSelect.addEventListener('change', function() {
+    if (this.value === 'Otro (escríbelo abajo)') {
+      otroContainer.style.display = 'block';
+    } else {
+      otroContainer.style.display = 'none';
+    }
+  });
+
+  // Modal del compromiso completo
+  const modal = document.getElementById('modalCompromiso');
+  const verLinks = document.querySelectorAll('#verCompromisoLink, #verCompromisoResumen');
+  const closeModalBtn = document.querySelector('.close-modal');
+  
+  function abrirModal(e) {
+    e.preventDefault();
+    modal.style.display = 'flex';
+  }
+  
+  verLinks.forEach(link => link.addEventListener('click', abrirModal));
+  
+  closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+
+  // Lógica de registro
+  const registrarBtn = document.getElementById('registrarBtn');
+  const checkbox = document.getElementById('aceptoCompromiso');
+  
+  registrarBtn.addEventListener('click', function() {
+    // Validar campos obligatorios
+    const nombre = document.getElementById('nombre').value.trim();
+    const telefono = document.getElementById('telefono').value.trim();
+    const direccion = document.getElementById('direccion').value.trim();
+    let oficio = oficioSelect.value;
+    
+    if (oficio === 'Otro (escríbelo abajo)') {
+      oficio = document.getElementById('otroOficio').value.trim();
+      if (!oficio) {
+        alert('Por favor escribe tu oficio en el campo "Otro"');
+        return;
+      }
+    }
+    
+    if (!nombre || !telefono || !direccion || !oficio) {
+      alert('Por favor completa todos los campos marcados con *');
+      return;
+    }
+    
+    if (!checkbox.checked) {
+      alert('Debes aceptar el Compromiso de Confianza Vecinal para registrarte');
+      return;
+    }
+    
+    // Simular registro exitoso (aquí conectarías con tu backend)
+    alert(`✅ ¡Bienvenido/a a la plataforma, ${nombre}!\n\nTu perfil ha sido creado. Los vecinos de la colonia podrán encontrarte como: ${oficio}\n\nPronto aparecerás en el directorio.`);
+    
+    // Aquí podrías enviar los datos a tu servidor o guardar localmente
+    console.log({
+      nombre,
+      telefono,
+      direccion,
+      oficio,
+      descripcion: document.getElementById('descripcion').value,
+      tipoUsuario: document.getElementById('tipoUsuario').value
+    });
+    
+    // Opcional: limpiar o redirigir
+    // window.location.href = '/gracias.html';
+  });
+</script>
+</body>
+</html>
