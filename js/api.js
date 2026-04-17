@@ -1,6 +1,7 @@
 // ==================== API CLIENT - Jardines PVR ====================
 
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwkYplZcv6ZNcDGlBkicln0ONggznOEitWPMrFmQiwnLgBHljn4R7EclLgw4EKqI0AP/exec';
+//actualiza la url 17/04/2026
 
 // ==================== CLASE PRINCIPAL ====================
 
