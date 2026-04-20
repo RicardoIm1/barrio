@@ -13,12 +13,15 @@ const UI = {
       const html = await res.text();
       container.innerHTML = html;
 
-      // El header maneja su propia lógica de autenticación
+      // Esperar a que el DOM se actualice y ejecutar la función del header
       setTimeout(() => {
         if (typeof window._headerActualizarBotones === 'function') {
           window._headerActualizarBotones();
         }
-      }, 50);
+        if (typeof window.actualizarHeaderSesion === 'function') {
+          window.actualizarHeaderSesion();
+        }
+      }, 100);
 
     } catch (error) {
       console.error('Error cargando header:', error);
