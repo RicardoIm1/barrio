@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Avisos Colonia Jardines PVR</title>
+    <title>Header</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: #f5f7fb;
-            min-height: 200vh;
+            min-height: 100vh;
         }
 
         .header {
@@ -334,10 +334,8 @@
 </div>
 
 <script>
-    // API Configuration
     const API_BASE_URL = window.location.origin + '/api';
     
-    // Función para obtener headers de autenticación
     function getAuthHeaders() {
         const apiKey = localStorage.getItem('api_key');
         return {
@@ -346,7 +344,6 @@
         };
     }
     
-    // Función para obtener usuario actual
     async function obtenerUsuarioActual() {
         const apiKey = localStorage.getItem('api_key');
         if (!apiKey) return null;
@@ -366,12 +363,10 @@
                 return null;
             }
         } catch (error) {
-            console.error('Error al obtener usuario:', error);
             return null;
         }
     }
     
-    // Función para obtener reputación
     async function obtenerReputacion() {
         const apiKey = localStorage.getItem('api_key');
         if (!apiKey) return null;
@@ -386,12 +381,10 @@
             }
             return null;
         } catch (error) {
-            console.error('Error al obtener reputación:', error);
             return null;
         }
     }
     
-    // Función para actualizar widget de reputación
     async function actualizarWidgetReputacion() {
         const widget = document.getElementById('reputacion-widget');
         const usuario = await obtenerUsuarioActual();
@@ -416,7 +409,6 @@
         }
     }
     
-    // Función para cerrar sesión
     async function cerrarSesion() {
         const apiKey = localStorage.getItem('api_key');
         if (apiKey) {
@@ -428,9 +420,7 @@
                         'X-API-Key': apiKey
                     }
                 });
-            } catch (error) {
-                console.error('Error al cerrar sesión:', error);
-            }
+            } catch (error) {}
         }
         
         localStorage.removeItem('usuario');
@@ -438,7 +428,6 @@
         window.location.href = '/avisos-jardines/index.html';
     }
     
-    // Función para actualizar botones según estado de sesión
     async function actualizarBotones() {
         const usuario = await obtenerUsuarioActual();
         const loginLink = document.getElementById('login-link');
@@ -453,7 +442,6 @@
         const mobileUserInfo = document.getElementById('mobile-user-info');
         
         if (usuario) {
-            // Desktop
             if (loginLink) loginLink.style.display = 'none';
             if (registroLink) registroLink.style.display = 'none';
             if (cerrarBtn) {
@@ -466,7 +454,6 @@
                 });
             }
             
-            // Mobile
             if (mobileLogin) mobileLogin.style.display = 'none';
             if (mobileRegistro) mobileRegistro.style.display = 'none';
             if (mobileCerrar) {
@@ -510,13 +497,11 @@
             
             await actualizarWidgetReputacion();
         } else {
-            // Desktop
             if (loginLink) loginLink.style.display = 'inline-flex';
             if (registroLink) registroLink.style.display = 'inline-flex';
             if (adminLink) adminLink.style.display = 'none';
             if (cerrarBtn) cerrarBtn.style.display = 'none';
             
-            // Mobile
             if (mobileLogin) mobileLogin.style.display = 'flex';
             if (mobileRegistro) mobileRegistro.style.display = 'flex';
             if (mobileAdmin) mobileAdmin.style.display = 'none';
@@ -530,7 +515,6 @@
         }
     }
     
-    // Control del menú hamburguesa
     const hamburger = document.getElementById('hamburgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     const overlay = document.getElementById('menuOverlay');
@@ -564,64 +548,33 @@
     if (closeBtn) closeBtn.addEventListener('click', closeMenu);
     if (overlay) overlay.addEventListener('click', closeMenu);
     
-    // Cerrar menú al hacer clic en enlaces
     document.querySelectorAll('.mobile-menu a, .mobile-menu button').forEach(link => {
         link.addEventListener('click', closeMenu);
     });
     
-    // Inicializar todo al cargar la página
     document.addEventListener('DOMContentLoaded', async () => {
         await actualizarBotones();
         
-        // Botón para ver reputación
         const btnVer = document.getElementById('btn-ver-reputacion');
         if (btnVer) {
             btnVer.addEventListener('click', async () => {
                 const usuario = await obtenerUsuarioActual();
                 if (usuario) {
                     const reputacion = await obtenerReputacion();
-                    alert(`📊 Tu reputación:\n⭐ Puntos: ${reputacion?.puntos || 0}\n🏆 Nivel: ${reputacion?.nivel || 'Bronce'}\n📝 Avisos esta semana: ${reputacion?.avisos_semana || 0}/${reputacion?.limite_semanal || 5}`);
-                } else {
-                    alert('Inicia sesión para ver tu reputación');
+                    if (reputacion) {
+                        alert(`📊 Reputación\n⭐ Puntos: ${reputacion.puntos || 0}\n🏆 Nivel: ${reputacion.nivel || 'Bronce'}\n📝 Avisos esta semana: ${reputacion.avisos_semana || 0}/${reputacion.limite_semanal || 5}`);
+                    }
                 }
             });
         }
     });
     
-    // Escuchar cambios en localStorage
     window.addEventListener('storage', (e) => {
         if (e.key === 'usuario' || e.key === 'api_key') {
             actualizarBotones();
         }
     });
 </script>
-
-<!-- Contenido de ejemplo -->
-<main style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
-    <div style="background: white; border-radius: 24px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-        <h2>✨ Header super responsivo con TODO el sistema de login</h2>
-        <p>✅ Altura en móviles: <strong>~2rem</strong> – sticky funcionando</p>
-        <p>✅ Menú hamburguesa funcional en dispositivos pequeños</p>
-        <p>✅ Sistema de <strong>login/registro completo</strong> con API real</p>
-        <p>✅ Widget de <strong>reputación</strong> que muestra puntos, nivel y avisos restantes</p>
-        <p>✅ Botón de <strong>administrador</strong> visible solo para admins</p>
-        <p>✅ <strong>Cierre de sesión</strong> funcional desde desktop y móvil</p>
-        
-        <hr style="margin: 1.5rem 0">
-        
-        <div style="background: #e8f5e9; padding: 1rem; border-radius: 16px;">
-            <h3>🔐 Credenciales de prueba:</h3>
-            <p><strong>Usuario normal:</strong> usuario@test.com / 123456</p>
-            <p><strong>Administrador:</strong> admin@test.com / 123456</p>
-            <p style="font-size: 0.9rem; color: #666;">Nota: Asegúrate de que tu backend API esté corriendo en <code>/api</code></p>
-        </div>
-        
-        <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="/avisos-jardines/login.html" class="btn-login" style="display: inline-block;">🔐 Ir a Iniciar sesión</a>
-            <a href="/avisos-jardines/registro.html" class="btn-registro" style="display: inline-block;">📝 Ir a Registro</a>
-        </div>
-    </div>
-</main>
 
 </body>
 </html>
