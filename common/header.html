@@ -8,14 +8,14 @@
             </div>
         </a>
 
-        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
+        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(0,0,0,0.05); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
             <div>⭐ <span id="puntos-valor">0</span></div>
             <div>🏆 <span id="nivel-valor">cargando</span></div>
             <div>📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span></div>
-            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
+            <div style="width: 60px; height: 4px; background: rgba(0,0,0,0.2); border-radius: 2px; overflow: hidden;">
                 <div id="reputacion-barra" style="width:0%; height:100%; background:#fbbf24;"></div>
             </div>
-            <button id="btn-ver-reputacion" style="background:none; border:none; color:white; cursor:pointer;">📊</button>
+            <button id="btn-ver-reputacion" style="background:none; border:none; color:#2c3e66; cursor:pointer;">📊</button>
         </div>
 
         <div class="header-acciones" id="header-acciones">
@@ -27,43 +27,31 @@
 </header>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-        background: #f5f7fb;
-        min-height: 100vh;
-    }
-
+    /* Sobrescribir estilos del header que causan problemas */
     .header {
         position: sticky;
         top: 0;
-        left: 0;
-        width: 100%;
-        background: white;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         z-index: 1000;
+        background: white;
+        padding: 0;
+        margin-bottom: 0;
     }
-
-    .contenedor {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 0.75rem;
-    }
-
-    .header-contenido {
+    
+    .header .contenedor {
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap !important; /* Evitar que los elementos se vayan a otra línea */
         gap: 0.5rem;
-        min-height: 3rem;
-        flex-wrap: nowrap;
+        padding: 0.5rem 1rem;
+        max-width: 100%;
     }
-
+    
+    /* Forzar que el header-contenido use los estilos correctos */
+    .header-contenido {
+        width: 100%;
+    }
+    
     .header-logo {
         display: flex;
         align-items: center;
@@ -71,119 +59,109 @@
         text-decoration: none;
         flex-shrink: 1;
         min-width: 0;
-        overflow: hidden;
     }
-
+    
+    .header-logo:hover {
+        background: transparent !important;
+        padding: 0 !important;
+    }
+    
     .logo-icon {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         background: linear-gradient(135deg, #2b7a2b, #1e4620);
         border-radius: 50%;
-        width: 34px;
-        height: 34px;
+        width: 38px;
+        height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
     }
-
-    .logo-texto {
-        overflow: hidden;
-    }
-
+    
     .logo-texto h1 {
         margin: 0;
-        font-size: 0.85rem;
-        line-height: 1.1;
+        font-size: 0.9rem;
+        line-height: 1.2;
         background: linear-gradient(135deg, #2b7a2b, #d4a043);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
-
+    
     .header-slogan {
-        font-size: 0.5rem;
+        font-size: 0.55rem;
         color: #6b7280;
         margin: 0;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
-
-    #reputacion-widget {
-        align-items: center;
-        gap: 12px;
-        background: rgba(0,0,0,0.05);
-        padding: 6px 15px;
-        border-radius: 40px;
-        margin-right: 15px;
-        font-size: 0.8rem;
-    }
-
+    
     .header-acciones {
         display: flex;
         gap: 0.5rem;
         align-items: center;
         flex-shrink: 0;
     }
-
-    .btn-login, .btn-admin, .btn-logout {
+    
+    /* Estilos de botones - más específicos para no ser sobrescritos */
+    .header-acciones .btn-login,
+    .header-acciones .btn-admin,
+    .header-acciones .btn-logout {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        padding: 0.3rem 0.7rem;
+        padding: 0.3rem 0.8rem;
         border-radius: 40px;
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         font-weight: 600;
         text-decoration: none;
-        transition: all 0.2s ease;
         white-space: nowrap;
         cursor: pointer;
         border: none;
-    }
-
-    .btn-login {
         background: linear-gradient(135deg, #f5b042, #ff8c42);
         color: white;
         box-shadow: 0 2px 4px rgba(245, 176, 66, 0.2);
     }
     
-    .btn-login:hover {
+    .header-acciones .btn-login:hover {
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(245, 176, 66, 0.3);
+        padding: 0.3rem 0.8rem;
     }
     
-    .btn-login:active {
-        transform: translateY(0);
-    }
-
-    .btn-admin {
+    .header-acciones .btn-admin {
         background: linear-gradient(135deg, #d4a043, #b8860b);
         color: white;
     }
-
-    .btn-logout {
+    
+    .header-acciones .btn-logout {
         border: 2px solid #d4a043;
-        color: #d4a043;
         background: transparent;
+        color: #d4a043;
+        box-shadow: none;
     }
-
+    
+    .header-acciones .btn-logout:hover {
+        background: transparent;
+        padding: 0.3rem 0.8rem;
+    }
+    
     /* Ocultar widget en móviles */
     @media (max-width: 768px) {
         #reputacion-widget {
             display: none !important;
         }
     }
-
+    
     /* Pantallas pequeñas - ocultar texto del botón */
     @media (max-width: 400px) {
         .btn-text {
             display: none;
         }
         
-        .btn-login, .btn-admin, .btn-logout {
+        .header-acciones .btn-login,
+        .header-acciones .btn-admin,
+        .header-acciones .btn-logout {
             padding: 0.3rem 0.6rem;
             font-size: 0.9rem;
         }
