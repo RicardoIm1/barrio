@@ -369,6 +369,10 @@
             if (typeof window.inicializarHeaderAuth === 'function') {
               window.inicializarHeaderAuth();
             }
+            // Forzar actualización del header después de cargarlo
+            if (typeof window.actualizarHeaderSesion === 'function') {
+              window.actualizarHeaderSesion();
+            }
           }, 100);
         })
         .catch(err => console.error('Error cargando header:', err));
@@ -508,7 +512,11 @@
   <script>
     // Respaldo: Forzar actualización del header después de todo
     (function () {
+      let intentos = 0;
+      const maxIntentos = 10;
+      
       function forzarActualizarHeader() {
+        intentos++;
         const usuarioStr = localStorage.getItem('usuario');
         const apiKey = localStorage.getItem('api_key');
 
@@ -519,12 +527,16 @@
         const cerrarBtn = document.getElementById('cerrar-sesion');
 
         if (!loginLink) {
-          console.log('registro.html: Header no encontrado, reintentando...');
-          setTimeout(forzarActualizarHeader, 200);
+          if (intentos < maxIntentos) {
+            console.log(`registro.html: Header no encontrado, reintento ${intentos}/${maxIntentos}...`);
+            setTimeout(forzarActualizarHeader, 300);
+          } else {
+            console.log('registro.html: Header no encontrado después de varios intentos');
+          }
           return;
         }
 
-        console.log('registro.html: Forzando actualización header');
+        console.log('registro.html: Header encontrado, actualizando...');
         console.log('Usuario:', usuarioStr ? 'Sesión activa' : 'Sin sesión');
 
         if (usuarioStr && apiKey) {
@@ -565,19 +577,21 @@
         }
       }
 
-      // Ejecutar cuando el DOM esté listo
+      // Iniciar después de que el DOM cargue
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forzarActualizarHeader);
+        document.addEventListener('DOMContentLoaded', function() {
+          setTimeout(forzarActualizarHeader, 200);
+        });
       } else {
-        setTimeout(forzarActualizarHeader, 100);
+        setTimeout(forzarActualizarHeader, 200);
       }
-
-      // También ejecutar después de que el header se cargue (fetch)
-      setTimeout(forzarActualizarHeader, 500);
-      setTimeout(forzarActualizarHeader, 1000);
+      
+      // Intentar varias veces con intervalos
+      setTimeout(forzarActualizarHeader, 800);
+      setTimeout(forzarActualizarHeader, 1500);
+      setTimeout(forzarActualizarHeader, 2500);
     })();
-</script>
-
+  </script>
 </body>
 
 </html>
