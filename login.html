@@ -298,13 +298,21 @@
           const res = await Auth.login(email, password);
           console.log('Login correcto:', res);
 
+          // Obtener usuario actual para saber su rol
+          const usuario = API.getUsuarioActual();
+          console.log('Usuario logueado:', usuario);
+
           // Forzar actualización del header
           if (typeof window.actualizarHeaderSesion === 'function') {
             window.actualizarHeaderSesion();
           }
 
-          // Redirigir al panel de administración
-          window.location.href = '/avisos-jardines/admin.html';
+          // Redirigir según el rol
+          if (usuario && usuario.rol === 'admin') {
+            window.location.href = '/avisos-jardines/admin.html';
+          } else {
+            window.location.href = '/avisos-jardines/index.html';
+          }
 
         } catch (error) {
           console.error('Error login:', error);
