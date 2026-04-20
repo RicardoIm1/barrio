@@ -773,3 +773,30 @@ body {
         font-size: 0.45rem;
     }
 }
+
+/* ==================== FIX PARA BOTONES DE SESIÓN ==================== */
+#login-link,
+#admin-link,
+#cerrar-sesion {
+    transition: none;
+}
+
+/* Asegurar que los botones se oculten/muestren correctamente */
+#login-link[style*="display: none"],
+#admin-link[style*="display: none"],
+#cerrar-sesion[style*="display: none"] {
+    display: none !important;
+}
+
+#login-link[style*="display: inline-flex"],
+#admin-link[style*="display: inline-flex"],
+#cerrar-sesion[style*="display: inline-flex"] {
+    display: inline-flex !important;
+}
+
+/* Evitar que el CSS general sobrescriba los estilos de los botones */
+.header-acciones .btn-login,
+.header-acciones .btn-admin,
+.header-acciones .btn-logout {
+    display: inline-flex !important;
+}
