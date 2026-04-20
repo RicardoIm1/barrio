@@ -8,14 +8,14 @@
             </div>
         </a>
 
-        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(0,0,0,0.05); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
+        <div id="reputacion-widget" style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
             <div>⭐ <span id="puntos-valor">0</span></div>
             <div>🏆 <span id="nivel-valor">cargando</span></div>
             <div>📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span></div>
-            <div style="width: 60px; height: 4px; background: rgba(0,0,0,0.2); border-radius: 2px; overflow: hidden;">
+            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
                 <div id="reputacion-barra" style="width:0%; height:100%; background:#fbbf24;"></div>
             </div>
-            <button id="btn-ver-reputacion" style="background:none; border:none; color:#2c3e66; cursor:pointer;">📊</button>
+            <button id="btn-ver-reputacion" style="background:none; border:none; color:white; cursor:pointer;">📊</button>
         </div>
 
         <div class="header-acciones" id="header-acciones">
@@ -27,251 +27,227 @@
 </header>
 
 <style>
-/* ==================== HEADER STICKY ==================== */
-.header {
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    width: 100%;
-}
-
-.header .contenedor {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    flex-shrink: 1;
-    min-width: 0;
-}
-
-.header-logo:hover {
-    background: transparent !important;
-}
-
-.logo-icon {
-    font-size: 1.8rem;
-    background: linear-gradient(135deg, #2b7a2b, #1e4620);
-    border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.logo-texto h1 {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.2;
-    background: linear-gradient(135deg, #2b7a2b, #d4a043);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    white-space: nowrap;
-}
-
-.header-slogan {
-    font-size: 0.55rem;
-    color: #6b7280;
-    margin: 0;
-    white-space: nowrap;
-}
-
-#reputacion-widget {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    background: rgba(0,0,0,0.05);
-    padding: 6px 15px;
-    border-radius: 40px;
-    font-size: 0.8rem;
-}
-
-.header-acciones {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.btn-login, .btn-admin, .btn-logout {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0.4rem 1rem;
-    border-radius: 40px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    border: none;
-}
-
-.btn-login {
-    background: linear-gradient(135deg, #f5b042, #ff8c42);
-    color: white;
-    box-shadow: 0 2px 4px rgba(245, 176, 66, 0.2);
-}
-
-.btn-login:hover {
-    transform: translateY(-1px);
-}
-
-.btn-admin {
-    background: linear-gradient(135deg, #d4a043, #b8860b);
-    color: white;
-}
-
-.btn-logout {
-    border: 2px solid #d4a043;
-    background: transparent;
-    color: #d4a043;
-}
-
-.btn-logout:hover {
-    background: rgba(212, 160, 67, 0.1);
-}
-
-@media (max-width: 768px) {
-    #reputacion-widget {
-        display: none !important;
-    }
-}
-
-@media (max-width: 400px) {
-    .btn-text {
-        display: none;
+    /* ========== HEADER STICKY ========== */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     
-    .btn-login, .btn-admin, .btn-logout {
-        padding: 0.3rem 0.6rem;
-        font-size: 0.9rem;
+    .header .contenedor {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .header-contenido {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        min-height: 4rem;
+    }
+    
+    /* ========== LOGO ========== */
+    .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        flex-shrink: 1;
+        min-width: 0;
     }
     
     .logo-icon {
-        width: 30px;
-        height: 30px;
-        font-size: 1.4rem;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #2b7a2b, #1e4620);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
     
     .logo-texto h1 {
-        font-size: 0.75rem;
+        margin: 0;
+        font-size: 1.3rem;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #2b7a2b, #d4a043);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
     }
     
     .header-slogan {
-        font-size: 0.45rem;
+        font-size: 0.65rem;
+        color: #6b7280;
+        margin: 0;
+        white-space: nowrap;
     }
-}
+    
+    /* ========== BOTONES ========== */
+    .header-acciones {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+    
+    .btn-login, .btn-admin, .btn-logout {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        border-radius: 40px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        cursor: pointer;
+        border: none;
+    }
+    
+    .btn-login {
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        color: white;
+        box-shadow: 0 2px 8px rgba(245, 176, 66, 0.3);
+    }
+    
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 176, 66, 0.4);
+    }
+    
+    .btn-admin {
+        background: linear-gradient(135deg, #d4a043, #b8860b);
+        color: white;
+    }
+    
+    .btn-admin:hover {
+        transform: translateY(-2px);
+    }
+    
+    .btn-logout {
+        border: 2px solid #d4a043;
+        color: #d4a043;
+        background: transparent;
+    }
+    
+    .btn-logout:hover {
+        background: rgba(212, 160, 67, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    /* ========== RESPONSIVE: altura 2rem en móviles ========== */
+    @media (max-width: 768px) {
+        .header-contenido {
+            min-height: 2rem;
+            gap: 0.75rem;
+        }
+        
+        .logo-icon {
+            width: 34px;
+            height: 34px;
+            font-size: 1.5rem;
+        }
+        
+        .logo-texto h1 {
+            font-size: 0.85rem;
+        }
+        
+        .header-slogan {
+            font-size: 0.5rem;
+        }
+        
+        .btn-login, .btn-admin, .btn-logout {
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            gap: 5px;
+        }
+        
+        #reputacion-widget {
+            display: none !important;
+        }
+    }
+    
+    /* Pantallas muy pequeñas: solo ícono */
+    @media (max-width: 400px) {
+        .btn-text {
+            display: none;
+        }
+        
+        .btn-login, .btn-admin, .btn-logout {
+            padding: 5px 10px;
+            font-size: 1rem;
+        }
+    }
 </style>
 
 <script>
-(function() {
-    // Función para obtener usuario del backend
-    async function obtenerUsuarioActual() {
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) return null;
-        
-        try {
-            const response = await fetch('/api/usuarios/me', {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-API-Key': apiKey
-                }
-            });
-            
-            if (response.ok) {
-                const usuario = await response.json();
-                localStorage.setItem('usuario', JSON.stringify(usuario));
-                return usuario;
-            } else {
-                localStorage.removeItem('usuario');
-                localStorage.removeItem('api_key');
-                return null;
-            }
-        } catch (error) {
-            console.error('Error al obtener usuario:', error);
-            return null;
+    (function() {
+        function cerrarSesion() {
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('api_key');
+            window.location.href = '/avisos-jardines/login.html';
         }
-    }
-    
-    async function cerrarSesion() {
-        const apiKey = localStorage.getItem('api_key');
-        if (apiKey) {
-            try {
-                await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-API-Key': apiKey
+        
+        function actualizarBotones() {
+            const usuarioStr = localStorage.getItem('usuario');
+            const apiKey = localStorage.getItem('api_key');
+            
+            const loginLink = document.getElementById('login-link');
+            const adminLink = document.getElementById('admin-link');
+            let cerrarBtn = document.getElementById('cerrar-sesion');
+            
+            if (!loginLink) return;
+            
+            if (usuarioStr && apiKey) {
+                try {
+                    const usuario = JSON.parse(usuarioStr);
+                    loginLink.style.display = 'none';
+                    
+                    if (cerrarBtn) {
+                        cerrarBtn.style.display = 'inline-flex';
+                        // Clonar para eliminar eventos anteriores
+                        const newBtn = cerrarBtn.cloneNode(true);
+                        cerrarBtn.parentNode.replaceChild(newBtn, cerrarBtn);
+                        cerrarBtn = newBtn;
+                        cerrarBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            cerrarSesion();
+                        });
                     }
-                });
-            } catch (error) {}
-        }
-        
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('api_key');
-        window.location.href = '/avisos-jardines/index.html';
-    }
-    
-    async function actualizarBotones() {
-        const usuario = await obtenerUsuarioActual();
-        
-        const loginLink = document.getElementById('login-link');
-        const adminLink = document.getElementById('admin-link');
-        const cerrarBtn = document.getElementById('cerrar-sesion');
-        
-        if (!loginLink) return;
-        
-        if (usuario) {
-            // Usuario logueado
-            loginLink.style.display = 'none';
-            cerrarBtn.style.display = 'inline-flex';
-            cerrarBtn.onclick = function(e) {
-                e.preventDefault();
-                cerrarSesion();
-            };
-            
-            if (usuario.rol === 'admin') {
-                adminLink.style.display = 'inline-flex';
-                adminLink.onclick = function(e) {
-                    e.preventDefault();
-                    window.location.href = '/avisos-jardines/admin.html';
-                };
+                    
+                    if (usuario.rol === 'admin') {
+                        adminLink.style.display = 'inline-flex';
+                        adminLink.onclick = function(e) {
+                            e.preventDefault();
+                            window.location.href = '/avisos-jardines/admin.html';
+                        };
+                    } else {
+                        adminLink.style.display = 'none';
+                    }
+                } catch(e) {}
             } else {
+                loginLink.style.display = 'inline-flex';
                 adminLink.style.display = 'none';
+                if (cerrarBtn) cerrarBtn.style.display = 'none';
             }
-        } else {
-            // Usuario NO logueado
-            loginLink.style.display = 'inline-flex';
-            adminLink.style.display = 'none';
-            cerrarBtn.style.display = 'none';
         }
-    }
-    
-    // Inicializar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', actualizarBotones);
-    } else {
-        actualizarBotones();
-    }
-    
-    window.addEventListener('storage', actualizarBotones);
-})();
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', actualizarBotones);
+        } else {
+            actualizarBotones();
+        }
+        
+        window.addEventListener('storage', actualizarBotones);
+    })();
 </script>
