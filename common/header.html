@@ -177,12 +177,15 @@
         }
     }
 
-    /* iPhone 8 y similares (375px) - botón compacto */
+    /* Pantallas pequeñas - ocultar texto del botón */
     @media (max-width: 400px) {
+        .btn-text {
+            display: none;
+        }
+        
         .btn-login, .btn-admin, .btn-logout {
-            padding: 0.25rem 0.6rem;
-            font-size: 0.65rem;
-            gap: 3px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.9rem;
         }
         
         .logo-icon {
@@ -197,22 +200,6 @@
         
         .header-slogan {
             font-size: 0.45rem;
-        }
-        
-        .header-contenido {
-            gap: 0.3rem;
-        }
-    }
-
-    /* Pantallas muy pequeñas (320px) - solo ícono */
-    @media (max-width: 360px) {
-        .btn-text {
-            display: none;
-        }
-        
-        .btn-login, .btn-admin, .btn-logout {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.9rem;
         }
     }
 </style>
