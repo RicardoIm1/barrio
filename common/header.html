@@ -52,7 +52,7 @@
     .contenedor {
         max-width: 1400px;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 0 0.75rem;
     }
 
     .header-contenido {
@@ -61,6 +61,7 @@
         justify-content: space-between;
         gap: 0.5rem;
         min-height: 3rem;
+        flex-wrap: nowrap;
     }
 
     .header-logo {
@@ -70,36 +71,45 @@
         text-decoration: none;
         flex-shrink: 1;
         min-width: 0;
+        overflow: hidden;
     }
 
     .logo-icon {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         background: linear-gradient(135deg, #2b7a2b, #1e4620);
         border-radius: 50%;
-        width: 38px;
-        height: 38px;
+        width: 34px;
+        height: 34px;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
     }
 
+    .logo-texto {
+        overflow: hidden;
+    }
+
     .logo-texto h1 {
         margin: 0;
-        font-size: 1rem;
+        font-size: 0.85rem;
         line-height: 1.1;
         background: linear-gradient(135deg, #2b7a2b, #d4a043);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .header-slogan {
-        font-size: 0.6rem;
+        font-size: 0.5rem;
         color: #6b7280;
         margin: 0;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     #reputacion-widget {
@@ -122,10 +132,10 @@
     .btn-login, .btn-admin, .btn-logout {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 0.4rem 0.9rem;
+        gap: 4px;
+        padding: 0.3rem 0.7rem;
         border-radius: 40px;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
@@ -137,12 +147,12 @@
     .btn-login {
         background: linear-gradient(135deg, #f5b042, #ff8c42);
         color: white;
-        box-shadow: 0 2px 6px rgba(245, 176, 66, 0.3);
+        box-shadow: 0 2px 4px rgba(245, 176, 66, 0.2);
     }
     
     .btn-login:hover {
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(245, 176, 66, 0.4);
+        box-shadow: 0 4px 8px rgba(245, 176, 66, 0.3);
     }
     
     .btn-login:active {
@@ -160,74 +170,49 @@
         background: transparent;
     }
 
-    /* Móviles muy pequeños - todo en una línea */
-    @media (max-width: 480px) {
-        .contenedor {
-            padding: 0 0.75rem;
-        }
-        
-        .header-contenido {
-            gap: 0.4rem;
-            min-height: 2.5rem;
-        }
-        
-        .header-logo {
-            gap: 0.4rem;
-        }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            font-size: 1.4rem;
-        }
-        
-        .logo-texto h1 {
-            font-size: 0.8rem;
-        }
-        
-        .header-slogan {
-            font-size: 0.5rem;
-        }
-        
-        .btn-login, .btn-admin, .btn-logout {
-            padding: 0.3rem 0.7rem;
-            font-size: 0.65rem;
-            gap: 4px;
-        }
-        
+    /* Ocultar widget en móviles */
+    @media (max-width: 768px) {
         #reputacion-widget {
             display: none !important;
         }
     }
 
-    @media (max-width: 380px) {
+    /* iPhone 8 y similares (375px) - botón compacto */
+    @media (max-width: 400px) {
+        .btn-login {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.65rem;
+            gap: 3px;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            font-size: 1.4rem;
+        }
+        
         .logo-texto h1 {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
         }
         
         .header-slogan {
             font-size: 0.45rem;
         }
         
-        .btn-login, .btn-admin, .btn-logout {
-            padding: 0.25rem 0.6rem;
-            font-size: 0.6rem;
-        }
-        
-        .logo-icon {
-            width: 28px;
-            height: 28px;
-            font-size: 1.2rem;
+        .header-contenido {
+            gap: 0.3rem;
         }
     }
 
-    @media (max-width: 320px) {
-        .btn-login span:not(.emoji) {
+    /* Pantallas muy pequeñas (320px) - solo ícono */
+    @media (max-width: 340px) {
+        .btn-login .texto-login {
             display: none;
         }
         
         .btn-login {
-            padding: 0.3rem 0.5rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
         }
     }
 </style>
