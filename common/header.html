@@ -25,297 +25,312 @@
         </div>
     </div>
 </header>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fb;
-            min-height: 100vh;
-        }
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        .header {
-            position: sticky;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            z-index: 1000;
-        }
+    body {
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
 
-        .contenedor {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+    .header {
+        position: sticky;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        z-index: 1000;
+    }
 
+    .contenedor {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
+
+    .header-contenido {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        min-height: 4rem;
+        transition: min-height 0.2s;
+    }
+
+    .header-logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+
+    .logo-icon {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #2b7a2b, #1e4620);
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-texto h1 {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.2;
+        background: linear-gradient(135deg, #2b7a2b, #d4a043);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
+    }
+
+    .header-slogan {
+        font-size: 0.7rem;
+        color: #6b7280;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    #reputacion-widget {
+        align-items: center;
+        gap: 12px;
+        background: rgba(0,0,0,0.05);
+        padding: 6px 15px;
+        border-radius: 40px;
+        margin-right: 15px;
+        font-size: 0.8rem;
+    }
+
+    .header-acciones {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .btn-login, .btn-admin, .btn-logout, .btn-registro {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 0.5rem 1rem;
+        border-radius: 40px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: 0.2s;
+        white-space: nowrap;
+        cursor: pointer;
+        border: none;
+    }
+
+    .btn-login {
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        color: white;
+    }
+
+    .btn-registro {
+        background: linear-gradient(135deg, #2b7a2b, #1e4620);
+        color: white;
+    }
+
+    .btn-admin {
+        background: linear-gradient(135deg, #d4a043, #b8860b);
+        color: white;
+    }
+
+    .btn-logout {
+        border: 2px solid #d4a043;
+        color: #d4a043;
+        background: transparent;
+    }
+
+    .hamburger {
+        display: none;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 30px;
+        height: 24px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 1001;
+        flex-shrink: 0;
+    }
+
+    .hamburger span {
+        width: 100%;
+        height: 3px;
+        background: #2d3748;
+        border-radius: 10px;
+        transition: all 0.25s ease;
+    }
+
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: white;
+        box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+        z-index: 1050;
+        padding: 5rem 1.5rem 2rem;
+        transition: right 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mobile-menu.open {
+        right: 0;
+    }
+
+    .menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.25s;
+    }
+
+    .menu-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-menu a, .mobile-menu button {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border-radius: 60px;
+        text-decoration: none;
+        font-weight: 500;
+        color: #1f2937;
+        transition: 0.2s;
+        font-size: 1rem;
+        border: none;
+        width: 100%;
+        cursor: pointer;
+    }
+
+    .close-menu-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1.2rem;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #4b5563;
+        width: auto;
+        padding: 0;
+    }
+
+    @media (max-width: 768px) {
         .header-contenido {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            min-height: 4rem;
-            transition: min-height 0.2s;
-        }
-
-        .header-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            flex-shrink: 0;
+            min-height: 2rem;
+            padding: 0.4rem 0;
         }
 
         .logo-icon {
-            font-size: 2rem;
-            background: linear-gradient(135deg, #2b7a2b, #1e4620);
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 34px;
+            height: 34px;
+            font-size: 1.5rem;
         }
 
         .logo-texto h1 {
-            margin: 0;
-            font-size: 1.2rem;
-            line-height: 1.2;
-            background: linear-gradient(135deg, #2b7a2b, #d4a043);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            white-space: nowrap;
+            font-size: 0.9rem;
+            white-space: normal;
         }
 
         .header-slogan {
-            font-size: 0.7rem;
-            color: #6b7280;
-            margin: 0;
-            white-space: nowrap;
-        }
-
-        #reputacion-widget {
-            align-items: center;
-            gap: 12px;
-            background: rgba(0,0,0,0.05);
-            padding: 6px 15px;
-            border-radius: 40px;
-            margin-right: 15px;
-            font-size: 0.8rem;
+            font-size: 0.6rem;
+            white-space: normal;
         }
 
         .header-acciones {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        .btn-login, .btn-admin, .btn-logout, .btn-registro {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 0.5rem 1rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            text-decoration: none;
-            transition: 0.2s;
-            white-space: nowrap;
-            cursor: pointer;
-            border: none;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            color: white;
-        }
-
-        .btn-registro {
-            background: linear-gradient(135deg, #2b7a2b, #1e4620);
-            color: white;
-        }
-
-        .btn-admin {
-            background: linear-gradient(135deg, #d4a043, #b8860b);
-            color: white;
-        }
-
-        .btn-logout {
-            border: 2px solid #d4a043;
-            color: #d4a043;
-            background: transparent;
+            display: none;
         }
 
         .hamburger {
+            display: flex;
+        }
+
+        #reputacion-widget {
+            display: none !important;
+        }
+    }
+
+    @media (min-width: 769px) {
+        .hamburger {
             display: none;
-            flex-direction: column;
-            justify-content: space-between;
-            width: 30px;
-            height: 24px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            z-index: 1001;
-            flex-shrink: 0;
         }
-
-        .hamburger span {
-            width: 100%;
-            height: 3px;
-            background: #2d3748;
-            border-radius: 10px;
-            transition: all 0.25s ease;
+        .mobile-menu, .menu-overlay {
+            display: none;
         }
+    }
 
-        .mobile-menu {
-            position: fixed;
-            top: 0;
-            right: -100%;
-            width: 80%;
-            max-width: 320px;
-            height: 100vh;
-            background: white;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-            z-index: 1050;
-            padding: 5rem 1.5rem 2rem;
-            transition: right 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(10px) rotate(45deg);
+    }
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+    }
 
-        .mobile-menu.open {
-            right: 0;
-        }
-
-        .menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1040;
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.25s;
-        }
-
-        .menu-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .mobile-menu a, .mobile-menu button {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: #f8fafc;
-            border-radius: 60px;
-            text-decoration: none;
-            font-weight: 500;
-            color: #1f2937;
-            transition: 0.2s;
-            font-size: 1rem;
-            border: none;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        .close-menu-btn {
-            position: absolute;
-            top: 1rem;
-            right: 1.2rem;
-            background: none;
-            border: none;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #4b5563;
-            width: auto;
-            padding: 0;
-        }
-
-        @media (max-width: 768px) {
-            .header-contenido {
-                min-height: 2rem;
-                padding: 0.4rem 0;
-            }
-
-            .logo-icon {
-                width: 34px;
-                height: 34px;
-                font-size: 1.5rem;
-            }
-
-            .logo-texto h1 {
-                font-size: 0.9rem;
-                white-space: normal;
-            }
-
-            .header-slogan {
-                font-size: 0.6rem;
-                white-space: normal;
-            }
-
-            .header-acciones {
-                display: none;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            #reputacion-widget {
-                display: none !important;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .hamburger {
-                display: none;
-            }
-            .mobile-menu, .menu-overlay {
-                display: none;
-            }
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(10px) rotate(45deg);
-        }
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-10px) rotate(-45deg);
-        }
-
-        .usuario-info {
-            font-size: 0.75rem;
-            color: #6b7280;
-            padding: 0 16px;
-            margin-top: 1rem;
-        }
-    </style>
-<!-- <style>
-    .header-logo { display: flex; align-items: center; gap: 15px; text-decoration: none; }
-    .logo-icon { font-size: 3rem; background: linear-gradient(135deg, #2b7a2b, #1e4620); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; }
-    .logo-texto h1 { margin: 0; font-size: 1.8rem; background: linear-gradient(135deg, #2b7a2b, #d4a043); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .btn-login { background: linear-gradient(135deg, #f5b042, #ff8c42); color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; }
-    .btn-admin { background: linear-gradient(135deg, #d4a043, #b8860b); color: white; padding: 10px 20px; border-radius: 30px; text-decoration: none; }
-    .btn-logout { border: 2px solid #d4a043; color: #d4a043; padding: 10px 20px; border-radius: 30px; text-decoration: none; background: transparent; }
-    .header-acciones { display: flex; gap: 12px; align-items: center; }
-</style> -->
+    .usuario-info {
+        font-size: 0.75rem;
+        color: #6b7280;
+        padding: 0 16px;
+        margin-top: 1rem;
+    }
+</style>
 
 <script>
     (function() {
+        // Crear menú móvil si no existe
+        if (!document.getElementById('mobileMenu')) {
+            const mobileMenuHTML = `
+                <div class="menu-overlay" id="menuOverlay"></div>
+                <div class="mobile-menu" id="mobileMenu">
+                    <button class="close-menu-btn" id="closeMenuBtn">✕</button>
+                    <div id="mobile-menu-links">
+                        <a href="/avisos-jardines/login.html" id="mobile-login-link">🔐 Iniciar sesión</a>
+                        <a href="#" id="mobile-admin-link" style="display:none;">⚙️ Administrador</a>
+                        <a href="#" id="mobile-cerrar-sesion" style="display:none;">🚪 Cerrar sesión</a>
+                    </div>
+                    <div class="usuario-info" id="mobile-user-info"></div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', mobileMenuHTML);
+            
+            // Crear botón hamburguesa si no existe
+            if (!document.querySelector('.hamburger')) {
+                const hamburgerHTML = `<button class="hamburger" id="hamburgerBtn" aria-label="Menú"><span></span><span></span><span></span></button>`;
+                document.querySelector('.header-contenido').insertAdjacentHTML('beforeend', hamburgerHTML);
+            }
+        }
+        
         function cerrarSesion() {
             localStorage.removeItem('usuario');
             localStorage.removeItem('api_key');
@@ -330,16 +345,21 @@
             const adminLink = document.getElementById('admin-link');
             let cerrarBtn = document.getElementById('cerrar-sesion');
             
+            const mobileLoginLink = document.getElementById('mobile-login-link');
+            const mobileAdminLink = document.getElementById('mobile-admin-link');
+            const mobileCerrarBtn = document.getElementById('mobile-cerrar-sesion');
+            const mobileUserInfo = document.getElementById('mobile-user-info');
+            
             if (!loginLink) return;
             
             if (usuarioStr && apiKey) {
                 try {
                     const usuario = JSON.parse(usuarioStr);
                     loginLink.style.display = 'none';
+                    if (mobileLoginLink) mobileLoginLink.style.display = 'none';
                     
                     if (cerrarBtn) {
                         cerrarBtn.style.display = 'inline-flex';
-                        // Clonar para eliminar eventos anteriores
                         const newBtn = cerrarBtn.cloneNode(true);
                         cerrarBtn.parentNode.replaceChild(newBtn, cerrarBtn);
                         cerrarBtn = newBtn;
@@ -350,27 +370,102 @@
                         });
                     }
                     
+                    if (mobileCerrarBtn) {
+                        mobileCerrarBtn.style.display = 'flex';
+                        const newMobileBtn = mobileCerrarBtn.cloneNode(true);
+                        mobileCerrarBtn.parentNode.replaceChild(newMobileBtn, mobileCerrarBtn);
+                        newMobileBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            cerrarSesion();
+                        });
+                    }
+                    
+                    if (mobileUserInfo) {
+                        mobileUserInfo.innerHTML = `👋 Hola, ${usuario.nombre || usuario.email}`;
+                        mobileUserInfo.style.display = 'block';
+                    }
+                    
                     if (usuario.rol === 'admin') {
                         adminLink.style.display = 'inline-flex';
                         adminLink.onclick = function(e) {
                             e.preventDefault();
                             window.location.href = '/avisos-jardines/admin.html';
                         };
+                        if (mobileAdminLink) {
+                            mobileAdminLink.style.display = 'flex';
+                            mobileAdminLink.onclick = function(e) {
+                                e.preventDefault();
+                                window.location.href = '/avisos-jardines/admin.html';
+                            };
+                        }
                     } else {
                         adminLink.style.display = 'none';
+                        if (mobileAdminLink) mobileAdminLink.style.display = 'none';
                     }
                 } catch(e) {}
             } else {
                 loginLink.style.display = 'inline-flex';
                 adminLink.style.display = 'none';
                 if (cerrarBtn) cerrarBtn.style.display = 'none';
+                
+                if (mobileLoginLink) mobileLoginLink.style.display = 'flex';
+                if (mobileAdminLink) mobileAdminLink.style.display = 'none';
+                if (mobileCerrarBtn) mobileCerrarBtn.style.display = 'none';
+                if (mobileUserInfo) {
+                    mobileUserInfo.innerHTML = '🔓 No has iniciado sesión';
+                    mobileUserInfo.style.display = 'block';
+                }
             }
         }
         
+        // Control del menú hamburguesa
+        function initMobileMenu() {
+            const hamburger = document.getElementById('hamburgerBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('menuOverlay');
+            const closeBtn = document.getElementById('closeMenuBtn');
+            
+            if (!hamburger || !mobileMenu) return;
+            
+            function openMenu() {
+                mobileMenu.classList.add('open');
+                if (overlay) overlay.classList.add('active');
+                hamburger.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMenu() {
+                mobileMenu.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                hamburger.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            hamburger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (mobileMenu.classList.contains('open')) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            });
+            
+            if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+            if (overlay) overlay.addEventListener('click', closeMenu);
+            
+            document.querySelectorAll('.mobile-menu a, .mobile-menu button').forEach(link => {
+                link.addEventListener('click', closeMenu);
+            });
+        }
+        
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', actualizarBotones);
+            document.addEventListener('DOMContentLoaded', function() {
+                actualizarBotones();
+                initMobileMenu();
+            });
         } else {
             actualizarBotones();
+            initMobileMenu();
         }
         
         window.addEventListener('storage', actualizarBotones);
