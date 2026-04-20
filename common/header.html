@@ -19,9 +19,15 @@
         </div>
 
         <div class="header-acciones" id="header-acciones">
+            <!-- Solo visible cuando NO hay sesión -->
             <a href="/avisos-jardines/login.html" id="login-link" class="btn-login">🔐 <span class="btn-text">Iniciar sesión</span></a>
-            <a href="#" id="admin-link" class="btn-admin" style="display:none;">⚙️ <span class="btn-text">Administrador</span></a>
-            <a href="#" id="cerrar-sesion" class="btn-logout" style="display:none;">🚪 <span class="btn-text">Cerrar sesión</span></a>
+            
+            <!-- Solo visible cuando HAY sesión -->
+            <div class="user-area" id="user-area" style="display: none;">
+                <span class="user-name" id="user-name"></span>
+                <a href="#" id="perfil-link" class="btn-perfil">👤 <span class="btn-text">Mi perfil</span></a>
+                <a href="#" id="cerrar-sesion" class="btn-logout">🚪 <span class="btn-text">Cerrar sesión</span></a>
+            </div>
         </div>
     </div>
 </header>
@@ -98,7 +104,13 @@
         flex-shrink: 0;
     }
     
-    .btn-login, .btn-admin, .btn-logout {
+    .user-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .btn-login, .btn-perfil, .btn-logout {
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -124,12 +136,12 @@
         box-shadow: 0 4px 12px rgba(245, 176, 66, 0.4);
     }
     
-    .btn-admin {
-        background: linear-gradient(135deg, #d4a043, #b8860b);
+    .btn-perfil {
+        background: linear-gradient(135deg, #3498db, #2980b9);
         color: white;
     }
     
-    .btn-admin:hover {
+    .btn-perfil:hover {
         transform: translateY(-2px);
     }
     
@@ -142,6 +154,19 @@
     .btn-logout:hover {
         background: rgba(212, 160, 67, 0.1);
         transform: translateY(-2px);
+    }
+    
+    /* Nombre de usuario - marca de agua */
+    .user-name {
+        font-size: 0.85rem;
+        color: #9ca3af;
+        font-weight: 500;
+        padding: 0 8px;
+        border-right: 1px solid #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
     }
     
     /* ========== RESPONSIVE: altura 2rem en móviles ========== */
@@ -165,10 +190,15 @@
             font-size: 0.5rem;
         }
         
-        .btn-login, .btn-admin, .btn-logout {
+        .btn-login, .btn-perfil, .btn-logout {
             padding: 5px 12px;
             font-size: 0.75rem;
             gap: 5px;
+        }
+        
+        .user-name {
+            font-size: 0.7rem;
+            max-width: 100px;
         }
         
         #reputacion-widget {
@@ -182,9 +212,13 @@
             display: none;
         }
         
-        .btn-login, .btn-admin, .btn-logout {
+        .btn-login, .btn-perfil, .btn-logout {
             padding: 5px 10px;
             font-size: 1rem;
+        }
+        
+        .user-name {
+            display: none;
         }
     }
 </style>
@@ -194,7 +228,7 @@
         function cerrarSesion() {
             localStorage.removeItem('usuario');
             localStorage.removeItem('api_key');
-            window.location.href = '/avisos-jardines/login.html';
+            window.location.href = '/avisos-jardines/index.html';
         }
         
         function actualizarBotones() {
@@ -202,7 +236,9 @@
             const apiKey = localStorage.getItem('api_key');
             
             const loginLink = document.getElementById('login-link');
-            const adminLink = document.getElementById('admin-link');
+            const userArea = document.getElementById('user-area');
+            const userNameSpan = document.getElementById('user-name');
+            const perfilLink = document.getElementById('perfil-link');
             let cerrarBtn = document.getElementById('cerrar-sesion');
             
             if (!loginLink) return;
@@ -210,11 +246,25 @@
             if (usuarioStr && apiKey) {
                 try {
                     const usuario = JSON.parse(usuarioStr);
+                    
+                    // Ocultar botón de login
                     loginLink.style.display = 'none';
                     
+                    // Mostrar área de usuario
+                    userArea.style.display = 'flex';
+                    
+                    // Mostrar nombre del usuario (marca de agua)
+                    const nombreMostrar = usuario.nombre || usuario.email || 'Usuario';
+                    userNameSpan.textContent = `👋 ${nombreMostrar}`;
+                    
+                    // Configurar enlace a perfil
+                    perfilLink.onclick = function(e) {
+                        e.preventDefault();
+                        window.location.href = '/avisos-jardines/perfil.html';
+                    };
+                    
+                    // Configurar botón cerrar sesión
                     if (cerrarBtn) {
-                        cerrarBtn.style.display = 'inline-flex';
-                        // Clonar para eliminar eventos anteriores
                         const newBtn = cerrarBtn.cloneNode(true);
                         cerrarBtn.parentNode.replaceChild(newBtn, cerrarBtn);
                         cerrarBtn = newBtn;
@@ -225,20 +275,15 @@
                         });
                     }
                     
-                    if (usuario.rol === 'admin') {
-                        adminLink.style.display = 'inline-flex';
-                        adminLink.onclick = function(e) {
-                            e.preventDefault();
-                            window.location.href = '/avisos-jardines/admin.html';
-                        };
-                    } else {
-                        adminLink.style.display = 'none';
-                    }
-                } catch(e) {}
+                } catch(e) {
+                    console.error('Error al parsear usuario:', e);
+                    loginLink.style.display = 'inline-flex';
+                    userArea.style.display = 'none';
+                }
             } else {
+                // Usuario NO logueado
                 loginLink.style.display = 'inline-flex';
-                adminLink.style.display = 'none';
-                if (cerrarBtn) cerrarBtn.style.display = 'none';
+                userArea.style.display = 'none';
             }
         }
         
