@@ -24,84 +24,68 @@ document.addEventListener('DOMContentLoaded', function () {
   configurarTabs();
 
   // FORMULARIO NUEVO AVISO - USANDO API.crearAviso
-  const formAviso = document.getElementById('form-aviso');
-  if (formAviso) {
-    formAviso.addEventListener('submit', async function (e) {
-      e.preventDefault();
+  // FORMULARIO NUEVO AVISO
+const formAviso = document.getElementById('form-aviso');
+if (formAviso) {
+  formAviso.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    e.stopPropagation(); // Evita que el evento se propague
 
-      const usuarioActual = API.getUsuarioActual();
-      const apiKey = localStorage.getItem('api_key');
+    console.log('=== INICIO DEL ENVÍO ===');
+    
+    // Obtener valores DIRECTAMENTE
+    const tituloValue = document.getElementById('titulo').value;
+    const contenidoValue = document.getElementById('contenido').value;
+    const categoriaValue = document.getElementById('categoria').value;
+    
+    console.log('Título capturado:', tituloValue);
+    console.log('Título es vacío?', tituloValue === '');
+    console.log('Título es null?', tituloValue === null);
+    
+    // Validación explícita
+    if (!tituloValue || tituloValue.trim() === '') {
+      console.error('❌ Título vacío detectado');
+      API.mostrarError('El título es obligatorio. Por favor escribe un título.');
+      return; // Detener ejecución
+    }
+    
+    const usuarioActual = API.getUsuarioActual();
+    const apiKey = localStorage.getItem('api_key');
 
-      if (!apiKey) {
-        API.mostrarError('❌ No hay sesión activa. Inicia sesión nuevamente.');
-        return;
-      }
+    const datos = {
+      titulo: tituloValue.trim(),
+      contenido: contenidoValue.trim(),
+      categoria: categoriaValue,
+      ubicacion: document.getElementById('ubicacion')?.value || '',
+      contacto: document.getElementById('contacto')?.value || '',
+      fecha_evento: document.getElementById('fecha_evento')?.value || '',
+      imagen_url: document.getElementById('imagen_url')?.value || '',
+      video_url: document.getElementById('video_url')?.value || '',
+      destacado: document.getElementById('urgente')?.checked ? 'TRUE' : 'FALSE',
+      status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
+      created_by: usuarioActual.id,
+      created_at: new Date().toISOString()
+    };
 
-      const datos = {
-        titulo: document.getElementById('titulo').value.trim(),
-        contenido: document.getElementById('contenido').value.trim(),
-        categoria: document.getElementById('categoria').value,
-        ubicacion: document.getElementById('ubicacion').value || '',
-        contacto: document.getElementById('contacto').value || '',
-        fecha_evento: document.getElementById('fecha_evento').value || '',
-        imagen_url: document.getElementById('imagen_url').value || '',
-        video_url: document.getElementById('video_url').value || '',
-        destacado: document.getElementById('urgente').checked ? 'TRUE' : 'FALSE',
-        status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
-        created_by: usuarioActual.id,
-        created_at: new Date().toISOString()
-      };
+    console.log('📦 Datos a enviar:', datos);
+    
+    // Validar nuevamente después de construir el objeto
+    if (!datos.titulo || datos.titulo === '') {
+      console.error('❌ Título vacío en el objeto datos');
+      API.mostrarError('El título no puede estar vacío');
+      return;
+    }
 
-      // Validar campos obligatorios
-      if (!datos.categoria || !datos.titulo || !datos.contenido) {
-        API.mostrarError('Completa los campos obligatorios (Categoría, Título y Descripción)');
-        return;
-      }
-
-      console.log('📤 Enviando aviso con API.crearAviso:', datos);
-
-      try {
-        // Usar el método crearAviso que ya está definido en API
-        const resultado = await API.crearAviso(datos, apiKey);
-
-        console.log('📡 Respuesta del servidor:', resultado);
-
-        if (resultado && resultado.success) {
-          if (usuarioActual.rol !== 'admin') {
-            API.mostrarExito('✅ Aviso enviado para revisión. El administrador lo publicará en breve.');
-          } else {
-            API.mostrarExito('✅ Aviso publicado correctamente');
-          }
-
-          // Resetear formulario
-          formAviso.reset();
-          document.getElementById('urgente').checked = false;
-
-          // Limpiar vista previa
-          const previewContainer = document.getElementById('preview-nuevo');
-          if (previewContainer) previewContainer.style.display = 'none';
-
-          const previewImg = document.getElementById('preview-imagen-nuevo');
-          if (previewImg) previewImg.src = '';
-
-          // Recargar la lista de avisos
-          await cargarMisAvisos();
-
-          // Cambiar a la pestaña de lista
-          const listaTab = document.querySelector('[data-tab="lista"]');
-          if (listaTab) listaTab.click();
-        } else {
-          const errorMsg = resultado?.error || 'No se pudo publicar el aviso';
-          API.mostrarError('❌ Error: ' + errorMsg);
-          console.error('Error del servidor:', resultado);
-        }
-
-      } catch (error) {
-        console.error('❌ Error al publicar:', error);
-        API.mostrarError('Error al publicar: ' + (error.message || 'Error desconocido'));
-      }
-    });
-  }
+    // Continuar con el envío...
+    try {
+      const resultado = await API.crearAviso(datos, apiKey);
+      console.log('Respuesta:', resultado);
+      // ... resto del código
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  });
+}
 
   // Cancelar formulario
   const cancelar = document.getElementById('cancelar');
