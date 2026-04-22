@@ -54,19 +54,68 @@
       border-color: var(--color-primario);
     }
 
-    /* Tarjeta de avisos en admin */
+    /* ========== GRID DE AVISOS ========== */
+    .avisos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Tarjeta de avisos mejorada */
     .tarjeta {
       background: white;
       border: 1px solid var(--color-borde);
       border-radius: 0.75rem;
       padding: 1rem;
-      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tarjeta destacada (más reciente) */
+    .tarjeta.destacada {
+      grid-column: span 2;
+      grid-row: span 1;
+      background: linear-gradient(135deg, #fff 0%, #fef9e6 100%);
+      border: 2px solid #ff8c42;
+      box-shadow: 0 4px 15px rgba(255, 140, 66, 0.2);
+    }
+
+    .tarjeta.destacada .tarjeta-titulo {
+      font-size: 1.3rem;
+    }
+
+    .tarjeta.destacada .tarjeta-contenido {
+      font-size: 1rem;
+    }
+
+    /* Badge de "Nuevo" o "Reciente" */
+    .reciente-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #ff8c42, #f5b042);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      z-index: 1;
     }
 
     .tarjeta-titulo {
       font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 0.3rem;
+      padding-right: 60px;
     }
 
     .tarjeta-fecha {
@@ -79,6 +128,7 @@
       font-size: 0.9rem;
       color: var(--color-texto);
       margin-bottom: 0.8rem;
+      flex-grow: 1;
     }
 
     .tarjeta-meta {
@@ -86,6 +136,38 @@
       flex-wrap: wrap;
       gap: 0.5rem;
       font-size: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
+    /* Miniaturas de imagen */
+    .tarjeta-imagen {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-bottom: 0.8rem;
+      background: #f0f0f0;
+    }
+
+    .tarjeta.destacada .tarjeta-imagen {
+      height: 200px;
+    }
+
+    /* Video embebido pequeño */
+    .tarjeta-video {
+      margin-bottom: 0.8rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    .tarjeta-video iframe {
+      width: 100%;
+      height: 160px;
+      border: none;
+    }
+
+    .tarjeta.destacada .tarjeta-video iframe {
+      height: 200px;
     }
 
     .grupo-botones {
@@ -111,9 +193,78 @@
       background: var(--color-borde);
     }
 
+    /* ========== GRID DE USUARIOS ========== */
+    .usuarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .tarjeta-usuario {
+      background: white;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tarjeta-usuario:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar-usuario {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .info-usuario {
+      flex-grow: 1;
+    }
+
+    .info-usuario strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .info-usuario small {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+    }
+
+    .rol-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .rol-admin {
+      background: #dc3545;
+      color: white;
+    }
+
+    .rol-usuario {
+      background: #28a745;
+      color: white;
+    }
+
     /* Paginación */
     .paginacion {
-      margin-top: 1.5rem;
+      margin-top: 2rem;
       text-align: center;
     }
 
@@ -130,6 +281,11 @@
       background: white;
       border-radius: 0.5rem;
       cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pagina:hover {
+      background: var(--color-fondo);
     }
 
     .pagina.activa {
@@ -158,7 +314,7 @@
       opacity: 0.9;
     }
 
-    /* Estilos para formularios dentro de tabs */
+    /* Estilos para formularios */
     .formulario {
       background: white;
       border-radius: 0.75rem;
@@ -191,7 +347,6 @@
       resize: vertical;
     }
 
-    /* Vista previa de imagen */
     .preview-container {
       margin-top: 0.5rem;
       display: none;
@@ -204,8 +359,7 @@
       border: 1px solid var(--color-borde);
     }
 
-    /* ========== ESTILOS MEJORADOS PARA BOTONES ========== */
-
+    /* Botones principales */
     .boton {
       display: inline-flex;
       align-items: center;
@@ -229,30 +383,6 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
-    .boton:active {
-      transform: translateY(0);
-    }
-
-    /* Botón secundario */
-    .boton-secundario {
-      background: #f0f2f5;
-      color: #2c3e50;
-      border: 1px solid #ddd;
-    }
-
-    .boton-secundario:hover {
-      background: #e0e0e0;
-      transform: translateY(-2px);
-    }
-
-    /* Botón chico para tarjetas */
-    .boton-chico {
-      padding: 6px 14px;
-      font-size: 0.75rem;
-      gap: 4px;
-    }
-
-    /* Botón peligroso (eliminar) */
     .boton-peligro {
       background: #dc3545;
     }
@@ -261,7 +391,6 @@
       background: #c82333;
     }
 
-    /* Botón éxito (aprobar) */
     .boton-exito {
       background: #28a745;
     }
@@ -270,7 +399,95 @@
       background: #218838;
     }
 
-    /* Filtros activos */
+    /* ========== RESPONSIVE ========== */
+    /* Tablets */
+    @media (max-width: 1024px) {
+      .avisos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
+      }
+      
+      .tarjeta.destacada {
+        grid-column: span 1;
+      }
+    }
+
+    /* Móviles grandes */
+    @media (max-width: 768px) {
+      .avisos-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .tarjeta.destacada {
+        grid-column: span 1;
+        order: -1;
+      }
+      
+      .tarjeta.destacada .tarjeta-titulo {
+        font-size: 1.1rem;
+      }
+      
+      .usuarios-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .tarjeta-usuario {
+        padding: 0.8rem;
+      }
+      
+      .admin-header h1 {
+        font-size: 1.3rem;
+      }
+      
+      .grupo-botones {
+        flex-direction: column;
+      }
+      
+      .boton-chico {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Móviles pequeños */
+    @media (max-width: 480px) {
+      .tarjeta-imagen,
+      .tarjeta.destacada .tarjeta-imagen {
+        height: 140px;
+      }
+      
+      .tarjeta-video iframe,
+      .tarjeta.destacada .tarjeta-video iframe {
+        height: 140px;
+      }
+      
+      .tarjeta-titulo {
+        font-size: 1rem;
+      }
+      
+      .reciente-badge {
+        font-size: 0.6rem;
+        padding: 3px 8px;
+      }
+    }
+
+    /* Pantallas muy grandes (escritorio) */
+    @media (min-width: 1400px) {
+      .avisos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+      
+      .tarjeta.destacada {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
+      
+      .usuarios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+    }
+
+    /* Filtros */
     .filtro.activo {
       background: linear-gradient(135deg, #f5b042, #ff8c42);
       color: white;
@@ -281,6 +498,12 @@
       background: #e0e0e0;
       transform: translateY(-2px);
     }
+
+    .cargando {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-texto-claro);
+    }
   </style>
 </head>
 
@@ -288,7 +511,6 @@
   <div id="header-container"></div>
 
   <main class="contenedor">
-    <!-- Header decorativo -->
     <div class="admin-header">
       <h1>👋 Panel de Administración</h1>
       <p>Gestiona tus avisos, tu perfil y la comunidad</p>
@@ -296,7 +518,6 @@
 
     <div id="mensaje-container"></div>
 
-    <!-- Tabs -->
     <div class="filtros" id="admin-tabs">
       <button class="filtro activo" data-tab="nuevo">📝 Nuevo aviso</button>
       <button class="filtro" data-tab="lista">📋 Mis avisos</button>
@@ -392,7 +613,7 @@
       </div>
     </div>
 
-    <!-- Pestaña: Usuarios (solo admin) -->
+    <!-- Pestaña: Usuarios -->
     <div id="tab-usuarios" class="tab">
       <div class="formulario" style="max-width: 100%;">
         <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
@@ -463,7 +684,6 @@
           document.getElementById('footer-container').innerHTML = data;
         });
 
-      // Vista previa de imagen en nuevo aviso
       const inputImagen = document.getElementById('imagen_url');
       const previewContainer = document.getElementById('preview-nuevo');
       const previewImg = document.getElementById('preview-imagen-nuevo');
@@ -483,13 +703,56 @@
         });
       }
     });
+
+    // Sobrescribir la función cargarUsuarios para usar grid
+    const cargarUsuariosOriginal = window.cargarUsuarios;
+    if (cargarUsuariosOriginal) {
+      window.cargarUsuarios = async function() {
+        const contenedor = document.getElementById('lista-usuarios-container');
+        if (!contenedor) return;
+
+        contenedor.innerHTML = '<div class="cargando">🔄 Cargando usuarios...</div>';
+
+        try {
+          const resultado = await API.listar('USUARIOS', { activo: 'TRUE' });
+          const usuarios = resultado.datos || [];
+
+          if (usuarios.length === 0) {
+            contenedor.innerHTML = '<div class="mensaje mensaje-info">👥 No hay usuarios registrados</div>';
+            return;
+          }
+
+          let html = '<div class="usuarios-grid">';
+          usuarios.forEach(user => {
+            const rolClass = user.rol === 'admin' ? 'rol-admin' : 'rol-usuario';
+            const rolIcon = user.rol === 'admin' ? '👑' : '👤';
+            html += `
+              <div class="tarjeta-usuario">
+                <div class="avatar-usuario">${rolIcon}</div>
+                <div class="info-usuario">
+                  <strong>${escapeHTML(user.nombre || 'Sin nombre')}</strong>
+                  <small>${escapeHTML(user.email)}</small>
+                  <span class="rol-badge ${rolClass}">${user.rol === 'admin' ? 'Administrador' : 'Usuario'}</span>
+                  <small style="display: block; margin-top: 4px;">🏷️ ${escapeHTML(user.categorias || 'todas')}</small>
+                </div>
+                <button class="boton boton-chico boton-peligro" onclick="eliminarUsuario('${user.id}')" style="padding: 4px 12px;">🗑️</button>
+              </div>
+            `;
+          });
+          html += '</div>';
+
+          contenedor.innerHTML = html;
+        } catch (error) {
+          console.error('Error cargando usuarios:', error);
+          contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar usuarios</div>';
+        }
+      };
+    }
   </script>
 
-  <!-- Modal de edición de aviso -->
-  <div id="modal-editar"
-    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-    <div
-      style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
+  <!-- Modal de edición -->
+  <div id="modal-editar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">✏️ Editar aviso</h2>
         <button id="cerrar-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
@@ -545,7 +808,7 @@
         </div>
 
         <div class="campo">
-          <label for="edit-video_url">URL de video (YouTube o Vimeo)</label>
+          <label for="edit-video_url">URL de video</label>
           <input type="url" id="edit-video_url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
@@ -558,8 +821,17 @@
   </div>
 
   <script>
-    // Función para abrir modal de edición
-    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    window.abrirEditor = function(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-titulo').value = titulo || '';
       document.getElementById('edit-contenido').value = contenido || '';
@@ -570,7 +842,6 @@
       document.getElementById('edit-imagen_url').value = imagen_url || '';
       document.getElementById('edit-video_url').value = video_url || '';
       
-      // Vista previa de imagen en edición
       const previewContainer = document.getElementById('preview-editar');
       const previewImg = document.getElementById('preview-imagen-editar');
       if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
@@ -583,26 +854,6 @@
       document.getElementById('modal-editar').style.display = 'flex';
     }
 
-    // Vista previa en tiempo real para edición
-    const editImagenUrl = document.getElementById('edit-imagen_url');
-    if (editImagenUrl) {
-      editImagenUrl.addEventListener('input', function() {
-        const previewContainer = document.getElementById('preview-editar');
-        const previewImg = document.getElementById('preview-imagen-editar');
-        const url = this.value;
-        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-          previewImg.src = url;
-          previewContainer.style.display = 'block';
-          previewImg.onerror = function() {
-            previewContainer.style.display = 'none';
-          };
-        } else {
-          previewContainer.style.display = 'none';
-        }
-      });
-    }
-
-    // Cerrar modal
     document.getElementById('cerrar-modal')?.addEventListener('click', () => {
       document.getElementById('modal-editar').style.display = 'none';
     });
@@ -610,10 +861,8 @@
       document.getElementById('modal-editar').style.display = 'none';
     });
 
-    // Enviar edición
     document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
       e.preventDefault();
-
       const id = document.getElementById('edit-id').value;
       const apiKey = localStorage.getItem('api_key');
 
@@ -633,9 +882,7 @@
         if (resultado && resultado.success) {
           alert('✅ Aviso actualizado correctamente');
           document.getElementById('modal-editar').style.display = 'none';
-          if (typeof cargarMisAvisos === 'function') {
-            cargarMisAvisos();
-          }
+          if (typeof cargarMisAvisos === 'function') cargarMisAvisos();
         } else {
           alert('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
         }
@@ -645,68 +892,6 @@
       }
     });
   </script>
-
-  <script>
-    // Respaldo: Forzar actualización del header
-    (function () {
-      function forzarActualizarHeader() {
-        const usuarioStr = localStorage.getItem('usuario');
-        const apiKey = localStorage.getItem('api_key');
-
-        const loginLink = document.getElementById('login-link');
-        const userArea = document.getElementById('user-area');
-        const userNameSpan = document.getElementById('user-name');
-        const perfilLink = document.getElementById('perfil-link');
-        const cerrarBtn = document.getElementById('cerrar-sesion');
-
-        if (!loginLink) {
-          console.log('Admin: Header no encontrado, reintentando...');
-          setTimeout(forzarActualizarHeader, 200);
-          return;
-        }
-
-        if (usuarioStr && apiKey) {
-          try {
-            const usuario = JSON.parse(usuarioStr);
-            loginLink.style.display = 'none';
-            userArea.style.display = 'flex';
-            if (userNameSpan) {
-              userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
-            }
-            if (perfilLink) {
-              perfilLink.onclick = function (e) {
-                e.preventDefault();
-                window.location.href = '/avisos-jardines/perfil.html';
-              };
-            }
-            if (cerrarBtn) {
-              const nuevoCerrar = cerrarBtn.cloneNode(true);
-              cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-              nuevoCerrar.addEventListener('click', function (e) {
-                e.preventDefault();
-                localStorage.removeItem('usuario');
-                localStorage.removeItem('api_key');
-                window.location.href = '/avisos-jardines/index.html';
-              });
-            }
-          } catch (e) {
-            console.error('Admin: Error al actualizar header', e);
-          }
-        } else {
-          loginLink.style.display = 'inline-flex';
-          userArea.style.display = 'none';
-        }
-      }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forzarActualizarHeader);
-      } else {
-        setTimeout(forzarActualizarHeader, 100);
-      }
-      setTimeout(forzarActualizarHeader, 500);
-    })();
-  </script>
-
 </body>
 
 </html>
