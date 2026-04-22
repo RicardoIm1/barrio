@@ -191,6 +191,19 @@
       resize: vertical;
     }
 
+    /* Vista previa de imagen */
+    .preview-container {
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .preview-imagen {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 0.5rem;
+      border: 1px solid var(--color-borde);
+    }
+
     /* ========== ESTILOS MEJORADOS PARA BOTONES ========== */
 
     .boton {
@@ -334,6 +347,19 @@
           <input type="date" id="fecha_evento" name="fecha_evento">
         </div>
 
+        <div class="campo">
+          <label for="imagen_url">URL de imagen (opcional)</label>
+          <input type="url" id="imagen_url" name="imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+          <div id="preview-nuevo" class="preview-container">
+            <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="video_url">URL de video (opcional - YouTube o Vimeo)</label>
+          <input type="url" id="video_url" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+
         <div class="campo" style="display: flex; align-items: center; gap: 8px;">
           <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
           <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
@@ -436,6 +462,26 @@
         .then(data => {
           document.getElementById('footer-container').innerHTML = data;
         });
+
+      // Vista previa de imagen en nuevo aviso
+      const inputImagen = document.getElementById('imagen_url');
+      const previewContainer = document.getElementById('preview-nuevo');
+      const previewImg = document.getElementById('preview-imagen-nuevo');
+
+      if (inputImagen) {
+        inputImagen.addEventListener('input', function() {
+          const url = this.value;
+          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            previewImg.src = url;
+            previewContainer.style.display = 'block';
+            previewImg.onerror = function() {
+              previewContainer.style.display = 'none';
+            };
+          } else {
+            previewContainer.style.display = 'none';
+          }
+        });
+      }
     });
   </script>
 
@@ -492,7 +538,15 @@
 
         <div class="campo">
           <label for="edit-imagen_url">URL de imagen</label>
-          <input type="text" id="edit-imagen_url" placeholder="https://...">
+          <input type="url" id="edit-imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+          <div id="preview-editar" class="preview-container" style="display: none;">
+            <img id="preview-imagen-editar" class="preview-imagen" alt="Vista previa">
+          </div>
+        </div>
+
+        <div class="campo">
+          <label for="edit-video_url">URL de video (YouTube o Vimeo)</label>
+          <input type="url" id="edit-video_url" placeholder="https://www.youtube.com/watch?v=...">
         </div>
 
         <div class="grupo-botones">
@@ -505,7 +559,7 @@
 
   <script>
     // Función para abrir modal de edición
-    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url) {
+    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-titulo').value = titulo || '';
       document.getElementById('edit-contenido').value = contenido || '';
@@ -514,7 +568,38 @@
       document.getElementById('edit-contacto').value = contacto || '';
       document.getElementById('edit-fecha_evento').value = fecha_evento || '';
       document.getElementById('edit-imagen_url').value = imagen_url || '';
+      document.getElementById('edit-video_url').value = video_url || '';
+      
+      // Vista previa de imagen en edición
+      const previewContainer = document.getElementById('preview-editar');
+      const previewImg = document.getElementById('preview-imagen-editar');
+      if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
+        previewImg.src = imagen_url;
+        previewContainer.style.display = 'block';
+      } else {
+        previewContainer.style.display = 'none';
+      }
+      
       document.getElementById('modal-editar').style.display = 'flex';
+    }
+
+    // Vista previa en tiempo real para edición
+    const editImagenUrl = document.getElementById('edit-imagen_url');
+    if (editImagenUrl) {
+      editImagenUrl.addEventListener('input', function() {
+        const previewContainer = document.getElementById('preview-editar');
+        const previewImg = document.getElementById('preview-imagen-editar');
+        const url = this.value;
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+          previewImg.src = url;
+          previewContainer.style.display = 'block';
+          previewImg.onerror = function() {
+            previewContainer.style.display = 'none';
+          };
+        } else {
+          previewContainer.style.display = 'none';
+        }
+      });
     }
 
     // Cerrar modal
@@ -539,7 +624,8 @@
         ubicacion: document.getElementById('edit-ubicacion').value,
         contacto: document.getElementById('edit-contacto').value,
         fecha_evento: document.getElementById('edit-fecha_evento').value,
-        imagen_url: document.getElementById('edit-imagen_url').value
+        imagen_url: document.getElementById('edit-imagen_url').value,
+        video_url: document.getElementById('edit-video_url').value
       };
 
       try {

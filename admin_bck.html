@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <title>Administración | Avisos Colonia Jardines PVR</title>
+  <link rel="stylesheet" href="/avisos-jardines/css/estilo.css">
+  <link rel="manifest" href="/avisos-jardines/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+  <style>
+    /* Estilos adicionales para asegurar que los tabs funcionen */
+    .tab {
+      display: none;
+    }
+
+    .tab.activo {
+      display: block;
+    }
+
+    .filtro.activo {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    #admin-tabs {
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--color-borde);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .filtro {
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid var(--color-borde);
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .filtro:hover {
+      background: var(--color-fondo);
+    }
+
+    .filtro.activo {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    /* Tarjeta de avisos en admin */
+    .tarjeta {
+      background: white;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .tarjeta-titulo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .tarjeta-fecha {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+      margin-bottom: 0.5rem;
+    }
+
+    .tarjeta-contenido {
+      font-size: 0.9rem;
+      color: var(--color-texto);
+      margin-bottom: 0.8rem;
+    }
+
+    .tarjeta-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .grupo-botones {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .boton-chico {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      width: auto;
+    }
+
+    .boton-secundario {
+      background: var(--color-fondo);
+      color: var(--color-primario);
+      border: 1px solid var(--color-borde);
+    }
+
+    .boton-secundario:hover {
+      background: var(--color-borde);
+    }
+
+    /* Paginación */
+    .paginacion {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .paginacion-botones {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pagina {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--color-borde);
+      background: white;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    .pagina.activa {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    /* Header decorativo */
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 1rem;
+      background: linear-gradient(135deg, #1e4620, #2b7a2b);
+      border-radius: 1rem;
+      color: white;
+    }
+
+    .admin-header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .admin-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* Estilos para formularios dentro de tabs */
+    .formulario {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .campo {
+      margin-bottom: 1rem;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.5rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* ========== ESTILOS MEJORADOS PARA BOTONES ========== */
+
+    .boton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .boton:hover {
+      background: linear-gradient(135deg, #e69a2e, #e67300);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .boton:active {
+      transform: translateY(0);
+    }
+
+    /* Botón secundario */
+    .boton-secundario {
+      background: #f0f2f5;
+      color: #2c3e50;
+      border: 1px solid #ddd;
+    }
+
+    .boton-secundario:hover {
+      background: #e0e0e0;
+      transform: translateY(-2px);
+    }
+
+    /* Botón chico para tarjetas */
+    .boton-chico {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      gap: 4px;
+    }
+
+    /* Botón peligroso (eliminar) */
+    .boton-peligro {
+      background: #dc3545;
+    }
+
+    .boton-peligro:hover {
+      background: #c82333;
+    }
+
+    /* Botón éxito (aprobar) */
+    .boton-exito {
+      background: #28a745;
+    }
+
+    .boton-exito:hover {
+      background: #218838;
+    }
+
+    /* Filtros activos */
+    .filtro.activo {
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      color: white;
+      border-color: transparent;
+    }
+
+    .filtro:hover {
+      background: #e0e0e0;
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-container"></div>
+
+  <main class="contenedor">
+    <!-- Header decorativo -->
+    <div class="admin-header">
+      <h1>👋 Panel de Administración</h1>
+      <p>Gestiona tus avisos, tu perfil y la comunidad</p>
+    </div>
+
+    <div id="mensaje-container"></div>
+
+    <!-- Tabs -->
+    <div class="filtros" id="admin-tabs">
+      <button class="filtro activo" data-tab="nuevo">📝 Nuevo aviso</button>
+      <button class="filtro" data-tab="lista">📋 Mis avisos</button>
+      <button class="filtro" data-tab="perfil">👤 Mi perfil</button>
+      <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥 Usuarios</button>
+    </div>
+
+    <!-- Pestaña: Nuevo aviso -->
+    <div id="tab-nuevo" class="tab activo">
+      <form id="form-aviso" class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
+
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" required>
+            <option value="urgente">🚨 URGENTE</option>
+            <option value="escuelas">🏫 ESCUELAS</option>
+            <option value="servicios">🛠️ SERVICIOS</option>
+            <option value="comercios">🛒 COMERCIOS</option>
+            <option value="eventos">📅 EVENTOS</option>
+            <option value="gobierno">🏛️ GOBIERNO</option>
+            <option value="varios">📢 VARIOS</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
+        </div>
+
+        <div class="campo">
+          <label for="contenido">Descripción</label>
+          <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="ubicacion">Ubicación (opcional)</label>
+          <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
+        </div>
+
+        <div class="campo">
+          <label for="contacto">Contacto (opcional)</label>
+          <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
+        </div>
+
+        <div class="campo">
+          <label for="fecha_evento">Fecha del evento (opcional)</label>
+          <input type="date" id="fecha_evento" name="fecha_evento">
+        </div>
+
+        <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
+          <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+        </div>
+
+        <div class="grupo-botones">
+          <button type="submit" class="boton">Publicar aviso</button>
+          <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pestaña: Lista de avisos -->
+    <div id="tab-lista" class="tab">
+      <div id="mis-avisos-container"></div>
+      <div id="paginacion-admin" class="paginacion"></div>
+    </div>
+
+    <!-- Pestaña: Perfil -->
+    <div id="tab-perfil" class="tab">
+      <div class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
+        <div id="perfil-info"></div>
+        <div style="margin-top: 32px;">
+          <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
+          <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
+            🔔 Activar notificaciones
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestaña: Usuarios (solo admin) -->
+    <div id="tab-usuarios" class="tab">
+      <div class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
+
+        <form id="form-usuario">
+          <div class="campo">
+            <label for="user-email">Email</label>
+            <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
+          </div>
+
+          <div class="campo">
+            <label for="user-nombre">Nombre completo</label>
+            <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
+          </div>
+
+          <div class="campo">
+            <label for="user-rol">Rol</label>
+            <select id="user-rol" required>
+              <option value="usuario">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="user-password">Contraseña</label>
+            <input type="password" id="user-password" required placeholder="Contraseña temporal">
+          </div>
+
+          <div class="campo">
+            <label for="user-categorias">Categorías permitidas</label>
+            <select id="user-categorias" required>
+              <option value="todas">📋 Todas</option>
+              <option value="urgente">🚨 URGENTE</option>
+              <option value="escuelas">🏫 ESCUELAS</option>
+              <option value="servicios">🛠️ SERVICIOS</option>
+              <option value="comercios">🛒 COMERCIOS</option>
+              <option value="eventos">📅 EVENTOS</option>
+              <option value="gobierno">🏛️ GOBIERNO</option>
+              <option value="varios">📢 VARIOS</option>
+            </select>
+          </div>
+
+          <div class="grupo-botones">
+            <button type="submit" class="boton">Crear usuario</button>
+          </div>
+        </form>
+
+        <h3 style="margin: 32px 0 16px;">Usuarios registrados</h3>
+        <div id="lista-usuarios-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      UI.cargarHeader();
+
+      fetch('/avisos-jardines/common/footer.html')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('footer-container').innerHTML = data;
+        });
+    });
+  </script>
+
+  <!-- Modal de edición de aviso -->
+  <div id="modal-editar"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div
+      style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">✏️ Editar aviso</h2>
+        <button id="cerrar-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+      </div>
+
+      <form id="form-editar">
+        <input type="hidden" id="edit-id">
+
+        <div class="campo">
+          <label for="edit-categoria">Categoría</label>
+          <select id="edit-categoria" required>
+            <option value="urgente">🚨 URGENTE</option>
+            <option value="escuelas">🏫 ESCUELAS</option>
+            <option value="servicios">🛠️ SERVICIOS</option>
+            <option value="comercios">🛒 COMERCIOS</option>
+            <option value="eventos">📅 EVENTOS</option>
+            <option value="gobierno">🏛️ GOBIERNO</option>
+            <option value="varios">📢 VARIOS</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="edit-titulo">Título</label>
+          <input type="text" id="edit-titulo" required>
+        </div>
+
+        <div class="campo">
+          <label for="edit-contenido">Descripción</label>
+          <textarea id="edit-contenido" rows="5" required></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="edit-ubicacion">Ubicación</label>
+          <input type="text" id="edit-ubicacion">
+        </div>
+
+        <div class="campo">
+          <label for="edit-contacto">Contacto</label>
+          <input type="text" id="edit-contacto">
+        </div>
+
+        <div class="campo">
+          <label for="edit-fecha_evento">Fecha del evento</label>
+          <input type="date" id="edit-fecha_evento">
+        </div>
+
+        <div class="campo">
+          <label for="edit-imagen_url">URL de imagen</label>
+          <input type="text" id="edit-imagen_url" placeholder="https://...">
+        </div>
+
+        <div class="grupo-botones">
+          <button type="submit" class="boton">💾 Guardar cambios</button>
+          <button type="button" class="boton boton-secundario" id="cancelar-editar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Función para abrir modal de edición
+    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url) {
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-titulo').value = titulo || '';
+      document.getElementById('edit-contenido').value = contenido || '';
+      document.getElementById('edit-categoria').value = categoria || 'eventos';
+      document.getElementById('edit-ubicacion').value = ubicacion || '';
+      document.getElementById('edit-contacto').value = contacto || '';
+      document.getElementById('edit-fecha_evento').value = fecha_evento || '';
+      document.getElementById('edit-imagen_url').value = imagen_url || '';
+      document.getElementById('modal-editar').style.display = 'flex';
+    }
+
+    // Cerrar modal
+    document.getElementById('cerrar-modal')?.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+    document.getElementById('cancelar-editar')?.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+
+    // Enviar edición
+    document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = document.getElementById('edit-id').value;
+      const apiKey = localStorage.getItem('api_key');
+
+      const datos = {
+        titulo: document.getElementById('edit-titulo').value,
+        contenido: document.getElementById('edit-contenido').value,
+        categoria: document.getElementById('edit-categoria').value,
+        ubicacion: document.getElementById('edit-ubicacion').value,
+        contacto: document.getElementById('edit-contacto').value,
+        fecha_evento: document.getElementById('edit-fecha_evento').value,
+        imagen_url: document.getElementById('edit-imagen_url').value
+      };
+
+      try {
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
+        if (resultado && resultado.success) {
+          alert('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+          if (typeof cargarMisAvisos === 'function') {
+            cargarMisAvisos();
+          }
+        } else {
+          alert('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
+        }
+      } catch (error) {
+        console.error('Error al actualizar:', error);
+        alert('❌ Error al actualizar el aviso');
+      }
+    });
+  </script>
+
+  <script>
+    // Respaldo: Forzar actualización del header
+    (function () {
+      function forzarActualizarHeader() {
+        const usuarioStr = localStorage.getItem('usuario');
+        const apiKey = localStorage.getItem('api_key');
+
+        const loginLink = document.getElementById('login-link');
+        const userArea = document.getElementById('user-area');
+        const userNameSpan = document.getElementById('user-name');
+        const perfilLink = document.getElementById('perfil-link');
+        const cerrarBtn = document.getElementById('cerrar-sesion');
+
+        if (!loginLink) {
+          console.log('Admin: Header no encontrado, reintentando...');
+          setTimeout(forzarActualizarHeader, 200);
+          return;
+        }
+
+        if (usuarioStr && apiKey) {
+          try {
+            const usuario = JSON.parse(usuarioStr);
+            loginLink.style.display = 'none';
+            userArea.style.display = 'flex';
+            if (userNameSpan) {
+              userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+            }
+            if (perfilLink) {
+              perfilLink.onclick = function (e) {
+                e.preventDefault();
+                window.location.href = '/avisos-jardines/perfil.html';
+              };
+            }
+            if (cerrarBtn) {
+              const nuevoCerrar = cerrarBtn.cloneNode(true);
+              cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
+              nuevoCerrar.addEventListener('click', function (e) {
+                e.preventDefault();
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('api_key');
+                window.location.href = '/avisos-jardines/index.html';
+              });
+            }
+          } catch (e) {
+            console.error('Admin: Error al actualizar header', e);
+          }
+        } else {
+          loginLink.style.display = 'inline-flex';
+          userArea.style.display = 'none';
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forzarActualizarHeader);
+      } else {
+        setTimeout(forzarActualizarHeader, 100);
+      }
+      setTimeout(forzarActualizarHeader, 500);
+    })();
+  </script>
+
+</body>
+
+</html>
