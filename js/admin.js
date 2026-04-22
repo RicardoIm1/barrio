@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   console.log('Admin.js cargado correctamente');
 
   const usuario = Auth.requireAuth();
-  
+
   if (!usuario) return;
 
   console.log('Usuario logueado:', usuario);
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
 
       const usuarioActual = API.getUsuarioActual();
+      const apiKey = localStorage.getItem('api_key');
 
       const datos = {
         titulo: document.getElementById('titulo').value,
@@ -39,8 +40,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ubicacion: document.getElementById('ubicacion').value || '',
         contacto: document.getElementById('contacto').value || '',
         fecha_evento: document.getElementById('fecha_evento').value || '',
+        imagen_url: document.getElementById('imagen_url').value || '',
+        video_url: document.getElementById('video_url').value || '',
         destacado: document.getElementById('urgente').checked ? 'TRUE' : 'FALSE',
-        status: 'activo',
+        status: 'pendiente', // Por defecto pendiente, admin puede aprobar
         created_by: usuarioActual.id,
       };
 
@@ -52,7 +55,12 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       try {
-        const resultado = await API.crear('AVISOS', datos);
+        // Usar API.peticion en lugar de API.crear
+        const resultado = await API.peticion('CREAR', {
+          coleccion: 'AVISOS',
+          datos: datos
+        }, apiKey);
+
         console.log('Respuesta del servidor:', resultado);
 
         const usuarioActualRol = API.getUsuarioActual()?.rol;
@@ -64,7 +72,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         formAviso.reset();
         document.getElementById('urgente').checked = false;
+        document.getElementById('imagen_url').value = '';
+        document.getElementById('video_url').value = '';
 
+        // Ocultar vista previa
+        const previewContainer = document.getElementById('preview-nuevo');
+        if (previewContainer) previewContainer.style.display = 'none';
+
+        // Cambiar a la pestaña de lista
         const listaTab = document.querySelector('[data-tab="lista"]');
         if (listaTab) listaTab.click();
 
@@ -254,7 +269,7 @@ async function cargarMisAvisos() {
     // Eliminar filtros anteriores para evitar duplicados
     const filtrosCatExistentes = document.querySelector('.filtros-categorias');
     if (filtrosCatExistentes) filtrosCatExistentes.remove();
-    
+
     const filtrosStatusExistentes = document.querySelector('.filtros-status');
     if (filtrosStatusExistentes) filtrosStatusExistentes.remove();
 
