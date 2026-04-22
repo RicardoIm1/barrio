@@ -23,69 +23,68 @@ document.addEventListener('DOMContentLoaded', function () {
 
   configurarTabs();
 
-  // FORMULARIO NUEVO AVISO - USANDO API.crearAviso
   // FORMULARIO NUEVO AVISO
-const formAviso = document.getElementById('form-aviso');
-if (formAviso) {
-  formAviso.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    e.stopPropagation(); // Evita que el evento se propague
+  const formAviso = document.getElementById('form-aviso');
+  if (formAviso) {
+    formAviso.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      e.stopPropagation(); // Evita que el evento se propague
 
-    console.log('=== INICIO DEL ENVÍO ===');
-    
-    // Obtener valores DIRECTAMENTE
-    const tituloValue = document.getElementById('titulo').value;
-    const contenidoValue = document.getElementById('contenido').value;
-    const categoriaValue = document.getElementById('categoria').value;
-    
-    console.log('Título capturado:', tituloValue);
-    console.log('Título es vacío?', tituloValue === '');
-    console.log('Título es null?', tituloValue === null);
-    
-    // Validación explícita
-    if (!tituloValue || tituloValue.trim() === '') {
-      console.error('❌ Título vacío detectado');
-      API.mostrarError('El título es obligatorio. Por favor escribe un título.');
-      return; // Detener ejecución
-    }
-    
-    const usuarioActual = API.getUsuarioActual();
-    const apiKey = localStorage.getItem('api_key');
+      console.log('=== INICIO DEL ENVÍO ===');
 
-    const datos = {
-      titulo: tituloValue.trim(),
-      contenido: contenidoValue.trim(),
-      categoria: categoriaValue,
-      ubicacion: document.getElementById('ubicacion')?.value || '',
-      contacto: document.getElementById('contacto')?.value || '',
-      fecha_evento: document.getElementById('fecha_evento')?.value || '',
-      imagen_url: document.getElementById('imagen_url')?.value || '',
-      video_url: document.getElementById('video_url')?.value || '',
-      destacado: document.getElementById('urgente')?.checked ? 'TRUE' : 'FALSE',
-      status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
-      created_by: usuarioActual.id,
-      created_at: new Date().toISOString()
-    };
+      // Obtener valores DIRECTAMENTE
+      const tituloValue = document.getElementById('titulo').value;
+      const contenidoValue = document.getElementById('contenido').value;
+      const categoriaValue = document.getElementById('categoria').value;
 
-    console.log('📦 Datos a enviar:', datos);
-    
-    // Validar nuevamente después de construir el objeto
-    if (!datos.titulo || datos.titulo === '') {
-      console.error('❌ Título vacío en el objeto datos');
-      API.mostrarError('El título no puede estar vacío');
-      return;
-    }
+      console.log('Título capturado:', tituloValue);
+      console.log('Título es vacío?', tituloValue === '');
+      console.log('Título es null?', tituloValue === null);
 
-    // Continuar con el envío...
-    try {
-      const resultado = await API.crearAviso(datos, apiKey);
-      console.log('Respuesta:', resultado);
-      // ... resto del código
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  });
-}
+      // Validación explícita
+      if (!tituloValue || tituloValue.trim() === '') {
+        console.error('❌ Título vacío detectado');
+        API.mostrarError('El título es obligatorio. Por favor escribe un título.');
+        return; // Detener ejecución
+      }
+
+      const usuarioActual = API.getUsuarioActual();
+      const apiKey = localStorage.getItem('api_key');
+
+      const datos = {
+        titulo: tituloValue.trim(),
+        contenido: contenidoValue.trim(),
+        categoria: categoriaValue,
+        ubicacion: document.getElementById('ubicacion')?.value || '',
+        contacto: document.getElementById('contacto')?.value || '',
+        fecha_evento: document.getElementById('fecha_evento')?.value || '',
+        imagen_url: document.getElementById('imagen_url')?.value || '',
+        video_url: document.getElementById('video_url')?.value || '',
+        destacado: document.getElementById('urgente')?.checked ? 'TRUE' : 'FALSE',
+        status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
+        created_by: usuarioActual.id,
+        created_at: new Date().toISOString()
+      };
+
+      console.log('📦 Datos a enviar:', datos);
+
+      // Validar nuevamente después de construir el objeto
+      if (!datos.titulo || datos.titulo === '') {
+        console.error('❌ Título vacío en el objeto datos');
+        API.mostrarError('El título no puede estar vacío');
+        return;
+      }
+
+      // Continuar con el envío...
+      try {
+        const resultado = await API.crearAviso(datos, apiKey);
+        console.log('Respuesta:', resultado);
+        // ... resto del código
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  }
 
   // Cancelar formulario
   const cancelar = document.getElementById('cancelar');
