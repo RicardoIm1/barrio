@@ -172,12 +172,11 @@ class API {
 
   // Crear aviso
   static async crearAviso(datos, apiKey) {
-    // Enviar los datos directamente, no anidados
-    const params = {
+    // Enviar los datos DENTRO de un objeto llamado "datos"
+    return await API.peticion('CREAR', {
       coleccion: 'AVISOS',
-      ...datos  // Esto extrae todas las propiedades del objeto datos
-    };
-    return await API.peticion('CREAR', params, apiKey);
+      datos: datos  // <-- Aquí está la clave: anidar dentro de "datos"
+    }, apiKey);
   }
 
   // Actualizar aviso
