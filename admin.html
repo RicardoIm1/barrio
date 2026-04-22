@@ -405,7 +405,7 @@
       .avisos-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
       }
-      
+
       .tarjeta.destacada {
         grid-column: span 1;
       }
@@ -417,32 +417,32 @@
         grid-template-columns: 1fr;
         gap: 1rem;
       }
-      
+
       .tarjeta.destacada {
         grid-column: span 1;
         order: -1;
       }
-      
+
       .tarjeta.destacada .tarjeta-titulo {
         font-size: 1.1rem;
       }
-      
+
       .usuarios-grid {
         grid-template-columns: 1fr;
       }
-      
+
       .tarjeta-usuario {
         padding: 0.8rem;
       }
-      
+
       .admin-header h1 {
         font-size: 1.3rem;
       }
-      
+
       .grupo-botones {
         flex-direction: column;
       }
-      
+
       .boton-chico {
         width: 100%;
         text-align: center;
@@ -451,20 +451,21 @@
 
     /* Móviles pequeños */
     @media (max-width: 480px) {
+
       .tarjeta-imagen,
       .tarjeta.destacada .tarjeta-imagen {
         height: 140px;
       }
-      
+
       .tarjeta-video iframe,
       .tarjeta.destacada .tarjeta-video iframe {
         height: 140px;
       }
-      
+
       .tarjeta-titulo {
         font-size: 1rem;
       }
-      
+
       .reciente-badge {
         font-size: 0.6rem;
         padding: 3px 8px;
@@ -476,12 +477,12 @@
       .avisos-grid {
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       }
-      
+
       .tarjeta.destacada {
         grid-column: span 2;
         grid-row: span 1;
       }
-      
+
       .usuarios-grid {
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       }
@@ -689,12 +690,12 @@
       const previewImg = document.getElementById('preview-imagen-nuevo');
 
       if (inputImagen) {
-        inputImagen.addEventListener('input', function() {
+        inputImagen.addEventListener('input', function () {
           const url = this.value;
           if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
             previewImg.src = url;
             previewContainer.style.display = 'block';
-            previewImg.onerror = function() {
+            previewImg.onerror = function () {
               previewContainer.style.display = 'none';
             };
           } else {
@@ -706,8 +707,10 @@
   </script>
 
   <!-- Modal de edición -->
-  <div id="modal-editar" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
+  <div id="modal-editar"
+    style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    <div
+      style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">✏️ Editar aviso</h2>
         <button id="cerrar-modal" style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
@@ -778,7 +781,7 @@
   <script>
     function escapeHTML(str) {
       if (!str) return '';
-      return String(str).replace(/[&<>]/g, function(m) {
+      return String(str).replace(/[&<>]/g, function (m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -786,7 +789,7 @@
       });
     }
 
-    window.abrirEditor = function(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
+    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-titulo').value = titulo || '';
       document.getElementById('edit-contenido').value = contenido || '';
@@ -796,7 +799,7 @@
       document.getElementById('edit-fecha_evento').value = fecha_evento || '';
       document.getElementById('edit-imagen_url').value = imagen_url || '';
       document.getElementById('edit-video_url').value = video_url || '';
-      
+
       const previewContainer = document.getElementById('preview-editar');
       const previewImg = document.getElementById('preview-imagen-editar');
       if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
@@ -805,7 +808,7 @@
       } else {
         previewContainer.style.display = 'none';
       }
-      
+
       document.getElementById('modal-editar').style.display = 'flex';
     }
 
@@ -846,6 +849,80 @@
         alert('❌ Error al actualizar el aviso');
       }
     });
+  </script>
+
+  <script>
+    // Forzar actualización del header después de cargar
+    (function () {
+      function actualizarHeader() {
+        const usuarioStr = localStorage.getItem('usuario');
+        const apiKey = localStorage.getItem('api_key');
+
+        const loginLink = document.getElementById('login-link');
+        const userArea = document.getElementById('user-area');
+        const userNameSpan = document.getElementById('user-name');
+        const perfilLink = document.getElementById('perfil-link');
+        const adminLink = document.getElementById('admin-link');
+        const cerrarBtn = document.getElementById('cerrar-sesion');
+
+        if (!loginLink) {
+          console.log('Header no cargado aún, reintentando...');
+          setTimeout(actualizarHeader, 200);
+          return;
+        }
+
+        if (usuarioStr && apiKey) {
+          try {
+            const usuario = JSON.parse(usuarioStr);
+            // Ocultar login, mostrar área de usuario
+            if (loginLink) loginLink.style.display = 'none';
+            if (userArea) userArea.style.display = 'flex';
+            if (userNameSpan) userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+
+            // Mostrar link de admin si es admin
+            if (adminLink && usuario.rol === 'admin') {
+              adminLink.style.display = 'inline-flex';
+            }
+
+            // Configurar cierre de sesión
+            if (cerrarBtn) {
+              const nuevoCerrar = cerrarBtn.cloneNode(true);
+              if (cerrarBtn.parentNode) {
+                cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
+                nuevoCerrar.addEventListener('click', function (e) {
+                  e.preventDefault();
+                  localStorage.removeItem('usuario');
+                  localStorage.removeItem('api_key');
+                  window.location.href = '/avisos-jardines/index.html';
+                });
+              }
+            }
+
+            console.log('Header actualizado - Usuario logueado');
+          } catch (e) {
+            console.error('Error al actualizar header:', e);
+          }
+        } else {
+          // No hay sesión, mostrar login
+          if (loginLink) loginLink.style.display = 'inline-flex';
+          if (userArea) userArea.style.display = 'none';
+          console.log('Header actualizado - Sin sesión');
+        }
+      }
+
+      // Ejecutar cuando el DOM esté listo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          setTimeout(actualizarHeader, 100);
+        });
+      } else {
+        setTimeout(actualizarHeader, 100);
+      }
+
+      // También ejecutar después de que UI.cargarHeader() termine
+      setTimeout(actualizarHeader, 500);
+      setTimeout(actualizarHeader, 1000);
+    })();
   </script>
 </body>
 
