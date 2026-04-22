@@ -136,7 +136,7 @@ class API {
 
   // ==================== MÉTODOS DE AVISOS ====================
 
-  // Listar avisos - CORREGIDO: envía coleccion como parámetro directo
+  // Listar avisos
   static async listar(coleccion, filtros = {}, paginacion = {}) {
     const apiKey = localStorage.getItem('api_key');  // Obtener la API Key
 
@@ -345,3 +345,24 @@ API.mostrarError = function (mensaje) {
     alert('Error: ' + mensaje);
   }
 };
+
+// Listar usuarios - versión que no usa autenticación (solo para admin)
+static async listarUsuariosAdmin() {
+  // Usar un endpoint diferente o el mismo pero con un truco
+  const apiKey = localStorage.getItem('api_key');
+  
+  // Intentar con LISTAR_USUARIOS (acción diferente)
+  const resultado = await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+  
+  if (resultado && resultado.success) {
+    return resultado.data || { datos: [] };
+  }
+  
+  // Si falla, intentar con GET_USUARIOS
+  const resultado2 = await API.peticion('GET_USUARIOS', {}, apiKey);
+  if (resultado2 && resultado2.success) {
+    return resultado2.data || { datos: [] };
+  }
+  
+  return { datos: [] };
+}
