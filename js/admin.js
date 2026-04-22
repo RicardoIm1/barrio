@@ -549,63 +549,44 @@ function cargarPerfil() {
 // ========== CARGAR USUARIOS ==========
 async function cargarUsuarios() {
   const contenedor = document.getElementById('lista-usuarios-container');
-  if (!contenedor) {
-    console.error('❌ Contenedor lista-usuarios-container no encontrado');
-    return;
-  }
+  if (!contenedor) return;
 
   contenedor.innerHTML = '<div class="cargando">🔄 Cargando usuarios...</div>';
 
   try {
     const apiKey = localStorage.getItem('api_key');
-    console.log('🔑 Cargando usuarios con API key:', apiKey ? 'Presente' : 'Ausente');
-
     const resultado = await API.listar('USUARIOS', { activo: 'TRUE' });
-    console.log('📡 Respuesta completa de API.listar usuarios:', resultado);
 
-    let usuarios = [];
-    if (resultado && resultado.datos) {
-      usuarios = resultado.datos;
-    } else if (resultado && Array.isArray(resultado)) {
-      usuarios = resultado;
-    } else if (resultado && resultado.data && resultado.data.datos) {
-      usuarios = resultado.data.datos;
-    } else if (resultado && resultado.usuarios) {
-      usuarios = resultado.usuarios;
-    }
+    console.log('Respuesta usuarios:', resultado);
 
-    console.log('👥 Usuarios encontrados:', usuarios.length, usuarios);
+    let usuarios = resultado.datos || [];
 
-    if (!usuarios || usuarios.length === 0) {
-      contenedor.innerHTML = '<div class="mensaje mensaje-info">👥 No hay usuarios registrados</div>';
+    if (usuarios.length === 0) {
+      contenedor.innerHTML = '<div class="mensaje">👥 No hay usuarios registrados</div>';
       return;
     }
 
     let html = '<div class="usuarios-grid">';
     usuarios.forEach(user => {
-      const rolClass = user.rol === 'admin' ? 'rol-admin' : 'rol-usuario';
-      const rolIcon = user.rol === 'admin' ? '👑' : '👤';
       html += `
         <div class="tarjeta-usuario">
-          <div class="avatar-usuario">${rolIcon}</div>
+          <div class="avatar-usuario">${user.rol === 'admin' ? '👑' : '👤'}</div>
           <div class="info-usuario">
-            <strong>${escapeHTML(user.nombre || user.email || 'Sin nombre')}</strong>
+            <strong>${escapeHTML(user.nombre || user.email)}</strong>
             <small>${escapeHTML(user.email)}</small>
-            <span class="rol-badge ${rolClass}">${user.rol === 'admin' ? 'Administrador' : 'Usuario'}</span>
-            <small style="display: block; margin-top: 4px;">🏷️ ${escapeHTML(user.categorias || 'todas')}</small>
+            <span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol === 'admin' ? 'Administrador' : 'Usuario'}</span>
+            <small>🏷️ ${escapeHTML(user.categorias || 'todas')}</small>
           </div>
-          <button class="boton boton-chico boton-peligro" onclick="eliminarUsuario('${user.id}')" style="padding: 4px 12px;">🗑️</button>
+          <button class="boton boton-chico boton-peligro" onclick="eliminarUsuario('${user.id}')">🗑️</button>
         </div>
       `;
     });
     html += '</div>';
 
     contenedor.innerHTML = html;
-    console.log('✅ Usuarios renderizados correctamente');
-
   } catch (error) {
-    console.error('❌ Error cargando usuarios:', error);
-    contenedor.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar usuarios: ' + error.message + '</div>';
+    console.error('Error cargando usuarios:', error);
+    contenedor.innerHTML = '<div class="mensaje-error">❌ Error al cargar usuarios</div>';
   }
 }
 
@@ -637,14 +618,11 @@ async function eliminarUsuario(id) {
 
   try {
     const apiKey = localStorage.getItem('api_key');
-    const resultado = await API.peticion('ELIMINAR', {
-      coleccion: 'USUARIOS',
-      id: id
-    }, apiKey);
+    const resultado = await API.eliminar('USUARIOS', id, apiKey);
 
     if (resultado && resultado.success) {
       API.mostrarExito('✅ Usuario eliminado correctamente');
-      cargarUsuarios();
+      cargarUsuarios(); // Recargar la lista
     } else {
       API.mostrarError('❌ Error: ' + (resultado?.error || 'No se pudo eliminar'));
     }
