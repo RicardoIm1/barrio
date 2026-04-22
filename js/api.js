@@ -172,11 +172,23 @@ class API {
 
   // Crear aviso
   static async crearAviso(datos, apiKey) {
-    return await API.peticion('CREAR', {
-      coleccion: 'AVISOS',
-      datos: datos
-    }, apiKey);
-  }
+  // Enviar cada campo directamente
+  return await API.peticion('CREAR', {
+    coleccion: 'AVISOS',
+    titulo: datos.titulo,
+    contenido: datos.contenido,
+    categoria: datos.categoria,
+    ubicacion: datos.ubicacion,
+    contacto: datos.contacto,
+    fecha_evento: datos.fecha_evento,
+    imagen_url: datos.imagen_url,
+    video_url: datos.video_url,
+    destacado: datos.destacado,
+    status: datos.status,
+    created_by: datos.created_by,
+    created_at: datos.created_at
+  }, apiKey);
+}
 
   // Actualizar aviso
   static async actualizarAviso(id, datos, apiKey) {
