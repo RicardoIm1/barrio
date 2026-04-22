@@ -213,45 +213,46 @@ function configurarModalEdicion() {
     });
   }
 
- const formEditar = document.getElementById('form-editar');
-if (formEditar) {
-  formEditar.addEventListener('submit', async (e) => {
-    e.preventDefault();
+  const formEditar = document.getElementById('form-editar');
+  if (formEditar) {
+    formEditar.addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    const id = document.getElementById('edit-id').value;
-    const apiKey = localStorage.getItem('api_key');
+      const id = document.getElementById('edit-id').value;
+      const apiKey = localStorage.getItem('api_key');
 
-    const datos = {
-      titulo: document.getElementById('edit-titulo').value,
-      contenido: document.getElementById('edit-contenido').value,
-      categoria: document.getElementById('edit-categoria').value,
-      ubicacion: document.getElementById('edit-ubicacion').value,
-      contacto: document.getElementById('edit-contacto').value,
-      fecha_evento: document.getElementById('edit-fecha_evento').value,
-      imagen_url: document.getElementById('edit-imagen_url').value,
-      video_url: document.getElementById('edit-video_url').value
-    };
+      const datos = {
+        titulo: document.getElementById('edit-titulo').value,
+        contenido: document.getElementById('edit-contenido').value,
+        categoria: document.getElementById('edit-categoria').value,
+        ubicacion: document.getElementById('edit-ubicacion').value,
+        contacto: document.getElementById('edit-contacto').value,
+        fecha_evento: document.getElementById('edit-fecha_evento').value,
+        imagen_url: document.getElementById('edit-imagen_url').value,
+        video_url: document.getElementById('edit-video_url').value
+      };
 
-    console.log('📝 Enviando edición con API.actualizarAviso:', { id, datos });
+      console.log('📝 Enviando edición con API.actualizarAviso:', { id, datos });
 
-    try {
-      // Usar el método actualizarAviso que ya existe
-      const resultado = await API.actualizarAviso(id, datos, apiKey);
-      
-      console.log('📡 Respuesta:', resultado);
+      try {
+        // Usar el método actualizarAviso que ya existe
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
 
-      if (resultado && resultado.success) {
-        API.mostrarExito('✅ Aviso actualizado correctamente');
-        document.getElementById('modal-editar').style.display = 'none';
-        cargarMisAvisos();
-      } else {
-        API.mostrarError('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
+        console.log('📡 Respuesta:', resultado);
+
+        if (resultado && resultado.success) {
+          API.mostrarExito('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+          cargarMisAvisos();
+        } else {
+          API.mostrarError('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
+        }
+      } catch (error) {
+        console.error('Error al actualizar:', error);
+        API.mostrarError('❌ Error al actualizar el aviso: ' + error.message);
       }
-    } catch (error) {
-      console.error('Error al actualizar:', error);
-      API.mostrarError('❌ Error al actualizar el aviso: ' + error.message);
-    }
-  });
+    });
+  }
 }
 
 // Función para convertir URL de YouTube a embed
