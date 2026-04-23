@@ -245,13 +245,12 @@
             box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
         }
 
-                /* ============================================
+        /* ============================================
            GRID RESPONSIVO MEJORADO:
            - Móviles: 1 columna
            - Tablets/medianas (768px - 1199px): 
-                * Primeros 3 items: más grandes (ocupan 1 columna cada uno de 3 columnas totales)
-                * Resto: grid normal de 4 columnas
-           - Pantallas grandes: 4 columnas uniformes
+                * Primeros 3 items: ocupan cada uno 1/3 del ancho (tres columnas iguales)
+                * A partir del 4to item: grid normal de 4 columnas
         ============================================ */
         .grid-avisos {
             display: grid;
@@ -265,34 +264,49 @@
             }
         }
 
-        /* Tablets y pantallas medianas: primera fila 3 columnas, resto 4 */
+        /* Tablets y pantallas medianas: diseño especial de 3+4 columnas */
         @media (min-width: 768px) and (max-width: 1199px) {
-            /* Grid base de 4 columnas */
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
             
-            /* Los primeros 3 items: hacer que ocupen toda la primera fila 
-               pero mostrados en 3 columnas (cada uno ocupa 1.33 fracciones en ancho) */
+            /* Los primeros 3 items forman una fila de 3 columnas (más grandes visualmente) */
             .grid-avisos .aviso-card:nth-child(1),
             .grid-avisos .aviso-card:nth-child(2),
             .grid-avisos .aviso-card:nth-child(3) {
                 grid-column: span 1;
             }
             
-            /* Hacer que los primeros 3 items se comporten como una fila de 3 columnas */
-            .grid-avisos .aviso-card:nth-child(1) { grid-column: 1 / 2; }
-            .grid-avisos .aviso-card:nth-child(2) { grid-column: 2 / 3; }
-            .grid-avisos .aviso-card:nth-child(3) { grid-column: 3 / 4; }
+            /* Forzar que los primeros 3 ocupen exactamente las primeras 3 columnas */
+            .grid-avisos .aviso-card:nth-child(1) { 
+                grid-column: 1 / 2; 
+            }
+            .grid-avisos .aviso-card:nth-child(2) { 
+                grid-column: 2 / 3; 
+            }
+            .grid-avisos .aviso-card:nth-child(3) { 
+                grid-column: 3 / 4; 
+            }
             
-            /* El cuarto item empieza en la fila 2, columna 1 */
-            .grid-avisos .aviso-card:nth-child(4) { grid-column: auto; }
+            /* A partir del 4to item, trabajar en 4 columnas */
+            .grid-avisos .aviso-card:nth-child(4) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(5) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(6) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(7) { grid-column: 4 / 5; }
+            .grid-avisos .aviso-card:nth-child(8) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(9) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(10) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(11) { grid-column: 4 / 5; }
+            .grid-avisos .aviso-card:nth-child(12) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(13) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(14) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(15) { grid-column: 4 / 5; }
             
-            /* Los primeros 3 items con mejor presentación */
+            /* Hacer que los primeros 3 items tengan una altura ligeramente mayor y mejor presentación */
             .grid-avisos .aviso-card:nth-child(1) .aviso-imagen,
             .grid-avisos .aviso-card:nth-child(2) .aviso-imagen,
             .grid-avisos .aviso-card:nth-child(3) .aviso-imagen {
-                height: 220px;
+                height: 200px;
             }
             
             .grid-avisos .aviso-card:nth-child(1) h3,
@@ -525,17 +539,6 @@
 
         .toast-notification.show {
             transform: translateX(-50%) translateY(0);
-        }
-
-                /* SOLUCIÓN: Forzar reflow después de cargar dinámicamente */
-        .grid-avisos .aviso-card {
-            width: 100%;
-        }
-        
-        /* Asegurar que todas las tarjetas tengan el mismo ancho base */
-        .aviso-card {
-            width: 100%;
-            box-sizing: border-box;
         }
     </style>
 </head>
