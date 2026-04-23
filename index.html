@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#2c3e50">
     <style>
         /* ========== ESTILOS PREMIUM PARA EL INDEX ========== */
- 
+
         /* Tarjetas cliqueables */
         .aviso-card {
             cursor: pointer;
@@ -263,9 +263,11 @@
             .grid-avisos.has-more {
                 grid-template-columns: repeat(4, 1fr);
             }
+
             .grid-avisos.has-first-three.has-more {
                 grid-template-columns: repeat(4, 1fr);
             }
+
             /* Los primeros 3 ocupan todo el ancho en su fila implícita */
             .grid-avisos.has-first-three .aviso-card:nth-child(-n+3) {
                 grid-column: span 1;
@@ -277,24 +279,24 @@
             .grid-avisos {
                 grid-template-columns: 1fr;
             }
-            
+
             .top-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .filtros {
                 display: none;
             }
-            
+
             .filtros.mobile-visible {
                 display: flex;
             }
-            
+
             .buscador-container {
                 width: 100%;
             }
-            
+
             .mobile-filter-toggle {
                 display: block;
                 background: var(--color-acento);
@@ -306,7 +308,7 @@
                 cursor: pointer;
             }
         }
-        
+
         .mobile-filter-toggle {
             display: none;
         }
@@ -419,7 +421,8 @@
     <main class="contenedor">
         <div class="top-bar">
             <div class="buscador-container">
-                <input type="text" id="buscador" class="buscador-input" placeholder="🔍 Buscar por título, contenido, ubicación, fecha...">
+                <input type="text" id="buscador" class="buscador-input"
+                    placeholder="🔍 Buscar por título, contenido, ubicación, fecha...">
                 <button class="clear-search" id="clearSearch">✕</button>
             </div>
             <button class="mobile-filter-toggle" id="mobileFilterToggle">📋 Filtros</button>
@@ -478,14 +481,14 @@
             try {
                 const api = new API();
                 await api.llamar('REGISTRAR_VISTA', { id: id });
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function registrarClickWhatsApp(id) {
             try {
                 const api = new API();
                 await api.llamar('REGISTRAR_CLICK_WHATSAPP', { id: id });
-            } catch (e) {}
+            } catch (e) { }
         }
 
         async function registrarInteres(id) {
@@ -497,23 +500,23 @@
                     if (aviso) aviso.intereses = (aviso.intereses || 0) + 1;
                     return true;
                 }
-            } catch (e) {}
+            } catch (e) { }
             return false;
         }
 
         // ========== FUNCIONES DE INTERACCIÓN ==========
-        window.verAviso = async function(id) {
+        window.verAviso = async function (id) {
             await registrarVista(id);
             window.location.href = `/avisos-jardines/aviso.html?id=${id}`;
         };
 
-        window.abrirWhatsApp = async function(numero, texto, id, event) {
+        window.abrirWhatsApp = async function (numero, texto, id, event) {
             if (event) event.stopPropagation();
             if (id) await registrarClickWhatsApp(id);
             window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank');
         };
 
-        window.darLike = async function(id, event) {
+        window.darLike = async function (id, event) {
             if (event) event.stopPropagation();
             if (likedAvisos[id]) {
                 showToast('❤️ Ya marcaste "Me interesa" en este aviso', 1500);
@@ -528,14 +531,14 @@
             }
         };
 
-        window.abrirComentarios = function(id, event) {
+        window.abrirComentarios = function (id, event) {
             if (event) event.stopPropagation();
             currentAvisoIdForComments = id;
             document.getElementById('comments-panel').classList.add('open');
             cargarComentarios(id);
         };
 
-        window.cerrarPanelComentarios = function() {
+        window.cerrarPanelComentarios = function () {
             document.getElementById('comments-panel').classList.remove('open');
         };
 
@@ -565,7 +568,7 @@
             }
         }
 
-        window.enviarComentario = async function() {
+        window.enviarComentario = async function () {
             const input = document.getElementById('comment-input');
             const texto = input.value.trim();
             if (!texto) {
@@ -587,13 +590,13 @@
                     showToast('💬 Comentario enviado', 1500);
                     cargarComentarios(currentAvisoIdForComments);
                 }
-            } catch (e) {}
+            } catch (e) { }
         };
 
         // ========== FUNCIONES AUXILIARES ==========
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
+            return str.replace(/[&<>]/g, function (m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
@@ -639,7 +642,7 @@
             const avisosAMostrar = avisosFiltrados.slice(start, end);
             hasMore = end < avisosFiltrados.length;
             renderizarAvisos(avisosAMostrar);
-            
+
             if (!hasMore && document.getElementById('loader-more')) {
                 document.getElementById('loader-more').style.display = 'none';
             }
@@ -650,7 +653,7 @@
             isLoading = true;
             const loader = document.getElementById('loader-more');
             if (loader) loader.style.display = 'block';
-            
+
             setTimeout(() => {
                 currentPage++;
                 const itemsPerPage = 20;
@@ -666,7 +669,7 @@
         function renderizarAvisos(avisos, esCargaIncremental = false) {
             const container = document.getElementById('avisos-container');
             if (!container) return;
-            
+
             const avisosHTML = avisos.map((aviso, index) => `
                 <div class="aviso-card ${aviso.categoria === 'urgente' ? 'urgente' : ''}" 
                      data-id="${aviso.id}"
@@ -691,7 +694,7 @@
                     <button class="interes-btn" onclick="darLike('${aviso.id}', event)">❤️</button>
                 </div>
             `).join('');
-            
+
             if (!esCargaIncremental) {
                 container.innerHTML = avisosHTML;
             } else {
@@ -701,13 +704,13 @@
                     card.classList.add('visible');
                 });
             }
-            
+
             // Aplicar grid dinámico según cantidad de avisos
             const hasFirstThree = avisos.length >= 3;
             const hasMoreThanThree = avisos.length > 3;
             container.classList.toggle('has-first-three', hasFirstThree);
             container.classList.toggle('has-more', hasMoreThanThree);
-            
+
             // Forzar visibilidad de todas las tarjetas
             document.querySelectorAll('.aviso-card').forEach(card => card.classList.add('visible'));
         }
@@ -750,7 +753,7 @@
                     aplicarFiltrosYBusqueda();
                 });
             });
-            
+
             const buscador = document.getElementById('buscador');
             const clearBtn = document.getElementById('clearSearch');
             buscador.addEventListener('input', (e) => {
@@ -764,7 +767,7 @@
                 clearBtn.style.display = 'none';
                 aplicarFiltrosYBusqueda();
             });
-            
+
             // Scroll infinito
             scrollListener = () => {
                 const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
@@ -775,7 +778,7 @@
                 }
             };
             window.addEventListener('scroll', scrollListener);
-            
+
             // Menú móvil para filtros
             const mobileToggle = document.getElementById('mobileFilterToggle');
             const filtrosContainer = document.getElementById('filtros');
@@ -787,33 +790,54 @@
         }
 
         // ========== INICIALIZACIÓN ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            initFiltrosYBuscador();
-            cargarAvisosIniciales();
-            
+        document.addEventListener('DOMContentLoaded', function () {
+            initFiltros();
+            cargarAvisos();
+
+            // Cargar header
             fetch('/avisos-jardines/common/header.html')
-                .then(res => res.text())
+                .then(res => {
+                    if (!res.ok) throw new Error('Header no encontrado');
+                    return res.text();
+                })
                 .then(html => {
                     document.getElementById('header-container').innerHTML = html;
                     setTimeout(() => {
-                        if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth();
+                        if (typeof window.inicializarHeaderAuth === 'function') {
+                            window.inicializarHeaderAuth();
+                        }
                     }, 100);
-                }).catch(console.error);
-            
+                })
+                .catch(err => console.error('Error cargando header:', err));
+
+            // Cargar footer
             fetch('/avisos-jardines/common/footer.html')
-                .then(res => res.text())
+                .then(response => {
+                    if (!response.ok) throw new Error('Footer no encontrado');
+                    return response.text();
+                })
                 .then(data => {
                     const footerContainer = document.getElementById('footer-container');
-                    if (footerContainer) footerContainer.innerHTML = data;
-                }).catch(console.error);
+                    if (footerContainer) {
+                        footerContainer.innerHTML = data;
+                        const anioElement = document.getElementById('anio-actual');
+                        if (anioElement) {
+                            anioElement.textContent = new Date().getFullYear();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error cargando el footer:', error));
         });
     </script>
 
-    <div id="cookieBanner" style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e4620; color: white; padding: 1rem; text-align: center; z-index: 1000; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
+    <div id="cookieBanner"
+        style="position: fixed; bottom: 0; left: 0; right: 0; background: #1e4620; color: white; padding: 1rem; text-align: center; z-index: 1000; display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem;">
         <span>🍪 Usamos cookies para que la plataforma funcione bien. No vendemos tus datos.</span>
         <div>
-            <button id="aceptarCookies" style="background: #fbbf24; border: none; padding: 0.4rem 1.2rem; border-radius: 2rem; cursor: pointer;">Aceptar</button>
-            <a href="/avisos-jardines/cookies.html" style="background: transparent; border: 1px solid white; color: white; padding: 0.4rem 1.2rem; border-radius: 2rem; text-decoration: none; margin-left: 0.5rem;">Configurar</a>
+            <button id="aceptarCookies"
+                style="background: #fbbf24; border: none; padding: 0.4rem 1.2rem; border-radius: 2rem; cursor: pointer;">Aceptar</button>
+            <a href="/avisos-jardines/cookies.html"
+                style="background: transparent; border: 1px solid white; color: white; padding: 0.4rem 1.2rem; border-radius: 2rem; text-decoration: none; margin-left: 0.5rem;">Configurar</a>
         </div>
     </div>
     <script>
@@ -829,7 +853,9 @@
             <h3>💬 Comentarios</h3>
             <button class="close-comments" onclick="cerrarPanelComentarios()">×</button>
         </div>
-        <div id="comments-list" class="comments-list"><div class="cargando">Cargando comentarios...</div></div>
+        <div id="comments-list" class="comments-list">
+            <div class="cargando">Cargando comentarios...</div>
+        </div>
         <div class="comment-input-area">
             <input type="text" id="comment-input" placeholder="Escribe tu comentario...">
             <button onclick="enviarComentario()">Enviar</button>
