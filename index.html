@@ -306,11 +306,17 @@
                 grid-template-columns: repeat(4, 1fr);
             }
 
-            /* Los primeros 3 items más grandes visualmente */
-            .grid-avisos .aviso-card:nth-child(-n+3) .aviso-imagen {
-                height: 220px;
+            /* Primeros 2 items: ocupan 2 columnas (cada uno 1 columna, pero centrados) */
+            .grid-avisos .aviso-card:nth-child(1),
+            .grid-avisos .aviso-card:nth-child(2) {
+                grid-column: span 2;
             }
 
+            /* Los primeros 3 items más grandes visualmente */
+            /* .grid-avisos .aviso-card:nth-child(-n+3) .aviso-imagen {
+                height: 220px;
+            } */
+             
             .grid-avisos .aviso-card:nth-child(-n+3) h3 {
                 font-size: 1.2rem;
             }
