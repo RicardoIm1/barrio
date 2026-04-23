@@ -282,77 +282,50 @@
             box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
         }
 
-        /* ============================================
-           GRID RESPONSIVO - ESTILO YOUTUBE:
-           - Móviles: 1 columna
-           - Tablets/medianas: 4 columnas, primeras 3 destacadas
-           - Pantallas grandes: 4 columnas, primeras 3 destacadas
-        ============================================ */
-        .grid-avisos {
-            display: grid;
-            gap: 1.8rem;
-        }
-
-        /* Móviles: 1 columna */
-        @media (max-width: 767px) {
-            .grid-avisos {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Tablets y pantallas medianas: 4 columnas, primeras 3 destacadas */
+        /* Tablets y pantallas medianas: 4 columnas, primeras 2 destacadas */
         @media (min-width: 768px) and (max-width: 1199px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
 
-            /* Primeros 2 items: ocupan 2 columnas (cada uno 1 columna, pero centrados) */
+            /* Primeros 2 items: ocupan 2 columnas cada uno (primera fila de 2) */
             .grid-avisos .aviso-card:nth-child(1),
             .grid-avisos .aviso-card:nth-child(2) {
                 grid-column: span 2;
             }
 
-            /* Los primeros 3 items más grandes visualmente */
-            /* .grid-avisos .aviso-card:nth-child(-n+3) .aviso-imagen {
+            /* Primeros 2 items más grandes visualmente */
+            .grid-avisos .aviso-card:nth-child(-n+2) .aviso-imagen {
                 height: 220px;
-            } */
+            }
 
-            .grid-avisos .aviso-card:nth-child(-n+3) h3 {
+            .grid-avisos .aviso-card:nth-child(-n+2) h3 {
                 font-size: 1.2rem;
             }
 
-            .grid-avisos .aviso-card:nth-child(-n+3) .aviso-contenido-preview {
+            .grid-avisos .aviso-card:nth-child(-n+2) .aviso-contenido-preview {
                 -webkit-line-clamp: 4;
             }
         }
 
-        /* Pantallas grandes: 4 columnas, primeras 3 ligeramente más grandes */
+        /* Pantallas grandes: 4 columnas, primeras 2 destacadas */
         @media (min-width: 1200px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
 
-            .grid-avisos .aviso-card:nth-child(-n+3) .aviso-imagen {
+            /* Primeros 2 items: ocupan 2 columnas cada uno */
+            .grid-avisos .aviso-card:nth-child(1),
+            .grid-avisos .aviso-card:nth-child(2) {
+                grid-column: span 2;
+            }
+
+            .grid-avisos .aviso-card:nth-child(-n+2) .aviso-imagen {
                 height: 240px;
             }
 
-            .grid-avisos .aviso-card:nth-child(-n+3) .aviso-contenido-preview {
+            .grid-avisos .aviso-card:nth-child(-n+2) .aviso-contenido-preview {
                 -webkit-line-clamp: 4;
-            }
-        }
-
-        /* Pantallas medianas: en móviles ocultar filtros, solo buscador */
-        @media (max-width: 767px) {
-            .filtros {
-                display: none;
-            }
-
-            .filtros-buscador-wrapper {
-                justify-content: flex-start;
-            }
-
-            .buscador-container {
-                width: 100%;
             }
         }
 
