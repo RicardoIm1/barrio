@@ -10,28 +10,16 @@
     <meta name="theme-color" content="#2c3e50">
     <style>
         /* ========== ESTILOS PREMIUM PARA EL INDEX ========== */
-        :root {
-            --color-primario: #2c3e50;
-            --color-secundario: #e67e22;
-            --color-acento: #e67e22;
-            --color-texto: #2c3e50;
-            --color-texto-claro: #7f8c8d;
-            --color-borde: #ecf0f1;
-            --color-fondo: #f8f9fa;
-        }
 
         /* Tarjetas cliqueables */
         .aviso-card {
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
             position: relative;
             overflow: hidden;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            animation: fadeInUp 0.4s ease-out forwards;
             opacity: 0;
             transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
         }
 
         @keyframes fadeInUp {
@@ -40,6 +28,16 @@
                 transform: translateY(0);
             }
         }
+
+        /* Retraso escalonado para las tarjetas */
+        .aviso-card:nth-child(1) { animation-delay: 0.05s; }
+        .aviso-card:nth-child(2) { animation-delay: 0.10s; }
+        .aviso-card:nth-child(3) { animation-delay: 0.15s; }
+        .aviso-card:nth-child(4) { animation-delay: 0.20s; }
+        .aviso-card:nth-child(5) { animation-delay: 0.25s; }
+        .aviso-card:nth-child(6) { animation-delay: 0.30s; }
+        .aviso-card:nth-child(7) { animation-delay: 0.35s; }
+        .aviso-card:nth-child(8) { animation-delay: 0.40s; }
 
         .aviso-card:hover {
             transform: translateY(-4px);
@@ -156,7 +154,7 @@
             width: 100%;
             height: 160px;
             object-fit: cover;
-            border-radius: 16px 16px 0 0;
+            border-radius: 8px 8px 0 0;
             margin-bottom: 0.8rem;
             background: var(--color-fondo);
         }
@@ -181,57 +179,23 @@
             z-index: 2;
         }
 
-        /* Top bar con filtros y buscador */
-        .top-bar {
+        /* Contenedor de filtros y buscador */
+        .filtros-buscador-wrapper {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             gap: 1rem;
             margin-bottom: 1.5rem;
             flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Filtros mejorados */
+        /* Mejora en los filtros */
         .filtros {
             display: flex;
             gap: 0.5rem;
             flex-wrap: wrap;
             justify-content: center;
-            flex: 1;
-        }
-
-        .buscador-container {
-            position: relative;
-            min-width: 260px;
-        }
-
-        .buscador-input {
-            padding: 0.6rem 1rem;
-            border-radius: 40px;
-            border: 1px solid var(--color-borde);
-            width: 100%;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .buscador-input:focus {
-            outline: none;
-            border-color: var(--color-acento);
-            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
-        }
-
-        .clear-search {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #999;
-            font-size: 1rem;
-            display: none;
+            flex: 2;
         }
 
         .filtro {
@@ -240,128 +204,118 @@
             font-size: 0.85rem;
             font-weight: 500;
             transition: all 0.2s;
-            background: white;
-            border: 1px solid var(--color-borde);
             cursor: pointer;
+            background: var(--color-fondo, #f0f2f5);
+            border: none;
         }
 
         .filtro:hover {
             transform: translateY(-2px);
-            border-color: var(--color-acento);
         }
 
         .filtro.activo {
-            background: var(--color-acento);
+            background: var(--color-primario, #2c3e50);
             color: white;
-            border-color: var(--color-acento);
         }
 
-        /* Grid responsivo - NUEVO: primeros 3 en 3 columnas, resto en 4 */
+        /* Buscador */
+        .buscador-container {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .buscador-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--color-borde, #ddd);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .buscador-input:focus {
+            outline: none;
+            border-color: var(--color-primario, #2c3e50);
+            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+        }
+
+        /* Grid responsivo: 
+           - En móviles: 1 columna
+           - En tablets/medianas: primeros 3 en fila de 3, luego filas de 4
+           - En escritorio: similar pero más amplio
+        */
         .grid-avisos {
             display: grid;
             gap: 1.5rem;
         }
 
-        /* Móvil: 1 columna */
+        /* Móviles: 1 columna */
         @media (max-width: 767px) {
             .grid-avisos {
                 grid-template-columns: 1fr;
             }
-            
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filtros {
-                display: none;
-            }
-            
-            .filtros.mobile-visible {
-                display: flex;
-            }
-            
-            .buscador-container {
-                width: 100%;
-            }
-            
-            .mobile-filter-toggle {
-                display: block;
-                background: var(--color-acento);
-                color: white;
-                border: none;
-                padding: 0.6rem;
-                border-radius: 40px;
-                cursor: pointer;
-                margin-bottom: 0.5rem;
-                width: 100%;
-            }
         }
 
-        /* Tablets y pantallas medianas */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .grid-avisos {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Pantallas grandes: 4 columnas base */
-        @media (min-width: 1024px) {
+        /* Tablets y pantallas medianas: 3 columnas para los primeros 3, luego 4 columnas */
+        @media (min-width: 768px) and (max-width: 1199px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
-        }
-
-        /* Los primeros 3 avisos en pantallas grandes ocupan 3 columnas en su fila */
-        @media (min-width: 1024px) {
+            /* Los primeros 3 items ocupan 3 columnas en una fila especial */
             .grid-avisos .aviso-card:nth-child(1),
             .grid-avisos .aviso-card:nth-child(2),
             .grid-avisos .aviso-card:nth-child(3) {
                 grid-column: span 1;
             }
-            
-            /* Para que los primeros 3 se vean igual que los demás pero formando 3 columnas */
+            /* Forzar que los primeros 3 estén en una fila de 3 columnas */
+            .grid-avisos .aviso-card:nth-child(1) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(2) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(3) { grid-column: 3 / 4; }
+            /* A partir del 4to, fluyen normalmente en 4 columnas */
+            .grid-avisos .aviso-card:nth-child(4) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(5) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(6) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(7) { grid-column: 4 / 5; }
+            .grid-avisos .aviso-card:nth-child(8) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(9) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(10) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(11) { grid-column: 4 / 5; }
+        }
+
+        /* Pantallas grandes: grid normal de 4 columnas */
+        @media (min-width: 1200px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
-            
-            /* Si hay menos de 4 avisos, ajustamos */
-            .grid-avisos:has(.aviso-card:first-child:nth-last-child(3)) {
-                grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* Pantallas medianas: ocultar filtros? No, solo en móviles se ocultan */
+        @media (max-width: 767px) {
+            .filtros {
+                display: none;
+            }
+            .filtros-buscador-wrapper {
+                justify-content: flex-start;
+            }
+            .buscador-container {
+                width: 100%;
             }
         }
 
-        .mobile-filter-toggle {
+        /* Loader para scroll infinito */
+        .loading-trigger {
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-texto-claro);
+        }
+
+        /* Paginación oculta pero funcional para scroll infinito */
+        .paginacion {
             display: none;
         }
 
-        /* Botón Me interesa (corazón) */
-        .interes-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 56px;
-            background: #ff4757;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 3;
-            font-size: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .interes-btn:hover {
-            transform: scale(1.1);
-            background: #e84118;
-        }
-
-        /* Estadísticas en tarjetas */
+        /* Estadísticas en tarjetas - MEJORADO */
         .aviso-stats {
             display: flex;
             gap: 1rem;
@@ -520,19 +474,6 @@
         .toast-notification.show {
             transform: translateX(-50%) translateY(0);
         }
-
-        /* Loader para scroll infinito */
-        .loader-more {
-            text-align: center;
-            padding: 2rem;
-            color: var(--color-texto-claro);
-        }
-
-        .cargando {
-            text-align: center;
-            padding: 3rem;
-            color: var(--color-texto-claro);
-        }
     </style>
 </head>
 
@@ -540,13 +481,8 @@
     <div id="header-container"></div>
 
     <main class="contenedor">
-        <!-- Barra superior con filtros y buscador -->
-        <div class="top-bar">
-            <div class="buscador-container">
-                <input type="text" id="buscador" class="buscador-input" placeholder="🔍 Buscar por título, contenido, ubicación, fecha...">
-                <button class="clear-search" id="clearSearch">✕</button>
-            </div>
-            <button class="mobile-filter-toggle" id="mobileFilterToggle">📋 Mostrar filtros</button>
+        <!-- Filtros + Buscador -->
+        <div class="filtros-buscador-wrapper">
             <div class="filtros" id="filtros">
                 <button class="filtro activo" data-categoria="todos">📋 Todos</button>
                 <button class="filtro" data-categoria="urgente">🚨 URGENTE</button>
@@ -556,6 +492,9 @@
                 <button class="filtro" data-categoria="eventos">📅 EVENTOS</button>
                 <button class="filtro" data-categoria="gobierno">🏛️ GOBIERNO</button>
                 <button class="filtro" data-categoria="varios">📢 VARIOS</button>
+            </div>
+            <div class="buscador-container">
+                <input type="text" id="buscador-input" class="buscador-input" placeholder="🔍 Buscar por título, anunciante, mensaje, fecha...">
             </div>
         </div>
 
@@ -568,7 +507,10 @@
         </div>
 
         <!-- Loader para scroll infinito -->
-        <div id="loader-more" class="loader-more" style="display: none;">📰 Cargando más avisos...</div>
+        <div id="loading-trigger" class="loading-trigger" style="display: none;">📡 Cargando más avisos...</div>
+
+        <!-- Paginación oculta (para mantener estructura pero no se usa visualmente) -->
+        <div id="paginacion" class="paginacion"></div>
     </main>
 
     <!-- Footer -->
@@ -577,39 +519,28 @@
     <!-- Toast para notificaciones -->
     <div id="toast" class="toast-notification"></div>
 
-    <!-- Panel de comentarios flotante -->
-    <div id="comments-panel" class="comments-panel">
-        <div class="comments-header">
-            <h3>💬 Comentarios</h3>
-            <button class="close-comments" onclick="cerrarPanelComentarios()">×</button>
-        </div>
-        <div id="comments-list" class="comments-list">
-            <div class="cargando">Cargando comentarios...</div>
-        </div>
-        <div class="comment-input-area">
-            <input type="text" id="comment-input" placeholder="Escribe tu comentario...">
-            <button onclick="enviarComentario()">Enviar</button>
-        </div>
-    </div>
-
     <script src="/avisos-jardines/js/api.js"></script>
     <script src="/avisos-jardines/js/auth.js"></script>
     <script src="/avisos-jardines/js/app.js"></script>
 
     <script>
         // ========== VARIABLES GLOBALES ==========
-        let avisosFiltrados = [];
+        let avisosData = [];
         let currentUser = null;
         let likedAvisos = JSON.parse(localStorage.getItem('likedAvisos') || '{}');
         let currentAvisoIdForComments = null;
+        
+        // Variables para scroll infinito
         let currentPage = 1;
         let isLoading = false;
         let hasMore = true;
-        let categoriaActual = 'todos';
-        let busquedaActual = '';
-        const ITEMS_PER_PAGE = 12;
+        let currentCategory = 'todos';
+        let currentSearchTerm = '';
+        let allAvisos = []; // Todos los avisos cargados
+        let filteredAvisos = []; // Avisos después de filtro/búsqueda
+        let renderedCount = 0; // Cuántos se han mostrado
 
-        // ========== FUNCIONES DE ESTADÍSTICAS (tus funciones originales) ==========
+        // ========== FUNCIONES DE ESTADÍSTICAS ==========
 
         function showToast(message, duration = 2000) {
             const toast = document.getElementById('toast');
@@ -649,7 +580,8 @@
                 const api = new API();
                 const result = await api.llamar('REGISTRAR_INTERES', { id: id });
                 if (result && result.success) {
-                    const aviso = todosLosAvisos.find(a => a.id == id);
+                    console.log(`✅ Interés registrado para aviso ${id}`);
+                    const aviso = allAvisos.find(a => a.id == id);
                     if (aviso) {
                         aviso.intereses = (aviso.intereses || 0) + 1;
                     }
@@ -661,50 +593,56 @@
             return false;
         }
 
-        // ========== FUNCIONES DE INTERACCIÓN (tus funciones originales) ==========
+        // ========== FUNCIONES DE INTERACCIÓN ==========
 
-        window.verAviso = async function(id) {
+        window.verAviso = async function (id) {
             await registrarVista(id);
             window.location.href = `/avisos-jardines/aviso.html?id=${id}`;
         };
 
-        window.abrirWhatsApp = async function(numero, texto, id, event) {
+        window.abrirWhatsApp = async function (numero, texto, id, event) {
             if (event) event.stopPropagation();
             if (id) await registrarClickWhatsApp(id);
             const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
             window.open(url, '_blank');
         };
 
-        window.abrirTelefono = function(numero, event) {
+        window.abrirTelefono = function (numero, event) {
             if (event) event.stopPropagation();
             window.open(`tel:${numero}`, '_blank');
         };
 
-        window.darLike = async function(id, event) {
+        window.darLike = async function (id, event) {
             if (event) event.stopPropagation();
-
             if (likedAvisos[id]) {
                 showToast('❤️ Ya marcaste "Me interesa" en este aviso', 1500);
                 return;
             }
-
             const success = await registrarInteres(id);
             if (success) {
                 likedAvisos[id] = true;
                 localStorage.setItem('likedAvisos', JSON.stringify(likedAvisos));
                 showToast('👍 ¡Gracias por tu interés!', 1500);
-                aplicarFiltrosYBusqueda();
+                const statElement = document.querySelector(`.stat-item.like-btn[data-id="${id}"]`);
+                if (statElement) {
+                    const currentLikes = parseInt(statElement.querySelector('.stat-value')?.textContent || '0');
+                    if (statElement.querySelector('.stat-value')) {
+                        statElement.querySelector('.stat-value').textContent = currentLikes + 1;
+                    }
+                    statElement.classList.add('liked');
+                }
+                applyFiltersAndSearch();
             }
         };
 
-        window.abrirComentarios = function(id, event) {
+        window.abrirComentarios = function (id, event) {
             if (event) event.stopPropagation();
             currentAvisoIdForComments = id;
             document.getElementById('comments-panel').classList.add('open');
             cargarComentarios(id);
         };
 
-        window.cerrarPanelComentarios = function() {
+        window.cerrarPanelComentarios = function () {
             document.getElementById('comments-panel').classList.remove('open');
             currentAvisoIdForComments = null;
         };
@@ -712,12 +650,9 @@
         async function cargarComentarios(avisoId) {
             const commentsList = document.getElementById('comments-list');
             if (!commentsList) return;
-
             commentsList.innerHTML = '<div class="cargando">💬 Cargando comentarios...</div>';
-
             try {
                 const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
-
                 if (resultado && resultado.success && Array.isArray(resultado.data)) {
                     if (resultado.data.length === 0) {
                         commentsList.innerHTML = '<div style="text-align:center; color:#888;">📝 No hay comentarios aún. ¡Sé el primero!</div>';
@@ -739,23 +674,19 @@
             }
         }
 
-        window.enviarComentario = async function() {
+        window.enviarComentario = async function () {
             const input = document.getElementById('comment-input');
             const texto = input.value.trim();
-
             if (!texto) {
                 showToast('✏️ Escribe un comentario primero', 1500);
                 return;
             }
-
             if (!currentAvisoIdForComments) {
                 showToast('❌ Error: No se identificó el aviso', 1500);
                 return;
             }
-
             const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
             const autor = usuario.nombre || usuario.email || 'Anónimo';
-
             try {
                 const api = new API();
                 const result = await api.llamar('AGREGAR_COMENTARIO', {
@@ -763,7 +694,6 @@
                     texto: texto,
                     autor: autor
                 });
-
                 if (result && result.success) {
                     input.value = '';
                     showToast('💬 Comentario enviado', 1500);
@@ -778,10 +708,9 @@
         };
 
         // ========== FUNCIONES AUXILIARES ==========
-
         function escapeHtml(str) {
             if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
+            return str.replace(/[&<>]/g, function (m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
@@ -799,287 +728,191 @@
             }
         }
 
-        function formatearFechaHora(fechaStr) {
-            if (!fechaStr) return 'Reciente';
+        // Búsqueda global por cualquier campo
+        function searchInAviso(aviso, searchTerm) {
+            if (!searchTerm) return true;
+            const term = searchTerm.toLowerCase();
+            const searchableFields = [
+                aviso.titulo, aviso.contenido, aviso.categoria, aviso.ubicacion,
+                aviso.contacto, aviso.nombre_contacto, aviso.email, aviso.created_at
+            ];
+            return searchableFields.some(field => field && field.toString().toLowerCase().includes(term));
+        }
+
+        function applyFiltersAndSearch() {
+            let filtered = [...allAvisos];
+            if (currentCategory !== 'todos') {
+                filtered = filtered.filter(a => a.categoria === currentCategory);
+            }
+            if (currentSearchTerm) {
+                filtered = filtered.filter(aviso => searchInAviso(aviso, currentSearchTerm));
+            }
+            filteredAvisos = filtered;
+            renderedCount = 0;
+            currentPage = 1;
+            hasMore = true;
+            document.getElementById('avisos-container').innerHTML = '';
+            loadMoreAvisos();
+        }
+
+        function loadMoreAvisos() {
+            if (isLoading || !hasMore) return;
+            isLoading = true;
+            const loadingTrigger = document.getElementById('loading-trigger');
+            loadingTrigger.style.display = 'block';
+            
+            setTimeout(() => {
+                const start = renderedCount;
+                const itemsPerLoad = 8;
+                const end = Math.min(start + itemsPerLoad, filteredAvisos.length);
+                const newAvisos = filteredAvisos.slice(start, end);
+                
+                if (newAvisos.length > 0) {
+                    appendAvisosToGrid(newAvisos);
+                    renderedCount = end;
+                }
+                
+                if (end >= filteredAvisos.length) {
+                    hasMore = false;
+                    loadingTrigger.style.display = 'none';
+                } else {
+                    loadingTrigger.style.display = 'block';
+                }
+                isLoading = false;
+            }, 300);
+        }
+
+        function appendAvisosToGrid(avisos) {
+            const container = document.getElementById('avisos-container');
+            const html = avisos.map(aviso => `
+                <div class="aviso-card ${aviso.categoria === 'urgente' ? 'urgente' : ''}" 
+                     onclick="verAviso('${aviso.id}')">
+                  <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
+                    ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
+                  </div>
+                  ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
+                  <div style="padding: 1rem;">
+                    <div class="aviso-fecha">📅 ${formatearFecha(aviso.created_at)}</div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">${escapeHtml(aviso.titulo)}</h3>
+                    <div class="aviso-contenido-preview">
+                      ${escapeHtml((aviso.contenido || '').substring(0, 150))}${(aviso.contenido || '').length > 150 ? '...' : ''}
+                    </div>
+                    <div class="aviso-stats">
+                      <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
+                      <span class="stat-item">💬 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
+                      <span class="stat-item like-btn ${likedAvisos[aviso.id] ? 'liked' : ''}" 
+                            data-id="${aviso.id}" 
+                            onclick="darLike('${aviso.id}', event)">
+                        ❤️ <span class="stat-value">${aviso.intereses || 0}</span>
+                      </span>
+                      <span class="stat-item" onclick="abrirComentarios('${aviso.id}', event)">
+                        💬 <span class="stat-value">0</span>
+                      </span>
+                    </div>
+                    <div class="aviso-footer">
+                      <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
+                    </div>
+                  </div>
+                  ${aviso.contacto ? `
+                    <button class="whatsapp-btn" 
+                            onclick="abrirWhatsApp('${aviso.contacto}', '${encodeURIComponent('Hola, vi tu aviso en Jardines PVR: ' + aviso.titulo)}', '${aviso.id}', event)">
+                    </button>
+                  ` : ''}
+                  <button class="interes-btn" onclick="darLike('${aviso.id}', event)">
+                    ❤️
+                  </button>
+                </div>
+            `).join('');
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        async function cargarAvisos() {
+            const container = document.getElementById('avisos-container');
+            container.innerHTML = '<div class="cargando">📰 Cargando avisos...</div>';
             try {
-                const fecha = new Date(fechaStr);
-                return fecha.toLocaleDateString('es-MX') + ' ' + fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-            } catch (e) {
-                return fechaStr;
+                const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 200 });
+                if (resultado && resultado.datos) {
+                    allAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
+                    applyFiltersAndSearch();
+                } else {
+                    container.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
+                }
+            } catch (error) {
+                console.error('Error cargando avisos:', error);
+                container.innerHTML = '<div class="mensaje mensaje-error">❌ Error al cargar avisos</div>';
             }
         }
 
         function getIconoCategoria(cat) {
-            const iconos = {
-                urgente: '⚠️', escuelas: '🏫', servicios: '🛠️',
-                comercios: '🛒', eventos: '📅', gobierno: '🏛️', varios: '📢'
-            };
+            const iconos = { urgente: '⚠️', escuelas: '🏫', servicios: '🛠️', comercios: '🛒', eventos: '📅', gobierno: '🏛️', varios: '📢' };
             return iconos[cat] || '📄';
         }
 
         function getColorCategoria(cat) {
-            const colores = {
-                urgente: '#dc3545', escuelas: '#3498db', servicios: '#f39c12',
-                comercios: '#27ae60', eventos: '#9b59b6', gobierno: '#1abc9c', varios: '#7f8c8d'
-            };
+            const colores = { urgente: '#dc3545', escuelas: '#3498db', servicios: '#f39c12', comercios: '#27ae60', eventos: '#9b59b6', gobierno: '#1abc9c', varios: '#7f8c8d' };
             return colores[cat] || '#95a5a6';
         }
 
-        // ========== BÚSQUEDA EN TODOS LOS CAMPOS ==========
-        function buscarEnAviso(aviso, termino) {
-            if (!termino) return true;
-            const lowerTerm = termino.toLowerCase();
-            const camposBusqueda = [
-                aviso.titulo,
-                aviso.contenido,
-                aviso.categoria,
-                aviso.ubicacion,
-                aviso.contacto,
-                formatearFecha(aviso.created_at),
-                aviso.autor_nombre || ''
-            ];
-            return camposBusqueda.some(campo => campo && campo.toString().toLowerCase().includes(lowerTerm));
-        }
-
-        // ========== FILTROS Y BÚSQUEDA ==========
-        function aplicarFiltrosYBusqueda() {
-            let resultado = [...todosLosAvisos];
-            
-            if (categoriaActual !== 'todos') {
-                resultado = resultado.filter(a => a.categoria === categoriaActual);
-            }
-            
-            if (busquedaActual.trim()) {
-                resultado = resultado.filter(a => buscarEnAviso(a, busquedaActual));
-            }
-            
-            avisosFiltrados = resultado;
-            currentPage = 1;
-            hasMore = true;
-            renderizarAvisosConScroll();
-        }
-
-        // ========== RENDERIZADO CON SCROLL INFINITO ==========
-        function renderizarAvisosConScroll() {
-            const end = currentPage * ITEMS_PER_PAGE;
-            const avisosAMostrar = avisosFiltrados.slice(0, end);
-            hasMore = end < avisosFiltrados.length;
-            renderizarAvisos(avisosAMostrar);
-            
-            if (!hasMore && document.getElementById('loader-more')) {
-                document.getElementById('loader-more').style.display = 'none';
-            }
-        }
-
-        function cargarMasAvisos() {
-            if (isLoading || !hasMore) return;
-            isLoading = true;
-            const loader = document.getElementById('loader-more');
-            if (loader) loader.style.display = 'block';
-            
-            setTimeout(() => {
-                currentPage++;
-                const end = currentPage * ITEMS_PER_PAGE;
-                const nuevosAvisos = avisosFiltrados.slice(0, end);
-                renderizarAvisos(nuevosAvisos, true);
-                hasMore = end < avisosFiltrados.length;
-                isLoading = false;
-                if (loader) loader.style.display = 'none';
-            }, 300);
-        }
-
-        function renderizarAvisos(avisos, esCargaIncremental = false) {
-            const container = document.getElementById('avisos-container');
-            if (!container) return;
-
-            if (avisos.length === 0) {
-                container.innerHTML = '<div class="cargando">📭 No hay avisos que coincidan con tu búsqueda</div>';
-                document.getElementById('loader-more').style.display = 'none';
-                return;
-            }
-
-            const avisosHTML = avisos.map((aviso, index) => `
-                <div class="aviso-card ${aviso.categoria === 'urgente' ? 'urgente' : ''}" 
-                     data-id="${aviso.id}"
-                     onclick="verAviso('${aviso.id}')"
-                     style="animation-delay: ${Math.min(index * 0.02, 0.3)}s">
-                    <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
-                        ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
-                    </div>
-                    ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
-                    <div style="padding: 1rem;">
-                        <div class="aviso-fecha">📅 ${formatearFecha(aviso.created_at)}</div>
-                        <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">${escapeHtml(aviso.titulo)}</h3>
-                        <div class="aviso-contenido-preview">
-                            ${escapeHtml((aviso.contenido || '').substring(0, 150))}${(aviso.contenido || '').length > 150 ? '...' : ''}
-                        </div>
-                        <div class="aviso-stats">
-                            <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
-                            <span class="stat-item like-btn ${likedAvisos[aviso.id] ? 'liked' : ''}" 
-                                  data-id="${aviso.id}" 
-                                  onclick="darLike('${aviso.id}', event)">
-                                ❤️ <span class="stat-value">${aviso.intereses || 0}</span>
-                            </span>
-                            <span class="stat-item" onclick="abrirComentarios('${aviso.id}', event)">
-                                💬 <span class="stat-value">0</span>
-                            </span>
-                        </div>
-                        <div class="aviso-footer">
-                            <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
-                        </div>
-                    </div>
-                    ${aviso.contacto ? `
-                        <button class="whatsapp-btn" 
-                                onclick="abrirWhatsApp('${aviso.contacto}', '${encodeURIComponent('Hola, vi tu aviso en Jardines PVR: ' + aviso.titulo)}', '${aviso.id}', event)">
-                        </button>
-                    ` : ''}
-                    <button class="interes-btn" onclick="darLike('${aviso.id}', event)">❤️</button>
-                </div>
-            `).join('');
-            
-            if (!esCargaIncremental) {
-                container.innerHTML = avisosHTML;
-            } else {
-                container.insertAdjacentHTML('beforeend', avisosHTML);
-                // Animar las nuevas tarjetas
-                const newCards = container.querySelectorAll('.aviso-card');
-                for (let i = newCards.length - avisos.length; i < newCards.length; i++) {
-                    if (newCards[i]) newCards[i].style.animation = 'fadeInUp 0.4s ease-out forwards';
-                }
-            }
-            
-            // Actualizar contadores de comentarios
-            actualizarContadoresComentarios(avisos);
-        }
-
-        async function actualizarContadoresComentarios(avisos) {
-            try {
-                const api = new API();
-                for (const aviso of avisos) {
-                    const result = await api.llamar('LISTAR_COMENTARIOS', { avisoId: aviso.id });
-                    if (result && result.success && result.data) {
-                        const count = result.data.length;
-                        const card = document.querySelector(`.aviso-card[data-id="${aviso.id}"]`);
-                        if (card) {
-                            const commentStat = card.querySelector('.stat-item:last-child .stat-value');
-                            if (commentStat) commentStat.textContent = count;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('No se pudieron actualizar contadores de comentarios');
-            }
-        }
-
-        // ========== CARGA DE AVISOS DESDE TU API ==========
-        async function cargarAvisosIniciales() {
-            const container = document.getElementById('avisos-container');
-            if (!container) return;
-
-            container.innerHTML = '<div class="cargando">📰 Cargando avisos...</div>';
-
-            try {
-                const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 200 });
-
-                if (resultado && resultado.datos) {
-                    todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
-                    // Ordenar por fecha (más recientes primero)
-                    todosLosAvisos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    aplicarFiltrosYBusqueda();
-                } else {
-                    container.innerHTML = '<div class="cargando">📭 No hay avisos disponibles</div>';
-                }
-            } catch (error) {
-                console.error('Error cargando avisos:', error);
-                container.innerHTML = '<div class="cargando">❌ Error al cargar avisos. Verifica tu conexión.</div>';
-            }
-        }
-
-        // ========== INICIALIZACIÓN DE FILTROS Y BUSCADOR ==========
-        function initFiltrosYBuscador() {
-            // Filtros de categoría
+        function initFiltros() {
             const filtros = document.querySelectorAll('.filtro');
             filtros.forEach(filtro => {
                 filtro.addEventListener('click', () => {
                     filtros.forEach(f => f.classList.remove('activo'));
                     filtro.classList.add('activo');
-                    categoriaActual = filtro.dataset.categoria;
-                    aplicarFiltrosYBusqueda();
+                    currentCategory = filtro.dataset.categoria;
+                    applyFiltersAndSearch();
                 });
             });
-            
-            // Buscador
-            const buscador = document.getElementById('buscador');
-            const clearBtn = document.getElementById('clearSearch');
-            
-            buscador.addEventListener('input', (e) => {
-                busquedaActual = e.target.value;
-                clearBtn.style.display = busquedaActual ? 'block' : 'none';
-                aplicarFiltrosYBusqueda();
-            });
-            
-            clearBtn.addEventListener('click', () => {
-                buscador.value = '';
-                busquedaActual = '';
-                clearBtn.style.display = 'none';
-                aplicarFiltrosYBusqueda();
-            });
-            
-            // Scroll infinito
+        }
+
+        // Scroll infinito
+        function setupInfiniteScroll() {
             window.addEventListener('scroll', () => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const windowHeight = window.innerHeight;
-                const documentHeight = document.documentElement.scrollHeight;
-                if (scrollTop + windowHeight >= documentHeight - 300) {
-                    cargarMasAvisos();
+                if (isLoading || !hasMore) return;
+                const trigger = document.getElementById('loading-trigger');
+                if (trigger) {
+                    const rect = trigger.getBoundingClientRect();
+                    if (rect.top <= window.innerHeight + 100) {
+                        loadMoreAvisos();
+                    }
                 }
             });
-            
-            // Botón móvil para filtros
-            const mobileToggle = document.getElementById('mobileFilterToggle');
-            const filtrosContainer = document.getElementById('filtros');
-            if (mobileToggle) {
-                mobileToggle.addEventListener('click', () => {
-                    filtrosContainer.classList.toggle('mobile-visible');
-                });
-            }
+        }
+
+        // Buscador en tiempo real
+        function setupSearch() {
+            const searchInput = document.getElementById('buscador-input');
+            searchInput.addEventListener('input', (e) => {
+                currentSearchTerm = e.target.value;
+                applyFiltersAndSearch();
+            });
         }
 
         // ========== INICIALIZACIÓN ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            initFiltrosYBuscador();
-            cargarAvisosIniciales();
+        document.addEventListener('DOMContentLoaded', function () {
+            initFiltros();
+            setupSearch();
+            setupInfiniteScroll();
+            cargarAvisos();
 
-            // Cargar header
             fetch('/avisos-jardines/common/header.html')
-                .then(res => {
-                    if (!res.ok) throw new Error('Header no encontrado');
-                    return res.text();
-                })
+                .then(res => res.ok ? res.text() : Promise.reject())
                 .then(html => {
                     document.getElementById('header-container').innerHTML = html;
                     setTimeout(() => {
-                        if (typeof window.inicializarHeaderAuth === 'function') {
-                            window.inicializarHeaderAuth();
-                        }
+                        if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth();
                     }, 100);
                 })
                 .catch(err => console.error('Error cargando header:', err));
 
-            // Cargar footer
             fetch('/avisos-jardines/common/footer.html')
-                .then(response => {
-                    if (!response.ok) throw new Error('Footer no encontrado');
-                    return response.text();
-                })
+                .then(response => response.ok ? response.text() : Promise.reject())
                 .then(data => {
                     const footerContainer = document.getElementById('footer-container');
                     if (footerContainer) {
                         footerContainer.innerHTML = data;
                         const anioElement = document.getElementById('anio-actual');
-                        if (anioElement) {
-                            anioElement.textContent = new Date().getFullYear();
-                        }
+                        if (anioElement) anioElement.textContent = new Date().getFullYear();
                     }
                 })
                 .catch(error => console.error('Error cargando el footer:', error));
@@ -1102,11 +935,26 @@
         if (localStorage.getItem('cookie_consent') === 'aceptadas') {
             document.getElementById('cookieBanner').style.display = 'none';
         }
-        document.getElementById('aceptarCookies').addEventListener('click', () => {
+        document.getElementById('aceptarCookies')?.addEventListener('click', () => {
             localStorage.setItem('cookie_consent', 'aceptadas');
             document.getElementById('cookieBanner').style.display = 'none';
         });
     </script>
+
+    <!-- Panel de comentarios flotante -->
+    <div id="comments-panel" class="comments-panel">
+        <div class="comments-header">
+            <h3>💬 Comentarios</h3>
+            <button class="close-comments" onclick="cerrarPanelComentarios()">×</button>
+        </div>
+        <div id="comments-list" class="comments-list">
+            <div class="cargando">Cargando comentarios...</div>
+        </div>
+        <div class="comment-input-area">
+            <input type="text" id="comment-input" placeholder="Escribe tu comentario...">
+            <button onclick="enviarComentario()">Enviar</button>
+        </div>
+    </div>
 </body>
 
 </html>
