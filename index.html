@@ -606,8 +606,9 @@
         let filteredAvisos = [];
         let renderedCount = 0;
         
-        // Bandera para evitar doble carga
+        // Bandera para evitar múltiples llamadas a la API
         let isLoadingAvisos = false;
+        let avisosCargados = false;
 
         // ========== FUNCIONES DE ESTADÍSTICAS ==========
 
@@ -907,9 +908,9 @@
         }
 
         async function cargarAvisos() {
-            // Evitar múltiples llamadas simultáneas
-            if (isLoadingAvisos) {
-                console.log('⚠️ Ya hay una carga en proceso, omitiendo...');
+            // SOLUCIÓN: Evitar múltiples llamadas verificando si ya se cargaron o si ya está en proceso
+            if (avisosCargados || isLoadingAvisos) {
+                console.log('⚠️ Avisos ya cargados o carga en proceso, omitiendo llamada duplicada');
                 return;
             }
             
@@ -925,6 +926,7 @@
                     allAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
                     // Ordenar por fecha más reciente primero
                     allAvisos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    avisosCargados = true; // Marcar como ya cargados
                     applyFiltersAndSearch();
                 } else {
                     if (container) {
@@ -993,7 +995,7 @@
             initFiltros();
             setupSearch();
             setupInfiniteScroll();
-            cargarAvisos(); // Solo UNA llamada a la API
+            cargarAvisos(); // Solo UNA llamada a la API gracias a las banderas de control
 
             fetch('/avisos-jardines/common/header.html')
                 .then(res => res.ok ? res.text() : Promise.reject())
