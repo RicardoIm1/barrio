@@ -47,7 +47,7 @@ const Auth = {
   },
 
   // 👑 Protección por rol
-  requireRole(rol, redirect = '/avisos-jardines/index.html') {
+  requireRole(rol, redirect = '/avisos-jardines/admin.html') {
     const usuario = this.requireAuth();
 
     if (!usuario) return null;
