@@ -14,12 +14,12 @@
         /* Tarjetas cliqueables */
         .aviso-card {
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.4s ease, transform 0.4s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
             opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.5s ease forwards;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
         }
 
         @keyframes fadeInUp {
@@ -29,19 +29,24 @@
             }
         }
 
-        /* Retraso escalonado para las tarjetas */
-        .aviso-card:nth-child(1) { animation-delay: 0.05s; }
-        .aviso-card:nth-child(2) { animation-delay: 0.10s; }
-        .aviso-card:nth-child(3) { animation-delay: 0.15s; }
-        .aviso-card:nth-child(4) { animation-delay: 0.20s; }
-        .aviso-card:nth-child(5) { animation-delay: 0.25s; }
-        .aviso-card:nth-child(6) { animation-delay: 0.30s; }
-        .aviso-card:nth-child(7) { animation-delay: 0.35s; }
-        .aviso-card:nth-child(8) { animation-delay: 0.40s; }
+        /* Retraso escalonado más notable para las tarjetas */
+        .aviso-card:nth-child(1) { animation-delay: 0.1s; }
+        .aviso-card:nth-child(2) { animation-delay: 0.2s; }
+        .aviso-card:nth-child(3) { animation-delay: 0.3s; }
+        .aviso-card:nth-child(4) { animation-delay: 0.45s; }
+        .aviso-card:nth-child(5) { animation-delay: 0.55s; }
+        .aviso-card:nth-child(6) { animation-delay: 0.65s; }
+        .aviso-card:nth-child(7) { animation-delay: 0.8s; }
+        .aviso-card:nth-child(8) { animation-delay: 0.9s; }
+        .aviso-card:nth-child(9) { animation-delay: 1.0s; }
+        .aviso-card:nth-child(10) { animation-delay: 1.1s; }
+        .aviso-card:nth-child(11) { animation-delay: 1.2s; }
+        .aviso-card:nth-child(12) { animation-delay: 1.3s; }
 
         .aviso-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* Badge de categoría más elegante */
@@ -64,24 +69,24 @@
             bottom: 12px;
             right: 12px;
             background-color: #25D366;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             z-index: 3;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png');
-            background-size: 60%;
+            background-size: 55%;
             background-position: center;
             background-repeat: no-repeat;
         }
 
         .whatsapp-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.12);
             background-color: #128C7E;
         }
 
@@ -92,21 +97,21 @@
             right: 56px;
             background: var(--color-acento);
             color: white;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
             z-index: 3;
             font-size: 1rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
 
         .phone-btn:hover {
-            transform: scale(1.1);
+            transform: scale(1.12);
             background: var(--color-secundario);
         }
 
@@ -152,7 +157,7 @@
         /* Imagen en la tarjeta (si tiene) */
         .aviso-imagen {
             width: 100%;
-            height: 160px;
+            height: 180px;
             object-fit: cover;
             border-radius: 8px 8px 0 0;
             margin-bottom: 0.8rem;
@@ -221,7 +226,7 @@
         /* Buscador */
         .buscador-container {
             flex: 1;
-            min-width: 200px;
+            min-width: 220px;
         }
 
         .buscador-input {
@@ -237,17 +242,19 @@
         .buscador-input:focus {
             outline: none;
             border-color: var(--color-primario, #2c3e50);
-            box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
         }
 
-        /* Grid responsivo: 
-           - En móviles: 1 columna
-           - En tablets/medianas: primeros 3 en fila de 3, luego filas de 4
-           - En escritorio: similar pero más amplio
-        */
+        /* ============================================
+           GRID RESPONSIVO MEJORADO:
+           - Móviles: 1 columna
+           - Tablets/medianas (768px - 1199px): 
+                * Primeros 3 items: ocupan cada uno 1/3 del ancho (tres columnas iguales)
+                * A partir del 4to item: grid normal de 4 columnas
+        ============================================ */
         .grid-avisos {
             display: grid;
-            gap: 1.5rem;
+            gap: 1.8rem;
         }
 
         /* Móviles: 1 columna */
@@ -257,22 +264,31 @@
             }
         }
 
-        /* Tablets y pantallas medianas: 3 columnas para los primeros 3, luego 4 columnas */
+        /* Tablets y pantallas medianas: diseño especial de 3+4 columnas */
         @media (min-width: 768px) and (max-width: 1199px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
-            /* Los primeros 3 items ocupan 3 columnas en una fila especial */
+            
+            /* Los primeros 3 items forman una fila de 3 columnas (más grandes visualmente) */
             .grid-avisos .aviso-card:nth-child(1),
             .grid-avisos .aviso-card:nth-child(2),
             .grid-avisos .aviso-card:nth-child(3) {
                 grid-column: span 1;
             }
-            /* Forzar que los primeros 3 estén en una fila de 3 columnas */
-            .grid-avisos .aviso-card:nth-child(1) { grid-column: 1 / 2; }
-            .grid-avisos .aviso-card:nth-child(2) { grid-column: 2 / 3; }
-            .grid-avisos .aviso-card:nth-child(3) { grid-column: 3 / 4; }
-            /* A partir del 4to, fluyen normalmente en 4 columnas */
+            
+            /* Forzar que los primeros 3 ocupen exactamente las primeras 3 columnas */
+            .grid-avisos .aviso-card:nth-child(1) { 
+                grid-column: 1 / 2; 
+            }
+            .grid-avisos .aviso-card:nth-child(2) { 
+                grid-column: 2 / 3; 
+            }
+            .grid-avisos .aviso-card:nth-child(3) { 
+                grid-column: 3 / 4; 
+            }
+            
+            /* A partir del 4to item, trabajar en 4 columnas */
             .grid-avisos .aviso-card:nth-child(4) { grid-column: 1 / 2; }
             .grid-avisos .aviso-card:nth-child(5) { grid-column: 2 / 3; }
             .grid-avisos .aviso-card:nth-child(6) { grid-column: 3 / 4; }
@@ -281,16 +297,40 @@
             .grid-avisos .aviso-card:nth-child(9) { grid-column: 2 / 3; }
             .grid-avisos .aviso-card:nth-child(10) { grid-column: 3 / 4; }
             .grid-avisos .aviso-card:nth-child(11) { grid-column: 4 / 5; }
+            .grid-avisos .aviso-card:nth-child(12) { grid-column: 1 / 2; }
+            .grid-avisos .aviso-card:nth-child(13) { grid-column: 2 / 3; }
+            .grid-avisos .aviso-card:nth-child(14) { grid-column: 3 / 4; }
+            .grid-avisos .aviso-card:nth-child(15) { grid-column: 4 / 5; }
+            
+            /* Hacer que los primeros 3 items tengan una altura ligeramente mayor y mejor presentación */
+            .grid-avisos .aviso-card:nth-child(1) .aviso-imagen,
+            .grid-avisos .aviso-card:nth-child(2) .aviso-imagen,
+            .grid-avisos .aviso-card:nth-child(3) .aviso-imagen {
+                height: 200px;
+            }
+            
+            .grid-avisos .aviso-card:nth-child(1) h3,
+            .grid-avisos .aviso-card:nth-child(2) h3,
+            .grid-avisos .aviso-card:nth-child(3) h3 {
+                font-size: 1.2rem;
+            }
         }
 
-        /* Pantallas grandes: grid normal de 4 columnas */
+        /* Pantallas grandes: grid normal de 4 columnas armonioso */
         @media (min-width: 1200px) {
             .grid-avisos {
                 grid-template-columns: repeat(4, 1fr);
             }
+            
+            /* En pantallas grandes, los primeros 3 también se ven proporcionados */
+            .grid-avisos .aviso-card:nth-child(1) .aviso-imagen,
+            .grid-avisos .aviso-card:nth-child(2) .aviso-imagen,
+            .grid-avisos .aviso-card:nth-child(3) .aviso-imagen {
+                height: 210px;
+            }
         }
 
-        /* Pantallas medianas: ocultar filtros? No, solo en móviles se ocultan */
+        /* Pantallas medianas: en móviles ocultar filtros, solo buscador */
         @media (max-width: 767px) {
             .filtros {
                 display: none;
@@ -351,6 +391,32 @@
 
         .stat-item:active {
             transform: scale(0.95);
+        }
+
+        /* Botón Interés flotante */
+        .interes-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 100px;
+            background: #ff4757;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            z-index: 3;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .interes-btn:hover {
+            transform: scale(1.12);
+            background: #e84118;
         }
 
         /* Comentarios flotantes */
@@ -461,11 +527,11 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 0.85rem;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
             z-index: 1100;
             transition: transform 0.3s ease;
             pointer-events: none;
@@ -509,7 +575,7 @@
         <!-- Loader para scroll infinito -->
         <div id="loading-trigger" class="loading-trigger" style="display: none;">📡 Cargando más avisos...</div>
 
-        <!-- Paginación oculta (para mantener estructura pero no se usa visualmente) -->
+        <!-- Paginación oculta -->
         <div id="paginacion" class="paginacion"></div>
     </main>
 
@@ -536,9 +602,9 @@
         let hasMore = true;
         let currentCategory = 'todos';
         let currentSearchTerm = '';
-        let allAvisos = []; // Todos los avisos cargados
-        let filteredAvisos = []; // Avisos después de filtro/búsqueda
-        let renderedCount = 0; // Cuántos se han mostrado
+        let allAvisos = [];
+        let filteredAvisos = [];
+        let renderedCount = 0;
 
         // ========== FUNCIONES DE ESTADÍSTICAS ==========
 
@@ -763,7 +829,7 @@
             
             setTimeout(() => {
                 const start = renderedCount;
-                const itemsPerLoad = 8;
+                const itemsPerLoad = 12;
                 const end = Math.min(start + itemsPerLoad, filteredAvisos.length);
                 const newAvisos = filteredAvisos.slice(start, end);
                 
@@ -779,7 +845,7 @@
                     loadingTrigger.style.display = 'block';
                 }
                 isLoading = false;
-            }, 300);
+            }, 400);
         }
 
         function appendAvisosToGrid(avisos) {
@@ -799,7 +865,7 @@
                     </div>
                     <div class="aviso-stats">
                       <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
-                      <span class="stat-item">💬 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
+                      <span class="stat-item">📞 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
                       <span class="stat-item like-btn ${likedAvisos[aviso.id] ? 'liked' : ''}" 
                             data-id="${aviso.id}" 
                             onclick="darLike('${aviso.id}', event)">
@@ -833,6 +899,8 @@
                 const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 200 });
                 if (resultado && resultado.datos) {
                     allAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
+                    // Ordenar por fecha más reciente primero
+                    allAvisos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     applyFiltersAndSearch();
                 } else {
                     container.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
@@ -933,12 +1001,17 @@
 
     <script>
         if (localStorage.getItem('cookie_consent') === 'aceptadas') {
-            document.getElementById('cookieBanner').style.display = 'none';
+            const banner = document.getElementById('cookieBanner');
+            if (banner) banner.style.display = 'none';
         }
-        document.getElementById('aceptarCookies')?.addEventListener('click', () => {
-            localStorage.setItem('cookie_consent', 'aceptadas');
-            document.getElementById('cookieBanner').style.display = 'none';
-        });
+        const aceptarBtn = document.getElementById('aceptarCookies');
+        if (aceptarBtn) {
+            aceptarBtn.addEventListener('click', () => {
+                localStorage.setItem('cookie_consent', 'aceptadas');
+                const banner = document.getElementById('cookieBanner');
+                if (banner) banner.style.display = 'none';
+            });
+        }
     </script>
 
     <!-- Panel de comentarios flotante -->
