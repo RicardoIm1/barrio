@@ -10,19 +10,7 @@
     <meta name="theme-color" content="#2c3e50">
     <style>
         /* ========== ESTILOS PREMIUM PARA EL INDEX ========== */
-        :root {
-            --color-primario: #2c3e50;
-            --color-secundario: #e67e22;
-            --color-acento: #e67e22;
-            --color-texto: #2c3e50;
-            --color-texto-claro: #7f8c8d;
-            --color-borde: #ecf0f1;
-            --color-fondo: #f8f9fa;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
+ 
         /* Tarjetas cliqueables */
         .aviso-card {
             cursor: pointer;
@@ -463,11 +451,12 @@
 
     <script>
         // ========== VARIABLES GLOBALES ==========
-        let todosLosAvisos = [];
-        let avisosFiltrados = [];
+        let avisosData = [];
         let currentUser = null;
         let likedAvisos = JSON.parse(localStorage.getItem('likedAvisos') || '{}');
         let currentAvisoIdForComments = null;
+        let todosLosAvisos = [];
+        let avisosFiltrados = [];
         let currentPage = 1;
         let isLoading = false;
         let hasMore = true;
