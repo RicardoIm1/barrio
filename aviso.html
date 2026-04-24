@@ -355,7 +355,7 @@
         const videos = multimediaItems.filter(m => m.tipo?.includes('video'));
         imagenesGaleria.push(...videos);
       }
-      const tieneContacto = avisoActual.contacto?.trim();
+      const tieneContacto = avisoActual.contacto && typeof avisoActual.contacto === 'string' && avisoActual.contacto.trim();
       const numero = tieneContacto ? String(avisoActual.contacto).replace(/[^0-9]/g, '') : '';
       const mensaje = encodeURIComponent(`Hola, vi tu aviso "${avisoActual.titulo}" en BARRIO. Me interesa.`);
       const container = document.getElementById('aviso-container');
