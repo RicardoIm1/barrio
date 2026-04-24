@@ -1225,7 +1225,9 @@
                 .then(html => {
                     document.getElementById('header-container').innerHTML = html;
                     setTimeout(() => {
-                        if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth();
+                        if (typeof actualizarHeaderPorSesion === 'function') {
+                            actualizarHeaderPorSesion();
+                        }
                     }, 100);
                 })
                 .catch(err => console.error('Error cargando header:', err));
