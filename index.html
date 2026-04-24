@@ -1271,6 +1271,63 @@
         }
     </script>
 
+    <script>
+        // ========== ACTUALIZAR HEADER SEGÚN SESIÓN ==========
+        function actualizarHeaderPorSesion() {
+            const usuarioStr = localStorage.getItem('usuario');
+            const apiKey = localStorage.getItem('api_key');
+
+            const loginLink = document.getElementById('login-link');
+            const userArea = document.getElementById('user-area');
+            const userNameSpan = document.getElementById('user-name');
+            const cerrarBtn = document.getElementById('cerrar-sesion');
+
+            if (!loginLink) {
+                console.log('Header no cargado aún, reintentando...');
+                setTimeout(actualizarHeaderPorSesion, 200);
+                return;
+            }
+
+            if (usuarioStr && apiKey) {
+                try {
+                    const usuario = JSON.parse(usuarioStr);
+                    // Ocultar login, mostrar área de usuario
+                    if (loginLink) loginLink.style.display = 'none';
+                    if (userArea) userArea.style.display = 'flex';
+                    if (userNameSpan) userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+
+                    // Configurar cierre de sesión
+                    if (cerrarBtn) {
+                        const nuevoCerrar = cerrarBtn.cloneNode(true);
+                        cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
+                        nuevoCerrar.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            localStorage.removeItem('usuario');
+                            localStorage.removeItem('api_key');
+                            window.location.href = '/barrio/index.html';
+                        });
+                    }
+                    console.log('Header actualizado - Usuario logueado');
+                } catch (e) {
+                    console.error('Error al actualizar header:', e);
+                }
+            } else {
+                // No hay sesión, mostrar login
+                if (loginLink) loginLink.style.display = 'inline-flex';
+                if (userArea) userArea.style.display = 'none';
+                console.log('Header actualizado - Sin sesión');
+            }
+        }
+
+        // Ejecutar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            // Esperar un poco a que el header se cargue (fetch)
+            setTimeout(actualizarHeaderPorSesion, 200);
+            setTimeout(actualizarHeaderPorSesion, 500);
+            setTimeout(actualizarHeaderPorSesion, 1000);
+        });
+    </script>
+
     <!-- Panel de comentarios flotante -->
     <div id="comments-panel" class="comments-panel">
         <div class="comments-header">
