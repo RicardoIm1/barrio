@@ -168,10 +168,17 @@ class API {
 
   // Obtener un aviso específico por ID
   static async obtenerAviso(id) {
-    // Usar listar con filtro id
-    const resultado = await API.listar('AVISOS', { id: id });
-    if (resultado && resultado.datos && resultado.datos.length > 0) {
-      return resultado.datos[0];
+    // No usar filtro created_by, obtener sin restricciones
+    const resultado = await API.peticion('LISTAR', {
+      coleccion: 'AVISOS',
+      id: id
+    });
+
+    if (resultado && resultado.success) {
+      const datos = resultado.data;
+      if (datos && datos.datos && datos.datos.length > 0) {
+        return datos.datos[0];
+      }
     }
     return null;
   }
