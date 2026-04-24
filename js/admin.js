@@ -152,27 +152,31 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      // IMPORTANTE: Usar password_hash como clave (lo que espera el backend)
+      // Obtener la API key del localStorage
+      const apiKey = localStorage.getItem('api_key');
+      if (!apiKey) {
+        API.mostrarError('No hay sesión activa. Inicia sesión nuevamente.');
+        return;
+      }
+
+      // Datos para el backend
       const datos = {
         email: email,
         nombre: nombre,
         rol: rol,
-        password_hash: password,  // ✅ Nombre correcto para el backend
+        password_hash: password,
         categorias: categorias,
         activo: 'TRUE'
       };
 
-      console.log('📝 Enviando datos de usuario:', {
-        ...datos,
-        password_hash: '***'
-      });
+      console.log('📝 Enviando datos de usuario:', { ...datos, password_hash: '***' });
 
       try {
-        // Usar la petición con la acción CREAR y colección USUARIOS
+        // Enviar la API key en la petición
         const respuesta = await API.peticion('CREAR', {
           coleccion: 'USUARIOS',
           ...datos
-        });
+        }, apiKey);  // <-- ¡Aquí está la clave! Enviamos la apiKey
 
         console.log('📡 Respuesta completa:', respuesta);
 
@@ -180,11 +184,8 @@ document.addEventListener('DOMContentLoaded', function () {
           API.mostrarExito('✅ Usuario creado correctamente');
           formUsuario.reset();
 
-          // Recargar la lista de usuarios si estamos en esa pestaña
-          const tabUsuarios = document.getElementById('tab-usuarios');
-          if (tabUsuarios && tabUsuarios.classList.contains('activo')) {
-            cargarUsuarios();
-          }
+          // Recargar la lista de usuarios
+          cargarUsuarios();
         } else {
           const errorMsg = respuesta?.error || 'Error desconocido al crear usuario';
           API.mostrarError('❌ Error: ' + errorMsg);
