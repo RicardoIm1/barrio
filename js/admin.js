@@ -606,46 +606,19 @@ async function cargarUsuarios() {
 
   try {
     const usuarioActual = API.getUsuarioActual();
-    console.log('Usuario actual en cargarUsuarios:', usuarioActual);
-
-    if (!usuarioActual) {
-      contenedor.innerHTML = '<div class="mensaje-error">No hay sesión activa</div>';
-      return;
-    }
-
-    if (usuarioActual.rol !== 'admin') {
-      contenedor.innerHTML = '<div class="mensaje-error">No tienes permisos para ver usuarios (tu rol es: ' + usuarioActual.rol + ')</div>';
+    if (!usuarioActual || usuarioActual.rol !== 'admin') {
+      contenedor.innerHTML = '<div class="mensaje-error">No tienes permisos para ver usuarios</div>';
       return;
     }
 
     const apiKey = localStorage.getItem('api_key');
-    console.log('API Key presente:', !!apiKey);
 
-    if (!apiKey) {
-      contenedor.innerHTML = '<div class="mensaje-error">No hay API key</div>';
-      return;
-    }
+    // ✅ CAMBIO AQUÍ: usar API.listarUsuarios en lugar de API.peticion
+    const respuesta = await API.listarUsuarios(apiKey);
 
-    // Usar la acción LISTAR con colección USUARIOS
-    const respuesta = await API.peticion('LISTAR', {
-      coleccion: 'USUARIOS'
-    }, apiKey);
+    console.log('Respuesta usuarios:', respuesta);
 
-    console.log('Respuesta usuarios completa:', respuesta);
-
-    if (!respuesta || !respuesta.success) {
-      throw new Error(respuesta?.error || 'Error al cargar usuarios');
-    }
-
-    // Normalizar la respuesta
-    let usuarios = [];
-    if (respuesta.data && respuesta.data.datos) {
-      usuarios = respuesta.data.datos;
-    } else if (respuesta.datos) {
-      usuarios = respuesta.datos;
-    } else if (Array.isArray(respuesta.data)) {
-      usuarios = respuesta.data;
-    }
+    let usuarios = respuesta.datos || [];
 
     if (usuarios.length === 0) {
       contenedor.innerHTML = '<div class="mensaje">👥 No hay usuarios registrados</div>';
@@ -654,13 +627,12 @@ async function cargarUsuarios() {
 
     let html = '<div class="usuarios-grid">';
     usuarios.forEach(user => {
-      if (!user) return;
       html += `
         <div class="tarjeta-usuario">
           <div class="avatar-usuario">${user.rol === 'admin' ? '👑' : '👤'}</div>
           <div class="info-usuario">
-            <strong>${escapeHTML(user.nombre || user.email || 'Sin nombre')}</strong>
-            <small>${escapeHTML(user.email || 'Sin email')}</small>
+            <strong>${escapeHTML(user.nombre || user.email)}</strong>
+            <small>${escapeHTML(user.email)}</small>
             <span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol === 'admin' ? 'Administrador' : 'Usuario'}</span>
             <small>🏷️ ${escapeHTML(user.categorias || 'todas')}</small>
           </div>
