@@ -656,6 +656,83 @@
             }
         }
     </style>
+    <style>
+        /* === ESTILOS MODERNOS PARA TARJETAS (sin romper nada) === */
+        .tarjeta-moderna {
+            background: #ffffff;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .tarjeta-moderna:active {
+            transform: scale(0.98);
+        }
+
+        .card-contenido-moderno {
+            padding: 16px;
+        }
+
+        .card-header-moderno {
+            margin-bottom: 12px;
+        }
+
+        .card-titulo-moderno {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            color: #1c1c1e;
+            line-height: 1.3;
+        }
+
+        .card-fecha-moderna {
+            font-size: 0.7rem;
+            color: #8e8e93;
+            margin-top: 4px;
+        }
+
+        .card-preview-moderno {
+            font-size: 0.85rem;
+            color: #3a3a3c;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-stats-moderno {
+            display: flex;
+            gap: 20px;
+            padding-top: 12px;
+            border-top: 0.5px solid #e9e9ef;
+            margin-top: 4px;
+        }
+
+        .card-stats-moderno .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #5a5a5e;
+            background: none;
+            padding: 0;
+        }
+
+        .card-stats-moderno .stat-item.liked {
+            color: #e74c3c;
+        }
+
+        /* Asegurar que los botones flotantes de WhatsApp e Interés no se rompan */
+        .whatsapp-btn,
+        .interes-btn {
+            z-index: 2;
+        }
+    </style>
 </head>
 
 <body>
@@ -1010,47 +1087,48 @@
             if (!container) return;
 
             const html = avisos.map(aviso => `
-                <div class="aviso-card ${aviso.categoria === 'urgente' ? 'urgente' : ''}" 
-                     onclick="verAviso('${aviso.id}')">
-                  <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
-                    ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
-                  </div>
-                  ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
-                  <div style="padding: 1rem;">
-                    <div class="aviso-fecha">📅 ${formatearFecha(aviso.created_at)}</div>
-                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">${escapeHtml(aviso.titulo)}</h3>
-                    <div class="aviso-contenido-preview">
-                      ${escapeHtml((aviso.contenido || '').substring(0, 150))}${(aviso.contenido || '').length > 150 ? '...' : ''}
-                    </div>
-                    <div class="aviso-stats">
-                      <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
-                      <span class="stat-item">📞 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
-                      <span class="stat-item like-btn ${likedAvisos[aviso.id] ? 'liked' : ''}" 
-                            data-id="${aviso.id}" 
-                            onclick="darLike('${aviso.id}', event)">
-                        ❤️ <span class="stat-value">${aviso.intereses || 0}</span>
-                      </span>
-                      <span class="stat-item" onclick="abrirComentarios('${aviso.id}', event)">
-                        💬 <span class="stat-value">0</span>
-                      </span>
-                    </div>
-                    <div class="aviso-footer">
-                      <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
-                    </div>
-                  </div>
-                  ${aviso.contacto ? `
-                    <button class="whatsapp-btn" 
-                            onclick="abrirWhatsApp('${aviso.contacto}', '${encodeURIComponent('Hola, vi tu aviso en Jardines PVR: ' + aviso.titulo)}', '${aviso.id}', event)">
-                    </button>
-                  ` : ''}
-                  <button class="interes-btn" onclick="darLike('${aviso.id}', event)">
-                    ❤️
-                  </button>
+        <div class="aviso-card tarjeta-moderna ${aviso.categoria === 'urgente' ? 'urgente' : ''}" 
+             onclick="verAviso('${aviso.id}')">
+            <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
+                ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
+            </div>
+            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
+            <div class="card-contenido-moderno">
+                <div class="card-header-moderno">
+                    <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
+                    <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
-            `).join('');
+                <div class="card-preview-moderno">
+                    ${escapeHtml((aviso.contenido || '').substring(0, 120))}${(aviso.contenido || '').length > 120 ? '...' : ''}
+                </div>
+                <div class="card-stats-moderno">
+                    <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
+                    <span class="stat-item">📞 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
+                    <span class="stat-item like-btn ${likedAvisos[aviso.id] ? 'liked' : ''}" 
+                          data-id="${aviso.id}" 
+                          onclick="darLike('${aviso.id}', event)">
+                        ❤️ <span class="stat-value">${aviso.intereses || 0}</span>
+                    </span>
+                    <span class="stat-item" onclick="abrirComentarios('${aviso.id}', event)">
+                        💬 <span class="stat-value">0</span>
+                    </span>
+                </div>
+                <div class="aviso-footer">
+                    <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
+                </div>
+            </div>
+            ${aviso.contacto ? `
+                <button class="whatsapp-btn" 
+                        onclick="abrirWhatsApp('${aviso.contacto}', '${encodeURIComponent('Hola, vi tu aviso en Jardines PVR: ' + aviso.titulo)}', '${aviso.id}', event)">
+                </button>
+            ` : ''}
+            <button class="interes-btn" onclick="darLike('${aviso.id}', event)">
+                ❤️
+            </button>
+        </div>
+    `).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
-
         async function cargarAvisos() {
             // SOLUCIÓN: Evitar múltiples llamadas verificando si ya se cargaron o si ya está en proceso
             if (avisosCargados || isLoadingAvisos) {
