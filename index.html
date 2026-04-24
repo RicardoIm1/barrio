@@ -1129,6 +1129,7 @@
     `).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
+        
         async function cargarAvisos() {
             // SOLUCIÓN: Evitar múltiples llamadas verificando si ya se cargaron o si ya está en proceso
             if (avisosCargados || isLoadingAvisos) {
