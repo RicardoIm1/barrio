@@ -138,15 +138,24 @@ class API {
 
   // Listar avisos
   static async listar(coleccion, filtros = {}, paginacion = {}) {
-    const apiKey = localStorage.getItem('api_key');  // Obtener la API Key
+    const apiKey = localStorage.getItem('api_key');
+    const usuario = API.getUsuarioActual();
+    const esAdmin = usuario && usuario.rol === 'admin';
 
+    // Construir parámetros base
     const params = {
       coleccion: coleccion,
-      ...filtros,
       ...paginacion
     };
 
-    // Pasar la API Key a la petición
+    // Si NO es admin, filtrar por sus propios avisos (solo para colección AVISOS)
+    if (coleccion === 'AVISOS' && !esAdmin) {
+      params.created_by = usuario.id;
+    }
+
+    // Agregar filtros adicionales (sobrescriben si es necesario)
+    Object.assign(params, filtros);
+
     const resultado = await API.peticion('LISTAR', params, apiKey);
 
     if (resultado && resultado.success) {
@@ -314,9 +323,10 @@ console.log('📡 API Client cargado. API_BASE_URL:', API_BASE_URL);
 
 // ==================== FUNCIONES DE UI ====================
 
+// ==================== FUNCIONES DE UI ====================
+
 API.mostrarExito = function (mensaje) {
   console.log('✅ Éxito:', mensaje);
-  // Mostrar en la UI si existe el contenedor
   const container = document.getElementById('mensaje-container');
   if (container) {
     container.innerHTML = `<div class="mensaje mensaje-exito" style="background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 16px;">✅ ${mensaje}</div>`;
@@ -332,7 +342,6 @@ API.mostrarExito = function (mensaje) {
 
 API.mostrarError = function (mensaje) {
   console.error('❌ Error:', mensaje);
-  // Mostrar en la UI si existe el contenedor
   const container = document.getElementById('mensaje-container');
   if (container) {
     container.innerHTML = `<div class="mensaje mensaje-error" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 16px;">❌ ${mensaje}</div>`;
@@ -344,4 +353,45 @@ API.mostrarError = function (mensaje) {
   } else {
     alert('Error: ' + mensaje);
   }
+};
+
+// ========== LISTAR MIS AVISOS (para panel de administración) ==========
+API.listarMisAvisos = async function (filtros = {}, paginacion = {}) {
+  const apiKey = localStorage.getItem('api_key');
+  if (!apiKey) {
+    console.warn('No hay API key, no se pueden cargar avisos');
+    return { datos: [], total: 0 };
+  }
+
+  const params = {
+    accion: 'LISTAR_MIS_AVISOS',
+    ...filtros,
+    ...paginacion
+  };
+
+  const resultado = await API.peticion('LISTAR_MIS_AVISOS', params, apiKey);
+
+  if (resultado && resultado.success) {
+    return resultado.data || { datos: [], total: 0 };
+  }
+
+  console.error('Error en listarMisAvisos:', resultado);
+  return { datos: [], total: 0 };
+};
+
+// ========== LISTAR AVISOS PÚBLICOS (para index.html) ==========
+API.listarPublicos = async function (filtros = {}, paginacion = {}) {
+  const params = {
+    accion: 'LISTAR_AVISOS_PUBLICOS',
+    ...filtros,
+    ...paginacion
+  };
+
+  const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', params);
+
+  if (resultado && resultado.success) {
+    return resultado.data || { datos: [], total: 0 };
+  }
+
+  return { datos: [], total: 0 };
 };

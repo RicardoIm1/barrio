@@ -1129,7 +1129,7 @@
     `).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
-        
+
         async function cargarAvisos() {
             // SOLUCIÓN: Evitar múltiples llamadas verificando si ya se cargaron o si ya está en proceso
             if (avisosCargados || isLoadingAvisos) {
@@ -1144,7 +1144,7 @@
             }
 
             try {
-                const resultado = await API.listar('AVISOS', {}, { pagina: 1, limite: 200 });
+                const resultado = await API.listarPublicos({}, { pagina: 1, limite: 200 });
                 if (resultado && resultado.datos) {
                     allAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
                     // Ordenar por fecha más reciente primero

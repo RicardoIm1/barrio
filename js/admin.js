@@ -53,9 +53,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       const usuarioActual = API.getUsuarioActual();
       const apiKey = localStorage.getItem('api_key');
-      
+
       console.log('API Key presente:', !!apiKey);
-      
+
       const datos = {
         titulo: tituloValue.trim(),
         contenido: contenidoValue.trim(),
@@ -416,9 +416,9 @@ async function cargarMisAvisos() {
     const usuarioActual = API.getUsuarioActual();
     const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
 
+    // Eliminar filtros viejos si existen
     const filtrosCatExistentes = document.querySelector('.filtros-categorias');
     if (filtrosCatExistentes) filtrosCatExistentes.remove();
-
     const filtrosStatusExistentes = document.querySelector('.filtros-status');
     if (filtrosStatusExistentes) filtrosStatusExistentes.remove();
 
@@ -447,6 +447,7 @@ async function cargarMisAvisos() {
 
     contenedor.insertAdjacentHTML('beforebegin', filtrosHTML);
 
+    // Eventos para filtros de categoría
     document.querySelectorAll('[data-filtro-cat]').forEach(btn => {
       btn.addEventListener('click', function () {
         document.querySelectorAll('[data-filtro-cat]').forEach(b => b.classList.remove('activo'));
@@ -457,6 +458,7 @@ async function cargarMisAvisos() {
       });
     });
 
+    // Eventos para filtros de estado (solo admin)
     if (esAdmin) {
       document.querySelectorAll('[data-filtro-status]').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -469,28 +471,29 @@ async function cargarMisAvisos() {
       });
     }
 
+    // Construir consulta
     let consulta = {};
     if (filtroCategoriaAdmin !== 'todos') {
       consulta.categoria = filtroCategoriaAdmin;
     }
     if (esAdmin && filtroStatusAdmin !== 'todos') {
       consulta.status = filtroStatusAdmin;
-    } else if (!esAdmin) {
-      consulta.status = 'activo';
     }
 
-    const resultado = await API.listar('AVISOS', consulta, {
+    // Usar la nueva función listarMisAvisos
+    const resultado = await API.listarMisAvisos(consulta, {
       pagina: paginaAdmin,
       limite: 20
     });
 
     const avisos = resultado.datos || [];
-    const paginacion = resultado.paginacion || { pagina: 1, paginas: 1, total: 0 };
+    const paginacion = { pagina: paginaAdmin, paginas: resultado.paginas || 1, total: resultado.total || 0 };
 
     console.log('📋 Avisos cargados:', avisos.length);
 
     contenedor.innerHTML = renderizarAvisosGrid(avisos);
 
+    // Paginación
     if (paginacion.paginas > 1) {
       let pagHtml = '<div class="paginacion-botones">';
       if (paginaAdmin > 1) {
@@ -609,7 +612,7 @@ async function cargarUsuarios() {
     }
 
     const apiKey = localStorage.getItem('api_key');
-    
+
     // Usar la acción LISTAR con colección USUARIOS
     const respuesta = await API.peticion('LISTAR', {
       coleccion: 'USUARIOS'
