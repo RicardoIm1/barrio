@@ -168,19 +168,34 @@ class API {
 
   // Obtener un aviso específico por ID
   static async obtenerAviso(id) {
-    // No usar filtro created_by, obtener sin restricciones
-    const resultado = await API.peticion('LISTAR', {
-      coleccion: 'AVISOS',
-      id: id
-    });
+    try {
+      // Usar peticion directamente para evitar el filtro de created_by
+      const resultado = await API.peticion('LISTAR', {
+        coleccion: 'AVISOS',
+        id: id
+      });
 
-    if (resultado && resultado.success) {
-      const datos = resultado.data;
-      if (datos && datos.datos && datos.datos.length > 0) {
-        return datos.datos[0];
+      console.log('obtenerAviso resultado:', resultado);
+
+      if (resultado && resultado.success) {
+        const data = resultado.data;
+        if (data && data.datos && data.datos.length > 0) {
+          return data.datos[0];
+        }
       }
+
+      // Fallback: intentar con listar normal
+      const listado = await API.listar('AVISOS');
+      if (listado && listado.datos) {
+        const aviso = listado.datos.find(a => String(a.id) === String(id));
+        if (aviso) return aviso;
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error en obtenerAviso:', error);
+      return null;
     }
-    return null;
   }
 
   // Crear aviso
