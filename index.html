@@ -1324,17 +1324,37 @@
                     // 🔥 VERIFICAR SI EL ERROR ES "YA VOTASTE"
                     if (resultado && resultado.error === 'Ya votaste este aviso') {
                         showToast('ℹ️ Ya habías votado este aviso anteriormente', 1500);
-                        // Actualizar localStorage para que no intente votar de nuevo
+
+                        // 👇 NUEVO: Actualizar la interfaz para que coincida con el servidor
+                        const card = document.querySelector(`.aviso-card[data-id="${avisoId}"]`);
+                        if (card) {
+                            // Marcar el botón como votado
+                            const btn = card.querySelector(`.${tipo === 'positivo' ? 'like-btn' : 'dislike-btn'}`);
+                            if (btn) btn.classList.add(tipo === 'positivo' ? 'liked' : 'disliked');
+
+                            // Sincronizar el contador (si el servidor devuelve los valores reales)
+                            if (resultado.positivos !== undefined) {
+                                const likeSpan = card.querySelector('.like-btn .stat-value');
+                                if (likeSpan) likeSpan.textContent = resultado.positivos;
+                            }
+                            if (resultado.negativos !== undefined) {
+                                const dislikeSpan = card.querySelector('.dislike-btn .stat-value');
+                                if (dislikeSpan) dislikeSpan.textContent = resultado.negativos;
+                            }
+                        }
+
+                        // Guardar en localStorage para futuros clics
                         votosGuardados[tipo] = true;
                         localStorage.setItem(votosKey, JSON.stringify(votosGuardados));
                     } else {
                         showToast('❌ Error al votar: ' + (resultado?.error || 'Intenta de nuevo'), 2000);
                     }
                 }
+            
             } catch (error) {
-                console.error('Error votando:', error);
-                showToast('❌ Error de conexión', 2000);
-            }
+            console.error('Error votando:', error);
+            showToast('❌ Error de conexión', 2000);
+        }
         };
     </script>
 
