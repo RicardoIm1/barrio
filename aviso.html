@@ -409,8 +409,8 @@
     <span class="lightbox-close">&times;</span>
     <div id="lightbox-content"></div>
   </div>
-<!--   <div id="footer-container"></div> -->  
-   <div id="toast" class="toast-notification"></div>
+  <!--   <div id="footer-container"></div> -->
+  <div id="toast" class="toast-notification"></div>
 
   <div id="comments-panel" class="comments-panel">
     <div class="comments-header">
@@ -569,7 +569,8 @@
       try {
         usuarioActual = API.getUsuarioActual();
         if (typeof MultimediaManager !== 'undefined') multimediaManager = new MultimediaManager(API);
-        let aviso = await API.obtenerAviso(AVISO_ID);
+        let resultado = await API.listarPublicos({}, { pagina: 1, limite: 200 });
+        let aviso = resultado?.datos?.find(a => String(a.id) === String(AVISO_ID));
         if (!aviso) {
           const resultado = await API.listar('AVISOS');
           let avisos = resultado?.datos || (Array.isArray(resultado) ? resultado : resultado?.data || []);
