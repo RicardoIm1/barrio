@@ -386,13 +386,6 @@
 
 <body>
     <div id="header-container"></div>
-    <div class="contenedor">
-        <button onclick="enviarNotificacionPrueba()"
-            style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none;">
-            🔔 Probar Notificación
-        </button>
-    </div>
-
     <main class="contenedor">
         <div class="filtros-buscador-wrapper">
             <div class="buscador-container">
@@ -914,10 +907,31 @@
                 if (userArea) userArea.style.display = 'none';
             }
         }
+
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(actualizarHeaderPorSesion, 200);
             setTimeout(actualizarHeaderPorSesion, 500);
             setTimeout(actualizarHeaderPorSesion, 1000);
+
+            // Botón de prueba de notificación - DENTRO del DOMContentLoaded
+            const btnTest = document.getElementById('btnProbarNotificacion');
+            if (btnTest) {
+                btnTest.addEventListener('click', () => {
+                    // Verificar si hay usuario logueado
+                    const apiKey = localStorage.getItem('api_key');
+                    if (!apiKey) {
+                        alert('🔐 Inicia sesión primero para probar notificaciones');
+                        return;
+                    }
+
+                    // Llamar a la función EXPORTADA desde el módulo
+                    if (window.enviarNotificacionPrueba) {
+                        window.enviarNotificacionPrueba();
+                    } else {
+                        alert('⚠️ Sistema de notificaciones no disponible. Recarga la página.');
+                    }
+                });
+            }
         });
     </script>
 
@@ -1046,24 +1060,6 @@
 
             // Auto-remover después de 5 segundos
             setTimeout(() => notificationDiv.remove(), 5000);
-        }
-
-        // Función para enviar notificación de prueba (solo admin)
-        async function enviarNotificacionPrueba() {
-            if (!currentApiKey) {
-                alert('Debes iniciar sesión primero');
-                return;
-            }
-
-            const url = 'https://script.google.com/macros/s/AKfycbyw7lcF9tmPBVigUZgqrsWS4YBMH9GaT0USWWM77bFMUcQNyaZFdBbWrgw3_4iEkpOC/exec';
-            const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${currentApiKey}`);
-            const result = await response.json();
-
-            if (result.success) {
-                showNotification('Prueba', 'Notificación de prueba enviada', 'success');
-            } else {
-                showNotification('Error', result.error, 'error');
-            }
         }
 
         // Integrar con tu login existente
