@@ -882,11 +882,11 @@
             }
 
             const url = 'https://script.google.com/macros/s/AKfycby0tIFqvstmg8Jb-hDoK6nQj4a8LJSl6Rc9w-bs3pNY1nO2kO53XtsowL0Q1zjFetN2/exec';
-            
+
             try {
                 const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`);
                 const result = await response.json();
-                
+
                 if (result.success) {
                     alert('✅ Notificación de prueba enviada. Deberías verla en unos segundos.');
                 } else {
@@ -968,102 +968,68 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
+        // Notificaciones push con Web Push API nativa (SIN Firebase)
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD6TBV8AmQwxAIoQJB5yuxrKcqAEVOWYKQ",
-            authDomain: "avisos-jardines.firebaseapp.com",
-            projectId: "avisos-jardines",
-            storageBucket: "avisos-jardines.firebasestorage.app",
-            messagingSenderId: "1010324110751",
-            appId: "1:1010324110751:web:c7ab30ffadfb5966fd51aa"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const messaging = getMessaging(app);
-
-        // Variables globales
-        let currentApiKey = null;
-
-        // Función para mostrar notificaciones en la UI
-        function showNotification(titulo, mensaje, tipo = 'info') {
-            const notificationDiv = document.createElement('div');
-            notificationDiv.className = `notification notification-${tipo}`;
-            notificationDiv.innerHTML = `
-                <strong>${titulo}</strong>
-                <p>${mensaje}</p>
-                <button onclick="this.parentElement.remove()">✕</button>
-            `;
-            document.body.appendChild(notificationDiv);
-            setTimeout(() => notificationDiv.remove(), 5000);
-        }
-
-        // Función para registrar notificaciones push
         async function registrarPushNotifications(apiKey) {
             try {
-                currentApiKey = apiKey;
-
                 if (!('Notification' in window)) {
-                    console.log('Este navegador no soporta notificaciones');
+                    console.log('Notificaciones no soportadas');
                     return;
                 }
 
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
-                    console.log('Permiso de notificaciones denegado');
-                    showNotification('Notificaciones', 'Para recibir alertas, activa las notificaciones en tu navegador', 'warning');
+                    console.log('Permiso denegado');
                     return;
                 }
 
-                if ('serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.register('/barrio/firebase-messaging-sw.js');
-                    console.log('Service Worker registrado:', registration);
+                // Registrar Service Worker manualmente en /barrio/
+                const registration = await navigator.serviceWorker.register('/barrio/sw.js');
+                console.log('Service Worker registrado:', registration);
 
-                    const token = await getToken(messaging, {
-                        vapidKey: 'BIFRjw-VpDft10-O6ZJX_0ODl6tEuHM4gR4EvuHfvZz3u7Fo0ypcorNLb2E_rUae8ChaIfjQShrHAe_0r2papBE',
-                        serviceWorkerRegistration: registration
-                    });
+                // Suscripción push nativa
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUInt8Array('BIFRjw-VpDft10-O6ZJX_0ODl6tEuHM4gR4EvuHfvZz3u7Fo0ypcorNLb2E_rUae8ChaIfjQShrHAe_0r2papBE')
+                });
 
-                    if (token) {
-                        console.log('Token FCM obtenido:', token);
-                        await guardarTokenEnBackend(token, apiKey);
-                        showNotification('Éxito', 'Notificaciones activadas correctamente', 'success');
-                    } else {
-                        console.log('No se pudo obtener el token');
-                    }
-                }
+                console.log('Suscripción obtenida:', subscription);
+
+                // Guardar suscripción en el backend
+                await guardarSuscripcionEnBackend(subscription, apiKey);
+
+                showToast('Notificaciones activadas correctamente', 'success');
             } catch (error) {
-                console.error('Error al registrar push:', error);
+                console.error('Error:', error);
+                showToast('Error al activar notificaciones', 'error');
             }
         }
 
-        // Guardar token en Google Apps Script
-        async function guardarTokenEnBackend(token, apiKey) {
-            try {
-                const url = 'https://script.google.com/macros/s/AKfycby0tIFqvstmg8Jb-hDoK6nQj4a8LJSl6Rc9w-bs3pNY1nO2kO53XtsowL0Q1zjFetN2/exec';
-                const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${token}&dispositivo=web`);
-                const result = await response.json();
-                if (result.success) {
-                    console.log('✅ Token guardado en el servidor');
-                } else {
-                    console.error('❌ Error guardando token:', result.error);
-                }
-            } catch (error) {
-                console.error('Error en petición:', error);
+        function urlBase64ToUInt8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
             }
+            return outputArray;
         }
 
-        // Escuchar notificaciones en primer plano
-        onMessage(messaging, (payload) => {
-            console.log('Notificación en primer plano:', payload);
-            showNotification(payload.notification.title, payload.notification.body, 'info');
-            if (payload.data?.categoria) {
-                if (typeof cargarAvisos === 'function') cargarAvisos();
-            }
-        });
+        async function guardarSuscripcionEnBackend(subscription, apiKey) {
+            const url = 'https://script.google.com/macros/s/AKfycby0tIFqvstmg8Jb-hDoK6nQj4a8LJSl6Rc9w-bs3pNY1nO2kO53XtsowL0Q1zjFetN2/exec';
+            const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`);
+            return await response.json();
+        }
 
-        // Integrar con tu login existente
+        function showToast(mensaje, tipo) {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensaje;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Integrar con login
         const originalHandleLogin = window.handleLogin;
         window.handleLogin = async function (email, password) {
             const result = await originalHandleLogin(email, password);
@@ -1072,6 +1038,8 @@
             }
             return result;
         };
+
+        window.registrarPushNotifications = registrarPushNotifications;
     </script>
 
     <!-- Estilos para notificaciones -->
