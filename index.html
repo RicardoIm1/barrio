@@ -1017,7 +1017,7 @@
                 }
 
                 if ('serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    const registration = await navigator.serviceWorker.register('/barrio/firebase-messaging-sw.js');
                     console.log('Service Worker registrado:', registration);
 
                     const token = await getToken(messaging, {
