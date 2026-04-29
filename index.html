@@ -1001,7 +1001,7 @@
         // Guardar token en Google Apps Script
         async function guardarTokenEnBackend(token, apiKey) {
             try {
-                const url = 'https://script.google.com/macros/s/AKfycbwSSsa8oNUcvV9inV3p7msc4n2ZQ9eP-d-WMurJMb22KKefGAiO5J2WuPzprrxkmycr/exec';
+                const url = 'https://script.google.com/macros/s/AKfycbxoxQL47nwQHO4e_4rrzfWlBNNkx43Y553R6ajpHMIFzlPuNZ25Bo5D9K-9nCBBpF5D/exec';
                 const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${token}&dispositivo=web`);
                 const result = await response.json();
 
@@ -1053,7 +1053,7 @@
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbwSSsa8oNUcvV9inV3p7msc4n2ZQ9eP-d-WMurJMb22KKefGAiO5J2WuPzprrxkmycr/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbxoxQL47nwQHO4e_4rrzfWlBNNkx43Y553R6ajpHMIFzlPuNZ25Bo5D9K-9nCBBpF5D/exec';
             const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${currentApiKey}`);
             const result = await response.json();
 
