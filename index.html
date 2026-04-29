@@ -930,34 +930,207 @@
         </div>
     </div>
 
-    <!-- PARA LAS NOTIFICACIONES PUSH -->
-    <!-- Agrega al final del body -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(reg => console.log('SW registrado:', reg))
-                .catch(err => console.error('Error SW:', err));
-        }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging.js";
 
-        // Solicitar permiso para notificaciones
-        function solicitarPermisoNotificaciones() {
-            if ('Notification' in window) {
-                Notification.requestPermission().then(permiso => {
-                    if (permiso === 'granted') {
-                        console.log('Permiso concedido');
-                        // Obtener token para push
-                        obtenerTokenPush();
+        const firebaseConfig = {
+            apiKey: "AIzaSyD6TBV8AmQwxAIoQJB5yuxrKcqAEVOWYKQ",
+            authDomain: "avisos-jardines.firebaseapp.com",
+            projectId: "avisos-jardines",
+            storageBucket: "avisos-jardines.firebasestorage.app",
+            messagingSenderId: "1010324110751",
+            appId: "1:1010324110751:web:c7ab30ffadfb5966fd51aa"
+        };
+
+                const app = initializeApp(firebaseConfig);
+        const messaging = getMessaging(app);
+
+        // Variables globales
+        let currentApiKey = null;
+
+        // Función para registrar notificaciones push
+        async function registrarPushNotifications(apiKey) {
+            try {
+                currentApiKey = apiKey;
+
+                // Verificar si el navegador soporta notificaciones
+                if (!('Notification' in window)) {
+                    console.log('Este navegador no soporta notificaciones');
+                    return;
+                }
+
+                // Solicitar permiso
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    console.log('Permiso de notificaciones denegado');
+                    showNotification('Notificaciones', 'Para recibir alertas, activa las notificaciones en tu navegador', 'warning');
+                    return;
+                }
+
+                // Verificar si tenemos service worker
+                if ('serviceWorker' in navigator) {
+                    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                    console.log('Service Worker registrado:', registration);
+
+                    // Obtener token FCM
+                    const token = await getToken(messaging, {
+                        vapidKey: 'BIFRjw-VpDft10-O6ZJX_0ODl6tEuHM4gR4EvuHfvZz3u7Fo0ypcorNLb2E_rUae8ChaIfjQShrHAe_0r2papBE', // Lo obtendrás de Firebase Console
+                        serviceWorkerRegistration: registration
+                    });
+
+                    if (token) {
+                        console.log('Token FCM obtenido:', token);
+
+                        // Guardar token en el backend
+                        await guardarTokenEnBackend(token, apiKey);
+                        showNotification('Éxito', 'Notificaciones activadas correctamente', 'success');
+                    } else {
+                        console.log('No se pudo obtener el token');
                     }
-                });
+                }
+            } catch (error) {
+                console.error('Error al registrar push:', error);
             }
         }
 
-        // Obtener token único del dispositivo usando Firebase Cloud Messaging
-        function obtenerTokenPush() {
-            // Aquí integrarías Firebase Cloud Messaging
-            // Más detalles: https://firebase.google.com/docs/cloud-messaging/js/client
+        // Guardar token en Google Apps Script
+        async function guardarTokenEnBackend(token, apiKey) {
+            try {
+                const url = 'https://script.google.com/macros/s/TU_SCRIPT_ID/exec';
+                const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${token}&dispositivo=web`);
+                const result = await response.json();
+
+                if (result.success) {
+                    console.log('✅ Token guardado en el servidor');
+                } else {
+                    console.error('❌ Error guardando token:', result.error);
+                }
+            } catch (error) {
+                console.error('Error en petición:', error);
+            }
         }
+
+        // Escuchar notificaciones en primer plano
+        onMessage(messaging, (payload) => {
+            console.log('Notificación en primer plano:', payload);
+
+            // Mostrar notificación personalizada
+            showNotification(payload.notification.title, payload.notification.body, 'info');
+
+            // Puedes actualizar la UI aquí
+            if (payload.data?.categoria) {
+                // Recargar avisos si es necesario
+                cargarAvisos();
+            }
+        });
+
+        // Función para mostrar notificaciones en la UI
+        function showNotification(titulo, mensaje, tipo = 'info') {
+            // Crear un toast o alerta en tu página
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `notification notification-${tipo}`;
+            notificationDiv.innerHTML = `
+      <strong>${titulo}</strong>
+      <p>${mensaje}</p>
+      <button onclick="this.parentElement.remove()">✕</button>
+    `;
+
+            document.body.appendChild(notificationDiv);
+
+            // Auto-remover después de 5 segundos
+            setTimeout(() => notificationDiv.remove(), 5000);
+        }
+
+        // Función para enviar notificación de prueba (solo admin)
+        async function enviarNotificacionPrueba() {
+            if (!currentApiKey) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+
+            const url = 'https://script.google.com/macros/s/AKfycbxUa7m27wpBszv_3pzBjD5wQmAPBVKXWjXH499I1V4YqqlBO3gZAnqrGQB_ku2moAG-/exec';
+            const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${currentApiKey}`);
+            const result = await response.json();
+
+            if (result.success) {
+                showNotification('Prueba', 'Notificación de prueba enviada', 'success');
+            } else {
+                showNotification('Error', result.error, 'error');
+            }
+        }
+
+        // Integrar con tu login existente
+        const originalHandleLogin = window.handleLogin;
+        window.handleLogin = async function (email, password) {
+            const result = await originalHandleLogin(email, password);
+            if (result.success && result.data.api_key) {
+                // Registrar para notificaciones push después del login
+                await registrarPushNotifications(result.data.api_key);
+            }
+            return result;
+        };
+
+        // Exportar funciones globales
+        window.registrarPushNotifications = registrarPushNotifications;
+        window.enviarNotificacionPrueba = enviarNotificacionPrueba;
     </script>
+
+    <!-- Estilos para notificaciones -->
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .notification-error {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+        }
+
+        .notification-info {
+            background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%);
+        }
+
+        .notification-warning {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        }
+
+        .notification button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </body>
 
 </html>
