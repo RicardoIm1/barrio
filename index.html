@@ -393,7 +393,7 @@
             </div>
             <button id="btnProbarNotificacion"
                 style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none;">
-                🔔 Probar Notificación
+                📝 Registrarse
             </button>
         </div>
 
@@ -1014,12 +1014,14 @@
             setTimeout(actualizarHeaderPorSesion, 500);
             setTimeout(actualizarHeaderPorSesion, 1000);
 
-            // Botón de prueba de notificación
-            const btnTest = document.getElementById('btnProbarNotificacion');
-            if (btnTest) {
-                btnTest.removeEventListener('click', btnTest.clickHandler);
-                btnTest.clickHandler = () => enviarNotificacionPrueba();
-                btnTest.addEventListener('click', btnTest.clickHandler);
+            // Botón para ir a registro
+            const btnRegistro = document.getElementById('btnProbarNotificacion');
+            if (btnRegistro) {
+                btnRegistro.removeEventListener('click', btnRegistro.clickHandler);
+                btnRegistro.clickHandler = () => {
+                    window.location.href = '/barrio/registro.html';
+                };
+                btnRegistro.addEventListener('click', btnRegistro.clickHandler);
             }
         });
     </script>
