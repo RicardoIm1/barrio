@@ -563,38 +563,52 @@
     async function cargarAviso() {
       const container = document.getElementById('aviso-container');
       if (!AVISO_ID) {
-        container.innerHTML = `<div class="error-message">❌ No se especificó ningún aviso<div style="margin-top:1rem;"><a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a></div></div>`;
+        container.innerHTML = `<div class="error-message">❌ No se especificó ningún aviso</div>`;
         return;
       }
+
       try {
         usuarioActual = API.getUsuarioActual();
-        if (typeof MultimediaManager !== 'undefined') multimediaManager = new MultimediaManager(API);
-        let resultado = await API.listarPublicos({}, { pagina: 1, limite: 200 });
-        let aviso = resultado?.datos?.find(a => String(a.id) === String(AVISO_ID));
+
+        // ✅ UNA SOLA PETICIÓN: obtener todos los avisos públicos
+        const resultado = await API.listarPublicos({}, { pagina: 1, limite: 500 });
+        const avisos = resultado.datos || [];
+        const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
+
         if (!aviso) {
-          const resultado = await API.listar('AVISOS');
-          let avisos = resultado?.datos || (Array.isArray(resultado) ? resultado : resultado?.data || []);
-          aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
-        }
-        if (!aviso) {
-          container.innerHTML = `<div class="error-message">❌ El aviso no existe o fue eliminado<div style="margin-top:1rem;"><a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a></div></div>`;
+          container.innerHTML = `<div class="error-message">❌ Aviso no encontrado</div>`;
           return;
         }
+
         avisoActual = aviso;
+
+        // Registrar vista (petición adicional, pero es necesaria)
         await registrarVista(AVISO_ID);
-        let multimediaItems = [];
-        if (multimediaManager) {
-          try {
-            const multimediaResult = await multimediaManager.listarMultimedia(AVISO_ID);
-            if (multimediaResult?.success) multimediaItems = multimediaResult.data || [];
-          } catch (e) { console.warn('Error multimedia:', e); }
-        }
-        const comentariosResult = await API.peticion('LISTAR_COMENTARIOS', { avisoId: AVISO_ID });
-        comentariosCount = (comentariosResult?.success && Array.isArray(comentariosResult.data)) ? comentariosResult.data.length : 0;
-        renderizarAviso(multimediaItems);
+
+        // Renderizar sin comentarios (se cargarán después)
+        renderizarAviso([], 0);
+
+        // Cargar comentarios en segundo plano (sin bloquear la vista)
+        cargarComentariosEnSegundoPlano(AVISO_ID);
+
       } catch (error) {
         console.error('Error cargando aviso:', error);
-        container.innerHTML = `<div class="error-message">❌ Error al cargar el aviso: ${escapeHTML(error.message)}<div style="margin-top:1rem;"><a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a></div></div>`;
+        container.innerHTML = `<div class="error-message">❌ Error al cargar el aviso</div>`;
+      }
+    }
+
+    // Nueva función: carga comentarios sin bloquear la pantalla
+    async function cargarComentariosEnSegundoPlano(avisoId) {
+      try {
+        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+        if (resultado && resultado.success && Array.isArray(resultado.data)) {
+          comentariosCount = resultado.data.length;
+          // Actualizar el contador de comentarios en la página si ya está renderizada
+          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
+          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
+        }
+      } catch (e) {
+        console.warn('Error cargando comentarios:', e);
       }
     }
 
