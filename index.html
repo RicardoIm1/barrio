@@ -534,17 +534,17 @@
             return false;
         }
 
-        function actualizarContadoresCard(avisoId, likes, dislikes) {
+        function actualizarContadoresCard(avisoId, nuevosLikes, nuevosDislikes) {
             const card = document.querySelector(`.aviso-card[data-id="${avisoId}"]`);
             if (!card) return;
 
-            const likeStat = card.querySelector('.like-btn .stat-value');
-            const dislikeStat = card.querySelector('.dislike-btn .stat-value');
+            const likeSpan = card.querySelector('.like-btn .stat-value');
+            const dislikeSpan = card.querySelector('.dislike-btn .stat-value');
             const likeBtn = card.querySelector('.like-btn');
             const dislikeBtn = card.querySelector('.dislike-btn');
 
-            if (likeStat && likes !== undefined) likeStat.textContent = likes;
-            if (dislikeStat && dislikes !== undefined) dislikeStat.textContent = dislikes;
+            if (likeSpan && nuevosLikes !== undefined) likeSpan.textContent = nuevosLikes;
+            if (dislikeSpan && nuevosDislikes !== undefined) dislikeSpan.textContent = nuevosDislikes;
 
             if (likeBtn) {
                 if (userVotes[avisoId] === 'like') likeBtn.classList.add('liked');
@@ -554,15 +554,7 @@
                 if (userVotes[avisoId] === 'dislike') dislikeBtn.classList.add('disliked');
                 else dislikeBtn.classList.remove('disliked');
             }
-
-            // Actualizar en allAvisos
-            const aviso = allAvisos.find(a => a.id == avisoId);
-            if (aviso) {
-                if (likes !== undefined) aviso.likes = likes;
-                if (dislikes !== undefined) aviso.dislikes = dislikes;
-            }
         }
-
         // ========== FUNCIONES DE INTERACCIÓN ==========
 
         window.verAviso = async function (id) {
@@ -725,42 +717,47 @@
                 const isDisliked = userVote === 'dislike';
                 const whatsappNumber = aviso.contacto ? String(aviso.contacto).replace(/[^0-9]/g, '') : '';
                 const mensaje = encodeURIComponent(`Hola, vi tu aviso "${aviso.titulo}" en BARRIO. Me interesa.`);
-                const likes = aviso.likes || aviso.intereses || 0;
-                const dislikes = aviso.dislikes || aviso.votos_negativos || 0;
+
+                // USAR LOS CAMPOS CORRECTOS DE TU HOJA
+                const likes = parseInt(aviso.intereses) || 0;           // ← intereses = likes
+                const dislikes = parseInt(aviso.votos_negativos) || 0; // ← nueva columna
+                const comentarios = parseInt(aviso.comentarios_count) || 0; // ← nueva columna
+                const vistas = parseInt(aviso.vistas) || 0;
+                const whatsappClicks = parseInt(aviso.clicks_whatsapp) || 0;
 
                 return `
-                <div class="aviso-card tarjeta-moderna" data-id="${aviso.id}" onclick="verAviso('${aviso.id}')">
-                    <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
-                        ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
-                    </div>
-                    ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
-                    <div class="card-contenido-moderno">
-                        <div class="card-header-moderno">
-                            <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
-                            <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
-                        </div>
-                        <div class="card-preview-moderno">
-                            ${escapeHtml((aviso.contenido || '').substring(0, 120))}${(aviso.contenido || '').length > 120 ? '...' : ''}
-                        </div>
-                        <div class="card-stats-moderno">
-                            <span class="stat-item">👁️ <span class="stat-value">${aviso.vistas || 0}</span></span>
-                            <span class="stat-item whatsapp-stat">📞 <span class="stat-value">${aviso.clicks_whatsapp || 0}</span></span>
-                            <span class="stat-item like-btn ${isLiked ? 'liked' : ''}" onclick="darLikeWrapper('${aviso.id}', event)">
-                                👍 <span class="stat-value">${likes}</span>
-                            </span>
-                            <span class="stat-item dislike-btn ${isDisliked ? 'disliked' : ''}" onclick="darDislikeWrapper('${aviso.id}', event)">
-                                👎 <span class="stat-value">${dislikes}</span>
-                            </span>
-                            <span class="stat-item comments-stat" onclick="abrirComentarios('${aviso.id}', event)">
-                                💬 <span class="stat-value">${aviso.comentarios_count || 0}</span>
-                            </span>
-                        </div>
-                        <div class="aviso-footer">
-                            <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
-                        </div>
-                    </div>
-                    ${aviso.contacto ? `<button class="whatsapp-btn" onclick="abrirWhatsApp('${whatsappNumber}', '${mensaje}', '${aviso.id}', event)"></button>` : ''}
-                </div>`;
+        <div class="aviso-card tarjeta-moderna" data-id="${aviso.id}" onclick="verAviso('${aviso.id}')">
+            <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
+                ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
+            </div>
+            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
+            <div class="card-contenido-moderno">
+                <div class="card-header-moderno">
+                    <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
+                    <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
+                </div>
+                <div class="card-preview-moderno">
+                    ${escapeHtml((aviso.contenido || '').substring(0, 120))}${(aviso.contenido || '').length > 120 ? '...' : ''}
+                </div>
+                <div class="card-stats-moderno">
+                    <span class="stat-item">👁️ <span class="stat-value">${vistas}</span></span>
+                    <span class="stat-item whatsapp-stat">📞 <span class="stat-value">${whatsappClicks}</span></span>
+                    <span class="stat-item like-btn ${isLiked ? 'liked' : ''}" onclick="darLikeWrapper('${aviso.id}', event)">
+                        👍 <span class="stat-value">${likes}</span>
+                    </span>
+                    <span class="stat-item dislike-btn ${isDisliked ? 'disliked' : ''}" onclick="darDislikeWrapper('${aviso.id}', event)">
+                        👎 <span class="stat-value">${dislikes}</span>
+                    </span>
+                    <span class="stat-item comments-stat" onclick="abrirComentarios('${aviso.id}', event)">
+                        💬 <span class="stat-value">${comentarios}</span>
+                    </span>
+                </div>
+                <div class="aviso-footer">
+                    <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
+                </div>
+            </div>
+            ${aviso.contacto ? `<button class="whatsapp-btn" onclick="abrirWhatsApp('${whatsappNumber}', '${mensaje}', '${aviso.id}', event)"></button>` : ''}
+        </div>`;
             }).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
