@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <title>Aviso - BARRIO</title>
+  <link rel="stylesheet" href="/barrio/css/estilo.css">
+  <link rel="manifest" href="/barrio/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+  <style>
+    .aviso-paper {
+      max-width: 960px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      border: 1px solid #e9ecef;
+    }
+
+    .article-header {
+      padding: 2rem 2.5rem 1rem;
+      border-bottom: 2px solid #f5b042;
+      background: white;
+    }
+
+    .article-category {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-weight: 700;
+      padding: 0.2rem 0.8rem;
+      background: #f5b042;
+      color: white;
+      border-radius: 20px;
+      margin-bottom: 1rem;
+    }
+
+    .article-category.urgente {
+      background: #c0392b;
+    }
+
+    .article-category.pendiente {
+      background: #f39c12;
+    }
+
+    .article-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin: 0.5rem 0 1rem;
+      color: #1a2a3a;
+      letter-spacing: -0.5px;
+      font-family: 'Georgia', 'Times New Roman', Times, serif;
+    }
+
+    .featured-image {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .featured-image-container {
+      position: relative;
+      background: #1a1a2e;
+    }
+
+    .article-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding: 0.8rem 0;
+      margin: 0.5rem 0 0;
+      color: #6c757d;
+      font-size: 0.8rem;
+      border-top: 1px solid #e9ecef;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .article-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .article-body {
+      padding: 2rem 2.5rem;
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #2c3e2f;
+    }
+
+    .gallery-section {
+      margin: 2rem 0;
+    }
+
+    .gallery-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f5b042;
+      display: inline-block;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .gallery-item {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 0.5rem;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox img,
+    .lightbox video {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    .article-actions {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #e9ecef;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: #1e4620;
+      color: white;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-action.edit {
+      background: #d4a043;
+      color: #1a2a3a;
+    }
+
+    .btn-action.delete {
+      background: #c0392b;
+    }
+
+    .btn-action.back {
+      background: transparent;
+      border: 1px solid #e9ecef;
+      color: #1a2a3a;
+    }
+
+    .btn-action.comment {
+      background: #3498db;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #f8f9fa;
+      border-radius: 12px;
+      font-size: 0.85rem;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6c757d;
+      font-size: 1.1rem;
+    }
+
+    .error-message {
+      background: #fef2e8;
+      border-left: 4px solid #c0392b;
+      padding: 1.2rem;
+      margin: 2rem;
+      border-radius: 8px;
+      color: #c0392b;
+    }
+
+    .comments-panel {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      max-width: 450px;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+      z-index: 1001;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+    }
+
+    .comments-panel.open {
+      transform: translateY(0);
+    }
+
+    .comments-header {
+      padding: 1rem;
+      background: #1e4620;
+      color: white;
+      border-radius: 20px 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comments-header h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .close-comments {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .comments-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      max-height: 400px;
+    }
+
+    .comment-item {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .comment-author {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: #1e4620;
+      margin-bottom: 0.3rem;
+    }
+
+    .comment-text {
+      font-size: 0.85rem;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .comment-date {
+      font-size: 0.6rem;
+      color: #888;
+      margin-top: 0.3rem;
+    }
+
+    .comment-input-area {
+      padding: 1rem;
+      border-top: 1px solid #e9ecef;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .comment-input-area input {
+      flex: 1;
+      padding: 0.6rem;
+      border: 1px solid #e9ecef;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    .comment-input-area button {
+      background: #1e4620;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .toast-notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      z-index: 1100;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .aviso-paper {
+        margin: 1rem;
+      }
+
+      .article-title {
+        font-size: 1.8rem;
+      }
+
+      .article-header,
+      .article-body {
+        padding: 1.2rem;
+      }
+
+      .article-meta {
+        gap: 1rem;
+        font-size: 0.7rem;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+
+      .comments-panel {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-container"></div>
+  <main>
+    <div id="aviso-container" class="aviso-paper">
+      <div class="loading-state">📰 Cargando aviso... ⏳</div>
+    </div>
+  </main>
+  <div id="lightbox" class="lightbox" onclick="cerrarLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <div id="lightbox-content"></div>
+  </div>
+  <!--   <div id="footer-container"></div> -->
+  <div id="toast" class="toast-notification"></div>
+
+  <div id="comments-panel" class="comments-panel">
+    <div class="comments-header">
+      <h3>💬 Comentarios</h3>
+      <button class="close-comments" onclick="cerrarPanelComentarios()">×</button>
+    </div>
+    <div id="comments-list" class="comments-list">
+      <div class="cargando">Cargando comentarios...</div>
+    </div>
+    <div class="comment-input-area">
+      <input type="text" id="comment-input" placeholder="Escribe tu comentario...">
+      <button onclick="enviarComentario()">Enviar</button>
+    </div>
+  </div>
+
+  <script src="/barrio/js/api.js"></script>
+  <script src="/barrio/js/ui.js"></script>
+  <script src="/barrio/js/auth.js"></script>
+  <script src="/barrio/js/multimedia.js"></script>
+
+  <script>
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/[&<>]/g, function (m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    function formatearContenido(texto) {
+      if (!texto) return '<p>Sin contenido</p>';
+      const stringTexto = String(texto);
+      const parrafos = stringTexto.split(/\n\s*\n/);
+      return parrafos.map(p => `<p>${escapeHTML(p).replace(/\n/g, '<br>')}</p>`).join('');
+    }
+
+    function formatearFecha(fechaStr) {
+      if (!fechaStr) return 'Fecha desconocida';
+      try {
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+      } catch (e) { return fechaStr; }
+    }
+
+    function showToast(message, duration = 2000) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    function abrirLightbox(url, tipo) {
+      const lightbox = document.getElementById('lightbox');
+      const content = document.getElementById('lightbox-content');
+      if (tipo === 'video') {
+        content.innerHTML = `<video controls autoplay style="max-width:90%; max-height:90%;"><source src="${escapeHTML(url)}" type="video/mp4"></video>`;
+      } else {
+        content.innerHTML = `<img src="${escapeHTML(url)}" alt="Imagen ampliada">`;
+      }
+      lightbox.classList.add('active');
+    }
+    function cerrarLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.getElementById('lightbox-content').innerHTML = '';
+    }
+
+    async function registrarVista(avisoId) {
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        await API.peticion('REGISTRAR_VISTA', { id: avisoId }, apiKey);
+      } catch (e) { console.warn('Error registrando vista:', e); }
+    }
+
+    let currentAvisoIdForComments = null;
+    window.abrirComentarios = function (id, event) {
+      if (event) event.stopPropagation();
+      currentAvisoIdForComments = id;
+      document.getElementById('comments-panel').classList.add('open');
+      cargarComentarios(id);
+    };
+    window.cerrarPanelComentarios = function () {
+      document.getElementById('comments-panel').classList.remove('open');
+      currentAvisoIdForComments = null;
+    };
+    async function cargarComentarios(avisoId) {
+      const commentsList = document.getElementById('comments-list');
+      if (!commentsList) return;
+      commentsList.innerHTML = '<div class="cargando">💬 Cargando comentarios...</div>';
+      try {
+        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+        if (resultado && resultado.success && Array.isArray(resultado.data)) {
+          if (resultado.data.length === 0) {
+            commentsList.innerHTML = '<div style="text-align:center; color:#888;">📝 No hay comentarios aún. ¡Sé el primero!</div>';
+          } else {
+            commentsList.innerHTML = resultado.data.map(com => `
+              <div class="comment-item">
+                <div class="comment-author">${escapeHTML(com.autor || 'Anónimo')}</div>
+                <div class="comment-text">${escapeHTML(com.texto)}</div>
+                <div class="comment-date">${formatearFecha(com.fecha)}</div>
+              </div>
+            `).join('');
+          }
+        } else {
+          commentsList.innerHTML = '<div style="text-align:center; color:#888;">💬 No hay comentarios aún</div>';
+        }
+      } catch (e) {
+        console.error('Error cargando comentarios:', e);
+        commentsList.innerHTML = '<div style="text-align:center; color:#e74c3c;">❌ Error al cargar comentarios</div>';
+      }
+    }
+    window.enviarComentario = async function () {
+      const input = document.getElementById('comment-input');
+      const texto = input.value.trim();
+      if (!texto) { showToast('✏️ Escribe un comentario primero', 1500); return; }
+      if (!currentAvisoIdForComments) { showToast('❌ Error: No se identificó el aviso', 1500); return; }
+      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const autor = usuario.nombre || usuario.email || 'Anónimo';
+      try {
+        const resultado = await API.peticion('AGREGAR_COMENTARIO', {
+          avisoId: currentAvisoIdForComments,
+          texto: texto,
+          autor: autor
+        });
+        if (resultado && resultado.success) {
+          input.value = '';
+          showToast('💬 Comentario enviado', 1500);
+          cargarComentarios(currentAvisoIdForComments);
+          const comentariosSpan = document.querySelector('.stat-item.comentarios span');
+          if (comentariosSpan) {
+            let actual = parseInt(comentariosSpan.textContent) || 0;
+            comentariosSpan.textContent = actual + 1;
+          }
+        } else {
+          showToast('❌ Error al enviar comentario', 1500);
+        }
+      } catch (e) {
+        console.error('Error enviando comentario:', e);
+        showToast('❌ Error de conexión', 1500);
+      }
+    };
+
+    const AVISO_ID = new URLSearchParams(window.location.search).get('id');
+    let avisoActual = null;
+    let usuarioActual = null;
+    let multimediaManager = null;
+    let comentariosCount = 0;
+
+    async function cargarAviso() {
+      const container = document.getElementById('aviso-container');
+      if (!AVISO_ID) {
+        container.innerHTML = `<div class="error-message">❌ No se especificó ningún aviso</div>`;
+        return;
+      }
+
+      // Mostrar loading inmediatamente
+      container.innerHTML = '<div class="loading-state">📰 Cargando aviso...</div>';
+
+      try {
+        usuarioActual = API.getUsuarioActual();
+
+        // ✅ UNA SOLA PETICIÓN: obtener todos los avisos públicos
+        const resultado = await API.listarPublicos({}, { pagina: 1, limite: 500 });
+        const avisos = resultado.datos || [];
+        const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
+
+        if (!aviso) {
+          container.innerHTML = `<div class="error-message">❌ Aviso no encontrado</div>`;
+          return;
+        }
+
+        avisoActual = aviso;
+
+        // Registrar vista SIN esperar (en segundo plano)
+        registrarVista(AVISO_ID);
+
+        // Renderizar el aviso inmediatamente (comentarios en 0)
+        renderizarAviso([], 0);
+
+        // Cargar comentarios en segundo plano (sin bloquear)
+        cargarComentariosEnSegundoPlano(AVISO_ID);
+
+      } catch (error) {
+        console.error('Error cargando aviso:', error);
+        container.innerHTML = `<div class="error-message">❌ Error al cargar el aviso: ${escapeHTML(error.message)}</div>`;
+      }
+    }
+
+    // Nueva función: carga comentarios sin bloquear la pantalla
+    async function cargarComentariosEnSegundoPlano(avisoId) {
+      try {
+        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+        if (resultado && resultado.success && Array.isArray(resultado.data)) {
+          comentariosCount = resultado.data.length;
+          // Actualizar el contador de comentarios en la página si ya está renderizada
+          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
+          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
+        }
+      } catch (e) {
+        console.warn('Error cargando comentarios:', e);
+      }
+    }
+
+    // Nueva función: carga comentarios sin bloquear
+    async function cargarComentariosEnSegundoPlano(avisoId) {
+      try {
+        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+        if (resultado && resultado.success && Array.isArray(resultado.data)) {
+          comentariosCount = resultado.data.length;
+          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
+          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
+        }
+      } catch (e) {
+        console.warn('Error cargando comentarios:', e);
+      }
+    }
+
+    // Nueva función: carga comentarios sin bloquear la pantalla
+    async function cargarComentariosEnSegundoPlano(avisoId) {
+      try {
+        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+        if (resultado && resultado.success && Array.isArray(resultado.data)) {
+          comentariosCount = resultado.data.length;
+          // Actualizar el contador de comentarios en la página si ya está renderizada
+          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
+          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
+        }
+      } catch (e) {
+        console.warn('Error cargando comentarios:', e);
+      }
+    }
+
+    function renderizarAviso(multimediaItems) {
+      if (!avisoActual) return;
+      let fechaTexto = 'Fecha no disponible';
+      if (avisoActual.created_at) {
+        try { fechaTexto = new Date(avisoActual.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }); }
+        catch (e) { fechaTexto = String(avisoActual.created_at); }
+      }
+      const esUrgente = avisoActual.destacado === 'TRUE' || avisoActual.categoria === 'urgente';
+      const esPendiente = avisoActual.status === 'pendiente';
+      const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
+      const esPropietario = usuarioActual && String(usuarioActual.id) === String(avisoActual.created_by);
+      const puedeEditar = esAdmin || esPropietario;
+      const categoriaLegible = { 'urgente': 'URGENTE', 'escuelas': 'ESCUELAS', 'servicios': 'SERVICIOS', 'comercios': 'COMERCIOS', 'eventos': 'EVENTOS', 'gobierno': 'GOBIERNO', 'varios': 'VARIOS' }[avisoActual.categoria] || avisoActual.categoria || 'GENERAL';
+      let categoriaClase = ''; let categoriaTexto = categoriaLegible;
+      if (esUrgente) { categoriaClase = 'urgente'; categoriaTexto = '⚠️ URGENTE'; }
+      else if (esPendiente) { categoriaClase = 'pendiente'; categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN'; }
+
+      let imagenDestacada = null, imagenesGaleria = [];
+      if (avisoActual.imagen_url?.trim()) {
+        imagenDestacada = avisoActual.imagen_url;
+        if (multimediaItems?.length) imagenesGaleria = multimediaItems.filter(m => m.tipo?.includes('image'));
+      } else if (multimediaItems?.length) {
+        const imagenes = multimediaItems.filter(m => m.tipo?.includes('image'));
+        if (imagenes.length) { imagenDestacada = imagenes[0].url; imagenesGaleria = imagenes.slice(1); }
+        const videos = multimediaItems.filter(m => m.tipo?.includes('video'));
+        imagenesGaleria.push(...videos);
+      }
+
+      const tieneContacto = avisoActual.contacto && typeof avisoActual.contacto === 'string' && avisoActual.contacto.trim();
+      const numero = tieneContacto ? String(avisoActual.contacto).replace(/[^0-9]/g, '') : '';
+      const mensaje = encodeURIComponent(`Hola, vi tu aviso "${avisoActual.titulo}" en BARRIO. Me interesa.`);
+      const container = document.getElementById('aviso-container');
+
+      let html = `
+        <div class="article-header">
+          <div class="article-category ${categoriaClase}">${categoriaTexto}</div>
+          <h1 class="article-title">${escapeHTML(avisoActual.titulo || 'Sin título')}</h1>
+          <div class="article-meta">
+            <span>📅 ${escapeHTML(fechaTexto)}</span>
+            <span>👤 Por: ${escapeHTML(avisoActual.created_by || 'Vecino')}</span>
+            <span>🏷️ ${escapeHTML(categoriaLegible)}</span>
+          </div>
+        </div>
+        ${imagenDestacada ? `<div class="featured-image-container"><img src="${escapeHTML(imagenDestacada)}" class="featured-image" onclick="abrirLightbox('${escapeHTML(imagenDestacada)}', 'imagen')"></div>` : ''}
+        <div class="article-body">
+          <div class="article-content">${formatearContenido(avisoActual.contenido)}</div>
+      `;
+
+      if (avisoActual.ubicacion) {
+        html += `<p><strong>📍 Ubicación:</strong> ${escapeHTML(avisoActual.ubicacion)}</p>`;
+      }
+
+      if (imagenesGaleria.length) {
+        html += `<div class="gallery-section"><div class="gallery-title">📸 Galería</div><div class="gallery">`;
+        imagenesGaleria.forEach(item => {
+          const esVideo = item.tipo?.includes('video');
+          html += `<div class="gallery-item" onclick="abrirLightbox('${escapeHTML(item.url)}', '${esVideo ? 'video' : 'imagen'}')">
+            ${esVideo ? `<video src="${escapeHTML(item.url)}" preload="metadata"></video>` : `<img src="${escapeHTML(item.url)}" loading="lazy">`}
+          </div>`;
+        });
+        html += `</div></div>`;
+      }
+
+      html += `<div class="article-actions">`;
+      if (puedeEditar) {
+        html += `<a href="/barrio/admin.html" class="btn-action back">← Volver al panel</a>`;
+        html += `<button class="btn-action edit" onclick="irAEditar('${avisoActual.id}')">✏️ Editar</button>`;
+        html += `<button class="btn-action delete" onclick="eliminarAviso('${avisoActual.id}')">🗑️ Eliminar</button>`;
+      } else {
+        html += `<a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a>`;
+      }
+      html += `<button class="btn-action comment" onclick="abrirComentarios('${avisoActual.id}', event)">💬 Comentar (${comentariosCount})</button>`;
+      if (tieneContacto) {
+        html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="btn-action" target="_blank" onclick="registrarClickWhatsApp('${avisoActual.id}')">📱 WhatsApp</a>`;
+      }
+      html += `</div></div></div>`;
+      container.innerHTML = html;
+    }
+
+    async function registrarClickWhatsApp(id) {
+      try { await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id: id }); }
+      catch (e) { console.warn('Error registrando click WhatsApp:', e); }
+    }
+
+    window.irAEditar = (id) => window.location.href = `/barrio/admin.html?editar=${id}`;
+    window.eliminarAviso = async (id) => {
+      if (!confirm('¿Eliminar este aviso permanentemente?')) return;
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        const resultado = await API.peticion('ELIMINAR', { coleccion: 'AVISOS', id: id }, apiKey);
+        if (resultado?.success) { alert('✅ Aviso eliminado'); window.location.href = '/barrio/index.html'; }
+        else alert('❌ Error: ' + (resultado?.error || 'Error desconocido'));
+      } catch (e) { alert('❌ Error al eliminar'); }
+    };
+    window.registrarClickWhatsApp = registrarClickWhatsApp;
+    window.abrirLightbox = abrirLightbox;
+    window.cerrarLightbox = cerrarLightbox;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      fetch('/barrio/common/header.html').then(res => res.ok ? res.text() : Promise.reject()).then(html => {
+        document.getElementById('header-container').innerHTML = html;
+        setTimeout(() => { if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth(); }, 100);
+      }).catch(err => console.error('Error cargando header:', err));
+      /* fetch('/barrio/common/footer.html').then(res => res.ok ? res.text() : Promise.reject()).then(data => {
+        const footerContainer = document.getElementById('footer-container');
+        if (footerContainer) { footerContainer.innerHTML = data; const anioElement = document.getElementById('anio-actual'); if (anioElement) anioElement.textContent = new Date().getFullYear(); }
+      }).catch(err => console.error('Error cargando footer:', err)); */
+      cargarAviso();
+    });
+
+    (function () {
+      function forzarActualizarHeader() {
+        const usuarioStr = localStorage.getItem('usuario'), apiKey = localStorage.getItem('api_key');
+        const loginLink = document.getElementById('login-link'), userArea = document.getElementById('user-area'), userNameSpan = document.getElementById('user-name'), perfilLink = document.getElementById('perfil-link'), cerrarBtn = document.getElementById('cerrar-sesion');
+        if (!loginLink) { setTimeout(forzarActualizarHeader, 200); return; }
+        if (usuarioStr && apiKey) {
+          try {
+            const usuario = JSON.parse(usuarioStr);
+            loginLink.style.display = 'none'; userArea.style.display = 'flex';
+            if (userNameSpan) userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+            if (perfilLink) perfilLink.onclick = (e) => { e.preventDefault(); window.location.href = '/barrio/perfil.html'; };
+            if (cerrarBtn) { const nuevoCerrar = cerrarBtn.cloneNode(true); cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn); nuevoCerrar.addEventListener('click', (e) => { e.preventDefault(); localStorage.removeItem('usuario'); localStorage.removeItem('api_key'); window.location.href = '/barrio/index.html'; }); }
+          } catch (e) { console.error(e); }
+        } else { loginLink.style.display = 'inline-flex'; userArea.style.display = 'none'; }
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', forzarActualizarHeader);
+      else setTimeout(forzarActualizarHeader, 100);
+      setTimeout(forzarActualizarHeader, 500); setTimeout(forzarActualizarHeader, 1000);
+    })();
+  </script>
+</body>
+
+</html>

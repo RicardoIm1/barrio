@@ -216,21 +216,61 @@
       filter: brightness(1.05);
     }
 
+    /* ===== ESTADÍSTICAS MEJORADAS ===== */
     .stats-row {
       display: flex;
       gap: 1.5rem;
-      margin-top: 1rem;
-      padding: 0.8rem;
-      background: #f8f9fa;
-      border-radius: 12px;
-      font-size: 0.85rem;
+      margin: 1rem 0 1.5rem 0;
+      padding: 0.8rem 1.2rem;
+      background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%);
+      border-radius: 16px;
+      font-size: 0.9rem;
+      border: 1px solid #e9ecef;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.5rem;
+      color: #495057;
+      font-weight: 500;
     }
+
+    .stat-icon {
+      font-size: 1.2rem;
+    }
+
+    .stat-value {
+      font-weight: 700;
+      color: #1e4620;
+      font-size: 1rem;
+    }
+
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.8rem;
+    }
+
+    /* Like button especial */
+    .like-btn {
+      background: transparent;
+      border: 1px solid #e9ecef;
+      color: #495057;
+      transition: all 0.2s;
+    }
+    .like-btn.liked {
+      background: #ff4757;
+      border-color: #ff4757;
+      color: white;
+    }
+    .like-btn:hover {
+      transform: translateY(-2px);
+      background: #ff6b81;
+      border-color: #ff6b81;
+      color: white;
+    }
+    /* ===== ============ ===== */
 
     .loading-state {
       text-align: center;
@@ -394,6 +434,11 @@
       .comments-panel {
         max-width: 100%;
       }
+      
+      .stats-row {
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
@@ -409,7 +454,6 @@
     <span class="lightbox-close">&times;</span>
     <div id="lightbox-content"></div>
   </div>
-  <!--   <div id="footer-container"></div> -->
   <div id="toast" class="toast-notification"></div>
 
   <div id="comments-panel" class="comments-panel">
@@ -486,6 +530,34 @@
       } catch (e) { console.warn('Error registrando vista:', e); }
     }
 
+    async function toggleLike(avisoId) {
+      const likeBtn = document.querySelector('.like-btn');
+      const likesSpan = document.querySelector('.likes-count');
+      if (!likeBtn) return;
+      
+      const isLiked = likeBtn.classList.contains('liked');
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        const endpoint = isLiked ? 'QUITAR_LIKE' : 'DAR_LIKE';
+        const result = await API.peticion(endpoint, { id: avisoId }, apiKey);
+        
+        if (result && result.success) {
+          if (isLiked) {
+            likeBtn.classList.remove('liked');
+            if (likesSpan) likesSpan.textContent = Math.max(0, (parseInt(likesSpan.textContent) || 0) - 1);
+            showToast('❤️ Ya no te gusta', 1000);
+          } else {
+            likeBtn.classList.add('liked');
+            if (likesSpan) likesSpan.textContent = (parseInt(likesSpan.textContent) || 0) + 1;
+            showToast('👍 ¡Te gusta!', 1000);
+          }
+        }
+      } catch (e) {
+        console.warn('Error toggling like:', e);
+        showToast('❌ Error al procesar', 1500);
+      }
+    }
+
     let currentAvisoIdForComments = null;
     window.abrirComentarios = function (id, event) {
       if (event) event.stopPropagation();
@@ -497,6 +569,7 @@
       document.getElementById('comments-panel').classList.remove('open');
       currentAvisoIdForComments = null;
     };
+    
     async function cargarComentarios(avisoId) {
       const commentsList = document.getElementById('comments-list');
       if (!commentsList) return;
@@ -523,6 +596,7 @@
         commentsList.innerHTML = '<div style="text-align:center; color:#e74c3c;">❌ Error al cargar comentarios</div>';
       }
     }
+    
     window.enviarComentario = async function () {
       const input = document.getElementById('comment-input');
       const texto = input.value.trim();
@@ -540,7 +614,7 @@
           input.value = '';
           showToast('💬 Comentario enviado', 1500);
           cargarComentarios(currentAvisoIdForComments);
-          const comentariosSpan = document.querySelector('.stat-item.comentarios span');
+          const comentariosSpan = document.querySelector('.comments-count');
           if (comentariosSpan) {
             let actual = parseInt(comentariosSpan.textContent) || 0;
             comentariosSpan.textContent = actual + 1;
@@ -559,6 +633,8 @@
     let usuarioActual = null;
     let multimediaManager = null;
     let comentariosCount = 0;
+    let vistasCount = 0;
+    let likesCount = 0;
 
     async function cargarAviso() {
       const container = document.getElementById('aviso-container');
@@ -567,13 +643,11 @@
         return;
       }
 
-      // Mostrar loading inmediatamente
       container.innerHTML = '<div class="loading-state">📰 Cargando aviso...</div>';
 
       try {
         usuarioActual = API.getUsuarioActual();
 
-        // ✅ UNA SOLA PETICIÓN: obtener todos los avisos públicos
         const resultado = await API.listarPublicos({}, { pagina: 1, limite: 500 });
         const avisos = resultado.datos || [];
         const aviso = avisos.find(a => String(a.id) === String(AVISO_ID));
@@ -584,14 +658,16 @@
         }
 
         avisoActual = aviso;
-
-        // Registrar vista SIN esperar (en segundo plano)
+        
+        // Obtener estadísticas completas
+        await cargarEstadisticasCompletas(AVISO_ID);
+        
+        // Registrar vista
         registrarVista(AVISO_ID);
 
-        // Renderizar el aviso inmediatamente (comentarios en 0)
-        renderizarAviso([], 0);
+        renderizarAvisoConEstadisticas();
 
-        // Cargar comentarios en segundo plano (sin bloquear)
+        // Cargar comentarios en segundo plano
         cargarComentariosEnSegundoPlano(AVISO_ID);
 
       } catch (error) {
@@ -600,14 +676,35 @@
       }
     }
 
-    // Nueva función: carga comentarios sin bloquear la pantalla
+    async function cargarEstadisticasCompletas(avisoId) {
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        // Intentar obtener estadísticas del aviso
+        const resultado = await API.peticion('OBTENER_ESTADISTICAS', { id: avisoId }, apiKey);
+        if (resultado && resultado.success) {
+          vistasCount = resultado.data.vistas || 0;
+          likesCount = resultado.data.likes || 0;
+          comentariosCount = resultado.data.comentarios || 0;
+        } else {
+          // Valores por defecto desde el aviso si están disponibles
+          vistasCount = avisoActual?.vistas || 0;
+          likesCount = avisoActual?.likes || 0;
+          comentariosCount = avisoActual?.comentarios || 0;
+        }
+      } catch (e) {
+        console.warn('Error cargando estadísticas:', e);
+        vistasCount = avisoActual?.vistas || 0;
+        likesCount = avisoActual?.likes || 0;
+        comentariosCount = avisoActual?.comentarios || 0;
+      }
+    }
+
     async function cargarComentariosEnSegundoPlano(avisoId) {
       try {
         const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
         if (resultado && resultado.success && Array.isArray(resultado.data)) {
           comentariosCount = resultado.data.length;
-          // Actualizar el contador de comentarios en la página si ya está renderizada
-          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
+          const comentariosSpan = document.querySelector('.comments-count');
           if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
         }
       } catch (e) {
@@ -615,36 +712,7 @@
       }
     }
 
-    // Nueva función: carga comentarios sin bloquear
-    async function cargarComentariosEnSegundoPlano(avisoId) {
-      try {
-        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
-        if (resultado && resultado.success && Array.isArray(resultado.data)) {
-          comentariosCount = resultado.data.length;
-          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
-          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
-        }
-      } catch (e) {
-        console.warn('Error cargando comentarios:', e);
-      }
-    }
-
-    // Nueva función: carga comentarios sin bloquear la pantalla
-    async function cargarComentariosEnSegundoPlano(avisoId) {
-      try {
-        const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
-        if (resultado && resultado.success && Array.isArray(resultado.data)) {
-          comentariosCount = resultado.data.length;
-          // Actualizar el contador de comentarios en la página si ya está renderizada
-          const comentariosSpan = document.querySelector('.stat-item.comentarios .stat-value');
-          if (comentariosSpan) comentariosSpan.textContent = comentariosCount;
-        }
-      } catch (e) {
-        console.warn('Error cargando comentarios:', e);
-      }
-    }
-
-    function renderizarAviso(multimediaItems) {
+    function renderizarAvisoConEstadisticas() {
       if (!avisoActual) return;
       let fechaTexto = 'Fecha no disponible';
       if (avisoActual.created_at) {
@@ -664,12 +732,6 @@
       let imagenDestacada = null, imagenesGaleria = [];
       if (avisoActual.imagen_url?.trim()) {
         imagenDestacada = avisoActual.imagen_url;
-        if (multimediaItems?.length) imagenesGaleria = multimediaItems.filter(m => m.tipo?.includes('image'));
-      } else if (multimediaItems?.length) {
-        const imagenes = multimediaItems.filter(m => m.tipo?.includes('image'));
-        if (imagenes.length) { imagenDestacada = imagenes[0].url; imagenesGaleria = imagenes.slice(1); }
-        const videos = multimediaItems.filter(m => m.tipo?.includes('video'));
-        imagenesGaleria.push(...videos);
       }
 
       const tieneContacto = avisoActual.contacto && typeof avisoActual.contacto === 'string' && avisoActual.contacto.trim();
@@ -696,16 +758,26 @@
         html += `<p><strong>📍 Ubicación:</strong> ${escapeHTML(avisoActual.ubicacion)}</p>`;
       }
 
-      if (imagenesGaleria.length) {
-        html += `<div class="gallery-section"><div class="gallery-title">📸 Galería</div><div class="gallery">`;
-        imagenesGaleria.forEach(item => {
-          const esVideo = item.tipo?.includes('video');
-          html += `<div class="gallery-item" onclick="abrirLightbox('${escapeHTML(item.url)}', '${esVideo ? 'video' : 'imagen'}')">
-            ${esVideo ? `<video src="${escapeHTML(item.url)}" preload="metadata"></video>` : `<img src="${escapeHTML(item.url)}" loading="lazy">`}
-          </div>`;
-        });
-        html += `</div></div>`;
-      }
+      // SECCIÓN DE ESTADÍSTICAS - ¡AHORA VISIBLE!
+      html += `
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-icon">👁️</span>
+            <span class="stat-value vistas-count">${vistasCount}</span>
+            <span class="stat-label">vistas</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-value likes-count">${likesCount}</span>
+            <span class="stat-label">me gusta</span>
+          </div>
+          <div class="stat-item comentarios">
+            <span class="stat-icon">💬</span>
+            <span class="stat-value comments-count">${comentariosCount}</span>
+            <span class="stat-label">comentarios</span>
+          </div>
+        </div>
+      `;
 
       html += `<div class="article-actions">`;
       if (puedeEditar) {
@@ -715,12 +787,30 @@
       } else {
         html += `<a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a>`;
       }
-      html += `<button class="btn-action comment" onclick="abrirComentarios('${avisoActual.id}', event)">💬 Comentar (${comentariosCount})</button>`;
+      html += `<button class="btn-action like-btn" onclick="toggleLike('${avisoActual.id}')">❤️ Me gusta</button>`;
+      html += `<button class="btn-action comment" onclick="abrirComentarios('${avisoActual.id}', event)">💬 Comentar</button>`;
       if (tieneContacto) {
         html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="btn-action" target="_blank" onclick="registrarClickWhatsApp('${avisoActual.id}')">📱 WhatsApp</a>`;
       }
       html += `</div></div></div>`;
       container.innerHTML = html;
+      
+      // Verificar si el usuario ya dio like (cargar estado)
+      verificarEstadoLike();
+    }
+
+    async function verificarEstadoLike() {
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        if (!apiKey) return;
+        const resultado = await API.peticion('VERIFICAR_LIKE', { id: AVISO_ID }, apiKey);
+        if (resultado && resultado.success && resultado.data.liked) {
+          const likeBtn = document.querySelector('.like-btn');
+          if (likeBtn) likeBtn.classList.add('liked');
+        }
+      } catch (e) {
+        console.warn('Error verificando like:', e);
+      }
     }
 
     async function registrarClickWhatsApp(id) {
@@ -738,19 +828,17 @@
         else alert('❌ Error: ' + (resultado?.error || 'Error desconocido'));
       } catch (e) { alert('❌ Error al eliminar'); }
     };
+    
     window.registrarClickWhatsApp = registrarClickWhatsApp;
     window.abrirLightbox = abrirLightbox;
     window.cerrarLightbox = cerrarLightbox;
+    window.toggleLike = toggleLike;
 
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/barrio/common/header.html').then(res => res.ok ? res.text() : Promise.reject()).then(html => {
         document.getElementById('header-container').innerHTML = html;
         setTimeout(() => { if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth(); }, 100);
       }).catch(err => console.error('Error cargando header:', err));
-      /* fetch('/barrio/common/footer.html').then(res => res.ok ? res.text() : Promise.reject()).then(data => {
-        const footerContainer = document.getElementById('footer-container');
-        if (footerContainer) { footerContainer.innerHTML = data; const anioElement = document.getElementById('anio-actual'); if (anioElement) anioElement.textContent = new Date().getFullYear(); }
-      }).catch(err => console.error('Error cargando footer:', err)); */
       cargarAviso();
     });
 
