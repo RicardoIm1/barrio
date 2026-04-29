@@ -226,7 +226,7 @@
       border-radius: 16px;
       font-size: 0.9rem;
       border: 1px solid #e9ecef;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     }
 
     .stat-item {
@@ -253,34 +253,40 @@
     }
 
     /* Like y Dislike buttons */
-    .like-btn, .dislike-btn {
+    .like-btn,
+    .dislike-btn {
       background: transparent;
       border: 1px solid #e9ecef;
       color: #495057;
       transition: all 0.2s;
     }
+
     .like-btn.liked {
       background: #ff4757;
       border-color: #ff4757;
       color: white;
     }
+
     .dislike-btn.disliked {
       background: #7f8c8d;
       border-color: #7f8c8d;
       color: white;
     }
+
     .like-btn:hover {
       transform: translateY(-2px);
       background: #ff6b81;
       border-color: #ff6b81;
       color: white;
     }
+
     .dislike-btn:hover {
       transform: translateY(-2px);
       background: #95a5a6;
       border-color: #95a5a6;
       color: white;
     }
+
     /* ===== ============ ===== */
 
     .loading-state {
@@ -445,7 +451,7 @@
       .comments-panel {
         max-width: 100%;
       }
-      
+
       .stats-row {
         gap: 1rem;
         flex-wrap: wrap;
@@ -541,86 +547,75 @@
       } catch (e) { console.warn('Error registrando vista:', e); }
     }
 
-    // Función para dar/quitar like
-    async function toggleLike(avisoId) {
-      const likeBtn = document.querySelector('.like-btn');
-      const dislikeBtn = document.querySelector('.dislike-btn');
-      const likesSpan = document.querySelector('.likes-count');
-      
-      if (!likeBtn) return;
-      
-      const isLiked = likeBtn.classList.contains('liked');
-      const isDisliked = dislikeBtn && dislikeBtn.classList.contains('disliked');
-      
+    // Función para dar like
+    async function darLike(avisoId) {
+      const apiKey = localStorage.getItem('api_key');
+      if (!apiKey) {
+        showToast('🔐 Inicia sesión para dar like', 1500);
+        return;
+      }
+
       try {
-        const apiKey = localStorage.getItem('api_key');
-        
-        // Si ya tenía dislike, primero quitar el dislike
-        if (isDisliked) {
-          await API.peticion('QUITAR_DISLIKE', { id: avisoId }, apiKey);
-          dislikeBtn.classList.remove('disliked');
+        const resultado = await API.peticion('VOTAR_AVISO', {
+          aviso_id: avisoId,
+          tipo: 'positivo'
+        }, apiKey);
+
+        if (resultado && resultado.success) {
+          const likesSpan = document.querySelector('.likes-count');
+          const nuevosLikes = resultado.data?.likes || resultado.likes;
+          if (likesSpan) likesSpan.textContent = nuevosLikes;
+
+          // Marcar botón como liked
+          const likeBtn = document.querySelector('.like-btn');
+          if (likeBtn) likeBtn.classList.add('liked');
+
+          showToast('👍 Like registrado', 1500);
+        } else {
+          showToast('❌ ' + (resultado?.error || 'No se pudo'), 1500);
         }
-        
-        // Ahora procesar el like
-        const endpoint = isLiked ? 'QUITAR_LIKE' : 'DAR_LIKE';
-        const result = await API.peticion(endpoint, { id: avisoId }, apiKey);
-        
-        if (result && result.success) {
-          if (isLiked) {
-            likeBtn.classList.remove('liked');
-            if (likesSpan) likesSpan.textContent = Math.max(0, (parseInt(likesSpan.textContent) || 0) - 1);
-            showToast('❤️ Ya no te gusta', 1000);
-          } else {
-            likeBtn.classList.add('liked');
-            if (likesSpan) likesSpan.textContent = (parseInt(likesSpan.textContent) || 0) + 1;
-            showToast('👍 ¡Te gusta!', 1000);
-          }
-        }
-      } catch (e) {
-        console.warn('Error toggling like:', e);
-        showToast('❌ Error al procesar', 1500);
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Error de conexión', 1500);
       }
     }
 
-    // Función para dar/quitar dislike
-    async function toggleDislike(avisoId) {
-      const dislikeBtn = document.querySelector('.dislike-btn');
-      const likeBtn = document.querySelector('.like-btn');
-      const likesSpan = document.querySelector('.likes-count');
-      
-      if (!dislikeBtn) return;
-      
-      const isDisliked = dislikeBtn.classList.contains('disliked');
-      const isLiked = likeBtn && likeBtn.classList.contains('liked');
-      
+    // Función para dar dislike
+    async function darDislike(avisoId) {
+      const apiKey = localStorage.getItem('api_key');
+      if (!apiKey) {
+        showToast('🔐 Inicia sesión para dar dislike', 1500);
+        return;
+      }
+
       try {
-        const apiKey = localStorage.getItem('api_key');
-        
-        // Si ya tenía like, primero quitar el like
-        if (isLiked) {
-          await API.peticion('QUITAR_LIKE', { id: avisoId }, apiKey);
-          likeBtn.classList.remove('liked');
-          if (likesSpan) likesSpan.textContent = Math.max(0, (parseInt(likesSpan.textContent) || 0) - 1);
+        const resultado = await API.peticion('VOTAR_AVISO', {
+          aviso_id: avisoId,
+          tipo: 'negativo'
+        }, apiKey);
+
+        if (resultado && resultado.success) {
+          const dislikesSpan = document.querySelector('.dislikes-count');
+          const nuevosDislikes = resultado.data?.dislikes || resultado.dislikes;
+          if (dislikesSpan) dislikesSpan.textContent = nuevosDislikes;
+
+          // Marcar botón como disliked
+          const dislikeBtn = document.querySelector('.dislike-btn');
+          if (dislikeBtn) dislikeBtn.classList.add('disliked');
+
+          showToast('👎 Dislike registrado', 1500);
+        } else {
+          showToast('❌ ' + (resultado?.error || 'No se pudo'), 1500);
         }
-        
-        // Ahora procesar el dislike
-        const endpoint = isDisliked ? 'QUITAR_DISLIKE' : 'DAR_DISLIKE';
-        const result = await API.peticion(endpoint, { id: avisoId }, apiKey);
-        
-        if (result && result.success) {
-          if (isDisliked) {
-            dislikeBtn.classList.remove('disliked');
-            showToast('👎 Ya no te disgusta', 1000);
-          } else {
-            dislikeBtn.classList.add('disliked');
-            showToast('👎 Te disgusta', 1000);
-          }
-        }
-      } catch (e) {
-        console.warn('Error toggling dislike:', e);
-        showToast('❌ Error al procesar', 1500);
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Error de conexión', 1500);
       }
     }
+
+    // Asignar a window
+    window.darLike = darLike;
+    window.darDislike = darDislike;
 
     let currentAvisoIdForComments = null;
     window.abrirComentarios = function (id, event) {
@@ -633,7 +628,7 @@
       document.getElementById('comments-panel').classList.remove('open');
       currentAvisoIdForComments = null;
     };
-    
+
     async function cargarComentarios(avisoId) {
       const commentsList = document.getElementById('comments-list');
       if (!commentsList) return;
@@ -660,7 +655,7 @@
         commentsList.innerHTML = '<div style="text-align:center; color:#e74c3c;">❌ Error al cargar comentarios</div>';
       }
     }
-    
+
     window.enviarComentario = async function () {
       const input = document.getElementById('comment-input');
       const texto = input.value.trim();
@@ -723,10 +718,10 @@
         }
 
         avisoActual = aviso;
-        
+
         // Obtener estadísticas completas
         await cargarEstadisticasCompletas(AVISO_ID);
-        
+
         // Registrar vista
         registrarVista(AVISO_ID);
 
@@ -858,15 +853,15 @@
       } else {
         html += `<a href="/barrio/index.html" class="btn-action back">← Volver al inicio</a>`;
       }
-      html += `<button class="btn-action like-btn" onclick="toggleLike('${avisoActual.id}')">❤️ Me gusta</button>`;
-      html += `<button class="btn-action dislike-btn" onclick="toggleDislike('${avisoActual.id}')">👎 No me gusta</button>`;
+      html += `<button class="btn-action like-btn" onclick="darLike('${avisoActual.id}')">❤️ Me gusta</button>`;
+      html += `<button class="btn-action dislike-btn" onclick="darDislike('${avisoActual.id}')">👎 No me gusta</button></button>`;
       html += `<button class="btn-action comment" onclick="abrirComentarios('${avisoActual.id}', event)">💬 Comentar</button>`;
       if (tieneContacto) {
         html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="btn-action" target="_blank" onclick="registrarClickWhatsApp('${avisoActual.id}')">📱 WhatsApp</a>`;
       }
       html += `</div></div></div>`;
       container.innerHTML = html;
-      
+
       // Verificar el estado de like y dislike del usuario
       verificarEstadoReacciones();
     }
@@ -875,12 +870,12 @@
       try {
         const apiKey = localStorage.getItem('api_key');
         if (!apiKey) return;
-        
+
         const resultado = await API.peticion('VERIFICAR_REACCIONES', { id: AVISO_ID }, apiKey);
         if (resultado && resultado.success) {
           const likeBtn = document.querySelector('.like-btn');
           const dislikeBtn = document.querySelector('.dislike-btn');
-          
+
           if (resultado.data.liked && likeBtn) {
             likeBtn.classList.add('liked');
           }
@@ -908,7 +903,7 @@
         else alert('❌ Error: ' + (resultado?.error || 'Error desconocido'));
       } catch (e) { alert('❌ Error al eliminar'); }
     };
-    
+
     window.registrarClickWhatsApp = registrarClickWhatsApp;
     window.abrirLightbox = abrirLightbox;
     window.cerrarLightbox = cerrarLightbox;
