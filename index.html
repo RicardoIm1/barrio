@@ -386,6 +386,10 @@
 
 <body>
     <div id="header-container"></div>
+    <button onclick="enviarNotificacionPrueba()"
+        style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none;">
+        🔔 Probar Notificación
+    </button>
 
     <main class="contenedor">
         <div class="filtros-buscador-wrapper">
@@ -943,7 +947,7 @@
             appId: "1:1010324110751:web:c7ab30ffadfb5966fd51aa"
         };
 
-                const app = initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
         const messaging = getMessaging(app);
 
         // Variables globales
