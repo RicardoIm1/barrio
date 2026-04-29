@@ -488,23 +488,25 @@
 
         async function darLike(avisoId) {
             const apiKey = localStorage.getItem('api_key');
-            if (!apiKey) { showToast('🔐 Inicia sesión para dar like', 2000); return false; }
-
-            if (userVotes[avisoId] === 'like') {
-                showToast('❤️ Ya te gusta este aviso', 1500);
+            if (!apiKey) {
+                showToast('🔐 Inicia sesión para dar like', 2000);
                 return false;
             }
 
             try {
-                const resultado = await API.peticion('DAR_LIKE', { id: avisoId }, apiKey);
+                const resultado = await API.peticion('VOTAR_AVISO', {
+                    aviso_id: avisoId,
+                    tipo: 'positivo'
+                }, apiKey);
+
                 if (resultado && resultado.success) {
-                    userVotes[avisoId] = 'like';
-                    actualizarContadoresCard(avisoId, resultado.likes, resultado.dislikes);
-                    showToast('👍 ¡Gracias por tu like!', 1500);
-                    return true;
+                    return resultado;
                 }
-            } catch (e) { console.error('Error dando like:', e); showToast('❌ Error de conexión', 1500); }
-            return false;
+                return false;
+            } catch (e) {
+                console.error('Error:', e);
+                return false;
+            }
         }
 
         async function darDislike(avisoId) {
