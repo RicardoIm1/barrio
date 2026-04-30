@@ -921,8 +921,6 @@
     window.registrarClickWhatsApp = registrarClickWhatsApp;
     window.abrirLightbox = abrirLightbox;
     window.cerrarLightbox = cerrarLightbox;
-    window.toggleLike = toggleLike;
-    window.toggleDislike = toggleDislike;
 
     document.addEventListener('DOMContentLoaded', function () {
       fetch('/barrio/common/header.html').then(res => res.ok ? res.text() : Promise.reject()).then(html => {
