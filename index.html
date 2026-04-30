@@ -437,15 +437,15 @@
 
         async function registrarVista(id) {
             try {
-                const api = new API();
-                await api.llamar('REGISTRAR_VISTA', { id: id });
+                const apiKey = localStorage.getItem('api_key');
+                await API.peticion('REGISTRAR_VISTA', { id: id }, apiKey);
             } catch (e) { console.warn('Error registrando vista:', e); }
         }
 
         async function registrarClickWhatsApp(id) {
             try {
-                const api = new API();
-                await api.llamar('REGISTRAR_CLICK_WHATSAPP', { id: id });
+                const apiKey = localStorage.getItem('api_key');
+                await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id: id }, apiKey);
                 const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
                 if (card) {
                     const whatsappStat = card.querySelector('.whatsapp-stat .stat-value');
