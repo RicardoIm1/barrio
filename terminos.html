@@ -550,31 +550,6 @@
   <script src="/barrio/js/auth.js"></script>
 
   <script>
-    // Configuración dinámica
-    const config = {
-      colonia: "Barrio",
-      titularAsociacion: "Jerónimo Ricardo Ramírez Torres",
-      emailContacto: "jeronimoricardo1@gmail.com",
-      jurisdiccion: "Puerto Vallarta, Jalisco",
-      fechaVigenciaTexto: "14 de abril de 2026",
-      firmaTitularNombre: "Jerónimo Ricardo Ramírez Torres",
-      cargoTitular: "Administrador de la Plataforma"
-    };
-
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.textContent = value;
-    }
-
-    setText("coloniaNombre", config.colonia);
-    setText("titularNombre", config.titularAsociacion);
-    setText("coloniaDef", config.colonia);
-    setText("emailTitularDisplay", config.emailContacto);
-    setText("jurisdiccionTexto", config.jurisdiccion);
-    setText("fechaVigencia", config.fechaVigenciaTexto);
-    setText("firmaTitularNombre", config.firmaTitularNombre);
-    setText("cargoFirmaTitular", config.cargoTitular);
-
     // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function () {
       // Header
@@ -614,17 +589,45 @@
               oldScript.remove();
             });
           }
-        });
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    }); // ← Cierre correcto del addEventListener
+  </script>
+  <script>
+    // Configuración dinámica
+    const config = {
+      colonia: "Barrio",
+      titularAsociacion: "Jerónimo Ricardo Ramírez Torres",
+      emailContacto: "jeronimoricardo1@gmail.com",
+      jurisdiccion: "Puerto Vallarta, Jalisco",
+      fechaVigenciaTexto: "14 de abril de 2026",
+      firmaTitularNombre: "Jerónimo Ricardo Ramírez Torres",
+      cargoTitular: "Administrador de la Plataforma"
+    };
 
-      // Impresión de orden de compra
-      const printBtn = document.getElementById("printOrderBtn");
-      if (printBtn) {
-        printBtn.addEventListener("click", () => {
-          const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
-          const btnClone = orderContent.querySelector("#printOrderBtn");
-          if (btnClone) btnClone.remove();
-          const ventana = window.open('', '_blank');
-          ventana.document.write(`
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    setText("coloniaNombre", config.colonia);
+    setText("titularNombre", config.titularAsociacion);
+    setText("coloniaDef", config.colonia);
+    setText("emailTitularDisplay", config.emailContacto);
+    setText("jurisdiccionTexto", config.jurisdiccion);
+    setText("fechaVigencia", config.fechaVigenciaTexto);
+    setText("firmaTitularNombre", config.firmaTitularNombre);
+    setText("cargoFirmaTitular", config.cargoTitular);
+
+    // Impresión de orden de compra
+    const printBtn = document.getElementById("printOrderBtn");
+    if (printBtn) {
+      printBtn.addEventListener("click", () => {
+        const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
+        const btnClone = orderContent.querySelector("#printOrderBtn");
+        if (btnClone) btnClone.remove();
+        const ventana = window.open('', '_blank');
+        ventana.document.write(`
           <html>
           <head><title>Orden de Compra - Publicidad Vecinal</title>
           <style>
@@ -639,17 +642,17 @@
           <body>${orderContent.outerHTML}</body>
           </html>
         `);
-          ventana.document.close();
-          ventana.print();
-        });
-      }
+        ventana.document.close();
+        ventana.print();
+      });
+    }
 
-      // Fecha automática en la orden
-      const fechaOrdenInput = document.getElementById("ordenFecha");
-      if (fechaOrdenInput && fechaOrdenInput.value === "_______________") {
-        const hoy = new Date().toLocaleDateString('es-MX');
-        fechaOrdenInput.value = hoy;
-      }
+    // Fecha automática en la orden
+    const fechaOrdenInput = document.getElementById("ordenFecha");
+    if (fechaOrdenInput && fechaOrdenInput.value === "_______________") {
+      const hoy = new Date().toLocaleDateString('es-MX');
+      fechaOrdenInput.value = hoy;
+    }
   </script>
 </body>
 

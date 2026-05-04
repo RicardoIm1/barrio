@@ -652,6 +652,7 @@
   <script src="/barrio/js/auth.js"></script>
 
   <script>
+    // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function () {
       // Header
       fetch('/barrio/common/header.html')
@@ -690,29 +691,32 @@
               oldScript.remove();
             });
           }
-        });
-
-      // FAQ acordeón
-      const faqItems = document.querySelectorAll('.faq-item');
-      faqItems.forEach(item => {
-        const questionDiv = item.querySelector('.faq-question');
-        questionDiv.addEventListener('click', () => {
-          item.classList.toggle('active');
-        });
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    }); // ← Cierre correcto del addEventListener
+  </script>
+  <script>
+    // FAQ acordeón
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const questionDiv = item.querySelector('.faq-question');
+      questionDiv.addEventListener('click', () => {
+        item.classList.toggle('active');
       });
+    });
 
-      // Botones de contratación
-      const contratarBtns = document.querySelectorAll('.contratar-btn');
-      contratarBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const paqueteInfo = btn.getAttribute('data-paquete') || btn.innerText;
-          const mensaje = `Hola, estoy interesado en el paquete ${paqueteInfo} para anunciar mi negocio en la colonia. ¿Me pueden dar más información y formas de pago?`;
-          const numeroWhatsApp = "3222354331";
-          const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-          window.open(url, '_blank');
-        });
+    // Botones de contratación
+    const contratarBtns = document.querySelectorAll('.contratar-btn');
+    contratarBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const paqueteInfo = btn.getAttribute('data-paquete') || btn.innerText;
+        const mensaje = `Hola, estoy interesado en el paquete ${paqueteInfo} para anunciar mi negocio en la colonia. ¿Me pueden dar más información y formas de pago?`;
+        const numeroWhatsApp = "3222354331";
+        const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
       });
+    });
     });
   </script>
 </body>

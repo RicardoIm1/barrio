@@ -397,20 +397,23 @@
               oldScript.remove();
             });
           }
-        });
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    }); // ← Cierre correcto del addEventListener
+  </script>
+  <script>
+    // Botón de aceptar
+    document.getElementById('btnAceptar').addEventListener('click', () => {
+      localStorage.setItem('compromiso_aceptado', 'true');
+      localStorage.setItem('fecha_aceptacion', new Date().toISOString());
+      alert('Gracias por tu confianza. Ya puedes continuar con tu registro.');
+      window.location.href = '/barrio/registro.html';
+    });
 
-      // Botón de aceptar
-      document.getElementById('btnAceptar').addEventListener('click', () => {
-        localStorage.setItem('compromiso_aceptado', 'true');
-        localStorage.setItem('fecha_aceptacion', new Date().toISOString());
-        alert('Gracias por tu confianza. Ya puedes continuar con tu registro.');
-        window.location.href = '/barrio/registro.html';
-      });
-
-      // Botón regresar
-      document.getElementById('btnRegresar').addEventListener('click', () => {
-        window.history.back();
-      });
+    // Botón regresar
+    document.getElementById('btnRegresar').addEventListener('click', () => {
+      window.history.back();
+    });
   </script>
 </body>
 
