@@ -278,107 +278,108 @@
     document.addEventListener('DOMContentLoaded', function () {
       UI.cargarHeader();
 
+      // Footer
       fetch('/barrio/common/footer.html')
         .then(response => response.ok ? response.text() : Promise.reject())
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) footerContainer.innerHTML = data;
-
-          // ✅ Forzar la ejecución de scripts después de inyectar
-          const scripts = footerContainer.querySelectorAll('script');
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-              newScript.src = oldScript.src;
-            } else {
-              newScript.textContent = oldScript.textContent;
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
             }
-            document.body.appendChild(newScript);
-            oldScript.remove();
-          });
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
-    });
-
-    const oficioSelect = document.getElementById('oficio');
-    const otroContainer = document.getElementById('otroOficioContainer');
-
-    oficioSelect.addEventListener('change', () => {
-      otroContainer.style.display = oficioSelect.value === 'Otro' ? 'block' : 'none';
-    });
-
-    const btn = document.getElementById('btnRegistrar');
-    const mensajeDiv = document.getElementById('mensajeGlobal');
-
-    function mostrarMensaje(texto, esError = true) {
-      mensajeDiv.innerHTML = `<div class="${esError ? 'mensaje-error' : 'mensaje-exito'}">${texto}</div>`;
-      setTimeout(() => {
-        if (mensajeDiv.innerHTML.includes(texto)) mensajeDiv.innerHTML = '';
-      }, 5000);
-    }
-
-    btn.addEventListener('click', async () => {
-      const nombre = document.getElementById('nombre').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const telefono = document.getElementById('telefono').value.trim();
-      const direccion = document.getElementById('direccion').value.trim();
-      let oficio = oficioSelect.value;
-
-      if (oficio === 'Otro') {
-        oficio = document.getElementById('otroOficio').value.trim();
-        if (!oficio) {
-          mostrarMensaje('Por favor escribe tu oficio en el campo "Otro"');
-          return;
-        }
-      }
-
-      if (!nombre || !email || !password || !telefono || !direccion || !oficio) {
-        mostrarMensaje('Por favor completa todos los campos marcados con *');
-        return;
-      }
-
-      if (password.length < 6) {
-        mostrarMensaje('La contraseña debe tener al menos 6 caracteres');
-        return;
-      }
-
-      if (!document.getElementById('acepto').checked) {
-        mostrarMensaje('Debes aceptar el Compromiso de Confianza Vecinal');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Registrando...';
-
-      try {
-        // Usar API.registro() que ya existe
-        const resultado = await API.registro({
-          nombre: nombre,
-          email: email,
-          password: password,
-          telefono: telefono,
-          rol: 'usuario',
-          categorias: oficio,
-          direccion: direccion
+            // Ejecutar scripts
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          }
         });
 
-        console.log('Registro exitoso:', resultado);
+      const oficioSelect = document.getElementById('oficio');
+      const otroContainer = document.getElementById('otroOficioContainer');
 
-        mostrarMensaje(`✅ ¡Bienvenido/a ${nombre}! Tu registro fue exitoso.`, false);
+      oficioSelect.addEventListener('change', () => {
+        otroContainer.style.display = oficioSelect.value === 'Otro' ? 'block' : 'none';
+      });
 
+      const btn = document.getElementById('btnRegistrar');
+      const mensajeDiv = document.getElementById('mensajeGlobal');
+
+      function mostrarMensaje(texto, esError = true) {
+        mensajeDiv.innerHTML = `<div class="${esError ? 'mensaje-error' : 'mensaje-exito'}">${texto}</div>`;
         setTimeout(() => {
-          window.location.href = '/barrio/login.html';
-        }, 2000);
-
-      } catch (error) {
-        console.error('Error en registro:', error);
-        mostrarMensaje('Error: ' + error.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Registrarme';
+          if (mensajeDiv.innerHTML.includes(texto)) mensajeDiv.innerHTML = '';
+        }, 5000);
       }
-    });
+
+      btn.addEventListener('click', async () => {
+        const nombre = document.getElementById('nombre').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const telefono = document.getElementById('telefono').value.trim();
+        const direccion = document.getElementById('direccion').value.trim();
+        let oficio = oficioSelect.value;
+
+        if (oficio === 'Otro') {
+          oficio = document.getElementById('otroOficio').value.trim();
+          if (!oficio) {
+            mostrarMensaje('Por favor escribe tu oficio en el campo "Otro"');
+            return;
+          }
+        }
+
+        if (!nombre || !email || !password || !telefono || !direccion || !oficio) {
+          mostrarMensaje('Por favor completa todos los campos marcados con *');
+          return;
+        }
+
+        if (password.length < 6) {
+          mostrarMensaje('La contraseña debe tener al menos 6 caracteres');
+          return;
+        }
+
+        if (!document.getElementById('acepto').checked) {
+          mostrarMensaje('Debes aceptar el Compromiso de Confianza Vecinal');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Registrando...';
+
+        try {
+          // Usar API.registro() que ya existe
+          const resultado = await API.registro({
+            nombre: nombre,
+            email: email,
+            password: password,
+            telefono: telefono,
+            rol: 'usuario',
+            categorias: oficio,
+            direccion: direccion
+          });
+
+          console.log('Registro exitoso:', resultado);
+
+          mostrarMensaje(`✅ ¡Bienvenido/a ${nombre}! Tu registro fue exitoso.`, false);
+
+          setTimeout(() => {
+            window.location.href = '/barrio/login.html';
+          }, 2000);
+
+        } catch (error) {
+          console.error('Error en registro:', error);
+          mostrarMensaje('Error: ' + error.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = 'Registrarme';
+        }
+      });
   </script>
 </body>
 

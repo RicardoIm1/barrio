@@ -350,7 +350,8 @@
           <h3>3.3. Renovación</h3>
           <p>La renovación no es automática. El Anunciante deberá manifestar su intención de renovar al menos con
             <strong>5 días naturales</strong> de anticipación a la fecha de término de la campaña vigente, sujeto a
-            disponibilidad del espacio y a los precios y condiciones vigentes en ese momento.</p>
+            disponibilidad del espacio y a los precios y condiciones vigentes en ese momento.
+          </p>
         </div>
 
         <!-- 4. Precios y Condiciones de Pago -->
@@ -597,33 +598,33 @@
         .then(response => response.ok ? response.text() : Promise.reject())
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) footerContainer.innerHTML = data;
-
-          // ✅ Forzar la ejecución de scripts después de inyectar
-          const scripts = footerContainer.querySelectorAll('script');
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-              newScript.src = oldScript.src;
-            } else {
-              newScript.textContent = oldScript.textContent;
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
             }
-            document.body.appendChild(newScript);
-            oldScript.remove();
-          });
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
-    });
+            // Ejecutar scripts
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          }
+        });
 
-    // Impresión de orden de compra
-    const printBtn = document.getElementById("printOrderBtn");
-    if (printBtn) {
-      printBtn.addEventListener("click", () => {
-        const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
-        const btnClone = orderContent.querySelector("#printOrderBtn");
-        if (btnClone) btnClone.remove();
-        const ventana = window.open('', '_blank');
-        ventana.document.write(`
+      // Impresión de orden de compra
+      const printBtn = document.getElementById("printOrderBtn");
+      if (printBtn) {
+        printBtn.addEventListener("click", () => {
+          const orderContent = document.getElementById("ordenCompraBlock").cloneNode(true);
+          const btnClone = orderContent.querySelector("#printOrderBtn");
+          if (btnClone) btnClone.remove();
+          const ventana = window.open('', '_blank');
+          ventana.document.write(`
           <html>
           <head><title>Orden de Compra - Publicidad Vecinal</title>
           <style>
@@ -638,17 +639,17 @@
           <body>${orderContent.outerHTML}</body>
           </html>
         `);
-        ventana.document.close();
-        ventana.print();
-      });
-    }
+          ventana.document.close();
+          ventana.print();
+        });
+      }
 
-    // Fecha automática en la orden
-    const fechaOrdenInput = document.getElementById("ordenFecha");
-    if (fechaOrdenInput && fechaOrdenInput.value === "_______________") {
-      const hoy = new Date().toLocaleDateString('es-MX');
-      fechaOrdenInput.value = hoy;
-    }
+      // Fecha automática en la orden
+      const fechaOrdenInput = document.getElementById("ordenFecha");
+      if (fechaOrdenInput && fechaOrdenInput.value === "_______________") {
+        const hoy = new Date().toLocaleDateString('es-MX');
+        fechaOrdenInput.value = hoy;
+      }
   </script>
 </body>
 

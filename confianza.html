@@ -381,36 +381,36 @@
         .then(response => response.ok ? response.text() : Promise.reject())
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) footerContainer.innerHTML = data;
-
-          // ✅ Forzar la ejecución de scripts después de inyectar
-          const scripts = footerContainer.querySelectorAll('script');
-          scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-              newScript.src = oldScript.src;
-            } else {
-              newScript.textContent = oldScript.textContent;
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
             }
-            document.body.appendChild(newScript);
-            oldScript.remove();
-          });
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
-    });
+            // Ejecutar scripts
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          }
+        });
 
-    // Botón de aceptar
-    document.getElementById('btnAceptar').addEventListener('click', () => {
-      localStorage.setItem('compromiso_aceptado', 'true');
-      localStorage.setItem('fecha_aceptacion', new Date().toISOString());
-      alert('Gracias por tu confianza. Ya puedes continuar con tu registro.');
-      window.location.href = '/barrio/registro.html';
-    });
+      // Botón de aceptar
+      document.getElementById('btnAceptar').addEventListener('click', () => {
+        localStorage.setItem('compromiso_aceptado', 'true');
+        localStorage.setItem('fecha_aceptacion', new Date().toISOString());
+        alert('Gracias por tu confianza. Ya puedes continuar con tu registro.');
+        window.location.href = '/barrio/registro.html';
+      });
 
-    // Botón regresar
-    document.getElementById('btnRegresar').addEventListener('click', () => {
-      window.history.back();
-    });
+      // Botón regresar
+      document.getElementById('btnRegresar').addEventListener('click', () => {
+        window.history.back();
+      });
   </script>
 </body>
 
