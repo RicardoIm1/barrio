@@ -265,48 +265,48 @@
   <script src="/barrio/js/auth.js"></script>
 
   <script>
-    
-      // Cargar header y footer
-      document.addEventListener('DOMContentLoaded', function () {
-        // Header
-        fetch('/barrio/common/header.html')
-          .then(res => {
-            if (!res.ok) throw new Error('Header no encontrado');
-            return res.text();
-          })
-          .then(html => {
-            document.getElementById('header-container').innerHTML = html;
-            setTimeout(() => {
-              if (typeof window.inicializarHeaderAuth === 'function') {
-                window.inicializarHeaderAuth();
-              }
-            }, 100);
-          })
-          .catch(err => console.error('Error cargando header:', err));
-
-        // Footer
-        fetch('/barrio/common/footer.html')
-          .then(response => response.ok ? response.text() : Promise.reject())
-          .then(data => {
-            const footerContainer = document.getElementById('footer-container');
-            if (footerContainer) {
-              footerContainer.innerHTML = data;
-              // ✅ Actualizar el año manualmente
-              const yearSpan = footerContainer.querySelector('#copyright-year');
-              if (yearSpan) {
-                yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
-              }
-              // Ejecutar scripts
-              const scripts = footerContainer.querySelectorAll('script');
-              scripts.forEach(oldScript => {
-                const newScript = document.createElement('script');
-                newScript.textContent = oldScript.textContent;
-                document.body.appendChild(newScript);
-                oldScript.remove();
-              });
+    // Cargar header y footer
+    document.addEventListener('DOMContentLoaded', function () {
+      // Header
+      fetch('/barrio/common/header.html')
+        .then(res => {
+          if (!res.ok) throw new Error('Header no encontrado');
+          return res.text();
+        })
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          setTimeout(() => {
+            if (typeof window.inicializarHeaderAuth === 'function') {
+              window.inicializarHeaderAuth();
             }
-          });
+          }, 100);
+        })
+        .catch(err => console.error('Error cargando header:', err));
 
+      // Footer
+      fetch('/barrio/common/footer.html')
+        .then(response => response.ok ? response.text() : Promise.reject())
+        .then(data => {
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
+            }
+            // Ejecutar scripts
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          }
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    }); // ← Cierre correcto del addEventListener
   </script>
 </body>
 
