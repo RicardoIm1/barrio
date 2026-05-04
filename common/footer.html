@@ -267,6 +267,11 @@
 </style>
 
 <script>
-    // Actualizar el año automáticamente
-    document.getElementById('anio-actual').textContent = new Date().getFullYear();
+    // Actualizar el año automáticamente cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function () {
+        const anioSpan = document.getElementById('anio-actual');
+        if (anioSpan) {
+            anioSpan.textContent = new Date().getFullYear();
+        }
+    });
 </script>
