@@ -708,11 +708,11 @@
         usuarioActual = API.getUsuarioActual();
 
         // 🚀 NUEVO: Cargar SOLO el aviso necesario, no todos
-        const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', { id: AVISO_ID });
-
+        // Código NUEVO (bueno)
+        const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', {});
         let aviso = null;
         if (resultado && resultado.success && resultado.data && resultado.data.datos) {
-          aviso = resultado.data.datos[0];
+          aviso = resultado.data.datos.find(a => String(a.id) === String(AVISO_ID));
         }
 
         // Fallback: si no vino en datos.datos, buscar en estructura alternativa
