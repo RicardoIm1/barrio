@@ -918,6 +918,19 @@
                 .then(data => {
                     const footerContainer = document.getElementById('footer-container');
                     if (footerContainer) footerContainer.innerHTML = data;
+
+                    // ✅ Forzar la ejecución de scripts después de inyectar
+                    const scripts = footerContainer.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        document.body.appendChild(newScript);
+                        oldScript.remove();
+                    });
                 })
                 .catch(error => console.error('Error cargando el footer:', error));
         });

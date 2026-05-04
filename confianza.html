@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es-MX">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
@@ -220,18 +221,22 @@
       .confianza-content {
         padding: 1.5rem;
       }
+
       .seccion h2 {
         font-size: 1.1rem;
       }
+
       .confianza-header h1 {
         font-size: 1.4rem;
       }
+
       .datos-grid {
         grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
+
 <body>
   <div id="header-container"></div>
 
@@ -249,13 +254,15 @@
       <div class="confianza-content">
         <!-- Intro -->
         <div class="intro">
-          📢 <strong>Esto no es un documento de abogados.</strong> Somos vecinos, no un banco ni una empresa grande. Aquí solo queremos ayudarnos mutuamente.
+          📢 <strong>Esto no es un documento de abogados.</strong> Somos vecinos, no un banco ni una empresa grande.
+          Aquí solo queremos ayudarnos mutuamente.
         </div>
 
         <!-- Sección 1: Qué somos -->
         <div class="seccion">
           <h2><span class="emoji">🏠</span> 1. ¿Qué somos?</h2>
-          <p>Somos una <strong>plataforma vecinal</strong> donde los residentes de la colonia compartimos avisos, servicios y oficios. No vendemos nada, no financiamos nada. Solo ponemos en contacto a los vecinos.</p>
+          <p>Somos una <strong>plataforma vecinal</strong> donde los residentes de la colonia compartimos avisos,
+            servicios y oficios. No vendemos nada, no financiamos nada. Solo ponemos en contacto a los vecinos.</p>
         </div>
 
         <!-- Sección 2: Qué datos pedimos -->
@@ -270,14 +277,17 @@
               <div class="dato-item"><strong>📸 Fotos (opcional)</strong> → Para mostrar tu trabajo</div>
             </div>
           </div>
-          <p><strong>No pedimos</strong> tu CURP, RFC (a menos que pidas factura), ni datos bancarios. Solo lo necesario para que los vecinos te encuentren.</p>
+          <p><strong>No pedimos</strong> tu CURP, RFC (a menos que pidas factura), ni datos bancarios. Solo lo necesario
+            para que los vecinos te encuentren.</p>
         </div>
 
         <!-- Sección 3: Quién ve tus datos -->
         <div class="seccion">
           <h2><span class="emoji">👁️</span> 3. ¿Quién ve tu información?</h2>
-          <p><strong>Todos los vecinos que usan la plataforma</strong> pueden ver tu nombre, teléfono, dirección general y oficio. Así pueden contactarte si necesitan algo.</p>
-          <p>Tu correo electrónico (si lo das) solo lo ve el administrador, por si necesitamos avisarte algo importante.</p>
+          <p><strong>Todos los vecinos que usan la plataforma</strong> pueden ver tu nombre, teléfono, dirección general
+            y oficio. Así pueden contactarte si necesitan algo.</p>
+          <p>Tu correo electrónico (si lo das) solo lo ve el administrador, por si necesitamos avisarte algo importante.
+          </p>
         </div>
 
         <!-- Sección 4: Lo que NO hacemos -->
@@ -294,7 +304,8 @@
             </div>
             <div class="no-hacemos-item">
               <span class="no-icon">❌</span>
-              <span><strong>No los damos a proveedores externos</strong> — Nadie te va a molestar para venderte nada.</span>
+              <span><strong>No los damos a proveedores externos</strong> — Nadie te va a molestar para venderte
+                nada.</span>
             </div>
             <div class="no-hacemos-item">
               <span class="no-icon">❌</span>
@@ -306,21 +317,25 @@
         <!-- Sección 5: Cómo borrar tus datos -->
         <div class="seccion">
           <h2><span class="emoji">🗑️</span> 5. ¿Qué hago si quiero borrar mis datos?</h2>
-          <p>Es muy fácil. Solo mándanos un <strong>WhatsApp</strong> pidiendo que te borremos. Sin trámites, sin formatos, sin explicaciones.</p>
+          <p>Es muy fácil. Solo mándanos un <strong>WhatsApp</strong> pidiendo que te borremos. Sin trámites, sin
+            formatos, sin explicaciones.</p>
           <p>En menos de <strong>3 días</strong>, tu información desaparece por completo de la plataforma.</p>
-          <p><strong>WhatsApp:</strong> 📞 <a href="https://wa.me/3222354331" style="color: var(--color-acento); text-decoration: none; font-weight: bold;">+52 322 235 4331</a></p>
+          <p><strong>WhatsApp:</strong> 📞 <a href="https://wa.me/3222354331"
+              style="color: var(--color-acento); text-decoration: none; font-weight: bold;">+52 322 235 4331</a></p>
         </div>
 
         <!-- Sección 6: Regla de oro -->
         <div class="seccion">
           <h2><span class="emoji">💛</span> 6. Una regla de oro</h2>
-          <p>La plataforma es para ayudarnos, no para molestar. Si alguien usa tus datos para acosarte, enviarte spam o algo que no te gusta, <strong>avísanos</strong> y esa persona será eliminada de la comunidad.</p>
+          <p>La plataforma es para ayudarnos, no para molestar. Si alguien usa tus datos para acosarte, enviarte spam o
+            algo que no te gusta, <strong>avísanos</strong> y esa persona será eliminada de la comunidad.</p>
         </div>
 
         <!-- Sección 7: Aceptación -->
         <div class="seccion">
           <h2><span class="emoji">✅</span> 7. Aceptación</h2>
-          <p>Cuando te registras o publicas un aviso, nos estás diciendo que <strong>confías en nosotros</strong> para manejar tus datos como está escrito aquí.</p>
+          <p>Cuando te registras o publicas un aviso, nos estás diciendo que <strong>confías en nosotros</strong> para
+            manejar tus datos como está escrito aquí.</p>
           <p>Si no confías, no te registres. Así de simple. No hay trampa.</p>
         </div>
 
@@ -344,7 +359,7 @@
 
   <script>
     // Cargar header y footer
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Header
       fetch('/barrio/common/header.html')
         .then(res => {
@@ -363,21 +378,25 @@
 
       // Footer
       fetch('/barrio/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
+        .then(response => response.ok ? response.text() : Promise.reject())
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const anioElement = document.getElementById('anio-actual');
-            if (anioElement) {
-              anioElement.textContent = new Date().getFullYear();
+          if (footerContainer) footerContainer.innerHTML = data;
+
+          // ✅ Forzar la ejecución de scripts después de inyectar
+          const scripts = footerContainer.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            if (oldScript.src) {
+              newScript.src = oldScript.src;
+            } else {
+              newScript.textContent = oldScript.textContent;
             }
-          }
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
         })
-        .catch(error => console.error('Error cargando footer:', error));
+        .catch(error => console.error('Error cargando el footer:', error));
     });
 
     // Botón de aceptar
@@ -394,4 +413,5 @@
     });
   </script>
 </body>
+
 </html>
