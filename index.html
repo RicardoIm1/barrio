@@ -386,20 +386,6 @@
 </head>
 
 <body>
-    
-    <div class="header-acciones" id="header-acciones">
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <a href="/barrio/registro.html" id="login-link" class="btn-login">🔑 <span class="btn-text">¿Eres vecino? Regístrate y publica tus avisos gratis</span></a>
-        </div>
-
-        <div class="user-area" id="user-area" style="display: none;">
-            <span class="user-name" id="user-name"></span>
-            <a href="#" id="perfil-link" class="btn-perfil">👤 <span class="btn-text">Mi perfil</span></a>
-            <a href="#" id="cerrar-sesion" class="btn-logout">🔒 <span class="btn-text">Cerrar sesión</span></a>
-        </div
-    </div>
-
-
     <div id="header-container"></div>
     <main class="contenedor">
         <div class="filtros-buscador-wrapper">
@@ -415,6 +401,12 @@
         <div id="loading-trigger" class="loading-trigger" style="display: none;">📡 Cargando más avisos...</div>
         <div id="paginacion" class="paginacion"></div>
     </main>
+    <div style="display: flex; justify-content: center; width: 100%;">
+        <button id="btnProbarNotificacion"
+            style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none; cursor: pointer;">
+            📝 Regístrate aquí
+        </button>
+    </div>
 
     <div id="footer-container"></div>
     <div id="toast" class="toast-notification"></div>
