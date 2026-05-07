@@ -225,13 +225,16 @@
 
         <div class="campo">
           <label>Teléfono o WhatsApp *</label>
-          <input type="tel" id="telefono" >
-          <div class="ayuda">10 dígitos, para que los vecinos te contacten por WhatsApp directamente</div>
+          <input type="tel" id="telefono">
+          <div class="ayuda">10 dígitos, para que los vecinos te contacten por WhatsApp</div>
         </div>
 
-        <input type="text" id="direccion" required pattern="\d{5}" maxlength="5"
-          title="Debe contener exactamente 5 números"
-          oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,5)">
+        <div class="campo">
+          <label>Código Postal *</label>
+          <input type="text" id="direccion" required pattern="\d{5}" maxlength="5"
+            title="Debe contener exactamente 5 números (ejemplo: 45100)"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,5)">
+        </div>
 
         <div class="campo">
           <label>¿Qué oficio o profesión tienes? *</label>
