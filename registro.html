@@ -209,12 +209,12 @@
 
         <div class="campo">
           <label>Tu nombre completo *</label>
-          <input type="text" id="nombre" placeholder="Ejemplo: María de la Luz Gutiérrez">
+          <input type="text" id="nombre">
         </div>
 
         <div class="campo">
           <label>Correo electrónico *</label>
-          <input type="email" id="email" placeholder="Ejemplo: maria@ejemplo.com">
+          <input type="email" id="email">
           <div class="ayuda">Lo usarás para iniciar sesión</div>
         </div>
 
@@ -225,14 +225,13 @@
 
         <div class="campo">
           <label>Teléfono o WhatsApp *</label>
-          <input type="tel" id="telefono" placeholder="Ejemplo: 322 999 9999">
-          <div class="ayuda">Para que los vecinos te contacten</div>
+          <input type="tel" id="telefono" >
+          <div class="ayuda">10 dígitos, para que los vecinos te contacten</div>
         </div>
 
-        <div class="campo">
-          <label>Dirección o referencia en la colonia *</label>
-          <input type="text" id="direccion" placeholder="Ejemplo: Calle Siempre viva #847">
-        </div>
+        <input type="text" id="direccion" required pattern="\d{5}" maxlength="5"
+          title="Debe contener exactamente 5 números"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,5)">
 
         <div class="campo">
           <label>¿Qué oficio o profesión tienes? *</label>
