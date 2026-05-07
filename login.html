@@ -251,24 +251,32 @@
         }
       }
 
-      // Cargar footer
-      try {
-        const response = await fetch('/barrio/common/footer.html');
-        if (response.ok) {
-          const data = await response.text();
+      // Footer
+      fetch('/barrio/common/footer.html')
+        .then(response => {
+          if (!response.ok) throw new Error('Footer no encontrado');
+          return response.text();
+        })
+        .then(data => {
           const footerContainer = document.getElementById('footer-container');
           if (footerContainer) {
             footerContainer.innerHTML = data;
-            const anioElement = document.getElementById('anio-actual');
-            if (anioElement) {
-              anioElement.textContent = new Date().getFullYear();
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
             }
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
           }
-        }
-      } catch (error) {
-        console.error('Error cargando footer:', error);
-      }
-    });
+        })
+        .catch(error => console.error('Error cargando el footer:', error));
+    }
+    );
 
     // Lógica de login
     document.addEventListener('DOMContentLoaded', function () {
