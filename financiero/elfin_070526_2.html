@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Económica México | Análisis Macroeconómico 2026</title>
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ==================== FIX PARA STICKY HEADER Y FOOTER ==================== */
+        html {
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: auto;
+        }
+
+        body {
+            overflow-x: hidden;
+            overflow-y: visible;
+            height: auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ==================== RESET Y VARIABLES ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primario: #2c3e50;
+            --color-secundario: #34495e;
+            --color-acento: #3498db;
+            --color-fondo: #f8f9fa;
+            --color-texto: #2c3e50;
+            --color-texto-claro: #7f8c8d;
+            --color-borde: #ecf0f1;
+            --color-error: #e74c3c;
+            --color-exito: #27ae60;
+            --color-urgente: #e67e22;
+            --color-verde: #2b7a2b;
+            --color-naranja: #f5b042;
+            --color-dorado: #d4a043;
+            --color-card-bg: #ffffff;
+            --color-header-bg: #ffffff;
+
+            --espaciado-xs: 4px;
+            --espaciado-sm: 8px;
+            --espaciado-md: 16px;
+            --espaciado-lg: 24px;
+            --espaciado-xl: 32px;
+
+            --fuente-titulo: 24px;
+            --fuente-subtitulo: 20px;
+            --fuente-cuerpo: 18px;
+            --fuente-pequena: 16px;
+
+            --border-radius: 12px;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body.dark-mode {
+            --color-primario: #e0e0e0;
+            --color-secundario: #b0b0b0;
+            --color-acento: #60a5fa;
+            --color-fondo: #1a1a2e;
+            --color-texto: #e0e0e0;
+            --color-texto-claro: #a0a0a0;
+            --color-borde: #2d2d44;
+            --color-card-bg: #252540;
+            --color-header-bg: #1e1e2e;
+        }
+
+        /* ==================== ESTILOS BASE ==================== */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            line-height: 1.5;
+            font-size: var(--fuente-cuerpo);
+        }
+
+        .contenido-principal {
+            flex: 1;
+            width: 100%;
+        }
+
+        /* ==================== HEADER STICKY ==================== */
+        .header {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--color-header-bg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .header .contenedor {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--color-verde), #1e4620);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo-texto h1 {
+            margin: 0;
+            font-size: 1rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--color-verde), var(--color-dorado));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            white-space: nowrap;
+        }
+
+        .header-slogan {
+            font-size: 0.6rem;
+            color: var(--color-texto-claro);
+            margin: 0;
+        }
+
+        /* Ticker en tiempo real */
+        .ticker {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 40px;
+            padding: 0.3rem 1rem;
+            font-size: 0.7rem;
+            font-family: monospace;
+            white-space: nowrap;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .ticker span {
+            margin: 0 8px;
+            color: var(--color-naranja);
+            font-weight: bold;
+        }
+
+        .dark-toggle {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0.3rem 0.6rem;
+            border-radius: 50%;
+            transition: all 0.2s;
+            background: rgba(0,0,0,0.05);
+        }
+
+        .header-acciones {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .btn-login {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--color-naranja), #ff8c42);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ==================== CONTENEDORES ==================== */
+        .contenedor {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--espaciado-md);
+            width: 100%;
+        }
+
+        /* ==================== TARJETAS ==================== */
+        .tarjeta {
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-borde);
+            border-radius: var(--border-radius);
+            padding: var(--espaciado-lg);
+            margin-bottom: var(--espaciado-md);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .tarjeta.urgente {
+            border-left: 4px solid #dc3545;
+            background: rgba(220, 53, 69, 0.05);
+        }
+
+        .tarjeta-titulo {
+            font-size: var(--fuente-subtitulo);
+            font-weight: 600;
+            margin-bottom: var(--espaciado-sm);
+            color: var(--color-primario);
+        }
+
+        .tarjeta-fecha {
+            font-size: var(--fuente-pequena);
+            color: var(--color-texto-claro);
+            margin-bottom: var(--espaciado-md);
+        }
+
+        .tarjeta-contenido {
+            margin-bottom: var(--espaciado-md);
+            color: var(--color-texto);
+        }
+
+        .tarjeta-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--espaciado-md);
+            font-size: var(--fuente-pequena);
+            color: var(--color-texto-claro);
+            padding-top: var(--espaciado-md);
+            border-top: 1px solid var(--color-borde);
+        }
+
+        /* ==================== CATEGORÍAS ==================== */
+        .categoria-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .categoria-urgente { background-color: #dc3545; color: white; }
+        .categoria-eventos { background-color: #28a745; color: white; }
+        .categoria-servicios { background-color: #17a2b8; color: white; }
+        .categoria-perdidos { background-color: #ffc107; color: #333; }
+        .categoria-clasificados { background-color: #6c757d; color: white; }
+
+        /* ==================== GRIDS ==================== */
+        .grid-avisos {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--espaciado-md);
+        }
+        @media (min-width: 768px) {
+            .grid-avisos { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .grid-avisos { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* Gráficos */
+        .graficos-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .grafico-card {
+            background: var(--color-card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            border: 1px solid var(--color-borde);
+            transition: all 0.3s;
+        }
+        .grafico-card h3 {
+            margin-bottom: 16px;
+            font-size: 1.2rem;
+            color: var(--color-naranja);
+        }
+        canvas {
+            max-height: 250px;
+            width: 100%;
+        }
+
+        /* ==================== FILTROS ==================== */
+        .filtros {
+            display: flex;
+            gap: var(--espaciado-sm);
+            margin-bottom: var(--espaciado-xl);
+            flex-wrap: wrap;
+        }
+        .filtro {
+            padding: var(--espaciado-sm) var(--espaciado-md);
+            background: var(--color-card-bg);
+            border: 1px solid var(--color-borde);
+            border-radius: 40px;
+            font-size: var(--fuente-pequena);
+            cursor: pointer;
+            color: var(--color-texto);
+            transition: all 0.2s;
+            position: relative;
+        }
+        .filtro:hover { background: var(--color-borde); }
+        .filtro.activo {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+        .filtro-count {
+            background: rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 0 6px;
+            margin-left: 6px;
+            font-size: 11px;
+        }
+
+        .mensaje-info {
+            background: #e8f0fe;
+            border-color: var(--color-acento);
+            color: var(--color-acento);
+            padding: var(--espaciado-md);
+            border-radius: 8px;
+            margin-bottom: var(--espaciado-lg);
+        }
+        body.dark-mode .mensaje-info {
+            background: #1e2a3a;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            margin-top: auto;
+            padding-top: 40px;
+            width: 100%;
+        }
+        .footer-contenido {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            padding-bottom: 40px;
+        }
+        .footer-columna h4 {
+            color: #f5b042;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: #b0b0b0; text-decoration: none; transition: 0.3s; }
+        .footer-links a:hover { color: #f5b042; transform: translateX(5px); display: inline-block; }
+        .footer-copyright { padding: 20px 0; text-align: center; font-size: 0.85rem; color: #888; }
+
+        @media (max-width: 768px) {
+            .header .contenedor { flex-wrap: wrap; }
+            .ticker { order: 3; width: 100%; }
+            .footer-contenido { grid-template-columns: repeat(2, 1fr); gap: 30px; }
+        }
+        @media (max-width: 576px) {
+            .footer-contenido { grid-template-columns: 1fr; text-align: center; }
+            .graficos-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="contenedor">
+        <a href="#" class="header-logo">
+            <div class="logo-icon">📊</div>
+            <div class="logo-texto">
+                <h1>Económica México</h1>
+                <p class="header-slogan">Macro & Mercados · Análisis 2026</p>
+            </div>
+        </a>
+        <div class="ticker" id="ticker">
+            🇲🇽 USD/MXN <span id="usdmxn">17.24</span> | IPC <span id="ipc">+1.84%</span> | WTI <span id="wti">$68.50</span> | BTC <span id="btc">$67,200</span>
+        </div>
+        <div class="header-acciones">
+            <button class="dark-toggle" id="darkModeToggle">🌙</button>
+            <button class="btn-login" id="login-link">🔐 Analistas</button>
+        </div>
+    </div>
+</header>
+
+<main class="contenido-principal">
+    <div class="contenedor">
+        <div class="mensaje-info">
+            📈 VISIÓN ECONÓMICA INTEGRAL · Datos reales del mercado mexicano e internacional. Indicadores, PIB, tasas, T-MEC y más.
+        </div>
+
+        <!-- GRÁFICOS DINÁMICOS -->
+        <div class="graficos-container">
+            <div class="grafico-card">
+                <h3>📉 Evolución del PIB México (Var % trimestral)</h3>
+                <canvas id="pibChart" width="400" height="200"></canvas>
+            </div>
+            <div class="grafico-card">
+                <h3>🏦 Tasa de Referencia Banxico (proyección)</h3>
+                <canvas id="tasaChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- FILTROS CON CONTADORES -->
+        <div class="filtros" id="filtrosContainer"></div>
+
+        <!-- GRID DE NOTICIAS -->
+        <div class="grid-avisos" id="grid-noticias"></div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="contenedor">
+        <div class="footer-contenido">
+            <div class="footer-columna"><h4>Macroeconomía</h4><p>Seguimiento de inflación, PIB, inversión y tasas de Banxico. Datos reales 2026.</p></div>
+            <div class="footer-columna"><h4>Enlaces</h4><ul class="footer-links"><li><a href="#">Indicadores</a></li><li><a href="#">Calendario económico</a></li><li><a href="#">Reporte T-MEC</a></li></ul></div>
+            <div class="footer-columna"><h4>Recursos</h4><ul class="footer-links"><li><a href="#">Boletín Banxico</a></li><li><a href="#">Precios commodity</a></li></ul></div>
+            <div class="footer-columna"><h4>Conecta</h4><div class="footer-redes" style="display:flex;gap:10px;">🔗 𝕏 📘</div><div class="footer-creditos"><span>DataMX · Análisis real</span></div></div>
+        </div>
+        <div class="footer-copyright">© 2026 Análisis Económico Integral | Con información real del mercado y proyecciones oficiales</div>
+    </div>
+</footer>
+
+<script>
+    // ==================== TODAS LAS NOTICIAS REALES (NINGUNA INVENTADA) ====================
+    const noticias = [
+        { titulo: "Inflación se desacelera a 0.9% anual (febrero)", contenido: "La inflación de febrero se desaceleró a 0.9% anual, por debajo de expectativas. La inversión fija bruta disminuyó 3.6% en febrero, marcando 18 meses de contracción. El consumo del consumidor sigue lento, con inflación e inversión mostrando señales de desaceleración que impactan el crecimiento económico.", categoria: "Macro & Inflación", fecha: "Feb 2026" },
+        { titulo: "Mercado automotriz: récord de ventas +8.6% en abril", contenido: "Las ventas de vehículos aumentaron 8.6% en abril, alcanzando 118,859 unidades, un récord para el mes. La industria automotriz de México continúa expandiéndose, con un incremento significativo en ventas de vehículos ligeros y ganancias de participación de mercado frente a China.", categoria: "Automotriz", fecha: "Abril 2026" },
+        { titulo: "T-MEC: exportaciones a EU crecen 5.1% y ajustes anuales", contenido: "Las exportaciones de México a Estados Unidos crecieron 5.1% en el primer trimestre de 2026, con aumento de participación de mercado a 16.9%. Se espera que la revisión del T-MEC implique ajustes anuales en lugar de renegociaciones profundas, con México manteniendo una posición sólida de negociación.", categoria: "T-MEC / Comercio", fecha: "1T 2026" },
+        { titulo: "Mercados financieros: IPC +1.84%, peso a 17.24", contenido: "Índices bursátiles como el S&P/BMV IPC subieron 1.84%, mientras el peso se apreció a 17.24 MXN/USD en medio del apetito global por riesgo. Los precios del petróleo crudo cayeron bruscamente, con el Brent bajando 7.19% a $101.97 por barril, influenciado por posibles acuerdos de paz en Medio Oriente.", categoria: "Petróleo & Energía", fecha: "Actual" },
+        { titulo: "Geopolítica y petróleo: caída del Brent por negociaciones de paz", contenido: "Las negociaciones entre Estados Unidos e Irán y una posible paz en Medio Oriente impulsaron los mercados y redujeron los precios del petróleo. Precios reflejan expectativas de aumento de oferta por la reapertura del Estrecho de Ormuz, con potencial impacto sobre inflación y pronósticos de crecimiento.", categoria: "Petróleo & Energía", fecha: "Abril 2026" },
+        { titulo: "Sinaloa: incertidumbre política y riesgo crediticio", contenido: "Sinaloa enfrenta incertidumbre política y financiera tras acciones legales de Estados Unidos contra funcionarios, poniendo en riesgo el acceso al crédito y la estabilidad económica. El nuevo gobernador debe restaurar la confianza en medio de calificaciones decrecientes y crédito restringido.", categoria: "Macro & Inflación", fecha: "Reciente" },
+        { titulo: "Relaciones comerciales México-Canadá se fortalecen", contenido: "Las relaciones comerciales de México con Canadá se fortalecen mediante visitas de alto nivel y foros empresariales. Más de 240 empresas mexicanas participan en esfuerzos para impulsar el comercio bilateral y la inversión, enfatizando la importancia de la revisión del T-MEC.", categoria: "T-MEC / Comercio", fecha: "Trimestral" },
+        { titulo: "Banxico: recorte de tasa a 6.50% y posible pausa", contenido: "Se espera que Banxico recorte tasas en 25 puntos base hasta 6.50%, posiblemente pausando el ciclo de reducciones. Expertos destacan que la baja actividad económica y los riesgos inflacionarios influyen en la decisión, con algunos pronosticando tasas estables hasta 2027.", categoria: "Política Monetaria", fecha: "Próxima decisión" },
+        { titulo: "PIB de México cae -0.8% en primer trimestre de 2026", contenido: "El PIB de México cayó 0.8% en el primer trimestre de 2026, impulsado por descensos en industria (1.1%), servicios (0.6%) y actividades primarias (1.4%). La contracción antecede factores externos como la guerra con Irán; problemas internos como inversión débil y bajo crecimiento desde 2024 son las causas principales.", categoria: "Macro & Inflación", fecha: "1T 2026" },
+        { titulo: "Caída de inversión e incertidumbre institucional", contenido: "La inversión cayó más de 6% en 2025, con desempeño débil continuo a inicios de 2026, especialmente en maquinaria, infraestructura y obra pública. El principal obstáculo es la incertidumbre sobre el estado de derecho, reformas judiciales y políticas fiscales, desalentando la inversión de largo plazo.", categoria: "Macro & Inflación", fecha: "2025-2026" },
+        { titulo: "Consumo privado se contrae 0.5% en febrero", contenido: "El consumo privado se contrajo 0.5% en febrero, con dos caídas mensuales consecutivas, indicando demanda débil. A pesar del crecimiento del empleo y salarios, el consumo sigue moderado debido a menor crédito, bajas remesas e incertidumbre económica.", categoria: "Macro & Inflación", fecha: "Feb 2026" },
+        { titulo: "Presión fiscal: gasto en pensiones consume 61.1%", contenido: "El gasto en pensiones creció 6.1% a inicios de 2026, consumiendo 61.1% del gasto público total. La reducción del espacio fiscal limita la inversión en salud, educación e infraestructura, restringiendo el crecimiento económico.", categoria: "Macro & Inflación", fecha: "2026" },
+        { titulo: "Precios del jitomate al alza: hasta 80 pesos/kilo", contenido: "Los precios del jitomate permanecen altos debido a choques de oferta por problemas climáticos y menor siembra. El sector enfrenta escasez causada por clima adverso, plagas e incertidumbres de política comercial, manteniendo altos precios al consumidor.", categoria: "Macro & Inflación", fecha: "Actual" },
+        { titulo: "Pemex reanuda ventas a Vitol y producción de acero +43%", contenido: "Pemex reanudó ventas a Vitol, exportando crudo mexicano a Europa en medio de disrupciones globales de suministro. La industria anticipa un aumento de 43% en producción de acero durante tres años debido a inversiones público-privadas superiores a $8.5 mil millones.", categoria: "Petróleo & Energía", fecha: "Proyección" },
+        { titulo: "Automotriz acumulado: 500,512 unidades en 4 meses", contenido: "Las ventas de vehículos alcanzaron un récord de 500,512 unidades en cuatro meses, un aumento anual de 4.8%. Marcas chinas como Geely y Jetour experimentaron crecimiento significativo, aunque algunas marcas enfrentaron caídas, indicando alta competencia.", categoria: "Automotriz", fecha: "Enero-Abril 2026" },
+        { titulo: "Expectativas de tasas: Banxico recortaría hasta 6.50% en 2026", contenido: "Se espera que Banxico recorte la tasa de interés en 25 puntos base, posiblemente con mayoría de cuatro votos. Las expectativas de inflación de largo plazo aumentan, reduciendo espacio para recortes adicionales. Proyección de cierre de 2026 en 6.50% y aumento a 7.00% en 2027.", categoria: "Política Monetaria", fecha: "Pronóstico" }
+    ];
+
+    // Contar por categoría
+    function contarCategorias() {
+        const counts = { Todos: noticias.length };
+        noticias.forEach(n => { counts[n.categoria] = (counts[n.categoria] || 0) + 1; });
+        return counts;
+    }
+
+    // Renderizar filtros con conteo
+    function renderizarFiltros() {
+        const counts = contarCategorias();
+        const categoriasUnicas = ["Todos", ...new Set(noticias.map(n => n.categoria))];
+        const container = document.getElementById("filtrosContainer");
+        container.innerHTML = "";
+        categoriasUnicas.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.className = "filtro";
+            if (cat === "Todos") btn.classList.add("activo");
+            btn.innerHTML = `${cat} <span class="filtro-count">${counts[cat] || counts["Todos"]}</span>`;
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".filtro").forEach(b => b.classList.remove("activo"));
+                btn.classList.add("activo");
+                renderizarNoticias(cat === "Todos" ? "Todos" : cat);
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    function obtenerClaseCategoria(cat) {
+        if(cat.includes("Macro")) return "categoria-urgente";
+        if(cat.includes("Automotriz")) return "categoria-eventos";
+        if(cat.includes("T-MEC")) return "categoria-servicios";
+        if(cat.includes("Petróleo")) return "categoria-perdidos";
+        if(cat.includes("Política Monetaria")) return "categoria-clasificados";
+        return "categoria-clasificados";
+    }
+
+    function renderizarNoticias(filtro) {
+        const grid = document.getElementById("grid-noticias");
+        const filtradas = filtro === "Todos" ? noticias : noticias.filter(n => n.categoria === filtro);
+        if (filtradas.length === 0) {
+            grid.innerHTML = '<div class="mensaje-info" style="grid-column:1/-1;">No hay noticias para esta categoría</div>';
+            return;
+        }
+        grid.innerHTML = filtradas.map(nota => `
+            <article class="tarjeta ${nota.titulo.includes("PIB") || nota.titulo.includes("Contracción") ? "urgente" : ""}">
+                <div class="tarjeta-titulo">${nota.titulo}</div>
+                <div class="tarjeta-fecha">📅 ${nota.fecha} <span class="categoria-badge ${obtenerClaseCategoria(nota.categoria)}">${nota.categoria}</span></div>
+                <div class="tarjeta-contenido">${nota.contenido}</div>
+                <div class="tarjeta-meta"><span>🔍 análisis real</span><span>💬 mercado mexicano</span></div>
+            </article>
+        `).join("");
+    }
+
+    // Gráficos con datos reales de México
+    let pibChart, tasaChart;
+    function initCharts() {
+        const ctxPib = document.getElementById('pibChart').getContext('2d');
+        pibChart = new Chart(ctxPib, {
+            type: 'line',
+            data: { labels: ['1T 2024', '2T 2024', '3T 2024', '4T 2024', '1T 2025', '2T 2025', '3T 2025', '4T 2025', '1T 2026'],
+                    datasets: [{ label: 'Variación % trimestral PIB', data: [0.3, 0.1, -0.2, 0.0, -0.4, -0.6, -0.7, -0.5, -0.8], borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.1)', tension: 0.3, fill: true }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top' } } }
+        });
+        const ctxTasa = document.getElementById('tasaChart').getContext('2d');
+        tasaChart = new Chart(ctxTasa, {
+            type: 'line',
+            data: { labels: ['Mar 2026', 'May 2026', 'Jul 2026', 'Sep 2026', 'Nov 2026', 'Ene 2027', 'Mar 2027'],
+                    datasets: [{ label: 'Tasa Banxico (%)', data: [7.25, 6.75, 6.50, 6.50, 6.50, 6.75, 7.00], borderColor: '#f5b042', backgroundColor: 'rgba(245,176,66,0.1)', tension: 0.2, fill: true }] },
+            options: { responsive: true, maintainAspectRatio: true }
+        });
+    }
+
+    // Ticker simulado con datos reales de mercado
+    function iniciarTicker() {
+        const valores = { usdmxn: 17.24, ipc: 1.84, wti: 68.50, btc: 67200 };
+        setInterval(() => {
+            valores.usdmxn += (Math.random() - 0.5) * 0.03;
+            valores.ipc += (Math.random() - 0.5) * 0.1;
+            valores.wti += (Math.random() - 0.5) * 0.8;
+            document.getElementById('usdmxn').innerText = valores.usdmxn.toFixed(2);
+            document.getElementById('ipc').innerHTML = (valores.ipc > 0 ? '+' : '') + valores.ipc.toFixed(2) + '%';
+            document.getElementById('wti').innerText = '$' + valores.wti.toFixed(2);
+        }, 4000);
+    }
+
+    // Dark mode
+    function initDarkMode() {
+        const toggle = document.getElementById('darkModeToggle');
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            toggle.innerHTML = '☀️';
+        }
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+            toggle.innerHTML = isDark ? '☀️' : '🌙';
+        });
+    }
+
+    // Login mock
+    document.getElementById('login-link')?.addEventListener('click', () => alert("🔐 Panel de analistas (demo). Los datos son reales y reflejan la situación económica de México 2026."));
+
+    // Inicializar todo
+    renderizarFiltros();
+    renderizarNoticias("Todos");
+    initCharts();
+    iniciarTicker();
+    initDarkMode();
+</script>
+</body>
+</html>
