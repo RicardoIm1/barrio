@@ -596,6 +596,14 @@
 
         window.abrirWhatsApp = async function (numero, texto, id, event) {
             if (event) event.stopPropagation();
+
+            // ✅ VERIFICAR QUE EL USUARIO ESTÉ LOGUEADO
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                showToast('🔐 Inicia sesión para contactar al anunciante por WhatsApp', 2000);
+                return;
+            }
+
             if (id) await registrarClickWhatsApp(id);
             window.open(`https://wa.me/52${numero}?text=${encodeURIComponent(texto)}`, '_blank');
         };
