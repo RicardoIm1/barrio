@@ -824,3 +824,33 @@ body {
 .like-btn.liked {
     color: #e74c3c;
 }
+
+/* ==================== FIX ABSOLUTO PARA HEADER STICKY ==================== */
+.header {
+    position: -webkit-sticky !important;
+    /* Safari */
+    position: sticky !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: white !important;
+    width: 100% !important;
+}
+
+/* Forzar que el contenedor no rompa el sticky */
+.header .contenedor {
+    position: relative !important;
+}
+
+/* Evitar que el body o html tengan overflow que rompa sticky */
+body {
+    overflow-x: clip !important;
+    overflow-y: visible !important;
+}
+
+html {
+    overflow-y: visible !important;
+    overflow-x: visible !important;
+    height: 100% !important;
+}
