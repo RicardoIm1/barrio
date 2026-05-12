@@ -649,6 +649,14 @@
 
         window.abrirComentarios = function (id, event) {
             if (event) event.stopPropagation();
+
+            // ✅ VERIFICAR QUE EL USUARIO ESTÉ LOGUEADO PARA VER COMENTARIOS
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                showToast('🔐 Inicia sesión para ver y comentar', 1500);
+                return;
+            }
+
             currentAvisoIdForComments = id;
             document.getElementById('comments-panel').classList.add('open');
             cargarComentarios(id);
@@ -738,7 +746,7 @@
                 showToast('❌ Error de conexión', 1500);
             }
         };
-        
+
         // ========== FUNCIONES AUXILIARES ==========
         function escapeHtml(str) {
             if (!str) return '';
