@@ -386,41 +386,83 @@
         }
     </style>
     <style>
-        .hero-banner {
+        /* ========== HERO CON BOTÓN SUPERPUESTO ========== */
+        .hero-container {
+            position: relative;
             width: 100%;
-            height: auto;
-            max-height: 65vh;
-            object-fit: cover;
             display: block;
         }
 
-        @media (prefers-color-scheme: dark) {
-            .hero-banner {
-                opacity: 0.95;
+        .btn-hero-overlay {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #2c3e50, #1a2632);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+
+            /* Opcional: estilo adicional para que resalte */
+            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-hero-overlay:hover {
+            transform: translateX(-50%) translateY(-3px);
+            background: rgba(0, 0, 0, 0.85);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Ajuste para móvil */
+        @media (max-width: 768px) {
+            .btn-hero-overlay {
+                padding: 8px 16px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+                bottom: 15px;
             }
         }
-        
+
+        @media (max-width: 480px) {
+            .btn-hero-overlay {
+                padding: 6px 12px;
+                font-size: 0.65rem;
+                bottom: 10px;
+            }
+        }
     </style>
 
 </head>
 
 <body>
     <div id="header-container"></div>
-    <!-- ========== BANNER HERO ========== -->
-    <picture>
-        <source srcset="/barrio/img/banner-elbarrio2.webp" type="image/webp">
-        <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png"
-            alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager"
-            fetchpriority="high" decoding="async"
-            onerror="this.onerror=null; this.src='/barrio/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
-    </picture>
+    <!-- ========== BANNER HERO CON BOTÓN SUPERPUESTO ========== -->
+    <div class="hero-container">
+        <picture>
+            <source srcset="/barrio/img/banner-elbarrio.webp" type="image/webp">
+            <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png"
+                alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager"
+                fetchpriority="high" decoding="async"
+                onerror="this.onerror=null; this.src='/barrio/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
+        </picture>
+
+        <!-- Botón superpuesto -->
+        <button id="btnProbarNotificacion" class="btn-hero-overlay">
+            📝 ¿Eres vecino? Regístrate y publica tus avisos gratis
+        </button>
+    </div>
+
     <main class="contenedor">
-        <div style="display: flex; justify-content: center; width: 100%;">
-            <button id="btnProbarNotificacion" class="btn-login">
-                <!-- style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none; cursor: pointer; "-->
-                📝 ¿Eres vecino? Regístrate y publica tus avisos gratis
-            </button>
-        </div>
         <div class="filtros-buscador-wrapper">
             <div class="buscador-container">
                 <input type="text" id="buscador-input" class="buscador-input" placeholder="🔍 Buscar...">
