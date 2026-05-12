@@ -697,16 +697,25 @@
             if (!texto) { showToast('✏️ Escribe un comentario primero', 1500); return; }
             if (!currentAvisoIdForComments) { showToast('❌ Error: No se identificó el aviso', 1500); return; }
 
+            // ✅ VERIFICAR USUARIO LOGUEADO ANTES DE CONTINUAR
             const apiKey = localStorage.getItem('api_key');
             if (!apiKey) {
                 showToast('🔐 Inicia sesión para comentar', 1500);
                 return;
             }
 
+            // ✅ OBTENER EL USUARIO ACTUAL PARA ENVIAR COMO AUTOR
+            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+            if (!usuario.email) {
+                showToast('🔐 Tu sesión ha expirado, inicia sesión nuevamente', 1500);
+                return;
+            }
+
             try {
                 const resultado = await API.peticion('AGREGAR_COMENTARIO', {
                     avisoId: currentAvisoIdForComments,
-                    texto: texto
+                    texto: texto,
+                    autor: usuario.nombre || usuario.email
                 }, apiKey);
 
                 if (resultado && resultado.success) {
@@ -729,7 +738,7 @@
                 showToast('❌ Error de conexión', 1500);
             }
         };
-
+        
         // ========== FUNCIONES AUXILIARES ==========
         function escapeHtml(str) {
             if (!str) return '';
