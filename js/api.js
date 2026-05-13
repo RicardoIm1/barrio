@@ -326,9 +326,6 @@ window.addEventListener('storage', (e) => {
 console.log('📡 API Client cargado. API_BASE_URL:', API_BASE_URL);
 
 // ==================== FUNCIONES DE UI ====================
-
-// ==================== FUNCIONES DE UI ====================
-
 API.mostrarExito = function (mensaje) {
   console.log('✅ Éxito:', mensaje);
   const container = document.getElementById('mensaje-container');

@@ -580,7 +580,7 @@
           <div id="preview-nuevo" class="preview-container">
             <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
           </div>
-        </div> 
+        </div>
 
         <div class="campo">
           <label>📸 Subir imagen (opcional)</label>
@@ -966,7 +966,7 @@
             const datosSubida = {
               nombre: file.name,
               mimeType: file.type,
-              data: event.target.result
+              data: event.target.result.split(',')[1]
             };
             const apiKey = localStorage.getItem('api_key');
             const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
