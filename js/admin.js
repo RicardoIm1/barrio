@@ -5,8 +5,9 @@ let avisosActuales = [];
 let filtroCategoriaAdmin = 'todos';
 let filtroStatusAdmin = 'todos';
 
+let subiendoImagen = false;
+
 document.addEventListener('DOMContentLoaded', function () {
-  let subiendoImagen = false;  // ← AGREGAR ESTA LÍNEA
   console.log('Admin.js cargado correctamente');
 
   const usuario = Auth.requireAuth();
