@@ -71,6 +71,8 @@ class API {
 
   static async post(accion, datos = {}, apiKey = null) {
 
+    apiKey = apiKey || localStorage.getItem('api_key');
+
     try {
 
       const body = {
@@ -93,6 +95,7 @@ class API {
       return await response.json();
 
     } catch (error) {
+
       console.error('Error POST:', error);
       throw error;
     }
