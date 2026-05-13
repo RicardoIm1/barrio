@@ -211,10 +211,11 @@ class API {
   // Crear aviso
   static async crearAviso(datos, apiKey) {
     // Enviar los datos DENTRO de un objeto llamado "datos"
-    return await API.post('CREAR', {
-      coleccion: 'AVISOS',
-      datos: datos  // <-- Aquí está la clave: anidar dentro de "datos"
-    }, apiKey);
+    return await
+      API.post('CREAR', {
+        coleccion: 'AVISOS',
+        datos: datos
+      }, apiKey);
   }
 
   // Actualizar aviso
