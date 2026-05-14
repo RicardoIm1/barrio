@@ -300,6 +300,18 @@
   <script>
     // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function () {
+      
+      //hacer visible la contraseña
+      const passwordInput = document.getElementById('password');
+      const toggleBtn = document.getElementById('togglePassword');
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = passwordInput.type === 'password';
+          passwordInput.type = isHidden ? 'text' : 'password';
+          toggleBtn.textContent = isHidden ? '🙈' : '👁️';
+        });
+      }
       // Header
       fetch('/barrio/common/header.html')
         .then(res => {
