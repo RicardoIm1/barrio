@@ -1,6 +1,6 @@
 // ==================== API CLIENT - Jardines PVR ====================
 
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwqy1rAl87DUitXFgnHqZqn3E2n8sJJAQEelMf165aocBAm6ZKBAdYPTEYBFh6zMd_c/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyrZARiGvjxonyyVgvwH0cR0Zh-hReZWNqAchEdYgj81FxKZH0UGWU-9cFOv5fFLAtp/exec';
 
 // Al inicio del archivo, después de const API_BASE_URL
 if (window.location.hostname !== 'localhost') {
@@ -162,7 +162,7 @@ class API {
       const usuarioStr = localStorage.getItem('usuario');
       if (!usuarioStr) return null;
       const usuario = JSON.parse(usuarioStr);
-      
+
       // Verificar que no sea el string "undefined"
       if (usuario === 'undefined' || !usuario.email) return null;
       return usuario;

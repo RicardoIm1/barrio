@@ -1039,7 +1039,7 @@
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbwqy1rAl87DUitXFgnHqZqn3E2n8sJJAQEelMf165aocBAm6ZKBAdYPTEYBFh6zMd_c/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbyrZARiGvjxonyyVgvwH0cR0Zh-hReZWNqAchEdYgj81FxKZH0UGWU-9cFOv5fFLAtp/exec';
 
             try {
                 const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`);
@@ -1177,7 +1177,7 @@
         }
 
         async function guardarSuscripcionEnBackend(subscription, apiKey) {
-            const url = 'https://script.google.com/macros/s/AKfycbymAkb9J6BXWUftZxC8sJAisCWznqnvnpv4_B9jCOMa_Bj4dz_dhDVMHKsourD7WhyW/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbyrZARiGvjxonyyVgvwH0cR0Zh-hReZWNqAchEdYgj81FxKZH0UGWU-9cFOv5fFLAtp/exec';
             const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`);
             return await response.json();
         }
