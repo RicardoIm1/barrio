@@ -399,9 +399,21 @@
                 opacity: 0.95;
             }
         }
-        
     </style>
+    <script>
+        // Registrar visita al cargar la página
+        function registrarVisita(pagina) {
+            const userAgent = navigator.userAgent;
+            const referer = document.referrer;
+            const url = `URL_DE_TU_APPS_SCRIPT?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
+            fetch(url).catch(e => console.warn('Error registrando visita:', e));
+        }
 
+        // Llama a la función cuando cargue el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            registrarVisita('index');
+        });
+    </script>
 </head>
 
 <body>
@@ -416,10 +428,10 @@
     </picture>
     <main class="contenedor">
         <div style="display: flex; justify-content: center; width: 100%;">
-         <button id="btnProbarNotificacion" class="btn-login">
+            <button id="btnProbarNotificacion" class="btn-login">
                 <!-- style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none; cursor: pointer; "-->
                 📝 Regístrate y publica tus avisos gratis
-            </button>   
+            </button>
         </div>
         <div class="filtros-buscador-wrapper">
             <div class="buscador-container">
