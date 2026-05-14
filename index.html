@@ -400,20 +400,6 @@
             }
         }
     </style>
-    <script>
-        // Registrar visita al cargar la página
-        function registrarVisita(pagina) {
-            const userAgent = navigator.userAgent;
-            const referer = document.referrer;
-            const url = `https://script.google.com/macros/s/AKfycbzOwYO7-H2bArcfnRxePGukRMkdWfpXAAxfN50RNhrZvurPqBUVaB9gu8B0llLlGKg2/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
-            fetch(url).catch(e => console.warn('Error registrando visita:', e));
-        }
-
-        // Llama a la función cuando cargue el DOM
-        document.addEventListener('DOMContentLoaded', () => {
-            registrarVisita('index');
-        });
-    </script>
 </head>
 
 <body>
@@ -1257,6 +1243,20 @@
             }
         }
     </style>
+    <script>
+        // Registrar visita al cargar la página
+        function registrarVisita(pagina) {
+            const userAgent = navigator.userAgent;
+            const referer = document.referrer;
+            const url = `https://script.google.com/macros/s/AKfycbzOwYO7-H2bArcfnRxePGukRMkdWfpXAAxfN50RNhrZvurPqBUVaB9gu8B0llLlGKg2/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
+            fetch(url).catch(e => console.warn('Error registrando visita:', e));
+        }
+
+        // Llama a la función cuando cargue el DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            registrarVisita('index');
+        });
+    </script>
 </body>
 
 </html>
