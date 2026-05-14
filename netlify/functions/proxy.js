@@ -18,7 +18,7 @@ export async function handler(event) {
   try {
     const body = JSON.parse(event.body);
 
-    const resp = await fetch("https://script.google.com/macros/s/AKfycbzy_41nEj678ElLOwEo_Fc_7URRsRT97Xd7j72oFzMYEyTJqNIRMii3AQjf9gT7zSkW/exec", {
+    const resp = await fetch("https://script.google.com/macros/s/AKfycbwF_K1pSzS3hggCZyd1C9biPCRsOMIEAvGBN69sdfnqmOTmO2XHxjqz0RdlpD29iwDw/exec", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)

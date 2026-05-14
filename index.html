@@ -445,7 +445,7 @@
         function registrarVisita(pagina) {
             const userAgent = navigator.userAgent;
             const referer = document.referrer;
-            const url = `https://script.google.com/macros/s/AKfycbzy_41nEj678ElLOwEo_Fc_7URRsRT97Xd7j72oFzMYEyTJqNIRMii3AQjf9gT7zSkW/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
+            const url = `https://script.google.com/macros/s/AKfycbwF_K1pSzS3hggCZyd1C9biPCRsOMIEAvGBN69sdfnqmOTmO2XHxjqz0RdlpD29iwDw/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
             fetch(url).catch(e => console.warn('Error registrando visita:', e));
         }
 
@@ -1040,7 +1040,7 @@
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbzy_41nEj678ElLOwEo_Fc_7URRsRT97Xd7j72oFzMYEyTJqNIRMii3AQjf9gT7zSkW/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbwF_K1pSzS3hggCZyd1C9biPCRsOMIEAvGBN69sdfnqmOTmO2XHxjqz0RdlpD29iwDw/exec';
 
             try {
                 const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`);
@@ -1178,7 +1178,7 @@
         }
 
         async function guardarSuscripcionEnBackend(subscription, apiKey) {
-            const url = 'https://script.google.com/macros/s/AKfycbzy_41nEj678ElLOwEo_Fc_7URRsRT97Xd7j72oFzMYEyTJqNIRMii3AQjf9gT7zSkW/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbwF_K1pSzS3hggCZyd1C9biPCRsOMIEAvGBN69sdfnqmOTmO2XHxjqz0RdlpD29iwDw/exec';
             const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`);
             return await response.json();
         }
