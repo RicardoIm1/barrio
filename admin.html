@@ -806,79 +806,6 @@
     </div>
   </div>
 
-  <!-- <script>
-    function escapeHTML(str) {
-      if (!str) return '';
-      return String(str).replace(/[&<>]/g, function (m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      });
-    }
-
-    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
-      document.getElementById('edit-id').value = id;
-      document.getElementById('edit-titulo').value = titulo || '';
-      document.getElementById('edit-contenido').value = contenido || '';
-      document.getElementById('edit-categoria').value = categoria || 'eventos';
-      document.getElementById('edit-ubicacion').value = ubicacion || '';
-      document.getElementById('edit-contacto').value = contacto || '';
-      document.getElementById('edit-fecha_evento').value = fecha_evento || '';
-      document.getElementById('edit-imagen_url').value = imagen_url || '';
-      document.getElementById('edit-video_url').value = video_url || '';
-
-      const previewContainer = document.getElementById('preview-editar');
-      const previewImg = document.getElementById('preview-imagen-editar');
-      if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
-        previewImg.src = imagen_url;
-        previewContainer.style.display = 'block';
-      } else {
-        previewContainer.style.display = 'none';
-      }
-
-      document.getElementById('modal-editar').style.display = 'flex';
-    }
-
-    document.getElementById('cerrar-modal')?.addEventListener('click', () => {
-      document.getElementById('modal-editar').style.display = 'none';
-    });
-    document.getElementById('cancelar-editar')?.addEventListener('click', () => {
-      document.getElementById('modal-editar').style.display = 'none';
-    });
-
-    document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('edit-id').value;
-      const apiKey = localStorage.getItem('api_key');
-
-      const datos = {
-        titulo: document.getElementById('edit-titulo').value,
-        contenido: document.getElementById('edit-contenido').value,
-        categoria: document.getElementById('edit-categoria').value,
-        ubicacion: document.getElementById('edit-ubicacion').value,
-        contacto: document.getElementById('edit-contacto').value,
-        fecha_evento: document.getElementById('edit-fecha_evento').value,
-        imagen_url: document.getElementById('edit-imagen_url').value,
-        video_url: document.getElementById('edit-video_url').value
-      };
-
-      try {
-        const resultado = await API.actualizarAviso(id, datos, apiKey);
-        if (resultado && resultado.success) {
-          alert('✅ Aviso actualizado correctamente');
-          document.getElementById('modal-editar').style.display = 'none';
-          if (typeof cargarMisAvisos === 'function') cargarMisAvisos();
-        } else {
-          alert('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
-        }
-      } catch (error) {
-        console.error('Error al actualizar:', error);
-        alert('❌ Error al actualizar el aviso');
-      }
-    });
-  </script> -->
-
   <script>
     // Forzar actualización del header después de cargar
     (function () {
@@ -954,8 +881,21 @@
   </script>
 
   <script>
+    // Función para convertir archivo a base64
+    function convertirABase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Manejo de subida de imágenes
     document.addEventListener('DOMContentLoaded', function () {
       const uploadInput = document.getElementById('upload-imagen');
+      const imagenUrlInput = document.getElementById('imagen_url');
+      const vistaPrevia = document.getElementById('vista-previa');
 
       if (!uploadInput) return;
 
@@ -963,30 +903,42 @@
         const file = e.target.files[0];
         if (!file) return;
 
-        // Validaciones
-        if (file.size > 2 * 1024 * 1024) { // 2MB máximo para base64
-          API.mostrarError('La imagen no debe superar los 2MB');
+        // Validar tamaño (máximo 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+          API.mostrarError('❌ La imagen no debe superar los 2MB');
           uploadInput.value = '';
           return;
         }
 
+        // Validar tipo
         if (!file.type.startsWith('image/')) {
-          API.mostrarError('Solo se permiten imágenes');
+          API.mostrarError('❌ Solo se permiten imágenes (JPG, PNG, GIF)');
           uploadInput.value = '';
           return;
+        }
+
+        // Mostrar preview temporal
+        const urlTemp = URL.createObjectURL(file);
+        if (vistaPrevia) {
+          vistaPrevia.innerHTML = `
+        <div style="position: relative; display: inline-block; margin-top: 10px;">
+          <img src="${urlTemp}" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 2px solid #ff8c42;">
+          <div style="position: absolute; top: 5px; right: 5px; background: #ff8c42; color: white; border-radius: 50%; width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 12px;">⏳</div>
+        </div>
+      `;
         }
 
         const botonSubmit = document.querySelector('#form-aviso .boton[type="submit"]');
         if (botonSubmit) {
           botonSubmit.disabled = true;
-          botonSubmit.textContent = '📤 Subiendo imagen...';
+          botonSubmit.textContent = '📤 Subiendo imagen a Drive...';
         }
 
         try {
           // Convertir a base64
           const base64 = await convertirABase64(file);
 
-          // Enviar como JSON (esto NO tiene problemas de CORS)
+          // Preparar datos
           const datos = {
             accion: 'SUBIR_IMAGEN_DRIVE',
             datos: {
@@ -999,28 +951,55 @@
           const apiKey = localStorage.getItem('api_key');
           const urlGAS = 'https://script.google.com/macros/s/AKfycbx-p9dzp-hHMuQSxusyLTBNEkJWgitH5SBDeJEARsCPq3ChZunnZcf1EnSPvzT0MkIf/exec';
 
+          // Enviar al servidor
           const respuesta = await fetch(urlGAS, {
             method: 'POST',
-            mode: 'no-cors', // Importante para evitar CORS
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(datos)
           });
 
-          // Con mode: 'no-cors' no podemos leer la respuesta
-          // Pero podemos asumir éxito si no hay error
-          const urlImagenTemp = URL.createObjectURL(file);
-          document.getElementById('imagen_url').value = urlImagenTemp;
-          document.getElementById('vista-previa').innerHTML = `
-        <img src="${urlImagenTemp}" style="max-width:100%; max-height:150px; border-radius:8px; margin-top:10px;">
-      `;
+          const resultado = await respuesta.json();
 
-          API.mostrarExito('✅ Imagen procesada (se guardará al publicar)');
+          if (resultado && resultado.success) {
+            // Guardar URL real de Drive
+            if (imagenUrlInput) {
+              imagenUrlInput.value = resultado.data.url;
+            }
+
+            // Actualizar preview con URL real
+            if (vistaPrevia) {
+              vistaPrevia.innerHTML = `
+            <div style="position: relative; display: inline-block; margin-top: 10px;">
+              <img src="${resultado.data.url}" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 2px solid #28a745;">
+              <button type="button" id="eliminar-preview" style="position: absolute; top: 5px; right: 5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center;">✕</button>
+            </div>
+          `;
+
+              // Botón para eliminar
+              const eliminarBtn = document.getElementById('eliminar-preview');
+              if (eliminarBtn) {
+                eliminarBtn.addEventListener('click', () => {
+                  if (imagenUrlInput) imagenUrlInput.value = '';
+                  if (vistaPrevia) vistaPrevia.innerHTML = '';
+                  if (uploadInput) uploadInput.value = '';
+                  API.mostrarExito('🗑️ Imagen eliminada');
+                });
+              }
+            }
+
+            API.mostrarExito('✅ Imagen subida a Drive correctamente');
+          } else {
+            API.mostrarError('❌ Error: ' + (resultado.error || 'No se pudo subir la imagen'));
+            if (vistaPrevia) vistaPrevia.innerHTML = '';
+            uploadInput.value = '';
+          }
 
         } catch (err) {
-          console.error('Error:', err);
-          API.mostrarError('❌ Error al procesar imagen: ' + err.message);
+          console.error('Error detallado:', err);
+          API.mostrarError('❌ Error al subir imagen: ' + err.message);
+          if (vistaPrevia) vistaPrevia.innerHTML = '';
           uploadInput.value = '';
         }
 
@@ -1030,17 +1009,7 @@
         }
       });
     });
-
-    function convertirABase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
   </script>
-
 </body>
 
 </html>
