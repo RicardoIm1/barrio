@@ -391,9 +391,10 @@
             height: auto;
             max-height: 65vh;
             object-fit: contain;
+            /* ← Cambia 'cover' por 'contain' */
             display: block;
-            background: linear-gradient(135deg, #1e4620, #2b7a2b);
-            /* Un verde que combine con tu logo */
+            background-color: #f0f0f0;
+            /* Color de fondo mientras carga o si sobran bordes */
         }
 
         @media (prefers-color-scheme: dark) {
