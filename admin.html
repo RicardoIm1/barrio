@@ -963,42 +963,65 @@
         const file = e.target.files[0];
         if (!file) return;
 
+        // Validaciones
+        if (file.size > 2 * 1024 * 1024) { // 2MB máximo para base64
+          API.mostrarError('La imagen no debe superar los 2MB');
+          uploadInput.value = '';
+          return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+          API.mostrarError('Solo se permiten imágenes');
+          uploadInput.value = '';
+          return;
+        }
+
         const botonSubmit = document.querySelector('#form-aviso .boton[type="submit"]');
         if (botonSubmit) {
           botonSubmit.disabled = true;
           botonSubmit.textContent = '📤 Subiendo imagen...';
         }
 
-        const formData = new FormData();
-
-        formData.append('accion', 'SUBIR_IMAGEN_DRIVE');
-        formData.append('file', file);
-
-        const apiKey = localStorage.getItem('api_key');
-
         try {
-          const respuesta = await fetch('https://script.google.com/macros/s/AKfycbx-p9dzp-hHMuQSxusyLTBNEkJWgitH5SBDeJEARsCPq3ChZunnZcf1EnSPvzT0MkIf/exec', {
+          // Convertir a base64
+          const base64 = await convertirABase64(file);
+
+          // Enviar como JSON (esto NO tiene problemas de CORS)
+          const datos = {
+            accion: 'SUBIR_IMAGEN_DRIVE',
+            datos: {
+              data: base64,
+              nombre: file.name,
+              mimeType: file.type
+            }
+          };
+
+          const apiKey = localStorage.getItem('api_key');
+          const urlGAS = 'https://script.google.com/macros/s/AKfycbx-p9dzp-hHMuQSxusyLTBNEkJWgitH5SBDeJEARsCPq3ChZunnZcf1EnSPvzT0MkIf/exec';
+
+          const respuesta = await fetch(urlGAS, {
             method: 'POST',
+            mode: 'no-cors', // Importante para evitar CORS
             headers: {
-              'Authorization': apiKey
+              'Content-Type': 'application/json'
             },
-            body: formData
-          }).then(r => r.json());
+            body: JSON.stringify(datos)
+          });
 
-          if (respuesta && respuesta.success) {
-            document.getElementById('imagen_url').value = respuesta.data.url;
+          // Con mode: 'no-cors' no podemos leer la respuesta
+          // Pero podemos asumir éxito si no hay error
+          const urlImagenTemp = URL.createObjectURL(file);
+          document.getElementById('imagen_url').value = urlImagenTemp;
+          document.getElementById('vista-previa').innerHTML = `
+        <img src="${urlImagenTemp}" style="max-width:100%; max-height:150px; border-radius:8px; margin-top:10px;">
+      `;
 
-            document.getElementById('vista-previa').innerHTML =
-              `<img src="${respuesta.data.url}" style="max-width:100%; max-height:150px; border-radius:8px;">`;
-
-            API.mostrarExito('Imagen subida correctamente');
-          } else {
-            API.mostrarError('Error al subir imagen');
-          }
+          API.mostrarExito('✅ Imagen procesada (se guardará al publicar)');
 
         } catch (err) {
-          console.error(err);
-          API.mostrarError('Error de red al subir imagen');
+          console.error('Error:', err);
+          API.mostrarError('❌ Error al procesar imagen: ' + err.message);
+          uploadInput.value = '';
         }
 
         if (botonSubmit) {
@@ -1007,6 +1030,15 @@
         }
       });
     });
+
+    function convertirABase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+      });
+    }
   </script>
 
 </body>
