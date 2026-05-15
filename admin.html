@@ -179,7 +179,7 @@
       flex-wrap: wrap;
 
       justify-content: center;
-      width: 100%;
+      width: 40%;
     }
 
     .boton-chico {
@@ -517,6 +517,11 @@
   <div id="header-container"></div>
 
   <main class="contenedor">
+    <!-- <div class="admin-header">
+      <h1>👋 Panel de Administración</h1>
+      <p>Gestiona los avisos, tu perfil y la comunidad</p>
+    </div> -->
+
     <div id="mensaje-container"></div>
 
     <div class="filtros" id="admin-tabs">
@@ -569,24 +574,18 @@
           <input type="date" id="fecha_evento" name="fecha_evento">
         </div>
 
-        <!-- Campo de imagen -->
         <div class="campo">
-          <label>📸 Imagen (opcional):</label>
-          <div class="area-subida" id="area-subida-nuevo"
-            style="border: 2px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s;">
-            <div>📸 Haz clic o arrastra una imagen</div>
-            <small style="color: #666;">JPG, PNG, GIF (máx. 5MB)</small>
+          <label for="imagen_url">URL de imagen (opcional)</label>
+          <input type="url" id="imagen_url" name="imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+          <div id="preview-nuevo" class="preview-container">
+            <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
           </div>
-          <input type="file" id="imagen-nuevo" accept="image/*" style="display: none;">
-          <input type="hidden" id="imagen_url_nuevo" value="">
-        </div>
+        </div> 
 
-        <!-- Previsualización -->
-        <div id="preview-nuevo" style="display: none; margin-top: 10px;">
-          <img id="preview-imagen-nuevo" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
-          <button type="button" id="quitar-imagen-nuevo"
-            style="margin-top: 5px; background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">🗑️
-            Quitar imagen</button>
+        <div class="campo">
+          <label>📸 Subir imagen (opcional)</label>
+          <input type="file" id="upload-imagen" accept="image/*" capture="environment">
+          <div id="vista-previa" style="margin-top: 10px;"></div>
         </div>
 
         <div class="campo">
@@ -682,6 +681,59 @@
 
   <div id="footer-container"></div>
 
+  <script src="js/api.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      UI.cargarHeader();
+
+      // Footer
+      fetch('/barrio/common/footer.html')
+        .then(response => response.ok ? response.text() : Promise.reject())
+        .then(data => {
+          const footerContainer = document.getElementById('footer-container');
+          if (footerContainer) {
+            footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
+            const yearSpan = footerContainer.querySelector('#copyright-year');
+            if (yearSpan) {
+              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
+            }
+            // Ejecutar scripts
+            const scripts = footerContainer.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+              const newScript = document.createElement('script');
+              newScript.textContent = oldScript.textContent;
+              document.body.appendChild(newScript);
+              oldScript.remove();
+            });
+          }
+        });
+
+      const inputImagen = document.getElementById('imagen_url');
+      const previewContainer = document.getElementById('preview-nuevo');
+      const previewImg = document.getElementById('preview-imagen-nuevo');
+
+      if (inputImagen) {
+        inputImagen.addEventListener('input', function () {
+          const url = this.value;
+          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+            previewImg.src = url;
+            previewContainer.style.display = 'block';
+            previewImg.onerror = function () {
+              previewContainer.style.display = 'none';
+            };
+          } else {
+            previewContainer.style.display = 'none';
+          }
+        });
+      }
+    });
+  </script>
+
   <!-- Modal de edición -->
   <div id="modal-editar"
     style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
@@ -754,66 +806,75 @@
     </div>
   </div>
 
-  <script src="js/api.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/admin.js"></script>
-
   <script>
-    function convertirABase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>]/g, function (m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
       });
     }
-  </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      UI.cargarHeader();
+    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-titulo').value = titulo || '';
+      document.getElementById('edit-contenido').value = contenido || '';
+      document.getElementById('edit-categoria').value = categoria || 'eventos';
+      document.getElementById('edit-ubicacion').value = ubicacion || '';
+      document.getElementById('edit-contacto').value = contacto || '';
+      document.getElementById('edit-fecha_evento').value = fecha_evento || '';
+      document.getElementById('edit-imagen_url').value = imagen_url || '';
+      document.getElementById('edit-video_url').value = video_url || '';
 
-      // Footer
-      fetch('/barrio/common/footer.html')
-        .then(response => response.ok ? response.text() : Promise.reject())
-        .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            // ✅ Actualizar el año manualmente
-            const yearSpan = footerContainer.querySelector('#copyright-year');
-            if (yearSpan) {
-              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
-            }
-            // Ejecutar scripts
-            const scripts = footerContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-              const newScript = document.createElement('script');
-              newScript.textContent = oldScript.textContent;
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          }
-        });
+      const previewContainer = document.getElementById('preview-editar');
+      const previewImg = document.getElementById('preview-imagen-editar');
+      if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
+        previewImg.src = imagen_url;
+        previewContainer.style.display = 'block';
+      } else {
+        previewContainer.style.display = 'none';
+      }
 
-      const inputImagen = document.getElementById('imagen_url');
-      const previewContainer = document.getElementById('preview-nuevo');
-      const previewImg = document.getElementById('preview-imagen-nuevo');
+      document.getElementById('modal-editar').style.display = 'flex';
+    }
 
-      if (inputImagen) {
-        inputImagen.addEventListener('input', function () {
-          const url = this.value;
-          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-            previewImg.src = url;
-            previewContainer.style.display = 'block';
-            previewImg.onerror = function () {
-              previewContainer.style.display = 'none';
-            };
-          } else {
-            previewContainer.style.display = 'none';
-          }
-        });
+    document.getElementById('cerrar-modal')?.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+    document.getElementById('cancelar-editar')?.addEventListener('click', () => {
+      document.getElementById('modal-editar').style.display = 'none';
+    });
+
+    document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('edit-id').value;
+      const apiKey = localStorage.getItem('api_key');
+
+      const datos = {
+        titulo: document.getElementById('edit-titulo').value,
+        contenido: document.getElementById('edit-contenido').value,
+        categoria: document.getElementById('edit-categoria').value,
+        ubicacion: document.getElementById('edit-ubicacion').value,
+        contacto: document.getElementById('edit-contacto').value,
+        fecha_evento: document.getElementById('edit-fecha_evento').value,
+        imagen_url: document.getElementById('edit-imagen_url').value,
+        video_url: document.getElementById('edit-video_url').value
+      };
+
+      try {
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
+        if (resultado && resultado.success) {
+          alert('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+          if (typeof cargarMisAvisos === 'function') cargarMisAvisos();
+        } else {
+          alert('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
+        }
+      } catch (error) {
+        console.error('Error al actualizar:', error);
+        alert('❌ Error al actualizar el aviso');
       }
     });
   </script>
@@ -893,250 +954,37 @@
   </script>
 
   <script>
-    // ENVÍO DEL FORMULARIO - VERSIÓN MEJORADA
     document.addEventListener('DOMContentLoaded', function () {
-      const formAviso = document.getElementById('form-aviso');
-      if (!formAviso) return;
+      const uploadInput = document.getElementById('upload-imagen');
+      if (uploadInput) {
+        uploadInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
 
-      // Variable para controlar si ya se está enviando
-      let enviando = false;
-
-      // Remover cualquier event listener anterior (por si acaso)
-      const nuevoForm = formAviso.cloneNode(true);
-      formAviso.parentNode.replaceChild(nuevoForm, formAviso);
-
-      nuevoForm.addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        if (enviando) return;
-
-        const apiKey = localStorage.getItem('api_key');
-        if (!apiKey) {
-          API.mostrarError('❌ Debes iniciar sesión');
-          return;
-        }
-
-        const botonSubmit = nuevoForm.querySelector('.boton[type="submit"]');
-        const botonOriginalText = botonSubmit?.innerHTML || 'Publicar aviso';
-
-        try {
-          enviando = true;
-          if (botonSubmit) {
-            botonSubmit.disabled = true;
-            botonSubmit.innerHTML = '📤 Publicando...';
-          }
-
-          // Recoger datos del formulario
-          const datosAviso = {
-            accion: 'CREAR_AVISO_CON_IMAGEN',
-            api_key: apiKey,
-            titulo: document.getElementById('titulo')?.value || '',
-            contenido: document.getElementById('contenido')?.value || '',
-            categoria: document.getElementById('categoria')?.value || 'varios',
-            ubicacion: document.getElementById('ubicacion')?.value || '',
-            contacto: document.getElementById('contacto')?.value || '',
-            fecha_evento: document.getElementById('fecha_evento')?.value || '',
-            video_url: document.getElementById('video_url')?.value || '',
-            urgente: document.getElementById('urgente')?.checked || false
-          };
-
-          // Validar campos requeridos
-          if (!datosAviso.titulo.trim() || !datosAviso.contenido.trim()) {
-            throw new Error('Completa todos los campos obligatorios');
-          }
-
-          // Procesar imagen si existe
-          const file = document.getElementById('upload-imagen')?.files[0];
-          if (file) {
-            API.mostrarExito('📸 Procesando imagen...');
-            datosAviso.imagen_base64 = await convertirABase64(file);
-          }
-
-          const urlGAS = 'https://script.google.com/macros/s/AKfycbxXQTwS9Zp6fPW545sFft8MRiY9h57i7hC_0CSRM1vFwLu-Po4Y3lFubCSKt66HjZjT/exec';
-
-          // Intentar conexión con timeout
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-          API.mostrarExito('📝 Publicando aviso...');
-
-          const respuesta = await fetch(urlGAS, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datosAviso),
-            signal: controller.signal
-          });
-
-          clearTimeout(timeoutId);
-
-          if (!respuesta.ok) {
-            throw new Error(`Error HTTP: ${respuesta.status}`);
-          }
-
-          const resultado = await respuesta.json();
-
-          if (resultado.success) {
-            API.mostrarExito('✅ ¡Aviso publicado correctamente!');
-            nuevoForm.reset();
-
-            // Limpiar vista previa
-            const vistaPrevia = document.getElementById('vista-previa');
-            if (vistaPrevia) vistaPrevia.innerHTML = '';
-
-            // Limpiar campo de URL de imagen
-            const imagenUrlInput = document.getElementById('imagen_url');
-            if (imagenUrlInput) imagenUrlInput.value = '';
-
-            // Limpiar input de archivo
-            const fileInput = document.getElementById('upload-imagen');
-            if (fileInput) fileInput.value = '';
-
-            // Cambiar a la pestaña de lista
-            setTimeout(() => {
-              const tabLista = document.querySelector('.filtro[data-tab="lista"]');
-              if (tabLista) tabLista.click();
-              if (typeof cargarMisAvisos === 'function') {
-                cargarMisAvisos();
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const datosSubida = {
+              nombre: file.name,
+              mimeType: file.type,
+              data: event.target.result
+            };
+            const apiKey = localStorage.getItem('api_key');
+            const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
+            if (respuesta && respuesta.success) {
+              document.getElementById('imagen_url').value = respuesta.data.url;
+              const vistaPrevia = document.getElementById('vista-previa');
+              if (vistaPrevia) {
+                vistaPrevia.innerHTML = `<img src="${respuesta.data.url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
               }
-            }, 1500);
-          } else {
-            throw new Error(resultado.error || 'Error al publicar');
-          }
-
-        } catch (error) {
-          console.error('Error:', error);
-          if (error.message === 'AbortError') {
-            API.mostrarError('❌ Tiempo de espera agotado. Intenta de nuevo.');
-          } else {
-            API.mostrarError('❌ ' + error.message);
-          }
-        } finally {
-          setTimeout(() => {
-            enviando = false;
-            if (botonSubmit) {
-              botonSubmit.disabled = false;
-              botonSubmit.innerHTML = botonOriginalText;
+            } else {
+              alert('Error al subir la imagen: ' + (respuesta?.error || 'Intenta de nuevo'));
             }
-          }, 2000);
-        }
-      });
+          };
+          reader.readAsDataURL(file);
+        });
+      }
     });
   </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const uploadInput = document.getElementById('upload-imagen');
-        const imagenUrlInput = document.getElementById('imagen_url');
-        const vistaPrevia = document.getElementById('vista-previa');
-        
-        let archivoSeleccionado = null;
-        let subiendoImagen = false;
-
-        if (!uploadInput) return;
-
-        uploadInput.addEventListener('change', async function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Validaciones
-            if (file.size > 5 * 1024 * 1024) {
-                API.mostrarError('❌ La imagen no debe superar los 5MB');
-                uploadInput.value = '';
-                vistaPrevia.innerHTML = '';
-                return;
-            }
-
-            if (!file.type.startsWith('image/')) {
-                API.mostrarError('❌ Solo se permiten imágenes');
-                uploadInput.value = '';
-                vistaPrevia.innerHTML = '';
-                return;
-            }
-
-            archivoSeleccionado = file;
-
-            // Mostrar previsualización local
-            const urlTemp = URL.createObjectURL(file);
-            vistaPrevia.innerHTML = `
-                <div style="position: relative; display: inline-block; margin-top: 10px;">
-                    <img src="${urlTemp}" style="max-width: 100%; max-height: 150px; border-radius: 8px; border: 2px solid #ff8c42;">
-                    <button type="button" id="eliminar-preview" style="position: absolute; top: 5px; right: 5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer;">✕</button>
-                    <div id="subiendo-indicador" style="margin-top: 5px; font-size: 12px; color: #666;">⬆️ Subiendo imagen a Drive...</div>
-                </div>
-            `;
-
-            // Limpiar URL anterior si existe
-            if (imagenUrlInput) imagenUrlInput.value = '';
-
-            // SUBIR IMAGEN A DRIVE
-            await subirImagenADrive(file);
-
-            const eliminarBtn = document.getElementById('eliminar-preview');
-            if (eliminarBtn) {
-                eliminarBtn.addEventListener('click', () => {
-                    uploadInput.value = '';
-                    vistaPrevia.innerHTML = '';
-                    if (imagenUrlInput) imagenUrlInput.value = '';
-                    archivoSeleccionado = null;
-                    API.mostrarExito('🗑️ Imagen eliminada');
-                });
-            }
-        });
-
-        async function subirImagenADrive(file) {
-            subiendoImagen = true;
-            
-            try {
-                const apiKey = localStorage.getItem('api_key');
-                if (!apiKey) {
-                    API.mostrarError('No hay sesión activa. Inicia sesión nuevamente.');
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append('accion', 'SUBIR_IMAGEN_DRIVE');
-                formData.append('file', file);
-
-                const response = await fetch('https://script.google.com/macros/s/AKfycbw_0VjMCL3iwmJgRdA7G_e0mxSNo8y91xJ7cbP0apY0W4OqLWuZzG8p_9KlXKYUk9k/exec', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-API-Key': apiKey
-                    }
-                });
-
-                const resultado = await response.json();
-                console.log('📡 Respuesta subida imagen:', resultado);
-
-                const indicador = document.getElementById('subiendo-indicador');
-                if (indicador) indicador.style.display = 'none';
-
-                if (resultado.success && resultado.data && resultado.data.url) {
-                    // Guardar la URL de Drive en el campo oculto
-                    if (imagenUrlInput) {
-                        imagenUrlInput.value = resultado.data.url;
-                        API.mostrarExito('✅ Imagen subida correctamente a Drive');
-                        console.log('✅ URL guardada:', resultado.data.url);
-                    }
-                } else {
-                    const errorMsg = resultado.error || 'Error desconocido';
-                    API.mostrarError('❌ Error subiendo imagen: ' + errorMsg);
-                    // Limpiar previsualización
-                    vistaPrevia.innerHTML = '';
-                    uploadInput.value = '';
-                }
-                
-            } catch (error) {
-                console.error('Error al subir imagen:', error);
-                API.mostrarError('❌ Error de conexión al subir la imagen');
-                vistaPrevia.innerHTML = '';
-                uploadInput.value = '';
-            } finally {
-                subiendoImagen = false;
-            }
-        }
-    });
-</script>
 
 </body>
 
