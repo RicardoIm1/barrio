@@ -1172,25 +1172,30 @@
                     return;
                 }
 
-                // Usar ACTUALIZAR (que SÍ existe en tu script)
+                console.log(`Cambiando aviso ${id} a ${nuevoStatus}`);
+
+                // Usar la misma estructura que funciona en LISTAR_MIS_AVISOS
                 const resultado = await API.peticion('ACTUALIZAR', {
                     coleccion: 'AVISOS',
                     id: id,
                     datos: { status: nuevoStatus }
                 }, apiKey);
 
-                console.log('Respuesta ACTUALIZAR:', resultado);
+                console.log('Respuesta completa:', resultado);
 
                 if (resultado && resultado.success) {
+                    // Actualizar localmente
                     const index = todosLosAvisos.findIndex(a => a.id == id);
-                    if (index !== -1) todosLosAvisos[index].status = nuevoStatus;
+                    if (index !== -1) {
+                        todosLosAvisos[index].status = nuevoStatus;
+                    }
                     renderizarTablaAvisos();
                     alert(`✅ Estado actualizado a: ${nuevoStatus}`);
                 } else {
-                    throw new Error(resultado?.error || 'Error al actualizar');
+                    alert('❌ La API respondió pero no actualizó: ' + (resultado?.error || 'Error desconocido'));
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error detallado:', error);
                 alert('❌ Error: ' + error.message);
             }
         };
