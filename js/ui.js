@@ -212,7 +212,7 @@ function actualizarHeaderPorSesion() {
       console.error(`❌ Fallo crítico al procesar ${accion}:`, error);
       this.mostrarError(`Error de red al intentar conectar con la hoja de cálculo.`);
     }
-  }
+  };
 
 // Exportar para usar en otras páginas si es necesario
 window.actualizarHeaderPorSesion = actualizarHeaderPorSesion;
