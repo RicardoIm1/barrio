@@ -1085,7 +1085,7 @@
                 }
             }
         }
-        
+
         // ==================== RENDERIZAR TABLA CON FILTROS ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
@@ -1150,20 +1150,14 @@
                     return;
                 }
 
-                // Usar APROBAR_AVISO o RECHAZAR_AVISO según el caso
-                let resultado;
-                if (nuevoStatus === 'activo') {
-                    resultado = await API.peticion('APROBAR_AVISO', { id: id }, apiKey);
-                } else if (nuevoStatus === 'rechazado') {
-                    resultado = await API.peticion('RECHAZAR_AVISO', { id: id }, apiKey);
-                } else {
-                    // Para otros cambios, usar ACTUALIZAR
-                    resultado = await API.peticion('ACTUALIZAR', {
-                        coleccion: 'AVISOS',
-                        id: id,
-                        datos: { status: nuevoStatus }
-                    }, apiKey);
-                }
+                // Usar ACTUALIZAR (que SÍ existe en tu script)
+                const resultado = await API.peticion('ACTUALIZAR', {
+                    coleccion: 'AVISOS',
+                    id: id,
+                    datos: { status: nuevoStatus }
+                }, apiKey);
+
+                console.log('Respuesta ACTUALIZAR:', resultado);
 
                 if (resultado && resultado.success) {
                     const index = todosLosAvisos.findIndex(a => a.id == id);
@@ -1427,6 +1421,79 @@
             .catch(() => console.log('Footer no disponible'));
 
         console.log('✅ Script de administración cargado - Conectado a API real');
+    </script>
+    
+    <script>
+        // ==================== CARGAR USUARIOS ====================
+        async function cargarUsuariosAdmin() {
+            const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
+            if (!tablaUsuarios) return;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
+
+                if (!apiKey || usuario?.rol !== 'admin') {
+                    console.warn('No autorizado para ver usuarios');
+                    return;
+                }
+
+                // Usar LISTAR_USUARIOS (debe existir en tu script)
+                const respuesta = await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+
+                console.log('Usuarios respuesta:', respuesta);
+
+                let usuarios = [];
+
+                if (respuesta && respuesta.success) {
+                    if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                        usuarios = respuesta.data.datos;
+                    } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                        usuarios = respuesta.datos;
+                    }
+                }
+
+                if (usuarios.length === 0) {
+                    tablaUsuarios.innerHTML = '<tr><td colspan="5">No hay usuarios registrados</td></tr>';
+                    return;
+                }
+
+                tablaUsuarios.innerHTML = usuarios.map(user => `
+      <tr>
+        <td>${escapeHTML(user.email || '')}</td>
+        <td>${escapeHTML(user.nombre || '')}</td>
+        <td><span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol || 'usuario'}</span></td>
+        <td>${user.activo === 'TRUE' ? '✅ Activo' : '❌ Inactivo'}</td>
+        <td>
+          <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+
+            } catch (error) {
+                console.error('Error cargando usuarios:', error);
+                tablaUsuarios.innerHTML = `<td><td colspan="5">❌ Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Función para eliminar usuario
+        window.eliminarUsuario = async function (id) {
+            if (!confirm('¿Eliminar este usuario?')) return;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('ELIMINAR_USUARIO', { id: id }, apiKey);
+
+                if (resultado && resultado.success) {
+                    alert('✅ Usuario eliminado');
+                    cargarUsuariosAdmin();
+                } else {
+                    throw new Error(resultado?.error || 'Error al eliminar');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        };
     </script>
 
 </body>
