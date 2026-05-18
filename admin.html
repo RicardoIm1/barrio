@@ -865,365 +865,6 @@
   <script src="/barrio/js/ui.js"></script>
   <script src="/barrio/js/admin.js"></script>
 
-  <script>
-    // Variables globales para almacenar avisos y filtros
-    let todosLosAvisos = [];
-    let filtroCategoriaActual = 'todos';
-    let filtroStatusActual = 'todos';
-
-    document.addEventListener('DOMContentLoaded', function() {
-      UI.cargarHeader();
-
-      // Footer
-      fetch('/barrio/common/footer.html')
-        .then(response => response.ok ? response.text() : Promise.reject())
-        .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const yearSpan = footerContainer.querySelector('#copyright-year');
-            if (yearSpan) {
-              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
-            }
-            const scripts = footerContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-              const newScript = document.createElement('script');
-              newScript.textContent = oldScript.textContent;
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          }
-        });
-
-      // Preview de imagen en nuevo aviso
-      const inputImagen = document.getElementById('imagen_url');
-      const previewContainer = document.getElementById('preview-nuevo');
-      const previewImg = document.getElementById('preview-imagen-nuevo');
-
-      if (inputImagen) {
-        inputImagen.addEventListener('input', function() {
-          const url = this.value;
-          if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-            previewImg.src = url;
-            previewContainer.style.display = 'block';
-            previewImg.onerror = function() {
-              previewContainer.style.display = 'none';
-            };
-          } else {
-            previewContainer.style.display = 'none';
-          }
-        });
-      }
-
-      // Cargar avisos al iniciar la pestaña de lista
-      cargarAvisosParaAdmin();
-
-      // Aplicar filtros
-      document.getElementById('aplicar-filtros')?.addEventListener('click', function() {
-        filtroCategoriaActual = document.getElementById('filtro-categoria-admin').value;
-        filtroStatusActual = document.getElementById('filtro-status-admin').value;
-        renderizarTablaAvisos();
-      });
-
-      // Escuchar cambios en los selectores para aplicar automáticamente
-      document.getElementById('filtro-categoria-admin')?.addEventListener('change', function() {
-        filtroCategoriaActual = this.value;
-        renderizarTablaAvisos();
-      });
-
-      document.getElementById('filtro-status-admin')?.addEventListener('change', function() {
-        filtroStatusActual = this.value;
-        renderizarTablaAvisos();
-      });
-    });
-
-    // Función para cargar avisos desde API
-    async function cargarAvisosParaAdmin() {
-      const tbody = document.getElementById('tabla-avisos-cuerpo');
-      if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">Cargando avisos...</td></tr>';
-      }
-
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-        
-        // Intentar obtener avisos desde la API
-        let avisos = [];
-        
-        if (typeof API !== 'undefined' && API.peticion) {
-          const respuesta = await API.peticion('OBTENER_AVISOS', {}, apiKey);
-          if (respuesta && respuesta.success && respuesta.data) {
-            avisos = respuesta.data;
-          }
-        }
-        
-        // Si no hay avisos, usar datos de ejemplo
-        if (!avisos || avisos.length === 0) {
-          avisos = [
-            { id: '1', titulo: 'Kermés vecinal', contenido: 'Este domingo en la plaza principal', categoria: 'eventos', status: 'activo', contacto: '555-1234', imagen_url: '', video_url: '', ubicacion: 'Plaza Principal', fecha_evento: '2025-06-15', creador_email: usuario.email || 'admin@barrio.com' },
-            { id: '2', titulo: 'Bache en la esquina', contenido: 'Urge reparación en Calle Juárez', categoria: 'urgente', status: 'pendiente', contacto: '', imagen_url: '', video_url: '', ubicacion: 'Calle Juárez #123', fecha_evento: '', creador_email: usuario.email || 'admin@barrio.com' },
-            { id: '3', titulo: 'Curso de computación', contenido: 'Para adultos mayores, gratuito', categoria: 'escuelas', status: 'activo', contacto: '555-5678', imagen_url: '', video_url: '', ubicacion: 'Biblioteca Municipal', fecha_evento: '2025-06-20', creador_email: 'otro@ejemplo.com' }
-          ];
-        }
-        
-        todosLosAvisos = avisos;
-        renderizarTablaAvisos();
-        
-      } catch (error) {
-        console.error('Error al cargar avisos:', error);
-        if (tbody) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">Error al cargar avisos</td></tr>';
-        }
-      }
-    }
-
-    // Función para renderizar tabla con filtros aplicados
-    function renderizarTablaAvisos() {
-      const tbody = document.getElementById('tabla-avisos-cuerpo');
-      if (!tbody) return;
-
-      // Aplicar filtros
-      let avisosFiltrados = [...todosLosAvisos];
-
-      if (filtroCategoriaActual !== 'todos') {
-        avisosFiltrados = avisosFiltrados.filter(a => a.categoria === filtroCategoriaActual);
-      }
-
-      if (filtroStatusActual !== 'todos') {
-        avisosFiltrados = avisosFiltrados.filter(a => a.status === filtroStatusActual);
-      }
-
-      if (avisosFiltrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">No hay avisos que coincidan con los filtros</td></tr>';
-        return;
-      }
-
-      // Construir filas
-      tbody.innerHTML = avisosFiltrados.map(aviso => `
-        <tr data-id="${aviso.id}">
-          <td data-label="ID">${aviso.id || 'N/A'}</td>
-          <td data-label="Imagen">
-            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
-          </td>
-          <td data-label="Título">
-            <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
-            <small>${getCategoriaIcono(aviso.categoria)} ${aviso.categoria || 'varios'}</small>
-            ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
-           </td>
-          <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
-          <td data-label="Estado">
-            <select class="select-estado ${aviso.status || 'pendiente'}" 
-                    onchange="cambiarEstadoAviso('${aviso.id}', this.value)"
-                    data-id="${aviso.id}">
-              <option value="pendiente" ${(aviso.status || 'pendiente') === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
-              <option value="activo" ${aviso.status === 'activo' ? 'selected' : ''}>🟢 Activo</option>
-              <option value="rechazado" ${aviso.status === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
-            </select>
-           </td>
-          <td data-label="Acciones">
-            <div class="acciones-botones">
-              <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
-              <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
-            </div>
-           </td>
-        </tr>
-      `).join('');
-    }
-
-    // Función para cambiar estado del aviso
-    window.cambiarEstadoAviso = async function(id, nuevoStatus) {
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        
-        // Buscar el aviso original
-        const aviso = todosLosAvisos.find(a => a.id == id);
-        if (!aviso) {
-          alert('No se encontró el aviso');
-          return;
-        }
-
-        // Actualizar el status
-        const datosActualizados = {
-          ...aviso,
-          status: nuevoStatus
-        };
-
-        let exito = false;
-        
-        if (typeof API !== 'undefined' && API.actualizarAviso) {
-          const resultado = await API.actualizarAviso(id, datosActualizados, apiKey);
-          exito = resultado && resultado.success;
-        }
-        
-        // Actualizar localmente
-        const index = todosLosAvisos.findIndex(a => a.id == id);
-        if (index !== -1) {
-          todosLosAvisos[index].status = nuevoStatus;
-        }
-        
-        // Re-renderizar
-        renderizarTablaAvisos();
-        
-        alert(`✅ Estado actualizado a: ${nuevoStatus}`);
-        
-      } catch (error) {
-        console.error('Error al cambiar estado:', error);
-        alert('❌ Error al actualizar el estado');
-      }
-    };
-
-    // Función para eliminar aviso
-    window.eliminarAviso = async function(id) {
-      if (!confirm('¿Estás seguro de que deseas eliminar este aviso? Esta acción no se puede deshacer.')) {
-        return;
-      }
-
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        let exito = false;
-        
-        if (typeof API !== 'undefined' && API.eliminarAviso) {
-          const resultado = await API.eliminarAviso(id, apiKey);
-          exito = resultado && resultado.success;
-        }
-        
-        // Eliminar localmente
-        todosLosAvisos = todosLosAvisos.filter(a => a.id != id);
-        
-        // Re-renderizar
-        renderizarTablaAvisos();
-        
-        alert('✅ Aviso eliminado correctamente');
-        
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('❌ Error al eliminar el aviso');
-      }
-    };
-
-    // Función para editar aviso (abre modal)
-    window.editarAviso = function(id) {
-      const aviso = todosLosAvisos.find(a => a.id == id);
-      if (!aviso) {
-        alert('No se encontró el aviso');
-        return;
-      }
-      
-      // Abrir modal de edición con los datos
-      if (typeof window.abrirEditor === 'function') {
-        window.abrirEditor(
-          aviso.id,
-          aviso.titulo,
-          aviso.contenido,
-          aviso.categoria,
-          aviso.ubicacion,
-          aviso.contacto,
-          aviso.fecha_evento,
-          aviso.imagen_url,
-          aviso.video_url
-        );
-      } else {
-        // Modal simple si no existe la función
-        const nuevoTitulo = prompt('Editar título:', aviso.titulo);
-        if (nuevoTitulo && nuevoTitulo !== aviso.titulo) {
-          actualizarAvisoSimple(id, { titulo: nuevoTitulo });
-        }
-      }
-    };
-
-    // Función auxiliar para actualizar aviso
-    async function actualizarAvisoSimple(id, datos) {
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        const aviso = todosLosAvisos.find(a => a.id == id);
-        
-        if (aviso) {
-          const datosActualizados = { ...aviso, ...datos };
-          
-          if (typeof API !== 'undefined' && API.actualizarAviso) {
-            await API.actualizarAviso(id, datosActualizados, apiKey);
-          }
-          
-          const index = todosLosAvisos.findIndex(a => a.id == id);
-          if (index !== -1) {
-            todosLosAvisos[index] = datosActualizados;
-          }
-          
-          renderizarTablaAvisos();
-          alert('✅ Aviso actualizado');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('❌ Error al actualizar');
-      }
-    }
-
-    // Helper para íconos de categoría
-    function getCategoriaIcono(categoria) {
-      const iconos = {
-        'urgente': '🚨',
-        'escuelas': '🏫',
-        'servicios': '🛠️',
-        'comercios': '🛒',
-        'eventos': '📅',
-        'gobierno': '🏛️',
-        'varios': '📢'
-      };
-      return iconos[categoria] || '📢';
-    }
-
-    // Función global para subir imagen a Drive
-    window.subirImagenADrive = async function(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const datosSubida = {
-              nombre: file.name,
-              mimeType: file.type,
-              data: event.target.result
-            };
-            const apiKey = localStorage.getItem('api_key');
-            const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
-            if (respuesta && respuesta.success) {
-              resolve(respuesta.data.url);
-            } else {
-              reject(new Error(respuesta?.error || 'Error al subir'));
-            }
-          } catch (error) {
-            reject(error);
-          }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    };
-
-    // Script para subir imagen desde móvil
-    document.addEventListener('DOMContentLoaded', function() {
-      const uploadInput = document.getElementById('upload-imagen');
-      if (uploadInput) {
-        uploadInput.addEventListener('change', async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          
-          try {
-            const url = await window.subirImagenADrive(file);
-            document.getElementById('imagen_url').value = url;
-            const vistaPrevia = document.getElementById('vista-previa');
-            if (vistaPrevia) {
-              vistaPrevia.innerHTML = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
-            }
-          } catch (error) {
-            console.error('Error al subir imagen:', error);
-            alert('Error al subir la imagen: ' + error.message);
-          }
-        });
-      }
-    });
-  </script>
-
   <!-- Modal de edición -->
   <div id="modal-editar"
     style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
@@ -1304,6 +945,14 @@
   </div>
 
   <script>
+    // ==================== ADMINISTRACIÓN - CONEXIÓN REAL CON TU API ====================
+
+    // Variables globales
+    let todosLosAvisos = [];
+    let filtroCategoriaActual = 'todos';
+    let filtroStatusActual = 'todos';
+
+    // Función de escape HTML (existente)
     function escapeHTML(str) {
       if (!str) return '';
       return String(str).replace(/[&<>]/g, function(m) {
@@ -1314,22 +963,222 @@
       });
     }
 
-    // Función global abrirEditor
-    window.abrirEditor = function(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
-      document.getElementById('edit-id').value = id;
-      document.getElementById('edit-titulo').value = titulo || '';
-      document.getElementById('edit-contenido').value = contenido || '';
-      document.getElementById('edit-categoria').value = categoria || 'eventos';
-      document.getElementById('edit-ubicacion').value = ubicacion || '';
-      document.getElementById('edit-contacto').value = contacto || '';
-      document.getElementById('edit-fecha_evento').value = fecha_evento || '';
-      document.getElementById('edit-imagen_url').value = imagen_url || '';
-      document.getElementById('edit-video_url').value = video_url || '';
+    // Helper para íconos de categoría
+    function getCategoriaIcono(categoria) {
+      const iconos = {
+        'urgente': '🚨',
+        'escuelas': '🏫',
+        'servicios': '🛠️',
+        'comercios': '🛒',
+        'eventos': '📅',
+        'gobierno': '🏛️',
+        'varios': '📢'
+      };
+      return iconos[categoria] || '📢';
+    }
+
+    // ==================== CARGAR AVISOS REALES DESDE TU API ====================
+    async function cargarAvisosParaAdmin() {
+      const tbody = document.getElementById('tabla-avisos-cuerpo');
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">Cargando avisos desde tu base de datos...</td></tr>';
+      }
+
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        const usuario = API.getUsuarioActual();
+        
+        if (!apiKey || !usuario) {
+          if (tbody) tbody.innerHTML = '<td><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
+          return;
+        }
+        
+        console.log('👤 Usuario actual:', usuario);
+        
+        let avisos = [];
+        
+        // Usar el método correcto de tu API
+        if (usuario.rol === 'admin') {
+          // Admin ve TODOS los avisos
+          console.log('🛡️ Admin - Cargando TODOS los avisos...');
+          const resultado = await API.peticion('LISTAR', {
+            coleccion: 'AVISOS'
+          }, apiKey);
+          
+          if (resultado && resultado.success) {
+            avisos = resultado.data?.datos || resultado.data || [];
+            console.log(`✅ Admin: Cargados ${avisos.length} avisos totales`);
+          }
+        } else {
+          // Usuario normal ve SOLO sus avisos
+          console.log('👤 Usuario normal - Cargando MIS avisos...');
+          const resultado = await API.listarMisAvisos({}, {});
+          avisos = resultado.datos || [];
+          console.log(`✅ Usuario: Cargados ${avisos.length} avisos propios`);
+        }
+        
+        // Verificar si hay avisos
+        if (!avisos || avisos.length === 0) {
+          if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No hay avisos registrados aún</td></tr>';
+          todosLosAvisos = [];
+          return;
+        }
+        
+        // Normalizar los datos
+        todosLosAvisos = avisos.map(aviso => ({
+          id: aviso.id || aviso._id,
+          titulo: aviso.titulo || 'Sin título',
+          contenido: aviso.contenido || aviso.descripcion || '',
+          categoria: aviso.categoria || 'varios',
+          status: aviso.status || aviso.estado || 'pendiente',
+          contacto: aviso.contacto || '',
+          imagen_url: aviso.imagen_url || aviso.imagen || '',
+          video_url: aviso.video_url || aviso.video || '',
+          ubicacion: aviso.ubicacion || '',
+          fecha_evento: aviso.fecha_evento || '',
+          creador_email: aviso.creador_email || aviso.created_by || aviso.email || usuario.email,
+          created_at: aviso.created_at || aviso.fecha || new Date().toISOString()
+        }));
+        
+        console.log('📋 Avisos procesados:', todosLosAvisos.length);
+        renderizarTablaAvisos();
+        
+      } catch (error) {
+        console.error('❌ Error al cargar avisos:', error);
+        const tbody = document.getElementById('tabla-avisos-cuerpo');
+        if (tbody) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ Error: ${error.message || 'No se pudo conectar'}</td></tr>`;
+        }
+      }
+    }
+
+    // ==================== RENDERIZAR TABLA CON FILTROS ====================
+    function renderizarTablaAvisos() {
+      const tbody = document.getElementById('tabla-avisos-cuerpo');
+      if (!tbody) return;
+
+      // Aplicar filtros
+      let avisosFiltrados = [...todosLosAvisos];
+
+      if (filtroCategoriaActual !== 'todos') {
+        avisosFiltrados = avisosFiltrados.filter(a => a.categoria === filtroCategoriaActual);
+      }
+
+      if (filtroStatusActual !== 'todos') {
+        avisosFiltrados = avisosFiltrados.filter(a => a.status === filtroStatusActual);
+      }
+
+      if (avisosFiltrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+        return;
+      }
+
+      // Construir filas
+      tbody.innerHTML = avisosFiltrados.map(aviso => `
+        <tr data-id="${aviso.id}">
+          <td data-label="ID">${aviso.id ? aviso.id.substring(0, 8) : 'N/A'}..</td>
+          <td data-label="Imagen">
+            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
+          </td>
+          <td data-label="Título">
+            <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
+            <small>${getCategoriaIcono(aviso.categoria)} ${aviso.categoria || 'varios'}</small>
+            ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
+          </td>
+          <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
+          <td data-label="Estado">
+            <select class="select-estado ${aviso.status || 'pendiente'}" 
+                    onchange="cambiarEstadoAviso('${aviso.id}', this.value)"
+                    data-id="${aviso.id}">
+              <option value="pendiente" ${(aviso.status || 'pendiente') === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+              <option value="activo" ${aviso.status === 'activo' ? 'selected' : ''}>🟢 Activo</option>
+              <option value="rechazado" ${aviso.status === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
+            </select>
+          </td>
+          <td data-label="Acciones">
+            <div class="acciones-botones">
+              <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
+              <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ==================== CAMBIAR ESTADO ====================
+    window.cambiarEstadoAviso = async function(id, nuevoStatus) {
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        
+        const resultado = await API.actualizarAviso(id, { status: nuevoStatus }, apiKey);
+        
+        if (resultado && resultado.success) {
+          // Actualizar localmente
+          const index = todosLosAvisos.findIndex(a => a.id == id);
+          if (index !== -1) {
+            todosLosAvisos[index].status = nuevoStatus;
+          }
+          renderizarTablaAvisos();
+          if (API.mostrarExito) API.mostrarExito(`✅ Estado actualizado a: ${nuevoStatus}`);
+          else alert(`✅ Estado actualizado a: ${nuevoStatus}`);
+        } else {
+          throw new Error(resultado?.error || 'Error al actualizar');
+        }
+      } catch (error) {
+        console.error('Error al cambiar estado:', error);
+        if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+        else alert('❌ Error: ' + error.message);
+      }
+    };
+
+    // ==================== ELIMINAR AVISO ====================
+    window.eliminarAviso = async function(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar este aviso? Esta acción no se puede deshacer.')) {
+        return;
+      }
+
+      try {
+        const apiKey = localStorage.getItem('api_key');
+        const resultado = await API.eliminar('AVISOS', id, apiKey);
+        
+        if (resultado && resultado.success) {
+          todosLosAvisos = todosLosAvisos.filter(a => a.id != id);
+          renderizarTablaAvisos();
+          if (API.mostrarExito) API.mostrarExito('✅ Aviso eliminado correctamente');
+          else alert('✅ Aviso eliminado correctamente');
+        } else {
+          throw new Error(resultado?.error || 'Error al eliminar');
+        }
+      } catch (error) {
+        console.error('Error al eliminar:', error);
+        if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+        else alert('❌ Error: ' + error.message);
+      }
+    };
+
+    // ==================== EDITAR AVISO ====================
+    window.editarAviso = function(id) {
+      const aviso = todosLosAvisos.find(a => a.id == id);
+      if (!aviso) {
+        alert('No se encontró el aviso');
+        return;
+      }
+      
+      // Abrir modal de edición
+      document.getElementById('edit-id').value = aviso.id;
+      document.getElementById('edit-titulo').value = aviso.titulo || '';
+      document.getElementById('edit-contenido').value = aviso.contenido || '';
+      document.getElementById('edit-categoria').value = aviso.categoria || 'eventos';
+      document.getElementById('edit-ubicacion').value = aviso.ubicacion || '';
+      document.getElementById('edit-contacto').value = aviso.contacto || '';
+      document.getElementById('edit-fecha_evento').value = aviso.fecha_evento || '';
+      document.getElementById('edit-imagen_url').value = aviso.imagen_url || '';
+      document.getElementById('edit-video_url').value = aviso.video_url || '';
 
       const previewContainer = document.getElementById('preview-editar');
       const previewImg = document.getElementById('preview-imagen-editar');
-      if (imagen_url && (imagen_url.startsWith('http://') || imagen_url.startsWith('https://'))) {
-        previewImg.src = imagen_url;
+      if (aviso.imagen_url && (aviso.imagen_url.startsWith('http://') || aviso.imagen_url.startsWith('https://'))) {
+        previewImg.src = aviso.imagen_url;
         previewContainer.style.display = 'block';
       } else {
         previewContainer.style.display = 'none';
@@ -1338,32 +1187,75 @@
       document.getElementById('modal-editar').style.display = 'flex';
     }
 
-    document.getElementById('cerrar-modal')?.addEventListener('click', () => {
-      document.getElementById('modal-editar').style.display = 'none';
-    });
-    document.getElementById('cancelar-editar')?.addEventListener('click', () => {
-      document.getElementById('modal-editar').style.display = 'none';
-    });
+    // ==================== SUBIR IMAGEN A DRIVE ====================
+    window.subirImagenADrive = async function(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const datosSubida = {
+              nombre: file.name,
+              mimeType: file.type,
+              data: event.target.result
+            };
+            const apiKey = localStorage.getItem('api_key');
+            const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
+            if (respuesta && respuesta.success) {
+              resolve(respuesta.data.url);
+            } else {
+              reject(new Error(respuesta?.error || 'Error al subir'));
+            }
+          } catch (error) {
+            reject(error);
+          }
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    };
 
-    // Subir imagen en edición
-    document.getElementById('edit-upload-imagen')?.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
+    // ==================== INICIALIZACIÓN ====================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cargar avisos al iniciar
+      setTimeout(cargarAvisosParaAdmin, 500);
       
-      try {
-        const url = await window.subirImagenADrive(file);
-        document.getElementById('edit-imagen_url').value = url;
-        const previewImg = document.getElementById('preview-imagen-editar');
-        if (previewImg) {
-          previewImg.src = url;
-          document.getElementById('preview-editar').style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Error al subir imagen:', error);
-        alert('Error al subir la imagen: ' + error.message);
+      // Configurar filtros
+      const btnFiltros = document.getElementById('aplicar-filtros');
+      const filtroCategoria = document.getElementById('filtro-categoria-admin');
+      const filtroStatus = document.getElementById('filtro-status-admin');
+      
+      if (btnFiltros) {
+        btnFiltros.addEventListener('click', function() {
+          filtroCategoriaActual = filtroCategoria?.value || 'todos';
+          filtroStatusActual = filtroStatus?.value || 'todos';
+          renderizarTablaAvisos();
+        });
       }
+      
+      if (filtroCategoria) {
+        filtroCategoria.addEventListener('change', function() {
+          filtroCategoriaActual = this.value;
+          renderizarTablaAvisos();
+        });
+      }
+      
+      if (filtroStatus) {
+        filtroStatus.addEventListener('change', function() {
+          filtroStatusActual = this.value;
+          renderizarTablaAvisos();
+        });
+      }
+
+      // Modal: cerrar
+      document.getElementById('cerrar-modal')?.addEventListener('click', () => {
+        document.getElementById('modal-editar').style.display = 'none';
+      });
+      document.getElementById('cancelar-editar')?.addEventListener('click', () => {
+        document.getElementById('modal-editar').style.display = 'none';
+      });
     });
 
+    // ==================== FORMULARIO DE EDICIÓN ====================
     document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('edit-id').value;
@@ -1381,94 +1273,114 @@
       };
 
       try {
-        let exito = false;
-        if (typeof API !== 'undefined' && API.actualizarAviso) {
-          const resultado = await API.actualizarAviso(id, datos, apiKey);
-          exito = resultado && resultado.success;
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
+        
+        if (resultado && resultado.success) {
+          const index = todosLosAvisos.findIndex(a => a.id == id);
+          if (index !== -1) {
+            todosLosAvisos[index] = { ...todosLosAvisos[index], ...datos };
+          }
+          renderizarTablaAvisos();
+          if (API.mostrarExito) API.mostrarExito('✅ Aviso actualizado correctamente');
+          else alert('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+        } else {
+          throw new Error(resultado?.error || 'Error al actualizar');
         }
-        
-        // Actualizar localmente
-        const index = todosLosAvisos.findIndex(a => a.id == id);
-        if (index !== -1) {
-          todosLosAvisos[index] = { ...todosLosAvisos[index], ...datos };
-        }
-        
-        renderizarTablaAvisos();
-        
-        alert('✅ Aviso actualizado correctamente');
-        document.getElementById('modal-editar').style.display = 'none';
-        
       } catch (error) {
         console.error('Error al actualizar:', error);
-        alert('❌ Error al actualizar el aviso');
+        if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+        else alert('❌ Error: ' + error.message);
       }
     });
 
-    // Forzar actualización del header
-    (function() {
-      function actualizarHeader() {
-        const usuarioStr = localStorage.getItem('usuario');
-        const apiKey = localStorage.getItem('api_key');
-
-        const loginLink = document.getElementById('login-link');
-        const userArea = document.getElementById('user-area');
-        const userNameSpan = document.getElementById('user-name');
-        const perfilLink = document.getElementById('perfil-link');
-        const adminLink = document.getElementById('admin-link');
-        const cerrarBtn = document.getElementById('cerrar-sesion');
-
-        if (!loginLink) {
-          setTimeout(actualizarHeader, 200);
-          return;
+    // ==================== SUBIR IMAGEN EN EDICIÓN ====================
+    document.getElementById('edit-upload-imagen')?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      try {
+        const url = await window.subirImagenADrive(file);
+        document.getElementById('edit-imagen_url').value = url;
+        const previewImg = document.getElementById('preview-imagen-editar');
+        if (previewImg) {
+          previewImg.src = url;
+          document.getElementById('preview-editar').style.display = 'block';
         }
+        if (API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+      } catch (error) {
+        console.error('Error al subir imagen:', error);
+        if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+      }
+    });
 
-        if (usuarioStr && apiKey) {
-          try {
-            const usuario = JSON.parse(usuarioStr);
-            if (loginLink) loginLink.style.display = 'none';
-            if (userArea) userArea.style.display = 'flex';
-            if (userNameSpan) userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+    // ==================== SUBIR IMAGEN EN NUEVO AVISO ====================
+    document.getElementById('upload-imagen')?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      
+      try {
+        const url = await window.subirImagenADrive(file);
+        document.getElementById('imagen_url').value = url;
+        const vistaPrevia = document.getElementById('vista-previa');
+        if (vistaPrevia) {
+          vistaPrevia.innerHTML = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
+        }
+        if (API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+      } catch (error) {
+        console.error('Error al subir imagen:', error);
+        if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+      }
+    });
 
-            const tabUsuariosBtn = document.getElementById('tab-usuarios-btn');
-            if (adminLink) adminLink.style.display = 'inline-flex';
-            if (tabUsuariosBtn && usuario.rol === 'admin') {
-              tabUsuariosBtn.style.display = 'inline-flex';
-            } else if (tabUsuariosBtn) {
-              tabUsuariosBtn.style.display = 'none';
-            }
+    // Preview de imagen en nuevo aviso
+    const inputImagen = document.getElementById('imagen_url');
+    const previewContainer = document.getElementById('preview-nuevo');
+    const previewImg = document.getElementById('preview-imagen-nuevo');
 
-            if (cerrarBtn) {
-              const nuevoCerrar = cerrarBtn.cloneNode(true);
-              if (cerrarBtn.parentNode) {
-                cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-                nuevoCerrar.addEventListener('click', function(e) {
-                  e.preventDefault();
-                  localStorage.removeItem('usuario');
-                  localStorage.removeItem('api_key');
-                  window.location.href = '/barrio/index.html';
-                });
-              }
-            }
-          } catch (e) {
-            console.error('Error al actualizar header:', e);
-          }
+    if (inputImagen) {
+      inputImagen.addEventListener('input', function() {
+        const url = this.value;
+        if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+          previewImg.src = url;
+          previewContainer.style.display = 'block';
+          previewImg.onerror = function() {
+            previewContainer.style.display = 'none';
+          };
         } else {
-          if (loginLink) loginLink.style.display = 'inline-flex';
-          if (userArea) userArea.style.display = 'none';
+          previewContainer.style.display = 'none';
         }
-      }
+      });
+    }
 
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-          setTimeout(actualizarHeader, 100);
-        });
-      } else {
-        setTimeout(actualizarHeader, 100);
-      }
+    // Cargar header y footer
+    if (typeof UI !== 'undefined' && UI.cargarHeader) {
+      UI.cargarHeader();
+    }
 
-      setTimeout(actualizarHeader, 500);
-      setTimeout(actualizarHeader, 1000);
-    })();
+    // Footer
+    fetch('/barrio/common/footer.html')
+      .then(response => response.ok ? response.text() : Promise.reject())
+      .then(data => {
+        const footerContainer = document.getElementById('footer-container');
+        if (footerContainer) {
+          footerContainer.innerHTML = data;
+          const yearSpan = footerContainer.querySelector('#copyright-year');
+          if (yearSpan) {
+            yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
+          }
+          const scripts = footerContainer.querySelectorAll('script');
+          scripts.forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+            oldScript.remove();
+          });
+        }
+      })
+      .catch(() => console.log('Footer no disponible'));
+
+    console.log('✅ Script de administración cargado - Conectado a API real');
   </script>
 
 </body>
