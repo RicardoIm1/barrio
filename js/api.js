@@ -14,6 +14,45 @@ class API {
     this.baseUrl = API_BASE_URL;
   }
 
+  // ==================== NUEVO MÉTODO REQUEST (UNIVERSAL) ====================
+  static async request(accion, datos = {}, apiKey = null) {
+    apiKey = apiKey || localStorage.getItem('api_key');
+    
+    const body = {
+      accion: accion,
+      ...datos
+    };
+    
+    if (apiKey) {
+      body.api_key = apiKey;
+    }
+    
+    console.log(`📤 ${accion} - Enviando:`, body);
+    
+    try {
+      const response = await fetch(API_BASE_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const resultado = await response.json();
+      console.log(`📥 ${accion} - Respuesta:`, resultado);
+      return resultado;
+      
+    } catch (error) {
+      console.error(`❌ ${accion} - Error:`, error);
+      throw error;
+    }
+  }
+
   // ==================== MÉTODOS ESTÁTICOS PRINCIPALES ====================
 
   // Método principal para hacer peticiones JSONP
@@ -313,7 +352,7 @@ class API {
   // ==================== MÉTODOS DE USUARIOS (ADMIN) ====================
 
   static async listarUsuarios(apiKey) {
-    const resultado = await API.peticion('LISTAR', { coleccion: 'USUARIOS' }, apiKey);
+    const resultado = await API.request('LISTAR_USUARIOS', {}, apiKey);
     if (resultado && resultado.success) {
       return resultado.data || { datos: [] };
     }
