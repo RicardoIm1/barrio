@@ -1,11 +1,9 @@
 // ==================== ADMINISTRACIÓN ====================
-// ==================== ADMINISTRACIÓN CORREGIDO ====================
 
 let paginaAdmin = 1;
 let avisosActuales = [];
 let filtroCategoriaAdmin = 'todos';
 let filtroStatusAdmin = 'todos';
-
 let subiendoImagen = false;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -32,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   configurarTabs();
   
-  // ========== NUEVO: CONFIGURAR FILTROS DEL ADMINISTRADOR ==========
+  // CONFIGURAR FILTROS DEL ADMINISTRADOR
   configurarFiltrosAdmin();
 
   // ========== FORMULARIO NUEVO AVISO ==========
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const usuarioActual = API.getUsuarioActual();
       const apiKey = localStorage.getItem('api_key');
 
-      // Corrección de captura: Intenta leer el campo oculto donde tu uploader guarda la URL final
       const inputImagenUrl = document.getElementById('imagen_url');
       let urlFinalImagen = inputImagenUrl ? inputImagenUrl.value.trim() : '';
 
@@ -73,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ubicacion: document.getElementById('ubicacion')?.value || '',
         contacto: document.getElementById('contacto')?.value || '',
         fecha_evento: document.getElementById('fecha_evento')?.value || '',
-        imagen_url: urlFinalImagen, // Enlace verificado y limpio
+        imagen_url: urlFinalImagen,
         video_url: document.getElementById('video_url')?.value || '',
         destacado: document.getElementById('urgente')?.checked ? 'TRUE' : 'FALSE',
         status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
@@ -131,79 +128,12 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // ========== CARGAR AVISOS INICIALES ==========
-  cargarMisAvisos();
-});
-
-// ========== NUEVA FUNCIÓN: CONECTAR SELECTORES DE FILTRADO CON LA INTERFAZ ==========
-function configurarFiltrosAdmin() {
-  const selectCategoria = document.getElementById('filtro-categoria-admin');
-  const selectStatus = document.getElementById('filtro-status-admin');
-
-  if (selectCategoria) {
-    selectCategoria.addEventListener('change', function(e) {
-      filtroCategoriaAdmin = e.target.value;
-      paginaAdmin = 1; // Resetea la página al filtrar
-      cargarMisAvisos();
-    });
-  }
-
-  if (selectStatus) {
-    selectStatus.addEventListener('change', function(e) {
-      filtroStatusAdmin = e.target.value;
-      paginaAdmin = 1;
-      cargarMisAvisos();
-    });
-  }
-}
-
-// ========== FUNCIÓN REESTRUCTURADA PARA TRAER AVISOS PARA REVISIÓN ==========
-async function cargarMisAvisos() {
-  try {
-    const usuarioActual = API.getUsuarioActual();
-    if (!usuarioActual) return;
-
-    // Construcción de filtros dinámicos basados en la selección real de la pantalla
-    const filtros = {};
-    
-    if (filtroCategoriaAdmin !== 'todos') {
-      filtros.categoria = filtroCategoriaAdmin;
-    }
-    
-    // Si es administrador, le permitimos cambiar de estatus globales. Si es usuario común, solo verá los suyos.
-    if (usuarioActual.rol === 'admin') {
-      if (filtroStatusAdmin !== 'todos') {
-        filtros.status = filtroStatusAdmin;
-      }
-    }
-
-    console.log('⚙️ Solicitando lista de avisos con filtros:', filtros);
-    
-    // Llamada unificada a la API
-    const respuesta = await API.listar('AVISOS', filtros, { pagina: paginaAdmin, limite: 10 });
-    
-    if (respuesta && (respuesta.datos || Array.isArray(respuesta))) {
-      avisosActuales = respuesta.datos || respuesta;
-      // Llamada obligatoria a UI para pintar el listado y habilitar botones de Aprobación
-      if (typeof UI !== 'undefined' && typeof UI.renderizarTablaAdmin === 'function') {
-        UI.renderizarTablaAdmin(avisosActuales);
-      } else {
-        console.warn('⚠️ UI.renderizarTablaAdmin no encontrada. Asegúrate de cargar ui.js');
-      }
-    }
-  } catch (error) {
-    console.error('❌ Error al cargar listado de avisos administrativos:', error);
-  }
-}
-
-
   // ========== ACTIVAR NOTIFICACIONES ==========
   const btnNotif = document.getElementById('activar-notificaciones');
   if (btnNotif) {
     btnNotif.addEventListener('click', activarNotificaciones);
   }
 
-  // ========== FORMULARIO NUEVO USUARIO ==========
   // ========== FORMULARIO NUEVO USUARIO ==========
   const formUsuario = document.getElementById('form-usuario');
   if (formUsuario) {
@@ -216,7 +146,6 @@ async function cargarMisAvisos() {
       const password = document.getElementById('user-password').value;
       const categorias = document.getElementById('user-categorias').value || 'todas';
 
-      // Validaciones básicas
       if (!email || !nombre || !password) {
         API.mostrarError('Completa todos los campos obligatorios');
         return;
@@ -227,14 +156,12 @@ async function cargarMisAvisos() {
         return;
       }
 
-      // Obtener la API key del localStorage
       const apiKey = localStorage.getItem('api_key');
       if (!apiKey) {
         API.mostrarError('No hay sesión activa. Inicia sesión nuevamente.');
         return;
       }
 
-      // Datos para el backend
       const datos = {
         email: email,
         nombre: nombre,
@@ -247,19 +174,16 @@ async function cargarMisAvisos() {
       console.log('📝 Enviando datos de usuario:', { ...datos, password_hash: '***' });
 
       try {
-        // Enviar la API key en la petición
         const respuesta = await API.peticion('CREAR', {
           coleccion: 'USUARIOS',
           ...datos
-        }, apiKey);  // <-- ¡Aquí está la clave! Enviamos la apiKey
+        }, apiKey);
 
         console.log('📡 Respuesta completa:', respuesta);
 
         if (respuesta && respuesta.success) {
           API.mostrarExito('✅ Usuario creado correctamente');
           formUsuario.reset();
-
-          // Recargar la lista de usuarios
           cargarUsuarios();
         } else {
           const errorMsg = respuesta?.error || 'Error desconocido al crear usuario';
@@ -279,7 +203,65 @@ async function cargarMisAvisos() {
 
   // ========== CARGAR AVISOS INICIALES ==========
   cargarMisAvisos();
-});
+}); // ← CIERRE DEL DOMContentLoaded
+
+// ========== CONFIGURAR FILTROS ADMIN ==========
+function configurarFiltrosAdmin() {
+  const selectCategoria = document.getElementById('filtro-categoria-admin');
+  const selectStatus = document.getElementById('filtro-status-admin');
+
+  if (selectCategoria) {
+    selectCategoria.addEventListener('change', function(e) {
+      filtroCategoriaAdmin = e.target.value;
+      paginaAdmin = 1;
+      cargarMisAvisos();
+    });
+  }
+
+  if (selectStatus) {
+    selectStatus.addEventListener('change', function(e) {
+      filtroStatusAdmin = e.target.value;
+      paginaAdmin = 1;
+      cargarMisAvisos();
+    });
+  }
+}
+
+// ========== CARGAR MIS AVISOS (VERSIÓN CORREGIDA) ==========
+async function cargarMisAvisos() {
+  try {
+    const usuarioActual = API.getUsuarioActual();
+    if (!usuarioActual) return;
+
+    const filtros = {};
+    
+    if (filtroCategoriaAdmin !== 'todos') {
+      filtros.categoria = filtroCategoriaAdmin;
+    }
+    
+    if (usuarioActual.rol === 'admin') {
+      if (filtroStatusAdmin !== 'todos') {
+        filtros.status = filtroStatusAdmin;
+      }
+    }
+
+    console.log('⚙️ Solicitando lista de avisos con filtros:', filtros);
+    
+    const respuesta = await API.listar('AVISOS', filtros, { pagina: paginaAdmin, limite: 10 });
+    
+    if (respuesta && (respuesta.datos || Array.isArray(respuesta))) {
+      avisosActuales = respuesta.datos || respuesta;
+      if (typeof UI !== 'undefined' && typeof UI.renderizarTablaAdmin === 'function') {
+        UI.renderizarTablaAdmin(avisosActuales);
+      } else {
+        console.warn('⚠️ UI.renderizarTablaAdmin no encontrada');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error al cargar listado de avisos administrativos:', error);
+  }
+}
+
 
 // ========== CONFIGURAR TABS ==========
 function configurarTabs() {
