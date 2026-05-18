@@ -986,79 +986,38 @@
         // ==================== CARGAR AVISOS REALES DESDE TU API ====================
         async function cargarAvisosParaAdmin() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">Cargando avisos...</td></tr>';
-            }
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6">Cargando desde Google Sheet...</td></tr>';
+
+            // ⚠️ CAMBIÁ ESTO por el ID de tu hoja de AVISOS
+            const SHEET_ID = '1s8w2Wb8uiQQMMrZn2TQYD5sVDbp-NdpnnQR8l-YTqXM';
+            const SHEET_NAME = 'AVISOS';
+            const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
             try {
-                const apiKey = localStorage.getItem('api_key');
-                const usuario = API.getUsuarioActual();
+                const response = await fetch(url);
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                const rows = json.table.rows;
+                const headers = json.table.cols.map(col => col.label);
 
-                if (!apiKey || !usuario) {
-                    if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
-                    return;
-                }
+                const avisos = rows.map(row => {
+                    let obj = {};
+                    headers.forEach((h, i) => {
+                        let val = row.c[i]?.v;
+                        if (h === 'id') val = val?.toString();
+                        obj[h] = val || '';
+                    });
+                    return obj;
+                }).filter(a => a.id);
 
-                console.log('👤 Usuario:', usuario.email, 'Rol:', usuario.rol);
-
-                let avisos = [];
-                let respuesta = null;
-
-                // Usar LISTAR_MIS_AVISOS (funciona para admin y usuarios normales)
-                console.log('📡 Llamando a API.peticion con LISTAR_MIS_AVISOS...');
-
-                respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
-                console.log('📡 Respuesta completa:', respuesta);
-
-                if (respuesta && respuesta.success) {
-                    // La respuesta puede venir en diferentes formatos
-                    if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
-                        avisos = respuesta.data.datos;
-                    } else if (respuesta.data && Array.isArray(respuesta.data)) {
-                        avisos = respuesta.data;
-                    } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
-                        avisos = respuesta.datos;
-                    } else if (Array.isArray(respuesta)) {
-                        avisos = respuesta;
-                    }
-                    console.log(`✅ Cargados ${avisos.length} avisos`);
-                } else {
-                    console.warn('⚠️ La respuesta no fue exitosa:', respuesta);
-                }
-
-                if (!avisos || avisos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No hay avisos registrados aún</td></tr>';
-                    todosLosAvisos = [];
-                    return;
-                }
-
-                // Normalizar datos
-                todosLosAvisos = avisos.map(aviso => ({
-                    id: aviso.id || aviso._id,
-                    titulo: aviso.titulo || 'Sin título',
-                    contenido: aviso.contenido || '',
-                    categoria: aviso.categoria || 'varios',
-                    status: aviso.status || aviso.estado || 'pendiente',
-                    contacto: aviso.contacto || '',
-                    imagen_url: aviso.imagen_url || '',
-                    video_url: aviso.video_url || '',
-                    ubicacion: aviso.ubicacion || '',
-                    fecha_evento: aviso.fecha_evento || '',
-                    created_at: aviso.created_at || aviso.fecha,
-                    creador_email: aviso.created_by || aviso.creador_email || usuario.email
-                }));
-
-                console.log('📋 Avisos normalizados:', todosLosAvisos.length);
+                todosLosAvisos = avisos;
                 renderizarTablaAvisos();
-
-            } catch (error) {
-                console.error('❌ Error en cargarAvisosParaAdmin:', error);
-                const tbody = document.getElementById('tabla-avisos-cuerpo');
-                if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ Error: ${error.message}</td></tr>`;
-                }
+            } catch (err) {
+                console.error(err);
+                tbody.innerHTML = '<tr><td colspan="6">❌ No se pudo leer la hoja pública. Revisá que esté publicada como "Cualquier persona".</td></tr>';
             }
         }
+
         // ==================== RENDERIZAR TABLA CON FILTROS ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
