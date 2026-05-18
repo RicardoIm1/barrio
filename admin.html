@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+  <title>Administración | EL BARRIO</title>
+  <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/barrio/css/estilo.css">
+  <link rel="manifest" href="/barrio/manifest.json">
+  <meta name="theme-color" content="#2c3e50">
+  <style>
+    /* Estilos adicionales para asegurar que los tabs funcionen */
+    .tab {
+      display: none;
+    }
+
+    .tab.activo {
+      display: block;
+    }
+
+    .filtro.activo {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    #admin-tabs {
+      margin-bottom: 30px;
+      border-bottom: 2px solid var(--color-borde);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .filtro {
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid var(--color-borde);
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .filtro:hover {
+      background: var(--color-fondo);
+    }
+
+    .filtro.activo {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    /* ========== GRID DE AVISOS ========== */
+    .avisos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Tarjeta de avisos mejorada */
+    .tarjeta {
+      background: white;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Tarjeta destacada (más reciente) */
+    .tarjeta.destacada {
+      grid-column: span 2;
+      grid-row: span 1;
+      background: linear-gradient(135deg, #fff 0%, #fef9e6 100%);
+      border: 2px solid #ff8c42;
+      box-shadow: 0 4px 15px rgba(255, 140, 66, 0.2);
+    }
+
+    .tarjeta.destacada .tarjeta-titulo {
+      font-size: 1.3rem;
+    }
+
+    .tarjeta.destacada .tarjeta-contenido {
+      font-size: 1rem;
+    }
+
+    /* Badge de "Nuevo" o "Reciente" */
+    .reciente-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, #ff8c42, #f5b042);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      z-index: 1;
+    }
+
+    .tarjeta-titulo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      padding-right: 60px;
+    }
+
+    .tarjeta-fecha {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+      margin-bottom: 0.5rem;
+    }
+
+    .tarjeta-contenido {
+      font-size: 0.9rem;
+      color: var(--color-texto);
+      margin-bottom: 0.8rem;
+      flex-grow: 1;
+    }
+
+    .tarjeta-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
+    /* Miniaturas de imagen */
+    .tarjeta-imagen {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 0.5rem;
+      margin-bottom: 0.8rem;
+      background: #f0f0f0;
+    }
+
+    .tarjeta.destacada .tarjeta-imagen {
+      height: 200px;
+    }
+
+    /* Video embebido pequeño */
+    .tarjeta-video {
+      margin-bottom: 0.8rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    .tarjeta-video iframe {
+      width: 100%;
+      height: 160px;
+      border: none;
+    }
+
+    .tarjeta.destacada .tarjeta-video iframe {
+      height: 200px;
+    }
+
+    .grupo-botones {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 40%;
+    }
+
+    .boton-chico {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.75rem;
+      width: auto;
+    }
+
+    .boton-secundario {
+      background: var(--color-fondo);
+      color: var(--color-primario);
+      border: 1px solid var(--color-borde);
+    }
+
+    .boton-secundario:hover {
+      background: var(--color-borde);
+    }
+
+    /* ========== GRID DE USUARIOS ========== */
+    .usuarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .tarjeta-usuario {
+      background: white;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .tarjeta-usuario:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .avatar-usuario {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .info-usuario {
+      flex-grow: 1;
+    }
+
+    .info-usuario strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .info-usuario small {
+      font-size: 0.7rem;
+      color: var(--color-texto-claro);
+    }
+
+    .rol-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .rol-admin {
+      background: #dc3545;
+      color: white;
+    }
+
+    .rol-usuario {
+      background: #28a745;
+      color: white;
+    }
+
+    /* Paginación */
+    .paginacion {
+      margin-top: 2rem;
+      text-align: center;
+    }
+
+    .paginacion-botones {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pagina {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--color-borde);
+      background: white;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pagina:hover {
+      background: var(--color-fondo);
+    }
+
+    .pagina.activa {
+      background: var(--color-primario);
+      color: white;
+      border-color: var(--color-primario);
+    }
+
+    /* Header decorativo */
+    .admin-header {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 1.5rem 1rem;
+      background: linear-gradient(135deg, #1e4620, #2b7a2b);
+      border-radius: 1rem;
+      color: white;
+    }
+
+    .admin-header h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .admin-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* Estilos para formularios */
+    .formulario {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .campo {
+      margin-bottom: 1rem;
+    }
+
+    .campo label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--color-borde);
+      border-radius: 0.5rem;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .preview-container {
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .preview-imagen {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 0.5rem;
+      border: 1px solid var(--color-borde);
+    }
+
+    /* Botones principales */
+    .boton {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .boton:hover {
+      background: linear-gradient(135deg, #e69a2e, #e67300);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .boton-peligro {
+      background: #dc3545;
+    }
+
+    .boton-peligro:hover {
+      background: #c82333;
+    }
+
+    .boton-exito {
+      background: #28a745;
+    }
+
+    .boton-exito:hover {
+      background: #218838;
+    }
+
+    /* Estilos inyectados quirúrgicamente para la tabla de moderación */
+    .admin-tabla-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: 0.5rem;
+      border: 1px solid var(--color-borde);
+      margin-top: 15px;
+    }
+
+    .tabla-admin {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    .tabla-admin th, .tabla-admin td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    .tabla-admin th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .admin-filtros-flex {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 0.5rem;
+      border: 1px solid var(--color-borde);
+      flex-wrap: wrap;
+    }
+
+    .admin-filtros-flex div {
+      flex: 1;
+      min-width: 140px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    /* Tablets */
+    @media (max-width: 1024px) {
+      .avisos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
+      }
+
+      .tarjeta.destacada {
+        grid-column: span 1;
+      }
+    }
+
+    /* Móviles grandes */
+    @media (max-width: 768px) {
+      .avisos-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .tarjeta.destacada {
+        grid-column: span 1;
+        order: -1;
+      }
+
+      .tarjeta.destacada .tarjeta-titulo {
+        font-size: 1.1rem;
+      }
+
+      .usuarios-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tarjeta-usuario {
+        padding: 0.8rem;
+      }
+
+      .admin-header h1 {
+        font-size: 1.3rem;
+      }
+
+      .grupo-botones {
+        flex-direction: column;
+      }
+
+      .boton-chico {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* Móviles pequeños */
+    @media (max-width: 480px) {
+
+      .tarjeta-imagen,
+      .tarjeta.destacada .tarjeta-imagen {
+        height: 140px;
+      }
+
+      .tarjeta-video iframe,
+      .tarjeta.destacada .tarjeta-video iframe {
+        height: 140px;
+      }
+
+      .tarjeta-titulo {
+        font-size: 1rem;
+      }
+
+      .reciente-badge {
+        font-size: 0.6rem;
+        padding: 3px 8px;
+      }
+    }
+
+    /* Pantallas muy grandes (escritorio) */
+    @media (min-width: 1400px) {
+      .avisos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+
+      .tarjeta.destacada {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
+
+      .usuarios-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      }
+    }
+
+    /* Filtros */
+    .filtro.activo {
+      background: linear-gradient(135deg, #f5b042, #ff8c42);
+      color: white;
+      border-color: transparent;
+    }
+
+    .filtro:hover {
+      background: #e0e0e0;
+      transform: translateY(-2px);
+    }
+
+    .cargando {
+      text-align: center;
+      padding: 2rem;
+      color: var(--color-texto-claro);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="header-container"></div>
+
+  <main class="contenedor">
+    <div id="mensaje-container"></div>
+
+    <div class="filtros" id="admin-tabs">
+      <button class="filtro activo" data-tab="nuevo">📝 Nuevo aviso</button>
+      <button class="filtro" data-tab="lista">📋 Mis avisos</button>
+      <button class="filtro" data-tab="perfil">👤 Mi perfil</button>
+      <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥 Usuarios</button>
+    </div>
+
+    <!-- Pestaña: Nuevo aviso -->
+    <div id="tab-nuevo" class="tab activo">
+      <form id="form-aviso" class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
+
+        <div class="campo">
+          <label for="categoria">Categoría</label>
+          <select id="categoria" required>
+            <option value="urgente">🚨 URGENTE</option>
+            <option value="escuelas">🏫 ESCUELAS</option>
+            <option value="servicios">🛠️ SERVICIOS</option>
+            <option value="comercios">🛒 COMERCIOS</option>
+            <option value="eventos">📅 EVENTOS</option>
+            <option value="gobierno">🏛️ GOBIERNO</option>
+            <option value="varios">📢 VARIOS</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
+        </div>
+
+        <div class="campo">
+          <label for="contenido">Descripción</label>
+          <textarea id="contenido" name="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="ubicacion">Ubicación (opcional)</label>
+          <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
+        </div>
+
+        <div class="campo">
+          <label for="contacto">Contacto (opcional)</label>
+          <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
+        </div>
+
+        <div class="campo">
+          <label for="fecha_evento">Fecha del evento (opcional)</label>
+          <input type="date" id="fecha_evento" name="fecha_evento">
+        </div>
+
+        <div class="campo">
+          <label for="imagen_url">URL de imagen (opcional)</label>
+          <input type="url" id="imagen_url" name="imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+          <div id="preview-nuevo" class="preview-container">
+            <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
+          </div>
+        </div> 
+
+        <div class="campo">
+          <label>📸 Subir imagen (opcional)</label>
+          <input type="file" id="upload-imagen" accept="image/*" capture="environment">
+          <div id="vista-previa" style="margin-top: 10px;"></div>
+        </div>
+
+        <div class="campo">
+          <label for="video_url">URL de video (opcional - YouTube o Vimeo)</label>
+          <input type="url" id="video_url" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+
+        <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
+          <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+        </div>
+
+        <div class="grupo-botones">
+          <button type="submit" class="boton">Publicar aviso</button>
+          <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Pestaña: Lista de avisos (Integrado Sistema de Filtrado y Tabla) -->
+    <div id="tab-lista" class="tab">
+      
+      <!-- Controles de filtrado requeridos por admin.js para Google Sheets -->
+      <div class="admin-filtros-flex">
+        <div>
+          <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Filtrar Categoría:</label>
+          <select id="filtro-categoria-admin" style="width: 100%; padding: 5px; margin-top: 3px; border-radius: 4px; border: 1px solid var(--color-borde); font-family: inherit;">
+            <option value="todos">Todas las categorías</option>
+            <option value="urgente">🚨 Urgentes</option>
+            <option value="escuelas">🏫 Escuelas</option>
+            <option value="servicios">🛠️ Servicios</option>
+            <option value="comercios">🛒 Comercios</option>
+            <option value="eventos">📅 Eventos</option>
+            <option value="gobierno">🏛️ Gobierno</option>
+            <option value="varios">📢 Varios</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Estatus de Modificación:</label>
+          <select id="filtro-status-admin" style="width: 100%; padding: 5px; margin-top: 3px; border-radius: 4px; border: 1px solid var(--color-borde); font-family: inherit;">
+            <option value="todos">Todos los estados</option>
+            <option value="pendiente">⏳ Pendientes</option>
+            <option value="activo">🟢 Activos</option>
+            <option value="rechazado">🔴 Rechazados</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabla donde ui.js inyectará las filas de manera segura -->
+      <div class="admin-tabla-wrapper">
+        <table class="tabla-admin">
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Título / Categoría</th>
+              <th>Contacto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-avisos-cuerpo">
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 15px; color: #777;">Cargando registros vecinales...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tus contenedores de paginación originales permanecen abajo intactos -->
+      <div id="mis-avisos-container" style="display: none;"></div>
+      <div id="paginacion-admin" class="paginacion"></div>
+    </div>
+
+    <!-- Pestaña: Perfil -->
+    <div id="tab-perfil" class="tab">
+      <div class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
+        <div id="perfil-info"></div>
+        <div style="margin-top: 32px;">
+          <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
+          <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
+            🔔 Activar notificaciones
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestaña: Usuarios -->
+    <div id="tab-usuarios" class="tab">
+      <div class="formulario" style="max-width: 100%;">
+        <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
+
+        <form id="form-usuario">
+          <div class="campo">
+            <label for="user-email">Email</label>
+            <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
+          </div>
+
+          <div class="campo">
+            <label for="user-nombre">Nombre completo</label>
+            <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
+          </div>
+
+          <div class="campo">
+            <label for="user-rol">Rol</label>
+            <select id="user-rol" required>
+              <option value="usuario">Usuario</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="user-password">Contraseña</label>
+            <input type="password" id="user-password" required placeholder="Contraseña temporal">
+          </div>
+
+          <input type="hidden" id="user-categorias" value="todas">
+          <button type="submit" class="boton" style="margin-top: 10px;">👥 Crear Cuenta de Usuario</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Inclusión de tus archivos JavaScript en orden secuencial -->
+  <script src="/barrio/js/auth.js"></script>
+  <script src="/barrio/js/api.js"></script>
+  <script src="/barrio/js/ui.js"></script>
+  <script src="/barrio/js/admin.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof UI !== 'undefined' && typeof UI.cargarHeader === 'function') {
+        UI.cargarHeader();
+      }
+    });
+  </script>
+</body>
+
+</html>
