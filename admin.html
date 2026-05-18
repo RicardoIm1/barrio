@@ -869,6 +869,33 @@
     <script src="/barrio/js/api.js"></script>
     <script src="/barrio/js/ui.js"></script>
     <script src="/barrio/js/admin.js"></script>
+    <script>
+        // ==================== CONTROL DE ACCESO ====================
+        (function verificarAccesoAdmin() {
+            const usuario = API.getUsuarioActual();
+            const apiKey = localStorage.getItem('api_key');
+
+            // Si no hay usuario logueado, redirigir al login
+            if (!usuario || !apiKey) {
+                console.warn('🔒 Acceso denegado: No hay sesión activa');
+                window.location.href = '/barrio/login.html?redirect=admin.html';
+                return;
+            }
+
+            // Si es admin, mostrar contenido
+            if (usuario.rol === 'admin') {
+                console.log('✅ Acceso concedido como administrador:', usuario.email);
+                return;
+            }
+
+            // Si es usuario normal pero intenta entrar a admin, redirigir
+            if (usuario.rol !== 'admin') {
+                console.warn('🔒 Acceso denegado: No eres administrador');
+                window.location.href = '/barrio/index.html';
+                return;
+            }
+        })();
+    </script>
 
     <!-- Modal de edición -->
     <div id="modal-editar"
