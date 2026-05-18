@@ -178,7 +178,7 @@
       margin-top: 1rem;
       flex-wrap: wrap;
       justify-content: center;
-      width: auto;
+      width: 40%;
     }
 
     .boton-chico {
@@ -403,7 +403,7 @@
       background: #218838;
     }
 
-    /* Estilos para la tabla de moderación */
+    /* Estilos inyectados quirúrgicamente para la tabla de moderación */
     .admin-tabla-wrapper {
       overflow-x: auto;
       background: white;
@@ -419,8 +419,7 @@
       font-size: 0.85rem;
     }
 
-    .tabla-admin th,
-    .tabla-admin td {
+    .tabla-admin th, .tabla-admin td {
       padding: 10px 12px;
       border-bottom: 1px solid var(--color-borde);
     }
@@ -428,31 +427,6 @@
     .tabla-admin th {
       background: #f8f9fa;
       font-weight: 600;
-    }
-
-    /* Estilo para selectores de estado */
-    .select-estado {
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: 1px solid var(--color-borde);
-      background: white;
-      cursor: pointer;
-      font-size: 0.75rem;
-    }
-
-    .select-estado.pendiente {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .select-estado.activo {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .select-estado.rechazado {
-      background: #f8d7da;
-      color: #721c24;
     }
 
     .admin-filtros-flex {
@@ -471,56 +445,8 @@
       min-width: 140px;
     }
 
-    .badge-estado {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.65rem;
-      font-weight: bold;
-    }
-
-    .badge-pendiente {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .badge-activo {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .badge-rechazado {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    /* Botones de acción en tabla */
-    .acciones-botones {
-      display: flex;
-      gap: 5px;
-      flex-wrap: wrap;
-    }
-
-    .accion-btn {
-      padding: 4px 8px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      font-size: 0.7rem;
-      font-weight: bold;
-    }
-
-    .accion-editar {
-      background: #007bff;
-      color: white;
-    }
-
-    .accion-eliminar {
-      background: #dc3545;
-      color: white;
-    }
-
     /* ========== RESPONSIVE ========== */
+    /* Tablets */
     @media (max-width: 1024px) {
       .avisos-grid {
         grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
@@ -531,6 +457,7 @@
       }
     }
 
+    /* Móviles grandes */
     @media (max-width: 768px) {
       .avisos-grid {
         grid-template-columns: 1fr;
@@ -566,47 +493,9 @@
         width: 100%;
         text-align: center;
       }
-
-      .tabla-admin,
-      .tabla-admin thead,
-      .tabla-admin tbody,
-      .tabla-admin th,
-      .tabla-admin td,
-      .tabla-admin tr {
-        display: block;
-      }
-
-      .tabla-admin thead tr {
-        display: none;
-      }
-
-      .tabla-admin tr {
-        margin-bottom: 15px;
-        border: 1px solid var(--color-borde);
-        border-radius: 8px;
-        padding: 10px;
-      }
-
-      .tabla-admin td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px;
-        border-bottom: 1px solid #eee;
-      }
-
-      .tabla-admin td:before {
-        content: attr(data-label);
-        font-weight: bold;
-        width: 40%;
-      }
-
-      .acciones-botones {
-        justify-content: flex-end;
-        width: 100%;
-      }
     }
 
+    /* Móviles pequeños */
     @media (max-width: 480px) {
 
       .tarjeta-imagen,
@@ -629,6 +518,7 @@
       }
     }
 
+    /* Pantallas muy grandes (escritorio) */
     @media (min-width: 1400px) {
       .avisos-grid {
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -644,6 +534,7 @@
       }
     }
 
+    /* Filtros */
     .filtro.activo {
       background: linear-gradient(135deg, #f5b042, #ff8c42);
       color: white;
@@ -725,7 +616,7 @@
           <div id="preview-nuevo" class="preview-container">
             <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
           </div>
-        </div>
+        </div> 
 
         <div class="campo">
           <label>📸 Subir imagen (opcional)</label>
@@ -750,10 +641,10 @@
       </form>
     </div>
 
-    <!-- Pestaña: Lista de avisos -->
+    <!-- Pestaña: Lista de avisos (Integrado Sistema de Filtrado y Tabla) -->
     <div id="tab-lista" class="tab">
-
-      <!-- Controles de filtrado -->
+      
+      <!-- Controles de filtrado requeridos por admin.js para Google Sheets -->
       <div class="admin-filtros-flex">
         <div>
           <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Filtrar Categoría:</label>
@@ -769,7 +660,7 @@
           </select>
         </div>
         <div>
-          <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Estatus:</label>
+          <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Estatus de Modificación:</label>
           <select id="filtro-status-admin" style="width: 100%; padding: 5px; margin-top: 3px; border-radius: 4px; border: 1px solid var(--color-borde); font-family: inherit;">
             <option value="todos">Todos los estados</option>
             <option value="pendiente">⏳ Pendientes</option>
@@ -777,18 +668,13 @@
             <option value="rechazado">🔴 Rechazados</option>
           </select>
         </div>
-        <div>
-          <label style="font-size: 0.75rem; font-weight: bold; color: #555;">&nbsp;</label>
-          <button id="aplicar-filtros" class="boton-chico" style="width: 100%; padding: 6px;">🔍 Aplicar filtros</button>
-        </div>
       </div>
 
-      <!-- Tabla de avisos -->
+      <!-- Tabla donde ui.js inyectará las filas de manera segura -->
       <div class="admin-tabla-wrapper">
         <table class="tabla-admin">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Imagen</th>
               <th>Título / Categoría</th>
               <th>Contacto</th>
@@ -798,12 +684,14 @@
           </thead>
           <tbody id="tabla-avisos-cuerpo">
             <tr>
-              <td colspan="6" style="text-align: center; padding: 15px; color: #777;">Cargando registros vecinales...</td>
+              <td colspan="5" style="text-align: center; padding: 15px; color: #777;">Cargando registros vecinales...</td>
             </tr>
           </tbody>
         </table>
       </div>
 
+      <!-- Tus contenedores de paginación originales permanecen abajo intactos -->
+      <div id="mis-avisos-container" style="display: none;"></div>
       <div id="paginacion-admin" class="paginacion"></div>
     </div>
 
@@ -859,19 +747,14 @@
   </main>
   <div id="footer-container"></div>
 
-  <!-- Inclusión de tus archivos JavaScript -->
+  <!-- Inclusión de tus archivos JavaScript en orden secuencial -->
   <script src="/barrio/js/auth.js"></script>
   <script src="/barrio/js/api.js"></script>
   <script src="/barrio/js/ui.js"></script>
   <script src="/barrio/js/admin.js"></script>
 
-  <script>
-    // Variables globales para almacenar avisos y filtros
-    let todosLosAvisos = [];
-    let filtroCategoriaActual = 'todos';
-    let filtroStatusActual = 'todos';
-
-    document.addEventListener('DOMContentLoaded', function() {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
       UI.cargarHeader();
 
       // Footer
@@ -881,10 +764,12 @@
           const footerContainer = document.getElementById('footer-container');
           if (footerContainer) {
             footerContainer.innerHTML = data;
+            // ✅ Actualizar el año manualmente
             const yearSpan = footerContainer.querySelector('#copyright-year');
             if (yearSpan) {
               yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
             }
+            // Ejecutar scripts
             const scripts = footerContainer.querySelectorAll('script');
             scripts.forEach(oldScript => {
               const newScript = document.createElement('script');
@@ -895,329 +780,21 @@
           }
         });
 
-      // Preview de imagen en nuevo aviso
       const inputImagen = document.getElementById('imagen_url');
       const previewContainer = document.getElementById('preview-nuevo');
       const previewImg = document.getElementById('preview-imagen-nuevo');
 
       if (inputImagen) {
-        inputImagen.addEventListener('input', function() {
+        inputImagen.addEventListener('input', function () {
           const url = this.value;
           if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
             previewImg.src = url;
             previewContainer.style.display = 'block';
-            previewImg.onerror = function() {
+            previewImg.onerror = function () {
               previewContainer.style.display = 'none';
             };
           } else {
             previewContainer.style.display = 'none';
-          }
-        });
-      }
-
-      // Cargar avisos al iniciar la pestaña de lista
-      cargarAvisosParaAdmin();
-
-      // Aplicar filtros
-      document.getElementById('aplicar-filtros')?.addEventListener('click', function() {
-        filtroCategoriaActual = document.getElementById('filtro-categoria-admin').value;
-        filtroStatusActual = document.getElementById('filtro-status-admin').value;
-        renderizarTablaAvisos();
-      });
-
-      // Escuchar cambios en los selectores para aplicar automáticamente
-      document.getElementById('filtro-categoria-admin')?.addEventListener('change', function() {
-        filtroCategoriaActual = this.value;
-        renderizarTablaAvisos();
-      });
-
-      document.getElementById('filtro-status-admin')?.addEventListener('change', function() {
-        filtroStatusActual = this.value;
-        renderizarTablaAvisos();
-      });
-    });
-
-    // Función para cargar avisos desde API
-    async function cargarAvisosParaAdmin() {
-      const tbody = document.getElementById('tabla-avisos-cuerpo');
-      if (tbody) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">Cargando avisos...</td></tr>';
-      }
-
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-        
-        // Intentar obtener avisos desde la API
-        let avisos = [];
-        
-        if (typeof API !== 'undefined' && API.peticion) {
-          const respuesta = await API.peticion('OBTENER_AVISOS', {}, apiKey);
-          if (respuesta && respuesta.success && respuesta.data) {
-            avisos = respuesta.data;
-          }
-        }
-        
-        // Si no hay avisos, usar datos de ejemplo
-        if (!avisos || avisos.length === 0) {
-          avisos = [
-            { id: '1', titulo: 'Kermés vecinal', contenido: 'Este domingo en la plaza principal', categoria: 'eventos', status: 'activo', contacto: '555-1234', imagen_url: '', video_url: '', ubicacion: 'Plaza Principal', fecha_evento: '2025-06-15', creador_email: usuario.email || 'admin@barrio.com' },
-            { id: '2', titulo: 'Bache en la esquina', contenido: 'Urge reparación en Calle Juárez', categoria: 'urgente', status: 'pendiente', contacto: '', imagen_url: '', video_url: '', ubicacion: 'Calle Juárez #123', fecha_evento: '', creador_email: usuario.email || 'admin@barrio.com' },
-            { id: '3', titulo: 'Curso de computación', contenido: 'Para adultos mayores, gratuito', categoria: 'escuelas', status: 'activo', contacto: '555-5678', imagen_url: '', video_url: '', ubicacion: 'Biblioteca Municipal', fecha_evento: '2025-06-20', creador_email: 'otro@ejemplo.com' }
-          ];
-        }
-        
-        todosLosAvisos = avisos;
-        renderizarTablaAvisos();
-        
-      } catch (error) {
-        console.error('Error al cargar avisos:', error);
-        if (tbody) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">Error al cargar avisos</td></tr>';
-        }
-      }
-    }
-
-    // Función para renderizar tabla con filtros aplicados
-    function renderizarTablaAvisos() {
-      const tbody = document.getElementById('tabla-avisos-cuerpo');
-      if (!tbody) return;
-
-      // Aplicar filtros
-      let avisosFiltrados = [...todosLosAvisos];
-
-      if (filtroCategoriaActual !== 'todos') {
-        avisosFiltrados = avisosFiltrados.filter(a => a.categoria === filtroCategoriaActual);
-      }
-
-      if (filtroStatusActual !== 'todos') {
-        avisosFiltrados = avisosFiltrados.filter(a => a.status === filtroStatusActual);
-      }
-
-      if (avisosFiltrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">No hay avisos que coincidan con los filtros</td></tr>';
-        return;
-      }
-
-      // Construir filas
-      tbody.innerHTML = avisosFiltrados.map(aviso => `
-        <tr data-id="${aviso.id}">
-          <td data-label="ID">${aviso.id || 'N/A'}</td>
-          <td data-label="Imagen">
-            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
-          </td>
-          <td data-label="Título">
-            <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
-            <small>${getCategoriaIcono(aviso.categoria)} ${aviso.categoria || 'varios'}</small>
-            ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
-           </td>
-          <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
-          <td data-label="Estado">
-            <select class="select-estado ${aviso.status || 'pendiente'}" 
-                    onchange="cambiarEstadoAviso('${aviso.id}', this.value)"
-                    data-id="${aviso.id}">
-              <option value="pendiente" ${(aviso.status || 'pendiente') === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
-              <option value="activo" ${aviso.status === 'activo' ? 'selected' : ''}>🟢 Activo</option>
-              <option value="rechazado" ${aviso.status === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
-            </select>
-           </td>
-          <td data-label="Acciones">
-            <div class="acciones-botones">
-              <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
-              <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
-            </div>
-           </td>
-        </tr>
-      `).join('');
-    }
-
-    // Función para cambiar estado del aviso
-    window.cambiarEstadoAviso = async function(id, nuevoStatus) {
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        
-        // Buscar el aviso original
-        const aviso = todosLosAvisos.find(a => a.id == id);
-        if (!aviso) {
-          alert('No se encontró el aviso');
-          return;
-        }
-
-        // Actualizar el status
-        const datosActualizados = {
-          ...aviso,
-          status: nuevoStatus
-        };
-
-        let exito = false;
-        
-        if (typeof API !== 'undefined' && API.actualizarAviso) {
-          const resultado = await API.actualizarAviso(id, datosActualizados, apiKey);
-          exito = resultado && resultado.success;
-        }
-        
-        // Actualizar localmente
-        const index = todosLosAvisos.findIndex(a => a.id == id);
-        if (index !== -1) {
-          todosLosAvisos[index].status = nuevoStatus;
-        }
-        
-        // Re-renderizar
-        renderizarTablaAvisos();
-        
-        alert(`✅ Estado actualizado a: ${nuevoStatus}`);
-        
-      } catch (error) {
-        console.error('Error al cambiar estado:', error);
-        alert('❌ Error al actualizar el estado');
-      }
-    };
-
-    // Función para eliminar aviso
-    window.eliminarAviso = async function(id) {
-      if (!confirm('¿Estás seguro de que deseas eliminar este aviso? Esta acción no se puede deshacer.')) {
-        return;
-      }
-
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        let exito = false;
-        
-        if (typeof API !== 'undefined' && API.eliminarAviso) {
-          const resultado = await API.eliminarAviso(id, apiKey);
-          exito = resultado && resultado.success;
-        }
-        
-        // Eliminar localmente
-        todosLosAvisos = todosLosAvisos.filter(a => a.id != id);
-        
-        // Re-renderizar
-        renderizarTablaAvisos();
-        
-        alert('✅ Aviso eliminado correctamente');
-        
-      } catch (error) {
-        console.error('Error al eliminar:', error);
-        alert('❌ Error al eliminar el aviso');
-      }
-    };
-
-    // Función para editar aviso (abre modal)
-    window.editarAviso = function(id) {
-      const aviso = todosLosAvisos.find(a => a.id == id);
-      if (!aviso) {
-        alert('No se encontró el aviso');
-        return;
-      }
-      
-      // Abrir modal de edición con los datos
-      if (typeof window.abrirEditor === 'function') {
-        window.abrirEditor(
-          aviso.id,
-          aviso.titulo,
-          aviso.contenido,
-          aviso.categoria,
-          aviso.ubicacion,
-          aviso.contacto,
-          aviso.fecha_evento,
-          aviso.imagen_url,
-          aviso.video_url
-        );
-      } else {
-        // Modal simple si no existe la función
-        const nuevoTitulo = prompt('Editar título:', aviso.titulo);
-        if (nuevoTitulo && nuevoTitulo !== aviso.titulo) {
-          actualizarAvisoSimple(id, { titulo: nuevoTitulo });
-        }
-      }
-    };
-
-    // Función auxiliar para actualizar aviso
-    async function actualizarAvisoSimple(id, datos) {
-      try {
-        const apiKey = localStorage.getItem('api_key');
-        const aviso = todosLosAvisos.find(a => a.id == id);
-        
-        if (aviso) {
-          const datosActualizados = { ...aviso, ...datos };
-          
-          if (typeof API !== 'undefined' && API.actualizarAviso) {
-            await API.actualizarAviso(id, datosActualizados, apiKey);
-          }
-          
-          const index = todosLosAvisos.findIndex(a => a.id == id);
-          if (index !== -1) {
-            todosLosAvisos[index] = datosActualizados;
-          }
-          
-          renderizarTablaAvisos();
-          alert('✅ Aviso actualizado');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('❌ Error al actualizar');
-      }
-    }
-
-    // Helper para íconos de categoría
-    function getCategoriaIcono(categoria) {
-      const iconos = {
-        'urgente': '🚨',
-        'escuelas': '🏫',
-        'servicios': '🛠️',
-        'comercios': '🛒',
-        'eventos': '📅',
-        'gobierno': '🏛️',
-        'varios': '📢'
-      };
-      return iconos[categoria] || '📢';
-    }
-
-    // Función global para subir imagen a Drive
-    window.subirImagenADrive = async function(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          try {
-            const datosSubida = {
-              nombre: file.name,
-              mimeType: file.type,
-              data: event.target.result
-            };
-            const apiKey = localStorage.getItem('api_key');
-            const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
-            if (respuesta && respuesta.success) {
-              resolve(respuesta.data.url);
-            } else {
-              reject(new Error(respuesta?.error || 'Error al subir'));
-            }
-          } catch (error) {
-            reject(error);
-          }
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    };
-
-    // Script para subir imagen desde móvil
-    document.addEventListener('DOMContentLoaded', function() {
-      const uploadInput = document.getElementById('upload-imagen');
-      if (uploadInput) {
-        uploadInput.addEventListener('change', async (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          
-          try {
-            const url = await window.subirImagenADrive(file);
-            document.getElementById('imagen_url').value = url;
-            const vistaPrevia = document.getElementById('vista-previa');
-            if (vistaPrevia) {
-              vistaPrevia.innerHTML = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
-            }
-          } catch (error) {
-            console.error('Error al subir imagen:', error);
-            alert('Error al subir la imagen: ' + error.message);
           }
         });
       }
@@ -1278,13 +855,6 @@
         <div class="campo">
           <label for="edit-imagen_url">URL de imagen</label>
           <input type="url" id="edit-imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
-          
-          <!-- Subir imagen desde móvil en edición -->
-          <div style="margin-top: 8px;">
-            <label>📸 Subir imagen desde móvil:</label>
-            <input type="file" id="edit-upload-imagen" accept="image/*" capture="environment">
-          </div>
-          
           <div id="preview-editar" class="preview-container" style="display: none;">
             <img id="preview-imagen-editar" class="preview-imagen" alt="Vista previa">
           </div>
@@ -1306,7 +876,7 @@
   <script>
     function escapeHTML(str) {
       if (!str) return '';
-      return String(str).replace(/[&<>]/g, function(m) {
+      return String(str).replace(/[&<>]/g, function (m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
@@ -1314,8 +884,7 @@
       });
     }
 
-    // Función global abrirEditor
-    window.abrirEditor = function(id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
+    window.abrirEditor = function (id, titulo, contenido, categoria, ubicacion, contacto, fecha_evento, imagen_url, video_url) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-titulo').value = titulo || '';
       document.getElementById('edit-contenido').value = contenido || '';
@@ -1345,25 +914,6 @@
       document.getElementById('modal-editar').style.display = 'none';
     });
 
-    // Subir imagen en edición
-    document.getElementById('edit-upload-imagen')?.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      try {
-        const url = await window.subirImagenADrive(file);
-        document.getElementById('edit-imagen_url').value = url;
-        const previewImg = document.getElementById('preview-imagen-editar');
-        if (previewImg) {
-          previewImg.src = url;
-          document.getElementById('preview-editar').style.display = 'block';
-        }
-      } catch (error) {
-        console.error('Error al subir imagen:', error);
-        alert('Error al subir la imagen: ' + error.message);
-      }
-    });
-
     document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const id = document.getElementById('edit-id').value;
@@ -1381,31 +931,24 @@
       };
 
       try {
-        let exito = false;
-        if (typeof API !== 'undefined' && API.actualizarAviso) {
-          const resultado = await API.actualizarAviso(id, datos, apiKey);
-          exito = resultado && resultado.success;
+        const resultado = await API.actualizarAviso(id, datos, apiKey);
+        if (resultado && resultado.success) {
+          alert('✅ Aviso actualizado correctamente');
+          document.getElementById('modal-editar').style.display = 'none';
+          if (typeof cargarMisAvisos === 'function') cargarMisAvisos();
+        } else {
+          alert('❌ Error: ' + (resultado?.error || 'No se pudo actualizar'));
         }
-        
-        // Actualizar localmente
-        const index = todosLosAvisos.findIndex(a => a.id == id);
-        if (index !== -1) {
-          todosLosAvisos[index] = { ...todosLosAvisos[index], ...datos };
-        }
-        
-        renderizarTablaAvisos();
-        
-        alert('✅ Aviso actualizado correctamente');
-        document.getElementById('modal-editar').style.display = 'none';
-        
       } catch (error) {
         console.error('Error al actualizar:', error);
         alert('❌ Error al actualizar el aviso');
       }
     });
+  </script>
 
-    // Forzar actualización del header
-    (function() {
+  <script>
+    // Forzar actualización del header después de cargar
+    (function () {
       function actualizarHeader() {
         const usuarioStr = localStorage.getItem('usuario');
         const apiKey = localStorage.getItem('api_key');
@@ -1418,6 +961,7 @@
         const cerrarBtn = document.getElementById('cerrar-sesion');
 
         if (!loginLink) {
+          console.log('Header no cargado aún, reintentando...');
           setTimeout(actualizarHeader, 200);
           return;
         }
@@ -1425,23 +969,22 @@
         if (usuarioStr && apiKey) {
           try {
             const usuario = JSON.parse(usuarioStr);
+            // Ocultar login, mostrar área de usuario
             if (loginLink) loginLink.style.display = 'none';
             if (userArea) userArea.style.display = 'flex';
             if (userNameSpan) userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
 
-            const tabUsuariosBtn = document.getElementById('tab-usuarios-btn');
-            if (adminLink) adminLink.style.display = 'inline-flex';
-            if (tabUsuariosBtn && usuario.rol === 'admin') {
-              tabUsuariosBtn.style.display = 'inline-flex';
-            } else if (tabUsuariosBtn) {
-              tabUsuariosBtn.style.display = 'none';
+            // Mostrar link de admin si es admin
+            if (adminLink && usuario.rol === 'admin') {
+              adminLink.style.display = 'inline-flex';
             }
 
+            // Configurar cierre de sesión
             if (cerrarBtn) {
               const nuevoCerrar = cerrarBtn.cloneNode(true);
               if (cerrarBtn.parentNode) {
                 cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-                nuevoCerrar.addEventListener('click', function(e) {
+                nuevoCerrar.addEventListener('click', function (e) {
                   e.preventDefault();
                   localStorage.removeItem('usuario');
                   localStorage.removeItem('api_key');
@@ -1449,26 +992,65 @@
                 });
               }
             }
+
+            console.log('Header actualizado - Usuario logueado');
           } catch (e) {
             console.error('Error al actualizar header:', e);
           }
         } else {
+          // No hay sesión, mostrar login
           if (loginLink) loginLink.style.display = 'inline-flex';
           if (userArea) userArea.style.display = 'none';
+          console.log('Header actualizado - Sin sesión');
         }
       }
 
+      // Ejecutar cuando el DOM esté listo
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
           setTimeout(actualizarHeader, 100);
         });
       } else {
         setTimeout(actualizarHeader, 100);
       }
 
+      // También ejecutar después de que UI.cargarHeader() termine
       setTimeout(actualizarHeader, 500);
       setTimeout(actualizarHeader, 1000);
     })();
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const uploadInput = document.getElementById('upload-imagen');
+      if (uploadInput) {
+        uploadInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const datosSubida = {
+              nombre: file.name,
+              mimeType: file.type,
+              data: event.target.result
+            };
+            const apiKey = localStorage.getItem('api_key');
+            const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
+            if (respuesta && respuesta.success) {
+              document.getElementById('imagen_url').value = respuesta.data.url;
+              const vistaPrevia = document.getElementById('vista-previa');
+              if (vistaPrevia) {
+                vistaPrevia.innerHTML = `<img src="${respuesta.data.url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
+              }
+            } else {
+              alert('Error al subir la imagen: ' + (respuesta?.error || 'Intenta de nuevo'));
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
   </script>
 
 </body>
