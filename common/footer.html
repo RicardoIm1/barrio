@@ -3,13 +3,14 @@
         <!-- Columna 1: Información -->
         <div class="footer-columna">
             <h4>Sobre Nosotros</h4>
-            <div><p><strong>El Barrio</strong> es puro Puerto Vallarta. <strong>El Barrio</strong> es la gente, es la calle, es la tiendita de la esquina, es la fuga de agua, es la mascota perdida, es la kermés de la escuela. <strong>El Barrio</strong> es utilidad y acción vecinal.</p></div>
+            <div>
+                <p><strong>El Barrio</strong> es la red social y herramienta de organización donde los vecinos de Puerto Vallarta publican avisos, ofrecen servicios y mejoran su comunidad. Es gratis, local y de confianza.</p>
+            </div>
             <div class="footer-creditos">
                 <span>Por</span>
                 <a href="https://ricardoim1.github.io/jeronimoricardo/" target="_blank" class="autor-enlace">Ricardo</a>
                 <span>y</span>
-                <a href="https://ricardoim1.github.io/jeronimoricardo/mimi/" target="_blank"
-                    class="autor-enlace">Mimi</a>
+                <a href="https://ricardoim1.github.io/jeronimoricardo/mimi/" target="_blank" class="autor-enlace">Mimi</a>
             </div>
         </div>
 
@@ -20,13 +21,6 @@
                 <li><a href="index.html">🏠 Inicio</a></li>
                 <li><a href="registro.html">👤 <strong>Registro</strong></a></li>
                 <li><a href="admin.html">⚙️ Administración</a></li>
-                <hr>
-                <li><a href="faqs.html">📣 Anunciarse en El Barrio</a></li>
-                <li><a href="confianza.html">👑 Confianza</a></li>
-                <hr>
-                <li><a href="terminos.html">🤝🏿 Términos</a></li>
-                <li><a href="cookies.html">🍪 Cookies</a></li>
-                <li><a href="legal.html">📜 Aviso Legal</a></li>
             </ul>
         </div>
 
@@ -45,21 +39,26 @@
             </ul>
         </div>
 
-        <!-- Columna 4: Contacto y redes -->
+        <!-- Columna 4: Contacto y Soporte -->
         <div class="footer-columna">
-            <h4>Contacto</h4>
+            <h4>Soporte y Contacto</h4>
             <ul class="footer-links">
-                <li>📍 Colonia Jardines, Puerto Vallarta, Jalisco</li>
+                <li>📍 Colonia Jardines, Puerto Vallarta, Jal.</li>
+                <li class="margin-top-id"><a href="faqs.html">📣 Anunciarse en El Barrio</a></li>
+                <li><a href="confianza.html">👑 Centro de Confianza</a></li>
             </ul>
-            <div><p><strong>El Barrio</strong> es la red social donde los vecinos publican avisos, ofrecen servicios y se organizan para mejorar su comunidad. Es gratis, es local y es de confianza.</p></div>
-            
         </div>
     </div>
 
-    <!-- Copyright -->
+    <!-- Copyright y Legales -->
     <div class="footer-copyright">
-        <div class="contenedor">
-            <p id="copyright-year">&copy; 2025 - El Barrio. Todos los derechos reservados.</p>
+        <div class="contenedor footer-copyright-flex">
+            <p id="copyright-year">&copy; 2026 - El Barrio. Todos los derechos reservados.</p>
+            <div class="legal-links">
+                <a href="terminos.html">🤝🏿 Términos</a>
+                <a href="cookies.html">🍪 Cookies</a>
+                <a href="legal.html">📜 Aviso Legal</a>
+            </div>
         </div>
     </div>
 </footer>
@@ -71,6 +70,7 @@
         color: #e0e0e0;
         margin-top: 60px;
         padding-top: 40px;
+        font-family: sans-serif; /* Asegura consistencia si no hereda */
     }
 
     .footer-contenido {
@@ -104,6 +104,7 @@
         line-height: 1.6;
         font-size: 0.9rem;
         color: #b0b0b0;
+        margin: 0;
     }
 
     .footer-links {
@@ -114,6 +115,12 @@
 
     .footer-links li {
         margin-bottom: 10px;
+        color: #b0b0b0;
+        font-size: 0.9rem;
+    }
+
+    .footer-links li.margin-top-id {
+        margin-top: 15px;
     }
 
     .footer-links a {
@@ -177,37 +184,37 @@
         width: 100%;
     }
 
-    .footer-redes {
-        display: flex;
-        gap: 15px;
-        margin-top: 20px;
-    }
-
-    .red-social {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        text-decoration: none;
-        font-size: 1.2rem;
-        transition: all 0.3s ease;
-        color: #e0e0e0;
-    }
-
-    .red-social:hover {
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
-        transform: translateY(-3px);
-        color: white;
-    }
-
     .footer-copyright {
         padding: 20px 0;
-        text-align: center;
         font-size: 0.85rem;
         color: #888;
+    }
+
+    .footer-copyright-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .footer-copyright p {
+        margin: 0;
+    }
+
+    .legal-links {
+        display: flex;
+        gap: 20px;
+    }
+
+    .legal-links a {
+        color: #888;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .legal-links a:hover {
+        color: #f5b042;
     }
 
     @media (max-width: 992px) {
@@ -229,18 +236,23 @@
             transform: translateX(-50%);
         }
 
-        .footer-redes {
-            justify-content: center;
-        }
-
         .footer-links a:hover {
             transform: translateX(0);
+        }
+
+        .footer-copyright-flex {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .legal-links {
+            justify-content: center;
+            gap: 15px;
         }
     }
 </style>
 
 <script>
-    // Función para aplicar categoría (debe estar disponible globalmente)
     window.aplicarCategoria = function (categoria) {
         if (typeof currentCategory !== 'undefined') {
             currentCategory = categoria;

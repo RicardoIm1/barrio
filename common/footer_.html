@@ -1,0 +1,255 @@
+<footer class="footer">
+    <div class="contenedor footer-contenido">
+        <!-- Columna 1: Información -->
+        <div class="footer-columna">
+            <h4>Sobre Nosotros</h4>
+            <div><p><strong>El Barrio</strong> es puro Puerto Vallarta. <strong>El Barrio</strong> es la gente, es la calle, es la tiendita de la esquina, es la fuga de agua, es la mascota perdida, es la kermés de la escuela. <strong>El Barrio</strong> es utilidad y acción vecinal.</p></div>
+            <div class="footer-creditos">
+                <span>Por</span>
+                <a href="https://ricardoim1.github.io/jeronimoricardo/" target="_blank" class="autor-enlace">Ricardo</a>
+                <span>y</span>
+                <a href="https://ricardoim1.github.io/jeronimoricardo/mimi/" target="_blank"
+                    class="autor-enlace">Mimi</a>
+            </div>
+        </div>
+
+        <!-- Columna 2: Enlaces rápidos -->
+        <div class="footer-columna">
+            <h4>Enlaces Rápidos</h4>
+            <ul class="footer-links">
+                <li><a href="index.html">🏠 Inicio</a></li>
+                <li><a href="registro.html">👤 <strong>Registro</strong></a></li>
+                <li><a href="admin.html">⚙️ Administración</a></li>
+                <hr>
+                <li><a href="faqs.html">📣 Anunciarse en El Barrio</a></li>
+                <li><a href="confianza.html">👑 Confianza</a></li>
+                <hr>
+                <li><a href="terminos.html">🤝🏿 Términos</a></li>
+                <li><a href="cookies.html">🍪 Cookies</a></li>
+                <li><a href="legal.html">📜 Aviso Legal</a></li>
+            </ul>
+        </div>
+
+        <!-- Columna 3: Categorías -->
+        <div class="footer-columna">
+            <h4>Categorías</h4>
+            <ul class="footer-links">
+                <li><a href="#" onclick="aplicarCategoria('todos'); return false;">📋 Todos</a></li>
+                <li><a href="#" onclick="aplicarCategoria('urgente'); return false;">🚨 Urgentes</a></li>
+                <li><a href="#" onclick="aplicarCategoria('escuelas'); return false;">🏫 Escuelas</a></li>
+                <li><a href="#" onclick="aplicarCategoria('servicios'); return false;">🛠️ Servicios</a></li>
+                <li><a href="#" onclick="aplicarCategoria('comercios'); return false;">🛒 Comercios</a></li>
+                <li><a href="#" onclick="aplicarCategoria('eventos'); return false;">📅 Eventos</a></li>
+                <li><a href="#" onclick="aplicarCategoria('gobierno'); return false;">🏛️ Gobierno</a></li>
+                <li><a href="#" onclick="aplicarCategoria('varios'); return false;">📢 Varios</a></li>
+            </ul>
+        </div>
+
+        <!-- Columna 4: Contacto y redes -->
+        <div class="footer-columna">
+            <h4>Contacto</h4>
+            <ul class="footer-links">
+                <li>📍 Colonia Jardines, Puerto Vallarta, Jalisco</li>
+            </ul>
+            <div><p><strong>El Barrio</strong> es la red social donde los vecinos publican avisos, ofrecen servicios y se organizan para mejorar su comunidad. Es gratis, es local y es de confianza.</p></div>
+            
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-copyright">
+        <div class="contenedor">
+            <p id="copyright-year">&copy; 2025 - El Barrio. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* ========== FOOTER MEJORADO ========== */
+    .footer {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e0e0e0;
+        margin-top: 60px;
+        padding-top: 40px;
+    }
+
+    .footer-contenido {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-columna h4 {
+        color: #f5b042;
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .footer-columna h4::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: linear-gradient(90deg, #f5b042, #ff8c42);
+        border-radius: 2px;
+    }
+
+    .footer-columna p {
+        line-height: 1.6;
+        font-size: 0.9rem;
+        color: #b0b0b0;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 10px;
+    }
+
+    .footer-links a {
+        color: #b0b0b0;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .footer-links a:hover {
+        color: #f5b042;
+        transform: translateX(5px);
+    }
+
+    .footer-creditos {
+        margin-top: 15px;
+        font-size: 0.9rem;
+    }
+
+    .footer-creditos span {
+        color: #b0b0b0;
+    }
+
+    .autor-enlace {
+        display: inline-block;
+        font-weight: 600;
+        font-size: 1rem;
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+        padding: 0 4px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .autor-enlace::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #f5b042, #ff8c42);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+
+    .autor-enlace:hover {
+        transform: translateY(-2px);
+        text-shadow: 0 2px 8px rgba(245, 176, 66, 0.3);
+        background: linear-gradient(135deg, #ffc46b, #ffa559);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .autor-enlace:hover::after {
+        width: 100%;
+    }
+
+    .footer-redes {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .red-social {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        color: #e0e0e0;
+    }
+
+    .red-social:hover {
+        background: linear-gradient(135deg, #f5b042, #ff8c42);
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    .footer-copyright {
+        padding: 20px 0;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #888;
+    }
+
+    @media (max-width: 992px) {
+        .footer-contenido {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .footer-contenido {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 30px;
+        }
+
+        .footer-columna h4::after {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .footer-redes {
+            justify-content: center;
+        }
+
+        .footer-links a:hover {
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<script>
+    // Función para aplicar categoría (debe estar disponible globalmente)
+    window.aplicarCategoria = function (categoria) {
+        if (typeof currentCategory !== 'undefined') {
+            currentCategory = categoria;
+        }
+        if (typeof applyFiltersAndSearch === 'function') {
+            applyFiltersAndSearch();
+        }
+        const newUrl = `${window.location.pathname}?categoria=${categoria}`;
+        window.history.pushState({}, '', newUrl);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+</script>
