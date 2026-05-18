@@ -1,4 +1,5 @@
 // ==================== ADMINISTRACIÓN ====================
+// ==================== ADMINISTRACIÓN CORREGIDO ====================
 
 let paginaAdmin = 1;
 let avisosActuales = [];
@@ -13,7 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const usuario = Auth.requireAuth();
   if (!usuario) return;
 
-  // ========== NUEVO: Verificar que sea admin o al menos usuario normal ==========
   if (usuario.rol !== 'admin' && usuario.rol !== 'usuario') {
     alert('No tienes permisos para acceder al panel de administración.');
     window.location.href = 'index.html';
@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   configurarTabs();
+  
+  // ========== NUEVO: CONFIGURAR FILTROS DEL ADMINISTRADOR ==========
+  configurarFiltrosAdmin();
 
   // ========== FORMULARIO NUEVO AVISO ==========
   const formAviso = document.getElementById('form-aviso');
@@ -38,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     formAviso.addEventListener('submit', async function (e) {
       e.preventDefault();
       e.stopPropagation();
+      
       if (subiendoImagen) {
         API.mostrarError('⏳ Espera a que termine de subir la imagen');
         return;
@@ -49,8 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const contenidoValue = document.getElementById('contenido').value;
       const categoriaValue = document.getElementById('categoria').value;
 
-      console.log('Título capturado:', tituloValue);
-
       if (!tituloValue || tituloValue.trim() === '') {
         console.error('❌ Título vacío detectado');
         API.mostrarError('El título es obligatorio. Por favor escribe un título.');
@@ -60,7 +62,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const usuarioActual = API.getUsuarioActual();
       const apiKey = localStorage.getItem('api_key');
 
-      console.log('API Key presente:', !!apiKey);
+      // Corrección de captura: Intenta leer el campo oculto donde tu uploader guarda la URL final
+      const inputImagenUrl = document.getElementById('imagen_url');
+      let urlFinalImagen = inputImagenUrl ? inputImagenUrl.value.trim() : '';
 
       const datos = {
         titulo: tituloValue.trim(),
@@ -69,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ubicacion: document.getElementById('ubicacion')?.value || '',
         contacto: document.getElementById('contacto')?.value || '',
         fecha_evento: document.getElementById('fecha_evento')?.value || '',
-        imagen_url: document.getElementById('imagen_url')?.value || '',
+        imagen_url: urlFinalImagen, // Enlace verificado y limpio
         video_url: document.getElementById('video_url')?.value || '',
         destacado: document.getElementById('urgente')?.checked ? 'TRUE' : 'FALSE',
         status: usuarioActual.rol === 'admin' ? 'activo' : 'pendiente',
@@ -77,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
         created_at: new Date().toISOString()
       };
 
-      console.log('📦 Datos a enviar:', datos);
+      console.log('📦 Datos validados a enviar a Google Sheets:', datos);
 
       try {
         const resultado = await API.crearAviso(datos, apiKey);
@@ -106,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
           const errorMsg = resultado?.error || 'No se pudo publicar el aviso';
           API.mostrarError('❌ Error: ' + errorMsg);
-          console.error('Error del servidor:', resultado);
         }
 
       } catch (error) {
@@ -122,11 +125,77 @@ document.addEventListener('DOMContentLoaded', function () {
     cancelar.addEventListener('click', function () {
       const form = document.getElementById('form-aviso');
       if (form) form.reset();
-      document.getElementById('urgente').checked = false;
+      if(document.getElementById('urgente')) document.getElementById('urgente').checked = false;
       const previewContainer = document.getElementById('preview-nuevo');
       if (previewContainer) previewContainer.style.display = 'none';
     });
   }
+
+  // ========== CARGAR AVISOS INICIALES ==========
+  cargarMisAvisos();
+});
+
+// ========== NUEVA FUNCIÓN: CONECTAR SELECTORES DE FILTRADO CON LA INTERFAZ ==========
+function configurarFiltrosAdmin() {
+  const selectCategoria = document.getElementById('filtro-categoria-admin');
+  const selectStatus = document.getElementById('filtro-status-admin');
+
+  if (selectCategoria) {
+    selectCategoria.addEventListener('change', function(e) {
+      filtroCategoriaAdmin = e.target.value;
+      paginaAdmin = 1; // Resetea la página al filtrar
+      cargarMisAvisos();
+    });
+  }
+
+  if (selectStatus) {
+    selectStatus.addEventListener('change', function(e) {
+      filtroStatusAdmin = e.target.value;
+      paginaAdmin = 1;
+      cargarMisAvisos();
+    });
+  }
+}
+
+// ========== FUNCIÓN REESTRUCTURADA PARA TRAER AVISOS PARA REVISIÓN ==========
+async function cargarMisAvisos() {
+  try {
+    const usuarioActual = API.getUsuarioActual();
+    if (!usuarioActual) return;
+
+    // Construcción de filtros dinámicos basados en la selección real de la pantalla
+    const filtros = {};
+    
+    if (filtroCategoriaAdmin !== 'todos') {
+      filtros.categoria = filtroCategoriaAdmin;
+    }
+    
+    // Si es administrador, le permitimos cambiar de estatus globales. Si es usuario común, solo verá los suyos.
+    if (usuarioActual.rol === 'admin') {
+      if (filtroStatusAdmin !== 'todos') {
+        filtros.status = filtroStatusAdmin;
+      }
+    }
+
+    console.log('⚙️ Solicitando lista de avisos con filtros:', filtros);
+    
+    // Llamada unificada a la API
+    const respuesta = await API.listar('AVISOS', filtros, { pagina: paginaAdmin, limite: 10 });
+    
+    if (respuesta && (respuesta.datos || Array.isArray(respuesta))) {
+      avisosActuales = respuesta.datos || respuesta;
+      // Llamada obligatoria a UI para pintar el listado y habilitar botones de Aprobación
+      if (typeof UI !== 'undefined' && typeof UI.renderizarTablaAdmin === 'function') {
+        UI.renderizarTablaAdmin(avisosActuales);
+      } else {
+        console.warn('⚠️ UI.renderizarTablaAdmin no encontrada. Asegúrate de cargar ui.js');
+      }
+    }
+  } catch (error) {
+    console.error('❌ Error al cargar listado de avisos administrativos:', error);
+  }
+}
+
 
   // ========== ACTIVAR NOTIFICACIONES ==========
   const btnNotif = document.getElementById('activar-notificaciones');
