@@ -696,50 +696,51 @@
 
                 <div class="campo">
                     <label for="titulo">Título</label>
-                    <input type="text" id="titulo" required placeholder="Ej: Kermés vecinal">
+                    <input type="text" id="titulo" name="titulo" required placeholder="Ej: Kermés vecinal">
                 </div>
 
                 <div class="campo">
                     <label for="contenido">Descripción</label>
-                    <textarea id="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+                    <textarea id="contenido" name="contenido" required
+                        placeholder="Escribe los detalles del aviso..."></textarea>
                 </div>
 
                 <div class="campo">
                     <label for="ubicacion">Ubicación (opcional)</label>
-                    <input type="text" id="ubicacion" placeholder="Ej: Calle Principal #123">
+                    <input type="text" id="ubicacion" name="ubicacion" placeholder="Ej: Calle Principal #123">
                 </div>
 
                 <div class="campo">
                     <label for="contacto">Contacto (opcional)</label>
-                    <input type="text" id="contacto" placeholder="Ej: Teléfono o email">
+                    <input type="text" id="contacto" name="contacto" placeholder="Ej: Teléfono o email">
                 </div>
 
                 <div class="campo">
                     <label for="fecha_evento">Fecha del evento (opcional)</label>
-                    <input type="date" id="fecha_evento">
+                    <input type="date" id="fecha_evento" name="fecha_evento">
                 </div>
 
-                <!-- ========== NUEVA SECCIÓN: ARCHIVO MULTIMEDIA ========== -->
                 <div class="campo">
-                    <label>🎬 Subir imagen o video desde tu móvil</label>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
-                        <button type="button" id="btn-seleccionar-imagen" class="boton"
-                            style="background: #2c7da0; flex:1;">📸 Seleccionar imagen</button>
-                        <button type="button" id="btn-seleccionar-video" class="boton"
-                            style="background: #5a6e7c; flex:1;">🎥 Seleccionar video</button>
+                    <label for="imagen_url">URL de imagen (opcional)</label>
+                    <input type="url" id="imagen_url" name="imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+                    <div id="preview-nuevo" class="preview-container">
+                        <img id="preview-imagen-nuevo" class="preview-imagen" alt="Vista previa">
                     </div>
-                    <input type="file" id="archivo-multimedia" accept="image/*,video/*" style="display: none;">
-                    <div id="vista-previa-multimedia" style="margin-top: 12px; text-align: center;"></div>
-                    <small style="color: #666;">Selecciona una imagen (jpg/png) o un video (mp4). El video se subirá a
-                        un servicio gratuito.</small>
                 </div>
 
-                <!-- Campos ocultos para guardar las URLs -->
-                <input type="hidden" id="imagen_url" name="imagen_url">
-                <input type="hidden" id="video_url" name="video_url">
+                <div class="campo">
+                    <label>📸 Subir imagen (opcional)</label>
+                    <input type="file" id="upload-imagen" accept="image/*" capture="environment">
+                    <div id="vista-previa" style="margin-top: 10px;"></div>
+                </div>
+
+                <div class="campo">
+                    <label for="video_url">URL de video (opcional - YouTube o Vimeo)</label>
+                    <input type="url" id="video_url" name="video_url" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
 
                 <div class="campo" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="urgente" style="width: auto;">
+                    <input type="checkbox" id="urgente" name="urgente" style="width: auto;">
                     <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
                 </div>
 
@@ -1054,6 +1055,7 @@
 
                 console.log('👤 Admin logueado:', usuario.email);
 
+                // ✅ Usar LISTAR_MIS_AVISOS (esta acción SÍ existe en tu script)
                 // Para admin, LISTAR_MIS_AVISOS devuelve TODOS los avisos (porque el script detecta rol admin)
                 const respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
 
@@ -1252,7 +1254,32 @@
             document.getElementById('modal-editar').style.display = 'flex';
         }
 
-        /* aqui va el subir img */
+        // ==================== SUBIR IMAGEN A DRIVE ====================
+        window.subirImagenADrive = async function (file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    try {
+                        const datosSubida = {
+                            nombre: file.name,
+                            mimeType: file.type,
+                            data: event.target.result
+                        };
+                        const apiKey = localStorage.getItem('api_key');
+                        const respuesta = await API.peticion('SUBIR_IMAGEN_DRIVE', { datos: datosSubida }, apiKey);
+                        if (respuesta && respuesta.success) {
+                            resolve(respuesta.data.url);
+                        } else {
+                            reject(new Error(respuesta?.error || 'Error al subir'));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        };
 
         // ==================== INICIALIZACIÓN ====================
         document.addEventListener('DOMContentLoaded', function () {
@@ -1367,6 +1394,45 @@
             }
         });
 
+        // ==================== SUBIR IMAGEN EN NUEVO AVISO ====================
+        document.getElementById('upload-imagen')?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const url = await window.subirImagenADrive(file);
+                document.getElementById('imagen_url').value = url;
+                const vistaPrevia = document.getElementById('vista-previa');
+                if (vistaPrevia) {
+                    vistaPrevia.innerHTML = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius: 8px;">`;
+                }
+                if (API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+            } catch (error) {
+                console.error('Error al subir imagen:', error);
+                if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+            }
+        });
+
+        // Preview de imagen en nuevo aviso
+        const inputImagen = document.getElementById('imagen_url');
+        const previewContainer = document.getElementById('preview-nuevo');
+        const previewImg = document.getElementById('preview-imagen-nuevo');
+
+        if (inputImagen) {
+            inputImagen.addEventListener('input', function () {
+                const url = this.value;
+                if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                    previewImg.src = url;
+                    previewContainer.style.display = 'block';
+                    previewImg.onerror = function () {
+                        previewContainer.style.display = 'none';
+                    };
+                } else {
+                    previewContainer.style.display = 'none';
+                }
+            });
+        }
+
         // Cargar header y footer
         if (typeof UI !== 'undefined' && UI.cargarHeader) {
             UI.cargarHeader();
@@ -1468,96 +1534,6 @@
                 alert('❌ Error: ' + error.message);
             }
         };
-    </script>
-
-    <script>
-        // ========== SUBIR IMAGEN A IMGBB ==========
-        async function subirImagenImgBB(file) {
-            const API_KEY_IMGBB = "e62413ac76628956dbce8a7658610d1a";
-            const formData = new FormData();
-            formData.append("key", API_KEY_IMGBB);
-            formData.append("image", file);
-
-            const res = await fetch("https://api.imgbb.com/1/upload", { method: "POST", body: formData });
-            const data = await res.json();
-            if (data.success) return data.data.url;
-            throw new Error(data.error?.message || "Error subiendo imagen");
-        }
-
-        // ========== SUBIR VIDEO A CATBOX (gratis, hasta 200MB) ==========
-        async function subirVideoCatbox(file) {
-            const formData = new FormData();
-            formData.append("reqtype", "fileupload");
-            formData.append("fileToUpload", file);
-
-            const res = await fetch("https://catbox.moe/user/api.php", { method: "POST", body: formData });
-            const url = await res.text();
-            if (url.startsWith("http")) return url;
-            throw new Error("Error subiendo video a Catbox");
-        }
-
-        // ========== CONFIGURAR INPUT MULTIMEDIA ==========
-        const inputMultimedia = document.getElementById('archivo-multimedia');
-        const btnImagen = document.getElementById('btn-seleccionar-imagen');
-        const btnVideo = document.getElementById('btn-seleccionar-video');
-        const vistaPrevia = document.getElementById('vista-previa-multimedia');
-        const campoImagenUrl = document.getElementById('imagen_url');
-        const campoVideoUrl = document.getElementById('video_url');
-
-        let tipoSeleccionado = '';
-
-        btnImagen.addEventListener('click', () => {
-            tipoSeleccionado = 'imagen';
-            inputMultimedia.accept = 'image/*';
-            inputMultimedia.click();
-        });
-
-        btnVideo.addEventListener('click', () => {
-            tipoSeleccionado = 'video';
-            inputMultimedia.accept = 'video/*';
-            inputMultimedia.click();
-        });
-
-        inputMultimedia.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Limpiar campos anteriores
-            campoImagenUrl.value = '';
-            campoVideoUrl.value = '';
-
-            // Mostrar preview local
-            vistaPrevia.innerHTML = `<p>🔄 Subiendo archivo... por favor espera</p>`;
-            const urlLocal = URL.createObjectURL(file);
-
-            if (tipoSeleccionado === 'imagen') {
-                vistaPrevia.innerHTML = `<img src="${urlLocal}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
-                try {
-                    const urlFinal = await subirImagenImgBB(file);
-                    campoImagenUrl.value = urlFinal;
-                    vistaPrevia.innerHTML += `<p style="color:green; font-size:12px;">✅ Imagen lista</p>`;
-                    if (API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
-                } catch (err) {
-                    vistaPrevia.innerHTML += `<p style="color:red;">❌ Error: ${err.message}</p>`;
-                    if (API.mostrarError) API.mostrarError(err.message);
-                }
-            }
-            else if (tipoSeleccionado === 'video') {
-                vistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
-                try {
-                    const urlFinal = await subirVideoCatbox(file);
-                    campoVideoUrl.value = urlFinal;
-                    vistaPrevia.innerHTML += `<p style="color:green; font-size:12px;">✅ Video listo: <a href="${urlFinal}" target="_blank">ver</a></p>`;
-                    if (API.mostrarExito) API.mostrarExito('✅ Video subido correctamente');
-                } catch (err) {
-                    vistaPrevia.innerHTML += `<p style="color:red;">❌ Error: ${err.message}</p>`;
-                    if (API.mostrarError) API.mostrarError(err.message);
-                }
-            }
-
-            // Limpiar el input para permitir otra subida
-            setTimeout(() => { inputMultimedia.value = ''; }, 1000);
-        });
     </script>
 
 </body>
