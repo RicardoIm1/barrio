@@ -760,7 +760,7 @@
                 contenedor.innerHTML = '<p>Cargando comentarios...</p>';
 
                 // ✅ Enviar solo el ID como segundo parámetro
-                const respuesta = await API.peticion('LISTAR_COMENTARIOS', avisoId, apiKey);
+                const respuesta = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId }, apiKey);
 
                 console.log('Comentarios respuesta:', respuesta);
 
