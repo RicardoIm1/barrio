@@ -29,7 +29,7 @@
 
         <!-- Columna 3: Categorías -->
         <div class="footer-columna">
-            <h4>Categorías</h4>
+            <h4>📋 Categorías</h4>
             <ul class="footer-links">
                 <li><a href="#" onclick="aplicarCategoria('todos'); return false;">📋 Todos</a></li>
                 <li><a href="#" onclick="aplicarCategoria('urgente'); return false;">🚨 Urgentes</a></li>
@@ -41,9 +41,34 @@
                 <li><a href="#" onclick="aplicarCategoria('varios'); return false;">📢 Varios</a></li>
             </ul>
             <p style="margin-top: 0.8rem;">
-                <a href="#" onclick="abrirModalCategorias(); return false;">❓ ¿Qué va en cada categoría?</a>
+                <a href="#" onclick="abrirModalCategorias(); return false;"
+                    style="display: inline-flex; align-items: center; gap: 0.3rem; background: #2c7da0; color: white; padding: 0.3rem 0.8rem; border-radius: 2rem; text-decoration: none; font-size: 0.7rem;">
+                    ❓ ¿Qué va en cada categoría?
+                </a>
             </p>
         </div>
+
+        <style>
+            /* Botón de guía de categorías */
+            .btn-guia-categorias {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #2c7da0;
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            }
+
+            .btn-guia-categorias:hover {
+            background: #1e5a73;
+            transform: translateY(-2px);
+            }
+        </style>
 
         <!-- Columna 4: Contacto y Soporte -->
         <div class="footer-columna">
