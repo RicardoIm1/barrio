@@ -17,18 +17,18 @@ class API {
   // ==================== NUEVO MÉTODO REQUEST (UNIVERSAL) ====================
   static async request(accion, datos = {}, apiKey = null) {
     apiKey = apiKey || localStorage.getItem('api_key');
-    
+
     const body = {
       accion: accion,
       ...datos
     };
-    
+
     if (apiKey) {
       body.api_key = apiKey;
     }
-    
+
     console.log(`📤 ${accion} - Enviando:`, body);
-    
+
     try {
       const response = await fetch(API_BASE_URL, {
         method: 'POST',
@@ -38,15 +38,15 @@ class API {
         },
         body: JSON.stringify(body)
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const resultado = await response.json();
       console.log(`📥 ${accion} - Respuesta:`, resultado);
       return resultado;
-      
+
     } catch (error) {
       console.error(`❌ ${accion} - Error:`, error);
       throw error;
@@ -168,11 +168,7 @@ class API {
       const resultado = await API.peticion('REGISTRO', { datos: datos });
 
       if (resultado && resultado.success && resultado.data && resultado.data.api_key) {
-        localStorage.setItem('api_key', resultado.data.api_key);
-        localStorage.setItem('usuario', JSON.stringify(resultado.data.usuario));
-        window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: resultado.data.usuario } }));
-        window.dispatchEvent(new Event('storage'));
-        return resultado.data;
+        return resultado.data;  // ← Debe contener api_key y usuario
       } else {
         throw new Error(resultado?.error || 'Error en registro');
       }
