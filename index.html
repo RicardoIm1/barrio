@@ -729,7 +729,7 @@
 
                 // Obtener comentarios de la API
                 const respuesta = await API.peticion('LISTAR_COMENTARIOS', {
-                    aviso_id: avisoId
+                    datos: { aviso_id: avisoId }
                 }, apiKey);
 
                 console.log('Comentarios respuesta:', respuesta);
