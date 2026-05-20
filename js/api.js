@@ -1,3 +1,14 @@
+// ==================== LIMPIAR SESIÓN CORRUPTA ====================
+(function limpiarSesionCorrupta() {
+    const usuarioStr = localStorage.getItem('usuario');
+    if (usuarioStr && !usuarioStr.startsWith('{') && !usuarioStr.startsWith('[')) {
+        console.warn('⚠️ Limpiando sesión corrupta:', usuarioStr);
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('api_key');
+    }
+})();
+// ================================================================
+
 // ==================== API CLIENT - Jardines PVR ====================
 
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbx030yLDke8cVQWOucUSqTkBACHLVV6JF3CGSJi2slzKo8k25Q_zFfxkfGNXIOVI-F3/exec';
