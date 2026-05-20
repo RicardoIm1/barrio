@@ -1,11 +1,11 @@
 // ==================== LIMPIAR SESIÓN CORRUPTA ====================
 (function limpiarSesionCorrupta() {
-    const usuarioStr = localStorage.getItem('usuario');
-    if (usuarioStr && !usuarioStr.startsWith('{') && !usuarioStr.startsWith('[')) {
-        console.warn('⚠️ Limpiando sesión corrupta:', usuarioStr);
-        localStorage.removeItem('usuario');
-        localStorage.removeItem('api_key');
-    }
+  const usuarioStr = localStorage.getItem('usuario');
+  if (usuarioStr && !usuarioStr.startsWith('{') && !usuarioStr.startsWith('[')) {
+    console.warn('⚠️ Limpiando sesión corrupta:', usuarioStr);
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('api_key');
+  }
 })();
 // ================================================================
 
@@ -329,7 +329,9 @@ class API {
   // ==================== MÉTODOS DE COMENTARIOS ====================
 
   static async listarComentarios(avisoId) {
+    // ✅ Usar JSONP con el parámetro correcto
     const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+    console.log('listarComentarios resultado:', resultado);
     if (resultado && resultado.success) {
       return resultado.data || [];
     }
