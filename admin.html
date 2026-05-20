@@ -1709,6 +1709,16 @@
             // Limpiar el input para permitir otra subida
             setTimeout(() => { inputMultimedia.value = ''; }, 1000);
         });
+
+        // Forzar categoría "varios" antes de enviar
+        document.getElementById('form-aviso')?.addEventListener('submit', function () {
+            document.getElementById('categoria').value = 'varios';
+        });
+
+        // También en edición
+        document.getElementById('form-editar')?.addEventListener('submit', function () {
+            document.getElementById('edit-categoria').value = 'varios';
+        });
     </script>
 </body>
 
