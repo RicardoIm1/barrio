@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <!-- ESTABLE 20:27 19may -->
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
@@ -681,7 +682,7 @@
             <form id="form-aviso" class="formulario" style="max-width: 100%;">
                 <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
 
-                <div class="campo">
+                <!-- <div class="campo">
                     <label for="categoria">Categoría</label>
                     <select id="categoria" required>
                         <option value="urgente">🚨 URGENTE</option>
@@ -691,6 +692,13 @@
                         <option value="eventos">📅 EVENTOS</option>
                         <option value="gobierno">🏛️ GOBIERNO</option>
                         <option value="varios">📢 VARIOS</option>
+                    </select>
+                </div> -->
+
+                <div class="campo" style="display: none;">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" required>
+                        <option value="varios" selected>📢 VARIOS</option>
                     </select>
                 </div>
 
@@ -754,7 +762,7 @@
 
             <!-- Controles de filtrado -->
             <div class="admin-filtros-flex">
-                <div>
+                <!-- <div>
                     <label style="font-size: 0.75rem; font-weight: bold; color: #555;">Filtrar Categoría:</label>
                     <select id="filtro-categoria-admin"
                         style="width: 100%; padding: 5px; margin-top: 3px; border-radius: 4px; border: 1px solid var(--color-borde); font-family: inherit;">
@@ -766,6 +774,12 @@
                         <option value="eventos">📅 Eventos</option>
                         <option value="gobierno">🏛️ Gobierno</option>
                         <option value="varios">📢 Varios</option>
+                    </select>
+                </div> -->
+                <div class="campo" style="display: none;">
+                    <label for="edit-categoria">Categoría</label>
+                    <select id="edit-categoria" required>
+                        <option value="varios" selected>📢 VARIOS</option>
                     </select>
                 </div>
                 <div>
