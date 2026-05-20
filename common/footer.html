@@ -4,13 +4,16 @@
         <div class="footer-columna">
             <h4>Sobre Nosotros</h4>
             <div>
-                <p><strong>El Barrio</strong> es la red social y herramienta de organización donde los vecinos de Puerto Vallarta publican avisos, ofrecen servicios y mejoran su comunidad. Es gratis, local y de confianza.</p>
+                <p><strong>El Barrio</strong> es la red social y herramienta de organización donde los vecinos de Puerto
+                    Vallarta publican avisos, ofrecen servicios y mejoran su comunidad. Es gratis, local y de confianza.
+                </p>
             </div>
             <div class="footer-creditos">
                 <span>Por</span>
                 <a href="https://ricardoim1.github.io/jeronimoricardo/" target="_blank" class="autor-enlace">Ricardo</a>
                 <span>y</span>
-                <a href="https://ricardoim1.github.io/jeronimoricardo/mimi/" target="_blank" class="autor-enlace">Mimi</a>
+                <a href="https://ricardoim1.github.io/jeronimoricardo/mimi/" target="_blank"
+                    class="autor-enlace">Mimi</a>
             </div>
         </div>
 
@@ -37,6 +40,9 @@
                 <li><a href="#" onclick="aplicarCategoria('gobierno'); return false;">🏛️ Gobierno</a></li>
                 <li><a href="#" onclick="aplicarCategoria('varios'); return false;">📢 Varios</a></li>
             </ul>
+            <p style="font-size: 0.7rem; margin-top: 0.5rem;">
+                <a href="#" onclick="abrirModalCategorias(); return false;">❓ ¿Qué va en cada categoría?</a>
+            </p>
         </div>
 
         <!-- Columna 4: Contacto y Soporte -->
@@ -70,7 +76,8 @@
         color: #e0e0e0;
         margin-top: 60px;
         padding-top: 40px;
-        font-family: sans-serif; /* Asegura consistencia si no hereda */
+        font-family: sans-serif;
+        /* Asegura consistencia si no hereda */
     }
 
     .footer-contenido {
@@ -253,15 +260,45 @@
 </style>
 
 <script>
-    window.aplicarCategoria = function (categoria) {
-        if (typeof currentCategory !== 'undefined') {
-            currentCategory = categoria;
+    function aplicarCategoria(categoria) {
+        // Si estás en index.html
+        if (typeof currentSearchTerm !== 'undefined') {
+            // Limpiar búsqueda
+            const searchInput = document.getElementById('buscador-input');
+            if (searchInput) searchInput.value = '';
+            currentSearchTerm = '';
+
+            // Aplicar filtro de categoría
+            if (categoria === 'todos') {
+                // Mostrar todos
+                currentCategoriaFiltro = 'todos';
+            } else {
+                currentCategoriaFiltro = categoria;
+            }
+
+            // Recargar avisos con la categoría seleccionada
+            cargarAvisosPorCategoria(categoria);
         }
-        if (typeof applyFiltersAndSearch === 'function') {
-            applyFiltersAndSearch();
+    }
+
+    function cargarAvisosPorCategoria(categoria) {
+        if (categoria === 'todos') {
+            cargarAvisos();
+        } else {
+            // Recargar avisos filtrados por categoría
+            avisosCargados = false;
+            allAvisos = [];
+            cargarAvisos();
+            // Después de cargar, filtrar por categoría
+            setTimeout(() => {
+                const filtered = allAvisos.filter(a => a.categoria === categoria);
+                filteredAvisos = filtered;
+                renderedCount = 0;
+                hasMore = true;
+                const container = document.getElementById('avisos-container');
+                if (container) container.innerHTML = '';
+                loadMoreAvisos();
+            }, 500);
         }
-        const newUrl = `${window.location.pathname}?categoria=${categoria}`;
-        window.history.pushState({}, '', newUrl);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+    }
 </script>

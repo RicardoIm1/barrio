@@ -403,7 +403,6 @@
             }
         }
     </style>
-
     <style>
         /* Estilos para videos en tarjetas */
         .aviso-video {
@@ -434,6 +433,117 @@
 
             .aviso-card.destacada .aviso-video {
                 height: 200px;
+            }
+        }
+    </style>
+    <style>
+        /* Modal de categorías */
+        .modal-categorias {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .modal-contenido {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #1e4620, #2b7a2b);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .modal-cerrar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .categoria-info {
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .categoria-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--color-primario);
+        }
+
+        .categoria-info p {
+            margin: 0.3rem 0;
+            font-size: 0.85rem;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        .categoria-info small {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.7rem;
+            color: #e74c3c;
+        }
+
+        .modal-footer {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .modal-contenido {
+                width: 95%;
+                margin: 10px auto;
+            }
+
+            .categoria-info h4 {
+                font-size: 0.95rem;
+            }
+
+            .categoria-info p {
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -1320,6 +1430,86 @@
             }
         }
     </style>
+
+    <!-- Modal de categorías -->
+    <div id="modalCategorias" class="modal-categorias" style="display: none;">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h3>📋 Categorías de avisos</h3>
+                <button class="modal-cerrar" onclick="cerrarModalCategorias()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="categoria-info">
+                    <h4>🚨 URGENTE</h4>
+                    <p>⚠️ <strong>Solo para emergencias reales</strong> que requieren atención inmediata de la
+                        comunidad.</p>
+                    <p>Ejemplos: Bache peligroso, fuga de agua, perro perdido, vehículo sospechoso.</p>
+                    <small>❌ No uses esta categoría para promociones o aviso normales.</small>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏫 ESCUELAS</h4>
+                    <p>📚 Actividades escolares y avisos de instituciones educativas.</p>
+                    <p>Ejemplos: Junta de padres, kermés escolar, inscripciones abiertas, donación de útiles.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛠️ SERVICIOS</h4>
+                    <p>🔧 Profesionistas y oficios que ofrecen sus servicios a la comunidad.</p>
+                    <p>Ejemplos: Plomero, electricista, carpintero, estilista, clases particulares.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛒 COMERCIOS</h4>
+                    <p>🏪 Negocios locales, promociones y productos.</p>
+                    <p>Ejemplos: Tienda de abarrotes, ferretería, comida corrida, ofertas especiales.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📅 EVENTOS</h4>
+                    <p>🎉 Reuniones vecinales, festividades y actividades comunitarias.</p>
+                    <p>Ejemplos: Posada navideña, día de limpieza, taller comunitario, feria de salud.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏛️ GOBIERNO</h4>
+                    <p>📢 Avisos oficiales, servicios públicos y trámites.</p>
+                    <p>Ejemplos: Calendario de recolección de basura, obras públicas, jornada de vacunación.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📢 VARIOS</h4>
+                    <p>📌 Lo que no encaja en las categorías anteriores.</p>
+                    <p>Ejemplos: Felicitaciones, recomendaciones de vecinos, mudanzas, préstamo de herramientas.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="cerrarModalCategorias()" class="boton">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function cerrarModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Cerrar modal al hacer click fuera del contenido
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('modalCategorias');
+            if (modal && modal.style.display === 'flex') {
+                if (event.target === modal) {
+                    cerrarModalCategorias();
+                }
+            }
+        });
+    </script>
 
 </body>
 
