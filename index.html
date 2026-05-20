@@ -403,6 +403,40 @@
             }
         }
     </style>
+
+    <style>
+        /* Estilos para videos en tarjetas */
+        .aviso-video {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            border-radius: 8px 8px 0 0;
+            background: #000;
+            position: relative;
+        }
+
+        .aviso-video video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+
+        /* Tarjetas destacadas con video más grande */
+        .aviso-card.destacada .aviso-video {
+            height: 240px;
+        }
+
+        @media (max-width: 768px) {
+            .aviso-video {
+                height: 160px;
+            }
+
+            .aviso-card.destacada .aviso-video {
+                height: 200px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -892,19 +926,46 @@
                 const whatsappNumber = aviso.contacto ? String(aviso.contacto).replace(/[^0-9]/g, '') : '';
                 const mensaje = encodeURIComponent(`Hola, vi tu aviso "${aviso.titulo}" en EL BARRIO. Me interesa.`);
 
-                // USAR LOS CAMPOS CORRECTOS DE TU HOJA
-                const likes = parseInt(aviso.intereses) || 0;           // ← intereses = likes
-                const dislikes = parseInt(aviso.votos_negativos) || 0; // ← nueva columna
-                const comentarios = parseInt(aviso.comentarios_count) || 0; // ← nueva columna
+                const likes = parseInt(aviso.intereses) || 0;
+                const dislikes = parseInt(aviso.votos_negativos) || 0;
+                const comentarios = parseInt(aviso.comentarios_count) || 0;
                 const vistas = parseInt(aviso.vistas) || 0;
                 const whatsappClicks = parseInt(aviso.clicks_whatsapp) || 0;
+
+                // ✅ PRIORIDAD: VIDEO SOBRE IMAGEN
+                let multimediaHTML = '';
+                if (aviso.video_url && aviso.video_url.trim() !== '') {
+                    // Convertir URL de YouTube a formato embed si es necesario
+                    let videoUrl = aviso.video_url;
+                    if (videoUrl.includes('youtube.com/watch?v=')) {
+                        const videoId = videoUrl.split('v=')[1].split('&')[0];
+                        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+                    } else if (videoUrl.includes('youtu.be/')) {
+                        const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+                        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+                    } else if (videoUrl.includes('vimeo.com/')) {
+                        const videoId = videoUrl.split('vimeo.com/')[1];
+                        videoUrl = `https://player.vimeo.com/video/${videoId}`;
+                    }
+
+                    multimediaHTML = `
+                <div class="aviso-video" onclick="event.stopPropagation()">
+                    <video controls style="width: 100%; height: 180px; object-fit: cover; border-radius: 8px 8px 0 0;">
+                        <source src="${videoUrl}" type="video/mp4">
+                        Tu navegador no soporta videos.
+                    </video>
+                </div>
+            `;
+                } else if (aviso.imagen_url && aviso.imagen_url.trim() !== '') {
+                    multimediaHTML = `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">`;
+                }
 
                 return `
         <div class="aviso-card tarjeta-moderna" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
             <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
                 ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
             </div>
-            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">` : ''}
+            ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
                     <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
