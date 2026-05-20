@@ -1052,10 +1052,11 @@
         }
 
         // ==================== CARGAR AVISOS REALES DESDE TU API ====================
+        // ==================== CARGAR AVISOS REALES DESDE TU API ====================
         async function cargarAvisosParaAdmin() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos desde tu API...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
             }
 
             try {
@@ -1063,18 +1064,13 @@
                 const usuario = API.getUsuarioActual();
 
                 if (!apiKey || !usuario) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión como administrador</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
                     return;
                 }
 
-                if (usuario.rol !== 'admin') {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⛔ Acceso denegado. Solo administradores.</td></tr>';
-                    return;
-                }
+                console.log(`👤 Usuario logueado: ${usuario.rol} - ${usuario.email}`);
 
-                console.log('👤 Admin logueado:', usuario.email);
-
-                // Para admin, LISTAR_MIS_AVISOS devuelve TODOS los avisos (porque el script detecta rol admin)
+                // ✅ LISTAR_MIS_AVISOS devuelve SOLO los avisos del usuario actual
                 const respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
 
                 console.log('📡 Respuesta de la API:', respuesta);
@@ -1082,7 +1078,6 @@
                 let avisos = [];
 
                 if (respuesta && respuesta.success) {
-                    // Extraer avisos de la estructura correcta
                     if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
                         avisos = respuesta.data.datos;
                     } else if (respuesta.data && Array.isArray(respuesta.data)) {
@@ -1095,12 +1090,11 @@
                 }
 
                 if (!avisos || avisos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No hay avisos registrados aún</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
                     todosLosAvisos = [];
                     return;
                 }
 
-                // Normalizar los datos para la tabla
                 todosLosAvisos = avisos.map(aviso => ({
                     id: aviso.id,
                     titulo: aviso.titulo || 'Sin título',
@@ -1115,28 +1109,28 @@
                     created_at: aviso.created_at
                 }));
 
-                console.log(`✅ Cargados ${todosLosAvisos.length} avisos desde la API`);
+                console.log(`✅ Cargados ${todosLosAvisos.length} avisos`);
                 renderizarTablaAvisos();
 
             } catch (error) {
-                console.error('❌ Error en cargarAvisosParaAdmin:', error);
+                console.error('❌ Error:', error);
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión con la API'}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
                 }
             }
         }
 
         // ==================== RENDERIZAR TABLA CON FILTROS ====================
+        // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (!tbody) return;
 
-            // Aplicar filtros
-            let avisosFiltrados = [...todosLosAvisos];
+            const usuario = API.getUsuarioActual();
+            const esAdmin = usuario?.rol === 'admin';
 
-            if (filtroCategoriaActual !== 'todos') {
-                avisosFiltrados = avisosFiltrados.filter(a => a.categoria === filtroCategoriaActual);
-            }
+            // Solo filtrar por estado (ya no por categoría)
+            let avisosFiltrados = [...todosLosAvisos];
 
             if (filtroStatusActual !== 'todos') {
                 avisosFiltrados = avisosFiltrados.filter(a => a.status === filtroStatusActual);
@@ -1147,36 +1141,39 @@
                 return;
             }
 
-            // Construir filas
-            tbody.innerHTML = avisosFiltrados.map(aviso => `
+            tbody.innerHTML = avisosFiltrados.map(aviso => {
+                const estado = aviso.status || 'pendiente';
+                const estadoTexto = estado === 'activo' ? '🟢 Activo' : (estado === 'rechazado' ? '🔴 Rechazado' : '⏳ Pendiente');
+
+                return `
         <tr data-id="${aviso.id}">
-          <td data-label="ID">${aviso.id ? aviso.id.substring(0, 8) : 'N/A'}..</td>
-          <td data-label="Imagen">
-            ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
-          </td>
-          <td data-label="Título">
-            <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
-            <small>${getCategoriaIcono(aviso.categoria)} ${aviso.categoria || 'varios'}</small>
-            ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
-          </td>
-          <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
-          <td data-label="Estado">
-            <select class="select-estado ${aviso.status || 'pendiente'}" 
-                    onchange="cambiarEstadoAviso('${aviso.id}', this.value)"
-                    data-id="${aviso.id}">
-              <option value="pendiente" ${(aviso.status || 'pendiente') === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
-              <option value="activo" ${aviso.status === 'activo' ? 'selected' : ''}>🟢 Activo</option>
-              <option value="rechazado" ${aviso.status === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
-            </select>
-          </td>
-          <td data-label="Acciones">
-            <div class="acciones-botones">
-              <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
-              <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+            <td data-label="ID">${aviso.id ? aviso.id.substring(0, 8) : 'N/A'}..</td>
+            <td data-label="Imagen">
+                ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
+            </td>
+            <td data-label="Título">
+                <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
+                <small>📢 VARIOS</small>
+                ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
+            </td>
+            <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
+            <td data-label="Estado">
+                ${esAdmin ? `
+                <select class="select-estado ${estado}" onchange="cambiarEstadoAviso('${aviso.id}', this.value)">
+                    <option value="pendiente" ${estado === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                    <option value="activo" ${estado === 'activo' ? 'selected' : ''}>🟢 Activo</option>
+                    <option value="rechazado" ${estado === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
+                </select>
+                ` : `<span class="badge-estado badge-${estado}">${estadoTexto}</span>`}
+            </td>
+            <td data-label="Acciones">
+                <div class="acciones-botones">
+                    <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
+                    ${esAdmin ? `<button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>` : ''}
+                </div>
+            </td>
+        </tr>`;
+            }).join('');
         }
 
         // Cambiar estado del aviso
@@ -1282,22 +1279,13 @@
             // ✅ Cargar usuarios al iniciar (por si la pestaña de usuarios está visible)
             setTimeout(cargarUsuariosAdmin, 500);
 
-            // Configurar filtros
+            // Configurar filtros (solo estado)
             const btnFiltros = document.getElementById('aplicar-filtros');
-            const filtroCategoria = document.getElementById('filtro-categoria-admin');
             const filtroStatus = document.getElementById('filtro-status-admin');
 
             if (btnFiltros) {
                 btnFiltros.addEventListener('click', function () {
-                    filtroCategoriaActual = filtroCategoria?.value || 'todos';
                     filtroStatusActual = filtroStatus?.value || 'todos';
-                    renderizarTablaAvisos();
-                });
-            }
-
-            if (filtroCategoria) {
-                filtroCategoria.addEventListener('change', function () {
-                    filtroCategoriaActual = this.value;
                     renderizarTablaAvisos();
                 });
             }
@@ -1305,6 +1293,13 @@
             if (filtroStatus) {
                 filtroStatus.addEventListener('change', function () {
                     filtroStatusActual = this.value;
+                    renderizarTablaAvisos();
+                });
+            }
+
+            if (filtroCategoria) {
+                filtroCategoria.addEventListener('change', function () {
+                    filtroCategoriaActual = this.value;
                     renderizarTablaAvisos();
                 });
             }
@@ -1636,6 +1631,18 @@
         document.getElementById('form-editar')?.addEventListener('submit', function () {
             document.getElementById('edit-categoria').value = 'varios';
         });
+    </script>
+
+    <script>
+        // Forzar actualización del header para mostrar el nombre del usuario
+        (function actualizarHeaderForce() {
+            const usuario = API.getUsuarioActual();
+            if (usuario && window.actualizarHeaderPorSesion) {
+                setTimeout(() => {
+                    window.actualizarHeaderPorSesion();
+                }, 100);
+            }
+        })();
     </script>
 </body>
 
