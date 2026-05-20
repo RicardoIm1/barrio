@@ -1061,7 +1061,6 @@
         }
 
         // ==================== CARGAR AVISOS REALES DESDE TU API ====================
-        // ==================== CARGAR AVISOS REALES DESDE TU API ====================
         async function cargarAvisosParaAdmin() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (tbody) {
@@ -1079,8 +1078,19 @@
 
                 console.log(`👤 Usuario logueado: ${usuario.rol} - ${usuario.email}`);
 
-                // ✅ LISTAR_MIS_AVISOS devuelve SOLO los avisos del usuario actual
-                const respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
+                // ✅ Para admin: obtener TODOS los avisos (sin paginación)
+                // Para usuario normal: solo sus avisos
+                let respuesta;
+                if (usuario.rol === 'admin') {
+                    // Intentar obtener todos los avisos (sin límite)
+                    respuesta = await API.peticion('LISTAR_TODOS_AVISOS', {}, apiKey);
+                    if (!respuesta || !respuesta.success) {
+                        // Si LISTAR_TODOS_AVISOS no existe, usar LISTAR_MIS_AVISOS con páginas
+                        respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
+                    }
+                } else {
+                    respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
+                }
 
                 console.log('📡 Respuesta de la API:', respuesta);
 
@@ -1129,7 +1139,6 @@
             }
         }
 
-        // ==================== RENDERIZAR TABLA CON FILTROS ====================
         // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
@@ -1422,7 +1431,6 @@
 
     <script>
         // ==================== CARGAR USUARIOS ====================
-        // ==================== CARGAR USUARIOS ====================
         async function cargarUsuariosAdmin() {
             const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
             if (!tablaUsuarios) return;
@@ -1437,24 +1445,56 @@
                     return;
                 }
 
-                // Mostrar loading
                 tablaUsuarios.innerHTML = '<tr><td colspan="5">🔄 Cargando usuarios...</td></tr>';
 
-                // Usar LISTAR_USUARIOS
-                const respuesta = await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+                // Probar diferentes acciones posibles
+                let respuesta = null;
+                let accionUsada = '';
 
-                console.log('Usuarios respuesta:', respuesta);
+                // Intentar LISTAR_USUARIOS
+                try {
+                    respuesta = await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+                    accionUsada = 'LISTAR_USUARIOS';
+                    console.log('Respuesta LISTAR_USUARIOS:', respuesta);
+                } catch (e) {
+                    console.log('LISTAR_USUARIOS falló:', e);
+                }
+
+                // Si falló, intentar OBTENER_USUARIOS
+                if (!respuesta || !respuesta.success) {
+                    try {
+                        respuesta = await API.peticion('OBTENER_USUARIOS', {}, apiKey);
+                        accionUsada = 'OBTENER_USUARIOS';
+                        console.log('Respuesta OBTENER_USUARIOS:', respuesta);
+                    } catch (e) {
+                        console.log('OBTENER_USUARIOS falló:', e);
+                    }
+                }
+
+                // Si falló, intentar LISTAR
+                if (!respuesta || !respuesta.success) {
+                    try {
+                        respuesta = await API.peticion('LISTAR', { coleccion: 'USUARIOS' }, apiKey);
+                        accionUsada = 'LISTAR';
+                        console.log('Respuesta LISTAR:', respuesta);
+                    } catch (e) {
+                        console.log('LISTAR falló:', e);
+                    }
+                }
+
+                if (!respuesta || !respuesta.success) {
+                    tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
+                    return;
+                }
 
                 let usuarios = [];
 
-                if (respuesta && respuesta.success) {
-                    if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
-                        usuarios = respuesta.data.datos;
-                    } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
-                        usuarios = respuesta.datos;
-                    } else if (Array.isArray(respuesta.data)) {
-                        usuarios = respuesta.data;
-                    }
+                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                    usuarios = respuesta.data.datos;
+                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                    usuarios = respuesta.datos;
+                } else if (Array.isArray(respuesta.data)) {
+                    usuarios = respuesta.data;
                 }
 
                 if (!usuarios || usuarios.length === 0) {
@@ -1462,7 +1502,6 @@
                     return;
                 }
 
-                // Función simple de escape
                 const escapeHtml = (str) => {
                     if (!str) return '';
                     return String(str).replace(/[&<>]/g, function (m) {
@@ -1491,9 +1530,11 @@
             </tr>
         `}).join('');
 
+                console.log(`✅ Cargados ${usuarios.length} usuarios`);
+
             } catch (error) {
                 console.error('Error cargando usuarios:', error);
-                tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ Error: ${error.message}</td></tr>`;
+                tablaUsuarios.innerHTML = `<td><td colspan="5">❌ Error: ${error.message}</td></tr>`;
             }
         }
 
