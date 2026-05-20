@@ -1027,6 +1027,51 @@
         </div>
     </div>
 
+    <!-- Modal de categorías -->
+    <div id="modalCategorias" class="modal-categorias" style="display: none;">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h3>📋 Categorías de avisos</h3>
+                <button class="modal-cerrar" onclick="cerrarModalCategorias()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="categoria-info">
+                    <h4>🚨 URGENTE</h4>
+                    <p>⚠️ <strong>Solo para emergencias reales</strong> que requieren atención inmediata.</p>
+                    <p>Ejemplos: Bache peligroso, fuga de agua, perro perdido.</p>
+                    <small>❌ No uses esta categoría para promociones.</small>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏫 ESCUELAS</h4>
+                    <p>📚 Actividades escolares y avisos de instituciones educativas.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛠️ SERVICIOS</h4>
+                    <p>🔧 Profesionistas y oficios que ofrecen servicios a la comunidad.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛒 COMERCIOS</h4>
+                    <p>🏪 Negocios locales, promociones y productos.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📅 EVENTOS</h4>
+                    <p>🎉 Reuniones vecinales, festividades y actividades comunitarias.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏛️ GOBIERNO</h4>
+                    <p>📢 Avisos oficiales, servicios públicos y trámites.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📢 VARIOS</h4>
+                    <p>📌 Lo que no encaja en las categorías anteriores.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="cerrarModalCategorias()" class="boton">Entendido</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==================== ADMINISTRACIÓN - CONEXIÓN REAL CON TU API ====================
 
@@ -1710,6 +1755,37 @@
                 }, 100);
             }
         })();
+    </script>
+
+    <script>
+        // ========== FUNCIONES DEL MODAL DE CATEGORÍAS ==========
+        function abrirModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                console.warn('Modal no encontrado');
+            }
+        }
+
+        function cerrarModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Cerrar modal al hacer click fuera del contenido
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('modalCategorias');
+            if (modal && modal.style.display === 'flex') {
+                if (event.target === modal) {
+                    cerrarModalCategorias();
+                }
+            }
+        });
     </script>
 </body>
 
