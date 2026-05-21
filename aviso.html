@@ -846,7 +846,7 @@
             const likes = parseInt(avisoActual.intereses) || 0;
             const dislikes = parseInt(avisoActual.votos_negativos) || 0;
             const comentarios = parseInt(avisoActual.comentarios_count) || 0;
-            const vistas = parseInt(avisoActual.vistas) || 0;
+            const vistas = parseInt(avisoActual.vistas) || parseInt(avisoActual.visitas) || parseInt(avisoActual.views) || 0;
 
             const tieneContacto = avisoActual.contacto && typeof avisoActual.contacto === 'string' && avisoActual.contacto.trim();
             const numero = tieneContacto ? String(avisoActual.contacto).replace(/[^0-9]/g, '') : '';
@@ -968,10 +968,27 @@
                 registrarVista(AVISO_ID);
                 renderizarAviso();
                 cargarComentarios(AVISO_ID);
+                // Después de registrar vista, actualizar el contador local
+                setTimeout(() => {
+                    actualizarContadorVistas();
+                }, 500);
             } catch (error) {
                 console.error('Error cargando aviso:', error);
                 container.innerHTML = `<div class="error-message">❌ Error al cargar el aviso: ${escapeHTML(error.message)}</div>`;
             }
+
+        }
+        async function actualizarContadorVistas() {
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('OBTENER_ESTADISTICAS', { id: AVISO_ID }, apiKey);
+                if (resultado && resultado.success && resultado.data) {
+                    const vistasSpan = document.querySelector('.vistas-count');
+                    if (vistasSpan) {
+                        vistasSpan.textContent = resultado.data.vistas || resultado.data.visitas || 0;
+                    }
+                }
+            } catch (e) { console.warn('Error actualizando vistas:', e); }
         }
 
         window.irAEditar = (id) => window.location.href = `/barrio/admin.html?editar=${id}`;
