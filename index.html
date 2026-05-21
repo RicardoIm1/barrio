@@ -974,11 +974,22 @@
             });
         }
 
-        function formatearFecha(fechaStr) {
+        /* function formatearFecha(fechaStr) {
             if (!fechaStr) return 'Reciente';
             try {
                 return new Date(fechaStr).toLocaleDateString('es-MX');
             } catch (e) { return fechaStr; }
+        } */
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return 'Fecha desconocida';
+            try {
+                let fecha = new Date(fechaStr);
+                if (isNaN(fecha.getTime())) return fechaStr;
+                return fecha.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch (e) {
+                return fechaStr;
+            }
         }
 
         function searchInAviso(aviso, searchTerm) {
