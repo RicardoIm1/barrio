@@ -582,22 +582,43 @@
 
         function iniciarPolling() {
             if (pollingInterval) clearInterval(pollingInterval);
+
+            // Solo obtener valores iniciales si existen
             const likesSpan = document.querySelector('.likes-count');
             const dislikesSpan = document.querySelector('.dislikes-count');
             const vistasSpan = document.querySelector('.vistas-count');
             const comentariosSpan = document.querySelector('.comments-count');
+
             ultimosDatos = {
                 likes: likesSpan ? parseInt(likesSpan.textContent) || 0 : 0,
                 dislikes: dislikesSpan ? parseInt(dislikesSpan.textContent) || 0 : 0,
                 vistas: vistasSpan ? parseInt(vistasSpan.textContent) || 0 : 0,
                 comentarios: comentariosSpan ? parseInt(comentariosSpan.textContent) || 0 : 0
             };
-            pollingInterval = setInterval(() => { obtenerActualizacionesEnTiempoReal(); }, 5000);
+
+            // ✅ POLLING CADA 60 SEGUNDOS (en lugar de 5)
+            // ✅ Solo actualiza si la pestaña está visible
+            pollingInterval = setInterval(() => {
+                if (!document.hidden) {
+                    obtenerActualizacionesEnTiempoReal();
+                }
+            }, 60000); // 60 segundos
         }
 
         function detenerPolling() {
-            if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
         }
+
+        // ✅ OPCIONAL: Actualizar cuando la pestaña vuelve a ser visible
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden && avisoActual && avisoActual.id) {
+                // Al volver a la pestaña, actualizar inmediatamente
+                obtenerActualizacionesEnTiempoReal();
+            }
+        });
 
         // ========== LIKE Y DISLIKE ==========
         async function darLike(avisoId) {
