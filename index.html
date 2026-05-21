@@ -871,8 +871,7 @@
                 contenedor.innerHTML = '<p>Cargando comentarios...</p>';
 
                 // ✅ VOLVER A LA VERSIÓN QUE FUNCIONABA
-                const respuesta = await API.peticion('LISTAR_COMENTARIOS', avisoId, apiKey);
-
+                const respuesta = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId }, apiKey);
                 console.log('Comentarios respuesta:', respuesta);
 
                 let comentarios = [];
