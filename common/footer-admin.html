@@ -424,6 +424,7 @@
     let chartDetailedView = false;
 
     // Detectar usuario actual desde API
+    // Detectar usuario actual desde API
     async function detectUserRole() {
         try {
             currentUser = API.getUsuarioActual();
@@ -431,19 +432,27 @@
                 currentUserRole = 'admin';
                 const badge = document.getElementById('userRoleBadge');
                 if (badge) {
-                    badge.innerHTML = '👑 Administrador';
+                    // ✅ Mostrar nombre del usuario admin
+                    badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
                     badge.style.background = 'rgba(255, 193, 7, 0.2)';
                 }
                 const pendingCard = document.getElementById('pendingCard');
                 if (pendingCard) pendingCard.style.display = 'flex';
                 const chartCategorias = document.getElementById('chartCategorias');
                 if (chartCategorias) chartCategorias.style.display = 'block';
-            } else {
+            } else if (currentUser) {
                 currentUserRole = 'user';
                 const badge = document.getElementById('userRoleBadge');
-                if (badge) badge.innerHTML = '👤 Usuario';
+                if (badge) {
+                    // ✅ Mostrar nombre del usuario normal
+                    badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
+                }
                 const pendingCard = document.getElementById('pendingCard');
                 if (pendingCard) pendingCard.style.display = 'none';
+            } else {
+                // Sin sesión
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) badge.innerHTML = '👤 Invitado';
             }
             return true;
         } catch (e) {
@@ -642,6 +651,17 @@
     // Función principal de actualización
     async function refreshDashboardData() {
         try {
+            // ✅ Actualizar badge con el usuario actual
+            const usuarioActual = API.getUsuarioActual();
+            const badge = document.getElementById('userRoleBadge');
+            if (badge && usuarioActual) {
+                if (usuarioActual.rol === 'admin') {
+                    badge.innerHTML = `👑 ${usuarioActual.nombre || usuarioActual.email}`;
+                } else {
+                    badge.innerHTML = `👤 ${usuarioActual.nombre || usuarioActual.email}`;
+                }
+            }
+
             const notices = await getAllNoticesFromAPI();
             const stats = calculateStats(notices);
             updateCards(stats);
@@ -652,7 +672,6 @@
 
             renderRecentNotices(notices);
 
-            // Actualizar fecha
             const now = new Date();
             const fechaSpan = document.getElementById('fechaActual');
             if (fechaSpan) {
@@ -662,7 +681,7 @@
             console.error('Error actualizando dashboard:', error);
         }
     }
-
+    
     // Alternar vista del gráfico
     window.toggleChartView = function () {
         chartDetailedView = !chartDetailedView;
