@@ -390,15 +390,15 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-        
+
         .stat-card {
             padding: 15px;
         }
-        
+
         .stat-number {
             font-size: 1.4rem;
         }
-        
+
         .bar-label {
             width: 100px;
             font-size: 0.75rem;
@@ -409,7 +409,7 @@
         .dashboard-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .dashboard-titulo {
             flex-direction: column;
             align-items: flex-start;
@@ -418,62 +418,81 @@
 </style>
 
 <script>
-    // ========== DASHBOARD FUNCTIONS ==========
-    let currentUserRole = 'user'; // 'user' o 'admin'
+    // ========== DASHBOARD FUNCTIONS - CONECTADO A API REAL ==========
+    let currentUserRole = 'user';
+    let currentUser = null;
     let chartDetailedView = false;
 
-    // Detectar si es admin (basado en localStorage o variable global)
-    function detectUserRole() {
-        const userData = localStorage.getItem('currentUser');
-        if (userData) {
-            try {
-                const user = JSON.parse(userData);
-                if (user.role === 'admin' || user.isAdmin === true) {
-                    currentUserRole = 'admin';
-                    document.getElementById('userRoleBadge').innerHTML = '👑 Administrador';
-                    document.getElementById('userRoleBadge').style.background = 'rgba(255, 193, 7, 0.2)';
-                    document.getElementById('pendingCard').style.display = 'flex';
-                    document.getElementById('chartCategorias').style.display = 'block';
-                } else {
-                    currentUserRole = 'user';
-                    document.getElementById('userRoleBadge').innerHTML = '👤 Usuario';
+    // Detectar usuario actual desde API
+    async function detectUserRole() {
+        try {
+            currentUser = API.getUsuarioActual();
+            if (currentUser && currentUser.rol === 'admin') {
+                currentUserRole = 'admin';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) {
+                    badge.innerHTML = '👑 Administrador';
+                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
                 }
-            } catch(e) {
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'flex';
+                const chartCategorias = document.getElementById('chartCategorias');
+                if (chartCategorias) chartCategorias.style.display = 'block';
+            } else {
                 currentUserRole = 'user';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) badge.innerHTML = '👤 Usuario';
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'none';
             }
+            return true;
+        } catch (e) {
+            console.error('Error detectando usuario:', e);
+            return false;
         }
     }
 
     // Formatear fecha
     function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
-    }
-
-    // Obtener todos los avisos (del localStorage)
-    function getAllNotices() {
-        const stored = localStorage.getItem('avisos');
-        if (stored) {
-            try {
-                return JSON.parse(stored);
-            } catch(e) {
-                return [];
-            }
+        if (!dateString) return 'Fecha desconocida';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+        } catch (e) {
+            return dateString;
         }
-        return [];
     }
 
-    // Obtener avisos según el rol
-    function getUserNotices() {
-        const allNotices = getAllNotices();
-        if (currentUserRole === 'admin') {
-            return allNotices;
-        } else {
-            const userData = localStorage.getItem('currentUser');
-            if (userData) {
-                const user = JSON.parse(userData);
-                return allNotices.filter(aviso => aviso.userId === user.id || aviso.userEmail === user.email);
+    // Obtener todos los avisos desde la API
+    async function getAllNoticesFromAPI() {
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            let respuesta;
+
+            if (currentUserRole === 'admin') {
+                // Admin obtiene TODOS los avisos
+                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', {}, apiKey);
+            } else {
+                // Usuario normal obtiene SOLO sus avisos
+                respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
             }
+
+            console.log('Dashboard - Respuesta API:', respuesta);
+
+            if (respuesta && respuesta.success) {
+                let avisos = [];
+                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                    avisos = respuesta.data.datos;
+                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                    avisos = respuesta.datos;
+                } else if (Array.isArray(respuesta.data)) {
+                    avisos = respuesta.data;
+                }
+                return avisos;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error obteniendo avisos:', error);
             return [];
         }
     }
@@ -481,23 +500,23 @@
     // Calcular estadísticas
     function calculateStats(notices) {
         const total = notices.length;
-        const activos = notices.filter(a => a.estado === 'activo' || a.estado !== 'inactivo').length;
-        const pendientes = notices.filter(a => a.estado === 'pendiente' || !a.estado).length;
-        
+        const activos = notices.filter(a => a.status === 'activo' || a.status === 'aprobado').length;
+        const pendientes = notices.filter(a => a.status === 'pendiente' || !a.status).length;
+
         // Categorías únicas en uso
         const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c));
         const totalCategorias = categoriasSet.size;
-        
+
         // Visitas totales
-        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.visitas) || 0), 0);
-        
+        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
+
         // Interacciones (likes + comentarios)
         const totalInteracciones = notices.reduce((sum, a) => {
-            const likes = parseInt(a.likes) || 0;
-            const comentarios = (a.comentarios && Array.isArray(a.comentarios)) ? a.comentarios.length : 0;
+            const likes = parseInt(a.intereses) || 0;
+            const comentarios = parseInt(a.comentarios_count) || 0;
             return sum + likes + comentarios;
         }, 0);
-        
+
         return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
     }
 
@@ -513,14 +532,21 @@
 
     // Actualizar tarjetas
     function updateCards(stats) {
-        document.getElementById('totalAvisos').innerText = stats.total;
-        document.getElementById('avisosActivos').innerText = stats.activos;
+        const totalAvisos = document.getElementById('totalAvisos');
+        const avisosActivos = document.getElementById('avisosActivos');
+        const totalCategorias = document.getElementById('totalCategorias');
+        const totalVisitas = document.getElementById('totalVisitas');
+        const totalInteracciones = document.getElementById('totalInteracciones');
+
+        if (totalAvisos) totalAvisos.innerText = stats.total;
+        if (avisosActivos) avisosActivos.innerText = stats.activos;
         if (currentUserRole === 'admin') {
-            document.getElementById('avisosPendientes').innerText = stats.pendientes;
+            const avisosPendientes = document.getElementById('avisosPendientes');
+            if (avisosPendientes) avisosPendientes.innerText = stats.pendientes;
         }
-        document.getElementById('totalCategorias').innerText = stats.totalCategorias;
-        document.getElementById('totalVisitas').innerText = stats.totalVisitas.toLocaleString();
-        document.getElementById('totalInteracciones').innerText = stats.totalInteracciones.toLocaleString();
+        if (totalCategorias) totalCategorias.innerText = stats.totalCategorias;
+        if (totalVisitas) totalVisitas.innerText = stats.totalVisitas.toLocaleString();
+        if (totalInteracciones) totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
     }
 
     // Renderizar gráfico de barras
@@ -536,12 +562,9 @@
             'gobierno': '🏛️ Gobierno',
             'varios': '📢 Varios'
         };
-        
+
         let barsHtml = '';
-        let totalWithNotices = 0;
-        
         for (const [key, value] of Object.entries(stats)) {
-            if (value > 0) totalWithNotices++;
             const percentage = (value / maxValue) * 100;
             barsHtml += `
                 <div class="bar-item">
@@ -555,56 +578,61 @@
                 </div>
             `;
         }
-        
-        document.getElementById('chartBars').innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
-        
-        const topCategory = Object.entries(stats).sort((a,b) => b[1] - a[1])[0];
-        if (topCategory && topCategory[1] > 0) {
-            document.getElementById('chartStatsMini').innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
-        } else {
-            document.getElementById('chartStatsMini').innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
+
+        const chartBars = document.getElementById('chartBars');
+        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
+
+        const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
+        const chartStatsMini = document.getElementById('chartStatsMini');
+        if (chartStatsMini) {
+            if (topCategory && topCategory[1] > 0) {
+                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
+            } else {
+                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
+            }
         }
     }
 
-    // Renderizar últimos avisos
+    // Renderizar últimos avisos en la tabla
     function renderRecentNotices(notices) {
-        const recent = [...notices].sort((a,b) => {
-            const dateA = new Date(a.fecha || a.createdAt || 0);
-            const dateB = new Date(b.fecha || b.createdAt || 0);
+        const recent = [...notices].sort((a, b) => {
+            const dateA = new Date(a.created_at || a.fecha || 0);
+            const dateB = new Date(b.created_at || b.fecha || 0);
             return dateB - dateA;
         }).slice(0, 5);
-        
+
         const tbody = document.getElementById('recentTableBody');
-        
+        if (!tbody) return;
+
         if (recent.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay avisos publicados</td></tr>';
             return;
         }
-        
+
         tbody.innerHTML = recent.map(aviso => {
             let statusClass = 'status-active';
             let statusText = 'Activo';
-            if (aviso.estado === 'pendiente' || !aviso.estado) {
+            if (aviso.status === 'pendiente' || !aviso.status) {
                 statusClass = 'status-pending';
                 statusText = 'Pendiente';
-            } else if (aviso.estado === 'inactivo') {
+            } else if (aviso.status === 'rechazado') {
                 statusClass = 'status-inactive';
-                statusText = 'Inactivo';
+                statusText = 'Rechazado';
             }
-            
-            const fecha = formatDate(aviso.fecha || aviso.createdAt || new Date());
-            const titulo = aviso.titulo?.substring(0, 40) + (aviso.titulo?.length > 40 ? '...' : '') || 'Sin título';
+
+            const fecha = formatDate(aviso.created_at || aviso.fecha);
+            const titulo = (aviso.titulo || 'Sin título').substring(0, 40);
             const categoriaIcon = {
                 'urgente': '🚨', 'escuelas': '🏫', 'servicios': '🛠️',
                 'comercios': '🛒', 'eventos': '📅', 'gobierno': '🏛️', 'varios': '📢'
             }[aviso.categoria] || '📋';
-            
+
             return `
                 <tr>
-                    <td>${categoriaIcon} ${titulo}</td>
+                    <td>${categoriaIcon} ${titulo}${aviso.titulo?.length > 40 ? '...' : ''}</td>
                     <td>${aviso.categoria || 'General'}</td>
                     <td>${fecha}</td>
-                    <td>${parseInt(aviso.visitas) || 0}</td>
+                    <td>${parseInt(aviso.vistas) || 0}</td>
                     <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                 </tr>
             `;
@@ -612,44 +640,47 @@
     }
 
     // Función principal de actualización
-    function refreshDashboardData() {
-        const notices = getUserNotices();
-        const stats = calculateStats(notices);
-        updateCards(stats);
-        
-        if (currentUserRole === 'admin') {
-            renderChart(notices);
+    async function refreshDashboardData() {
+        try {
+            const notices = await getAllNoticesFromAPI();
+            const stats = calculateStats(notices);
+            updateCards(stats);
+
+            if (currentUserRole === 'admin') {
+                renderChart(notices);
+            }
+
+            renderRecentNotices(notices);
+
+            // Actualizar fecha
+            const now = new Date();
+            const fechaSpan = document.getElementById('fechaActual');
+            if (fechaSpan) {
+                fechaSpan.innerHTML = `📅 ${now.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+            }
+        } catch (error) {
+            console.error('Error actualizando dashboard:', error);
         }
-        
-        renderRecentNotices(notices);
-        
-        // Actualizar fecha
-        const now = new Date();
-        document.getElementById('fechaActual').innerHTML = `📅 ${now.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
     }
 
     // Alternar vista del gráfico
-    function toggleChartView() {
+    window.toggleChartView = function () {
         chartDetailedView = !chartDetailedView;
-        const notices = getUserNotices();
-        renderChart(notices);
+        refreshDashboardData();
         const btn = document.querySelector('.chart-toggle');
         if (btn) {
             btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
         }
-    }
+    };
 
     // Inicializar dashboard
-    function initDashboard() {
-        detectUserRole();
-        refreshDashboardData();
-        
+    async function initDashboard() {
+        await detectUserRole();
+        await refreshDashboardData();
+
         // Actualizar automáticamente cada 30 segundos
         setInterval(refreshDashboardData, 30000);
     }
-
-    // Actualizar copyright
-    document.getElementById('copyright-year').innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
 
     // Iniciar cuando el DOM esté listo
     if (document.readyState === 'loading') {
