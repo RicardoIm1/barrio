@@ -554,7 +554,7 @@
     <!-- ========== BANNER HERO ========== -->
     <picture>
         <source srcset="/barrio/img/banner-elbarrio2.webp" type="image/webp">
-        <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png"
+        <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" decoding="async" class="aviso-imagen
             alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager"
             fetchpriority="high" decoding="async"
             onerror="this.onerror=null; this.src='/barrio/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
@@ -1067,7 +1067,7 @@
                 </div>
             `;
                 } else if (aviso.imagen_url && aviso.imagen_url.trim() !== '') {
-                    multimediaHTML = `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy">`;
+                    multimediaHTML = `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy" decoding="async" class="aviso-imagen>`;
                 }
 
                 return `
