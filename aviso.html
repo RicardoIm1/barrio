@@ -669,8 +669,10 @@
             if (!commentsList) return;
             commentsList.innerHTML = '<div class="cargando">💬 Cargando comentarios...</div>';
             try {
-                // ✅ CORREGIDO: enviar solo el ID, no un objeto
-                const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
+                // ✅ AGREGAR apiKey
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId }, apiKey);
+
                 console.log('Comentarios respuesta:', resultado);
 
                 if (resultado && resultado.success) {
