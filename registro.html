@@ -324,7 +324,7 @@
         .catch(err => console.error('Error cargando header:', err));
 
       // Footer
-      fetch('/barrio/common/footer.html')
+      fetch('/barrio/common/footer-admin.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
           return response.text();
