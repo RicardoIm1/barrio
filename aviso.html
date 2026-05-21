@@ -670,7 +670,7 @@
             commentsList.innerHTML = '<div class="cargando">💬 Cargando comentarios...</div>';
             try {
                 // ✅ CORREGIDO: enviar solo el ID, no un objeto
-                const resultado = await API.peticion('LISTAR_COMENTARIOS', avisoId);
+                const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
                 console.log('Comentarios respuesta:', resultado);
 
                 if (resultado && resultado.success) {
