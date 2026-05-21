@@ -797,7 +797,7 @@
           <h1 class="article-title">${escapeHTML(avisoActual.titulo || 'Sin título')}</h1>
           <div class="article-meta">
             <span>📅 ${escapeHTML(fechaTexto)}</span>
-            <span>👤 ${escapeHTML(avisoActual.nombre_autor || avisoActual.created_by || 'Vecino')}</span>
+            <span>👤 ${escapeHTML(avisoActual.nombre_autor || avisoActual.autor_nombre || avisoActual.nombre_usuario || avisoActual.created_by || 'Vecino')}</span>
             <span>🏷️ ${escapeHTML(categoriaLegible)}</span>
           </div>
         </div>
