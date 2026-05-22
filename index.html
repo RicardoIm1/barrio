@@ -549,46 +549,51 @@
     </style>
 
     <style>
-        /* Borde rojo lateral para avisos destacados */
+        /* Efecto KITT suave y calmado */
         .aviso-card.aviso-destacado {
             border-left: 6px solid #dc3545 !important;
             border-radius: 20px !important;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Brillo que sube y baja suavemente */
         .aviso-card.aviso-destacado::before {
             content: '';
             position: absolute;
-            top: -50%;
+            top: 0;
             left: 0;
             width: 100%;
-            height: 50%;
-            background: linear-gradient(180deg,
-                    transparent,
-                    rgba(255, 80, 80, 0.5),
-                    transparent);
-            animation: brilloSubeBaja 3s ease-in-out infinite;
+            height: 25px;
+            background: radial-gradient(ellipse at center, rgba(255, 100, 100, 0.9), transparent);
+            animation: kittSuave 4s ease-in-out infinite;
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
         }
 
-        @keyframes brilloSubeBaja {
+        @keyframes kittSuave {
             0% {
-                top: -50%;
-                opacity: 0;
+                top: 0%;
+                opacity: 0.3;
             }
 
-            20% {
+            25% {
+                top: 40%;
                 opacity: 1;
             }
 
-            80% {
+            50% {
+                top: 80%;
+                opacity: 1;
+            }
+
+            75% {
+                top: 40%;
                 opacity: 1;
             }
 
             100% {
-                top: 100%;
-                opacity: 0;
+                top: 0%;
+                opacity: 0.3;
             }
         }
     </style>
