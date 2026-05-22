@@ -547,57 +547,75 @@
             }
         }
     </style>
-
     <style>
+<<<<<<< HEAD
+        /* Base del borde rojo */
+=======
         /* Efecto KITT lento y elegante solo en el borde */
+>>>>>>> abb27a10777a7af8f695dedd19d718977eb6c4ab
         .aviso-card.aviso-destacado {
             border-left: 8px solid #dc3545 !important;
             border-radius: 20px !important;
             position: relative;
+            overflow: hidden;
         }
 
+<<<<<<< HEAD
+        /* La canica atrapada en el borde */
+=======
         /* Luz que viaja lentamente por el borde */
+>>>>>>> abb27a10777a7af8f695dedd19d718977eb6c4ab
         .aviso-card.aviso-destacado::before {
-            content: '';
+            content: '●';
             position: absolute;
             top: 0;
-            left: -6px;
-            width: 6px;
-            height: 25px;
-            background: rgba(255, 100, 100, 0.8);
-            border-radius: 3px;
-            animation: kittLento 5s ease-in-out infinite;
+            left: -4px;
+            font-size: 14px;
+            color: #ff9999;
+            text-shadow: 0 0 4px #ff4444;
+            animation: canicaRodante 5s ease-in-out infinite;
             pointer-events: none;
             z-index: 3;
+            width: 6px;
+            text-align: center;
+            line-height: 1;
         }
 
-        @keyframes kittLento {
+        @keyframes canicaRodante {
             0% {
                 top: 0%;
-                opacity: 0.3;
+                transform: scale(1);
+                text-shadow: 0 0 2px #ff6666;
             }
 
-            15% {
-                opacity: 1;
-                box-shadow: 0 0 6px #ff6666;
+            25% {
+                top: 35%;
+                transform: scale(1.2);
+                text-shadow: 0 0 8px #ff3333;
+                color: #ff4444;
             }
 
             50% {
-                top: 85%;
-                opacity: 1;
-                box-shadow: 0 0 6px #ff6666;
+                top: 70%;
+                transform: scale(1);
+                text-shadow: 0 0 6px #ff6666;
             }
 
-            65% {
-                opacity: 1;
+            75% {
+                top: 95%;
+                transform: scale(0.9);
+                text-shadow: 0 0 3px #ff8888;
+                color: #ff8888;
             }
 
             100% {
                 top: 0%;
-                opacity: 0.3;
+                transform: scale(1);
+                text-shadow: 0 0 2px #ff6666;
             }
         }
     </style>
+
 </head>
 
 <body>
