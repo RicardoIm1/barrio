@@ -572,7 +572,7 @@
             line-height: 1;
             font-weight: bold;
         }
-        
+
         /* Delays diferentes para cada canica */
         .aviso-card.aviso-destacado:nth-child(6n+1)::before {
             animation-delay: 0s;
@@ -613,6 +613,22 @@
             100% {
                 top: 94%;
                 transform: scale(1.1);
+            }
+        }
+
+        /* En dispositivos pequeños, canica más pequeña */
+        @media (max-width: 768px) {
+            .aviso-card.aviso-destacado::before {
+                font-size: 12px;
+                left: -3px;
+            }
+        }
+
+        /* En dispositivos muy pequeños (celulares chicos) */
+        @media (max-width: 480px) {
+            .aviso-card.aviso-destacado::before {
+                font-size: 10px;
+                left: -2px;
             }
         }
     </style>
