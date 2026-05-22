@@ -563,7 +563,6 @@
         .aviso-card.aviso-destacado {
             border-left: 6px solid #dc3545 !important;
             border-radius: 20px !important;
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
         }
 
         .aviso-card.aviso-destacado:hover {
@@ -1104,7 +1103,7 @@
                 }
 
                 return `
-        <div class="aviso-card tarjeta-moderna ${aviso.destacado === true || aviso.destacado === 'TRUE' ? 'aviso-destacado' : ''}" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
+        <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
             <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
                 ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
             </div>
