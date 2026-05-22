@@ -548,6 +548,14 @@
         }
     </style>
     <style>
+        /* Base del borde rojo */
+        .aviso-card.aviso-destacado {
+            border-left: 6px solid #dc3545 !important;
+            border-radius: 20px !important;
+            position: relative;
+            overflow: hidden;
+        }
+
         /* La canica atrapada en el borde */
         .aviso-card.aviso-destacado::before {
             content: '●';
@@ -565,6 +573,31 @@
             line-height: 1;
         }
 
+        /* Delays diferentes para cada canica (inician en diferente punto) */
+        .aviso-card.aviso-destacado:nth-child(6n+1)::before {
+            animation-delay: 0s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+2)::before {
+            animation-delay: 0.6s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+3)::before {
+            animation-delay: 1.2s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+4)::before {
+            animation-delay: 1.8s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+5)::before {
+            animation-delay: 2.4s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+6)::before {
+            animation-delay: 3s;
+        }
+
         @keyframes canicaSubeYBaja {
             0% {
                 top: 2%;
@@ -574,13 +607,12 @@
 
             100% {
                 top: 94%;
-                transform: scale(1);
+                transform: scale(1.1);
                 text-shadow: 0 0 6px #ff4444;
                 color: #ff4444;
             }
         }
     </style>
-    <!-- hola -->
 </head>
 
 <body>
