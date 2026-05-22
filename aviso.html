@@ -780,6 +780,14 @@
 
         window.abrirComentarios = function (id, event) {
             if (event) event.stopPropagation();
+
+            // ✅ VERIFICAR SESIÓN ANTES DE ABRIR
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                showToast('🔐 Inicia sesión para ver y comentar', 2000);
+                return;
+            }
+
             currentAvisoIdForComments = id;
             document.getElementById('comments-panel').classList.add('open');
             cargarComentarios(id);
