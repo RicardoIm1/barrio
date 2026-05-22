@@ -447,43 +447,7 @@
             }
         }
     </style>
-    <style>
-        .aviso-card.aviso-destacado {
-            border-left: 6px solid #dc3545 !important;
-            border-radius: 20px !important;
-            position: relative;
-        }
 
-        .aviso-card.aviso-destacado::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 100%;
-            background: linear-gradient(180deg,
-                    #ff6b6b,
-                    #dc3545,
-                    #ff6b6b);
-            animation: brilloBorde 2s ease-in-out infinite;
-            border-radius: 20px 0 0 20px;
-        }
-
-        @keyframes brilloBorde {
-            0% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-                box-shadow: 0 0 8px #dc3545;
-            }
-
-            100% {
-                opacity: 0.6;
-            }
-        }
-    </style>
 </head>
 
 <body>
