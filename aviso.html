@@ -1065,6 +1065,44 @@
 
         window.addEventListener('beforeunload', () => { detenerPolling(); });
     </script>
+    <script>
+        // ========== ACTUALIZAR VISTAS EN TIEMPO REAL ==========
+        async function actualizarContadorVistas() {
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('OBTENER_ESTADISTICAS', { id: AVISO_ID }, apiKey);
+
+                console.log('Respuesta de vistas:', resultado);
+
+                if (resultado && resultado.success && resultado.data) {
+                    const vistasSpan = document.querySelector('.vistas-count');
+                    if (vistasSpan) {
+                        const nuevasVistas = resultado.data.vistas || resultado.data.visitas || 0;
+                        const vistasActuales = parseInt(vistasSpan.textContent) || 0;
+
+                        if (nuevasVistas !== vistasActuales) {
+                            vistasSpan.textContent = nuevasVistas;
+                            console.log(`✅ Vistas actualizadas: ${vistasActuales} → ${nuevasVistas}`);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('Error actualizando vistas:', e);
+            }
+        }
+
+        // Llamar después de registrar la vista
+        setTimeout(() => {
+            actualizarContadorVistas();
+        }, 1000);
+
+        // También actualizar cada 30 segundos mientras la página está abierta
+        setInterval(() => {
+            if (!document.hidden) {
+                actualizarContadorVistas();
+            }
+        }, 30000);
+    </script>
 </body>
 
 </html>

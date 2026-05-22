@@ -593,7 +593,7 @@
         function registrarVisita(pagina) {
             const userAgent = navigator.userAgent;
             const referer = document.referrer;
-            const url = `https://script.google.com/macros/s/AKfycbwq4SLoABxWqM7vmJIubO-j7KuDgDcrnppz4uAzkDN4OM94qAeqj8gxz3IMieAwS_o4/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
+            const url = `https://script.google.com/macros/s/AKfycbxDB80T1kM-8BQ8v4pXQtRnkhqpzTiR812CRf2HNTbCaCii6R-Gn2Kgma7K6CcJTm6p/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
             fetch(url).catch(e => console.warn('Error registrando visita:', e));
         }
 
@@ -1287,7 +1287,7 @@
                 return;
             }
 
-            const url = 'https://script.google.com/macros/s/AKfycbwq4SLoABxWqM7vmJIubO-j7KuDgDcrnppz4uAzkDN4OM94qAeqj8gxz3IMieAwS_o4/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbxDB80T1kM-8BQ8v4pXQtRnkhqpzTiR812CRf2HNTbCaCii6R-Gn2Kgma7K6CcJTm6p/exec';
 
             try {
                 const response = await fetch(`${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`);
@@ -1425,7 +1425,7 @@
         }
 
         async function guardarSuscripcionEnBackend(subscription, apiKey) {
-            const url = 'https://script.google.com/macros/s/AKfycbwq4SLoABxWqM7vmJIubO-j7KuDgDcrnppz4uAzkDN4OM94qAeqj8gxz3IMieAwS_o4/exec';
+            const url = 'https://script.google.com/macros/s/AKfycbxDB80T1kM-8BQ8v4pXQtRnkhqpzTiR812CRf2HNTbCaCii6R-Gn2Kgma7K6CcJTm6p/exec';
             const response = await fetch(`${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`);
             return await response.json();
         }
@@ -1584,6 +1584,40 @@
                 }
             }
         });
+    </script>
+
+    <script>
+        // ========== ACTUALIZAR VISTAS EN EL INDEX ==========
+        async function actualizarTodasLasVistas() {
+            const cards = document.querySelectorAll('.aviso-card');
+            if (cards.length === 0) return;
+
+            const apiKey = localStorage.getItem('api_key');
+
+            for (const card of cards) {
+                const id = card.getAttribute('data-id');
+                if (!id) continue;
+
+                try {
+                    const resultado = await API.peticion('OBTENER_ESTADISTICAS', { id: id }, apiKey);
+                    if (resultado && resultado.success && resultado.data) {
+                        const vistasSpan = card.querySelector('.vistas-count');
+                        if (vistasSpan) {
+                            vistasSpan.textContent = resultado.data.vistas || 0;
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Error actualizando vistas del aviso ${id}:`, e);
+                }
+            }
+        }
+
+        // Actualizar cada 30 segundos
+        setInterval(() => {
+            if (!document.hidden) {
+                actualizarTodasLasVistas();
+            }
+        }, 30000);        
     </script>
 
 </body>
