@@ -556,24 +556,25 @@
             overflow: hidden;
         }
 
-        /* La canica atrapada en el borde */
+        /* La canica nítida en el borde */
         .aviso-card.aviso-destacado::before {
             content: '●';
             position: absolute;
             top: 0;
             left: -4px;
             font-size: 14px;
-            color: #ff9999;
-            text-shadow: 0 0 4px #ff4444;
+            color: #ff3333;
+            /* ❌ SIN text-shadow - para que se vea nítida */
             animation: canicaSubeYBaja 4s ease-in-out infinite alternate;
             pointer-events: none;
             z-index: 3;
             width: 6px;
             text-align: center;
             line-height: 1;
+            font-weight: bold;
         }
 
-        /* Delays diferentes para cada canica (inician en diferente punto) */
+        /* Delays diferentes para cada canica */
         .aviso-card.aviso-destacado:nth-child(6n+1)::before {
             animation-delay: 0s;
         }
@@ -602,14 +603,11 @@
             0% {
                 top: 2%;
                 transform: scale(1);
-                text-shadow: 0 0 2px #ff6666;
             }
 
             100% {
                 top: 94%;
                 transform: scale(1.1);
-                text-shadow: 0 0 6px #ff4444;
-                color: #ff4444;
             }
         }
     </style>
