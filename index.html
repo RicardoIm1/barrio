@@ -421,8 +421,8 @@
             background: #000;
         }
 
-        /* Tarjetas destacadas con video más grande */
-        .aviso-card.destacada .aviso-video {
+        /* Tarjetas destacados con video más grande */
+        .aviso-card.destacado .aviso-video {
             height: 240px;
         }
 
@@ -431,7 +431,7 @@
                 height: 160px;
             }
 
-            .aviso-card.destacada .aviso-video {
+            .aviso-card.destacado .aviso-video {
                 height: 200px;
             }
         }
@@ -1081,7 +1081,7 @@
                 }
 
                 return `
-        <div class="aviso-card tarjeta-moderna" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
+        <div class="aviso-card tarjeta-moderna ${aviso.destacado === true || aviso.destacado === 'TRUE' ? 'destacado' : ''}" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
             <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
                 ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
             </div>
