@@ -421,8 +421,8 @@
             background: #000;
         }
 
-        /* Tarjetas destacados con video más grande */
-        .aviso-card.destacado .aviso-video {
+        /* Tarjetas destacadas con video más grande */
+        .aviso-card.destacada .aviso-video {
             height: 240px;
         }
 
@@ -431,7 +431,7 @@
                 height: 160px;
             }
 
-            .aviso-card.destacado .aviso-video {
+            .aviso-card.destacada .aviso-video {
                 height: 200px;
             }
         }
@@ -545,6 +545,18 @@
             .categoria-info p {
                 font-size: 0.8rem;
             }
+        }
+    </style>
+    <style>
+        /* Marco especial para avisos destacados (columna M = TRUE) */
+        .aviso-card.destacado {
+            border-left: 5px solid #dc3545 !important;
+            border-radius: 20px !important;
+            position: relative;
+        }
+
+        .aviso-card.destacado:hover {
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.2);
         }
     </style>
 </head>
