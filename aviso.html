@@ -982,9 +982,9 @@
             }
 
             if (ubicacionFecha) {
-                html += `<div class="contact-info-item">
-        <span class="icon">📍📅</span>
-        <span>${ubicacionFecha}</span>
+                html += `<div class="contact-info-item" style="display: flex; gap: 16px; flex-wrap: wrap;">
+        ${avisoActual.ubicacion ? `<span>📍 ${escapeHTML(avisoActual.ubicacion)}</span>` : ''}
+        ${avisoActual.fecha_evento ? `<span>📅 ${fechaEventoFormateada}</span>` : ''}
     </div>`;
             }
 
