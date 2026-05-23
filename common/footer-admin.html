@@ -7,14 +7,11 @@
                 <h3>Panel de Estadísticas</h3>
                 <span class="dashboard-badge" id="userRoleBadge">Usuario</span>
             </div>
-            <div class="dashboard-fecha">
-                <span id="fechaActual"></span>
-            </div>
+            <div class="dashboard-fecha" id="fechaActual"></div>
         </div>
 
         <!-- DASHBOARD CARDS -->
-        <div class="dashboard-grid" id="dashboardGrid">
-            <!-- Tarjeta Total Avisos -->
+        <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-icon">📰</div>
                 <div class="stat-info">
@@ -23,8 +20,6 @@
                     <span class="stat-label">avisos publicados</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Activos -->
             <div class="stat-card">
                 <div class="stat-icon">✅</div>
                 <div class="stat-info">
@@ -33,8 +28,6 @@
                     <span class="stat-label">en circulación</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Pendientes (solo admin) -->
             <div class="stat-card pending-card" id="pendingCard" style="display: none;">
                 <div class="stat-icon">⏳</div>
                 <div class="stat-info">
@@ -43,8 +36,6 @@
                     <span class="stat-label">por aprobar</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Categorías -->
             <div class="stat-card">
                 <div class="stat-icon">📁</div>
                 <div class="stat-info">
@@ -53,8 +44,6 @@
                     <span class="stat-label">en uso</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Interacción -->
             <div class="stat-card">
                 <div class="stat-icon">👁️</div>
                 <div class="stat-info">
@@ -63,8 +52,6 @@
                     <span class="stat-label">visualizaciones</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Engagement -->
             <div class="stat-card">
                 <div class="stat-icon">💬</div>
                 <div class="stat-info">
@@ -75,150 +62,78 @@
             </div>
         </div>
 
-        <!-- GRÁFICO DE AVISOS POR CATEGORÍA (SOLO ADMIN) -->
+        <!-- GRÁFICO CATEGORÍAS -->
         <div class="dashboard-chart" id="chartCategorias" style="display: none;">
             <div class="chart-header">
                 <h4>📊 Distribución por Categoría</h4>
                 <button class="chart-toggle" onclick="toggleChartView()">📈 Vista detallada</button>
             </div>
-            <div class="chart-bars" id="chartBars">
-                <!-- Barras generadas dinámicamente -->
-            </div>
+            <div class="chart-bars" id="chartBars"></div>
             <div class="chart-stats-mini" id="chartStatsMini"></div>
         </div>
-    </div>
 
-    <!-- GRÁFICAS TEMPORALES (USUARIOS, AVISOS, CONEXIONES) -->
-    <div class="dashboard-chart" id="chartTemporal" style="display: none;">
-        <div class="chart-header">
-            <h4>📈 Evolución Diaria (últimos 30 días)</h4>
-            <div class="chart-toggles">
-                <button class="chart-toggle" onclick="toggleMetric('usuarios')">👥 Usuarios</button>
-                <button class="chart-toggle" onclick="toggleMetric('avisos')">📰 Avisos</button>
-                <button class="chart-toggle" onclick="toggleMetric('conexiones')">🟢 Conexiones</button>
+        <!-- GRÁFICA EVOLUCIÓN DIARIA -->
+        <div class="dashboard-chart" id="chartTemporal" style="display: none;">
+            <div class="chart-header">
+                <h4>📈 Evolución Diaria (últimos 30 días)</h4>
+                <div class="chart-toggles">
+                    <button class="chart-toggle" onclick="toggleMetric('usuarios')">👥 Usuarios</button>
+                    <button class="chart-toggle" onclick="toggleMetric('avisos')">📰 Avisos</button>
+                    <button class="chart-toggle" onclick="toggleMetric('conexiones')">🟢 Conexiones</button>
+                </div>
+            </div>
+            <div class="temporal-chart-container">
+                <canvas id="temporalChart" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+            </div>
+            <div class="chart-stats-mini" id="temporalStats"></div>
+        </div>
+
+        <!-- USUARIOS EN LÍNEA -->
+        <div class="dashboard-chart" id="chartOnline" style="display: none;">
+            <div class="chart-header">
+                <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
+                <span class="online-badge" id="onlineCount">0 conectados</span>
+            </div>
+            <div class="online-users-list" id="onlineUsersList">
+                <p style="color:#888;">Cargando...</p>
             </div>
         </div>
-        <div class="temporal-chart-container">
-            <canvas id="temporalChart" width="400" height="200"
-                style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
-        </div>
-        <div class="chart-stats-mini" id="temporalStats"></div>
-    </div>
 
-    <!-- USUARIOS EN LÍNEA (TIEMPO REAL) -->
-    <div class="dashboard-chart" id="chartOnline" style="display: none;">
-        <div class="chart-header">
-            <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
-            <span class="online-badge" id="onlineCount">0 conectados</span>
-        </div>
-        <div class="online-users-list" id="onlineUsersList">
-            <p style="color:#888;">Cargando...</p>
-        </div>
-    </div>
-
-    <!-- RESÚMENES RÁPIDOS -->
-    <div class="stats-summary" id="statsSummary" style="display: none;">
-        <div class="summary-item">
-            <span class="summary-label">📊 Promedio diario usuarios:</span>
-            <span class="summary-value" id="promUsuarios">0</span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">📝 Promedio diario avisos:</span>
-            <span class="summary-value" id="promAvisos">0</span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">👥 Total usuarios registrados:</span>
-            <span class="summary-value" id="totalUsuarios">0</span>
+        <!-- RESÚMENES RÁPIDOS -->
+        <div class="stats-summary" id="statsSummary" style="display: none;">
+            <div class="summary-item">
+                <span class="summary-label">📊 Promedio diario usuarios:</span>
+                <span class="summary-value" id="promUsuarios">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">📝 Promedio diario avisos:</span>
+                <span class="summary-value" id="promAvisos">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">👥 Total usuarios registrados:</span>
+                <span class="summary-value" id="totalUsuarios">0</span>
+            </div>
         </div>
     </div>
 </footer>
+
 <style>
-    /* Gráficas temporales */
-    .temporal-chart-container {
-        padding: 15px 0;
-        min-height: 250px;
-    }
-
-    .chart-toggles {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .online-badge {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-
-    .online-users-list {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .online-user-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 0.85rem;
-    }
-
-    .online-user-email {
-        color: #ccc;
-    }
-
-    .online-user-time {
-        color: #4caf50;
-        font-size: 0.7rem;
-    }
-
-    .stats-summary {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 15px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
-        padding: 15px 20px;
-        margin-top: 20px;
-    }
-
-    .summary-item {
-        text-align: center;
-    }
-
-    .summary-label {
-        display: block;
-        font-size: 0.7rem;
-        color: #888;
-        margin-bottom: 5px;
-    }
-
-    .summary-value {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #f5b042;
-    }
-
-    /* Mostrar solo para admin */
-    .dashboard-chart {
-        display: none;
-    }
-</style>
-<style>
-    /* ========== DASHBOARD FOOTER ESTYLES ========== */
+    /* ========== DASHBOARD FOOTER STYLES ========== */
     .dashboard-footer {
         background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
         margin-top: 60px;
-        padding-top: 30px;
+        padding: 30px 0 40px;
     }
 
-    /* Dashboard Header */
+    /* Contenedor interno */
+    .dashboard-footer .contenedor {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
     .dashboard-header {
         display: flex;
         justify-content: space-between;
@@ -262,10 +177,10 @@
         font-size: 0.85rem;
     }
 
-    /* Dashboard Grid Cards */
+    /* Grid de tarjetas */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 20px;
         margin-bottom: 30px;
     }
@@ -273,8 +188,8 @@
     .stat-card {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 20px;
+        border-radius: 20px;
+        padding: 20px 15px;
         display: flex;
         align-items: center;
         gap: 15px;
@@ -283,18 +198,18 @@
     }
 
     .stat-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-3px);
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(245, 176, 66, 0.3);
     }
 
     .stat-icon {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
     }
 
     .stat-info h4 {
         color: #aaa;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         margin: 0 0 5px 0;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -305,22 +220,21 @@
         font-size: 1.8rem;
         font-weight: bold;
         line-height: 1;
-        margin: 5px 0;
     }
 
     .stat-label {
         color: #777;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
     }
 
     .pending-card {
         border-left: 3px solid #ff9800;
     }
 
-    /* Dashboard Chart */
+    /* Gráficas */
     .dashboard-chart {
         background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
+        border-radius: 20px;
         padding: 20px;
         margin-bottom: 30px;
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -338,17 +252,18 @@
     .chart-header h4 {
         color: #f5b042;
         margin: 0;
+        font-size: 1rem;
     }
 
     .chart-toggle {
         background: rgba(245, 176, 66, 0.2);
         border: 1px solid #f5b042;
         color: #f5b042;
-        padding: 5px 12px;
-        border-radius: 20px;
+        padding: 6px 14px;
+        border-radius: 30px;
         cursor: pointer;
         font-size: 0.75rem;
-        transition: all 0.3s;
+        transition: all 0.2s;
     }
 
     .chart-toggle:hover {
@@ -356,6 +271,13 @@
         color: #1a1a2e;
     }
 
+    .chart-toggles {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Barras de categorías */
     .chart-bars {
         display: flex;
         flex-direction: column;
@@ -370,24 +292,23 @@
     }
 
     .bar-label {
-        width: 120px;
-        font-size: 0.85rem;
+        width: 100px;
+        font-size: 0.8rem;
         color: #ccc;
     }
 
     .bar-container {
         flex: 1;
-        height: 28px;
+        height: 30px;
         background: rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
+        border-radius: 15px;
         overflow: hidden;
-        position: relative;
     }
 
     .bar-fill {
         height: 100%;
         background: linear-gradient(90deg, #f5b042, #ff8c42);
-        border-radius: 14px;
+        border-radius: 15px;
         display: flex;
         align-items: center;
         justify-content: flex-end;
@@ -395,125 +316,120 @@
         color: #1a1a2e;
         font-size: 0.7rem;
         font-weight: bold;
-        transition: width 0.5s ease;
+        transition: width 0.4s ease;
     }
 
     .bar-count {
-        min-width: 40px;
+        min-width: 35px;
         text-align: right;
         font-size: 0.8rem;
         color: #f5b042;
         font-weight: bold;
     }
 
+    /* Gráfica temporal */
+    .temporal-chart-container {
+        min-height: 250px;
+    }
+
+    #temporalChart {
+        max-width: 100%;
+        height: auto;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+    }
+
+    /* Usuarios en línea */
+    .online-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .online-users-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .online-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+
+    .online-user-email {
+        color: #ccc;
+        word-break: break-all;
+    }
+
+    .online-user-time {
+        color: #4caf50;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        margin-left: 10px;
+    }
+
+    /* Resúmenes */
+    .stats-summary {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-top: 10px;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-label {
+        display: block;
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #f5b042;
+    }
+
     .chart-stats-mini {
         margin-top: 15px;
         padding-top: 15px;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #888;
         text-align: center;
     }
 
-    /* Recent Posts Table */
-    .dashboard-recent {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .recent-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .recent-header h4 {
-        color: #f5b042;
-        margin: 0;
-    }
-
-    .refresh-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: #ccc;
-        padding: 5px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: all 0.3s;
-    }
-
-    .refresh-btn:hover {
-        background: rgba(245, 176, 66, 0.2);
-        color: #f5b042;
-    }
-
-    .recent-table-wrapper {
-        overflow-x: auto;
-    }
-
-    .recent-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
-    }
-
-    .recent-table th {
-        text-align: left;
-        padding: 12px 10px;
-        background: rgba(245, 176, 66, 0.1);
-        color: #f5b042;
-        font-weight: 600;
-    }
-
-    .recent-table td {
-        padding: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: #bbb;
-    }
-
-    .recent-table tr:hover td {
-        background: rgba(255, 255, 255, 0.03);
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.7rem;
-        font-weight: bold;
-    }
-
-    .status-active {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-    }
-
-    .status-pending {
-        background: rgba(255, 152, 0, 0.2);
-        color: #ff9800;
-    }
-
-    .status-inactive {
-        background: rgba(244, 67, 54, 0.2);
-        color: #f44336;
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
+        .dashboard-footer .contenedor {
+            padding: 0 15px;
+        }
+
         .dashboard-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
         }
 
         .stat-card {
-            padding: 15px;
+            padding: 15px 12px;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
         }
 
         .stat-number {
@@ -521,8 +437,16 @@
         }
 
         .bar-label {
-            width: 100px;
-            font-size: 0.75rem;
+            width: 85px;
+            font-size: 0.7rem;
+        }
+
+        .stats-summary {
+            gap: 15px;
+        }
+
+        .summary-value {
+            font-size: 1.1rem;
         }
     }
 
@@ -531,9 +455,28 @@
             grid-template-columns: 1fr;
         }
 
+        .dashboard-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
         .dashboard-titulo {
+            justify-content: center;
+        }
+
+        .chart-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .online-user-item {
             flex-direction: column;
             align-items: flex-start;
+            gap: 5px;
+        }
+
+        .online-user-time {
+            margin-left: 0;
         }
     }
 </style>
