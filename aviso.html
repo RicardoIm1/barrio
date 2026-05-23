@@ -1035,7 +1035,10 @@
 
             // 5. WhatsApp
             if (tieneContacto) {
-                html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="stat-item action-btn whatsapp-btn" target="_blank" onclick="registrarClickWhatsApp('${avisoActual.id}')">
+                html += `<a href="https://wa.me/52${numero}?text=${mensaje}" class="stat-item action-btn" target="_blank" style="background: #25D366; color: white;">
+    <span class="stat-icon">📱</span>
+    <span class="stat-value">WhatsApp</span>
+</a> onclick="registrarClickWhatsApp('${avisoActual.id}')">
                             <span class="stat-icon">📱</span>
                             <span class="stat-value">WhatsApp</span>
                         </a>`;
