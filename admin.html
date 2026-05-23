@@ -1142,14 +1142,17 @@
 
         // Función de escape HTML (existente)
         function escapeHTML(str) {
-            if (!str) return '';
-            return String(str).replace(/[&<>]/g, function (m) {
+            // ✅ Si no es string, convertir a string o retornar vacío
+            if (str === undefined || str === null) return '';
+            if (typeof str !== 'string') str = String(str);
+
+            return str.replace(/[&<>]/g, function (m) {
                 if (m === '&') return '&amp;';
                 if (m === '<') return '&lt;';
                 if (m === '>') return '&gt;';
                 return m;
             });
-        }
+        } F
 
         // Helper para íconos de categoría
         function getCategoriaIcono(categoria) {
