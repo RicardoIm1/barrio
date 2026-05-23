@@ -1600,11 +1600,26 @@
                     applyFiltersAndSearch();
                     // En cargarAvisos(), dentro del setTimeout:
                     setTimeout(() => {
-                        const scrollContainer = document.querySelector('.scrollable-container');
-                        if (scrollContainer && !window.barrioScrollSnap) {
-                            window.barrioScrollSnap = new BarrioScrollSnap('.scrollable-container', '.aviso-card');
-                        } else if (window.barrioScrollSnap) {
-                            window.barrioScrollSnap.refresh();
+                        // 🚀 SOLO en móvil (ancho < 768px)
+                        const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && window.innerWidth < 768);
+
+                        if (isMobile) {
+                            const scrollContainer = document.querySelector('.scrollable-container');
+                            if (scrollContainer && !window.barrioScrollSnap) {
+                                window.barrioScrollSnap = new BarrioScrollSnap('.scrollable-container', '.aviso-card');
+                            } else if (window.barrioScrollSnap) {
+                                window.barrioScrollSnap.refresh();
+                            }
+                        } else {
+                            // Si existe el efecto en desktop, lo destruimos
+                            if (window.barrioScrollSnap) {
+                                window.barrioScrollSnap = null;
+                            }
+                            // Asegurar que el contenedor no tenga clases raras
+                            const container = document.getElementById('avisos-container');
+                            if (container) {
+                                container.classList.remove('posts-container-ios');
+                            }
                         }
                     }, 300);
 
