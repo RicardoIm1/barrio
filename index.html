@@ -888,16 +888,20 @@
         };
 
         window.abrirWhatsApp = function (numero, texto, id, event) {
-
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
             }
 
+            // 🔐 VALIDAR QUE EL USUARIO ESTÉ LOGUEADO
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                showToast('🔐 Inicia sesión para ver el contacto de WhatsApp', 2000);
+                return;
+            }
+
             let numeroLimpio = String(numero).replace(/[^0-9]/g, '');
-
             const url = `https://wa.me/52${numeroLimpio}?text=${encodeURIComponent(texto)}`;
-
             window.open(url, '_blank');
 
             if (id) {
