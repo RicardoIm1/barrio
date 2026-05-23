@@ -1151,8 +1151,9 @@
                 const whatsappNumber = aviso.contacto ? String(aviso.contacto).replace(/[^0-9]/g, '') : '';
 
                 // ✅ Título limpio para WhatsApp
+                // ✅ Título limpio para WhatsApp
                 const tituloLimpio = limpiarTitulo(aviso.titulo);
-                const mensaje = `Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`;
+                const mensaje = encodeURIComponent(`Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`);
 
                 const likes = parseInt(aviso.intereses) || 0;
                 const dislikes = parseInt(aviso.votos_negativos) || 0;
