@@ -842,30 +842,18 @@
         };
 
         window.abrirWhatsApp = function (numero, texto, id, event) {
-            if (event) event.stopPropagation();
 
-            console.log('📱 Intentando abrir WhatsApp:');
-            console.log('  - Número original:', numero);
-            console.log('  - Texto:', texto);
-            console.log('  - ID aviso:', id);
-
-            const apiKey = localStorage.getItem('api_key');
-
-            if (!apiKey) {
-                showToast('🔐 Inicia sesión para contactar al anunciante por WhatsApp', 2000);
-                return;
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
             }
 
-            // ✅ Limpiar número
             let numeroLimpio = String(numero).replace(/[^0-9]/g, '');
 
-            // ✅ Codificar SOLO AQUÍ
             const url = `https://wa.me/52${numeroLimpio}?text=${encodeURIComponent(texto)}`;
 
-            // ✅ Abrir WhatsApp
             window.open(url, '_blank');
 
-            // ✅ Registrar clic sin bloquear
             if (id) {
                 registrarClickWhatsApp(id)
                     .catch(e => console.warn('Error registrando click:', e));
@@ -1237,9 +1225,9 @@
     type="button"
     class="whatsapp-btn"
     onclick='abrirWhatsApp(
-        '${whatsappNumber}',
+        "${whatsappNumber}",
         ${JSON.stringify(mensaje)},
-        '${aviso.id}',
+        "${aviso.id}",
         event
     )'>
 </button>` : ''}
