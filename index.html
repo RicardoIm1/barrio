@@ -2256,141 +2256,138 @@
                 if (!this.container) return;
 
                 // Detectar móvil por ancho o soporte táctil
-                const isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
+                const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && window.innerWidth < 768);
                 if (!isMobile) {
-                    console.log('Desktop: efecto desactivado');
+                    console.log('🖥️ Desktop: efecto engrane desactivado');
                     return;
                 }
 
                 this.items = () => this.container.querySelectorAll(itemSelector);
                 this.currentIndex = 0;
+                this.scrollTimer = null;
                 this.init();
             }
-        }
 
-        init() {
-            // Agregar clase al contenedor
-            this.container.classList.add('posts-container-ios');
+            init() {
+                // Doble validación por si acaso
+                const isMobile = window.innerWidth < 768 || ('ontouchstart' in window && window.innerWidth < 768);
+                if (!isMobile) return;
 
-            // Aplicar clase a cada post existente y futuro
-            this.aplicarClaseAPosts();
-
-            // Detectar cambios de scroll
-            this.container.addEventListener('scroll', () => this.handleScroll());
-
-            // También detectar cuando termina de hacer scroll (para snap más preciso)
-            this.container.addEventListener('scrollend', () => this.handleScrollEnd());
-        }
-
-        aplicarClaseAPosts() {
-            const posts = this.items();
-            posts.forEach(post => {
-                if (!post.classList.contains('post-card-ios')) {
-                    post.classList.add('post-card-ios');
-                }
-            });
-        }
-
-        handleScroll() {
-            if (this.scrollTimer) clearTimeout(this.scrollTimer);
-
-            // Calcular cuál post está más cerca del centro de la pantalla
-            const containerRect = this.container.getBoundingClientRect();
-            const centerY = containerRect.top + containerRect.height / 2;
-
-            const posts = this.items();
-            let closestIndex = this.currentIndex;
-            let closestDistance = Infinity;
-
-            posts.forEach((post, idx) => {
-                const postRect = post.getBoundingClientRect();
-                const postCenter = postRect.top + postRect.height / 2;
-                const distance = Math.abs(centerY - postCenter);
-
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestIndex = idx;
-                }
-            });
-
-            // Si cambió el índice, disparar el efecto "engranaje"
-            if (closestIndex !== this.currentIndex) {
-                this.currentIndex = closestIndex;
-                this.triggerGearEffect(closestIndex);
+                this.container.classList.add('posts-container-ios');
+                this.aplicarClaseAPosts();
+                this.container.addEventListener('scroll', () => this.handleScroll());
+                this.container.addEventListener('scrollend', () => this.handleScrollEnd());
             }
 
-            // Marcar el post activo visualmente
-            this.markActivePost(closestIndex);
-        }
-
-        handleScrollEnd() {
-            // Al soltar, asegurar el snap más preciso
-            const posts = this.items();
-            if (posts[this.currentIndex]) {
-                posts[this.currentIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        }
-
-        triggerGearEffect(index) {
-            const posts = this.items();
-            const activePost = posts[index];
-            if (!activePost) return;
-
-            // 1. Efecto visual de "clic"
-            activePost.classList.add('gear-click');
-            setTimeout(() => {
-                activePost.classList.remove('gear-click');
-            }, 150);
-
-            // 2. Feedback háptico (vibración) - solo si el dispositivo lo soporta
-            if (window.navigator && window.navigator.vibrate) {
-                window.navigator.vibrate(8);  // Vibración sutil de 8ms
+            aplicarClaseAPosts() {
+                const posts = this.items();
+                posts.forEach(post => {
+                    if (!post.classList.contains('post-card-ios')) {
+                        post.classList.add('post-card-ios');
+                    }
+                });
             }
 
-            // 3. Sonido opcional (Web Audio - muy sutil, solo si quieres)
-            // this.playTickSound();
+            handleScroll() {
+                if (this.scrollTimer) clearTimeout(this.scrollTimer);
 
-            // 4. Disparar evento personalizado (por si quieres hacer algo más)
-            const event = new CustomEvent('postChanged', {
-                detail: { index: index, post: activePost }
-            });
-            this.container.dispatchEvent(event);
+                // Calcular cuál post está más cerca del centro de la pantalla
+                const containerRect = this.container.getBoundingClientRect();
+                const centerY = containerRect.top + containerRect.height / 2;
 
-            console.log(`⚙️ Engranaje: post ${index} activado`);
-        }
+                const posts = this.items();
+                let closestIndex = this.currentIndex;
+                let closestDistance = Infinity;
 
-        markActivePost(activeIndex) {
-            const posts = this.items();
-            posts.forEach((post, idx) => {
-                if (idx === activeIndex) {
-                    post.classList.add('active');
-                } else {
-                    post.classList.remove('active');
+                posts.forEach((post, idx) => {
+                    const postRect = post.getBoundingClientRect();
+                    const postCenter = postRect.top + postRect.height / 2;
+                    const distance = Math.abs(centerY - postCenter);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = idx;
+                    }
+                });
+
+                // Si cambió el índice, disparar el efecto "engranaje"
+                if (closestIndex !== this.currentIndex) {
+                    this.currentIndex = closestIndex;
+                    this.triggerGearEffect(closestIndex);
                 }
-            });
-        }
 
-        playTickSound() {
-            try {
-                if (!this.audioCtx) {
-                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                // Marcar el post activo visualmente
+                this.markActivePost(closestIndex);
+            }
+
+            handleScrollEnd() {
+                // Al soltar, asegurar el snap más preciso
+                const posts = this.items();
+                if (posts[this.currentIndex]) {
+                    posts[this.currentIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
-                const osc = this.audioCtx.createOscillator();
-                const gain = this.audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(this.audioCtx.destination);
-                osc.frequency.value = 1200;
-                gain.gain.value = 0.03;
-                osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.08);
-                osc.stop(this.audioCtx.currentTime + 0.08);
-            } catch (e) { /* silencio */ }
-        }
+            }
 
-        // Actualizar la referencia a los posts (útil si se cargan dinámicamente)
-        refresh() {
-            this.aplicarClaseAPosts();
-        }
+            triggerGearEffect(index) {
+                const posts = this.items();
+                const activePost = posts[index];
+                if (!activePost) return;
+
+                // 1. Efecto visual de "clic"
+                activePost.classList.add('gear-click');
+                setTimeout(() => {
+                    activePost.classList.remove('gear-click');
+                }, 150);
+
+                // 2. Feedback háptico (vibración) - solo si el dispositivo lo soporta
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(8);  // Vibración sutil de 8ms
+                }
+
+                // 3. Sonido opcional (Web Audio - muy sutil, solo si quieres)
+                // this.playTickSound();
+
+                // 4. Disparar evento personalizado (por si quieres hacer algo más)
+                const event = new CustomEvent('postChanged', {
+                    detail: { index: index, post: activePost }
+                });
+                this.container.dispatchEvent(event);
+
+                console.log(`⚙️ Engranaje: post ${index} activado`);
+            }
+
+            markActivePost(activeIndex) {
+                const posts = this.items();
+                posts.forEach((post, idx) => {
+                    if (idx === activeIndex) {
+                        post.classList.add('active');
+                    } else {
+                        post.classList.remove('active');
+                    }
+                });
+            }
+
+            playTickSound() {
+                try {
+                    if (!this.audioCtx) {
+                        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+                    osc.frequency.value = 1200;
+                    gain.gain.value = 0.03;
+                    osc.start();
+                    gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.08);
+                    osc.stop(this.audioCtx.currentTime + 0.08);
+                } catch (e) { /* silencio */ }
+            }
+
+            // Actualizar la referencia a los posts (útil si se cargan dinámicamente)
+            refresh() {
+                this.aplicarClaseAPosts();
+            }
         }
     </script>
     <script>
