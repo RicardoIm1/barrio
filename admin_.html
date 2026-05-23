@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<!-- ESTABLE 07:23 20may -->
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+    <title>Administración | EL BARRIO</title>
+    <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/barrio/css/estilo.css">
+    <link rel="manifest" href="/barrio/manifest.json">
+    <meta name="theme-color" content="#2c3e50">
+    <style>
+        /* Estilos adicionales para asegurar que los tabs funcionen */
+        .tab {
+            display: none;
+        }
+
+        .tab.activo {
+            display: block;
+        }
+
+        .filtro.activo {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+
+        #admin-tabs {
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--color-borde);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .filtro {
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid var(--color-borde);
+            padding: 0.6rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .filtro:hover {
+            background: var(--color-fondo);
+        }
+
+        .filtro.activo {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+
+        /* ========== GRID DE AVISOS ========== */
+        .avisos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Tarjeta de avisos mejorada */
+        .tarjeta {
+            background: white;
+            border: 1px solid var(--color-borde);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tarjeta destacada (más reciente) */
+        .tarjeta.destacada {
+            grid-column: span 2;
+            grid-row: span 1;
+            background: linear-gradient(135deg, #fff 0%, #fef9e6 100%);
+            border: 2px solid #ff8c42;
+            box-shadow: 0 4px 15px rgba(255, 140, 66, 0.2);
+        }
+
+        .tarjeta.destacada .tarjeta-titulo {
+            font-size: 1.3rem;
+        }
+
+        .tarjeta.destacada .tarjeta-contenido {
+            font-size: 1rem;
+        }
+
+        /* Badge de "Nuevo" o "Reciente" */
+        .reciente-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(135deg, #ff8c42, #f5b042);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .tarjeta-titulo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            padding-right: 60px;
+        }
+
+        .tarjeta-fecha {
+            font-size: 0.7rem;
+            color: var(--color-texto-claro);
+            margin-bottom: 0.5rem;
+        }
+
+        .tarjeta-contenido {
+            font-size: 0.9rem;
+            color: var(--color-texto);
+            margin-bottom: 0.8rem;
+            flex-grow: 1;
+        }
+
+        .tarjeta-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            margin-bottom: 0.8rem;
+        }
+
+        /* Miniaturas de imagen */
+        .tarjeta-imagen {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 0.8rem;
+            background: #f0f0f0;
+        }
+
+        .tarjeta.destacada .tarjeta-imagen {
+            height: 200px;
+        }
+
+        /* Video embebido pequeño */
+        .tarjeta-video {
+            margin-bottom: 0.8rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .tarjeta-video iframe {
+            width: 100%;
+            height: 160px;
+            border: none;
+        }
+
+        .tarjeta.destacada .tarjeta-video iframe {
+            height: 200px;
+        }
+
+        .grupo-botones {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: auto;
+        }
+
+        .boton-chico {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+            width: auto;
+        }
+
+        .boton-secundario {
+            background: var(--color-fondo);
+            color: var(--color-primario);
+            border: 1px solid var(--color-borde);
+        }
+
+        .boton-secundario:hover {
+            background: var(--color-borde);
+        }
+
+        /* ========== GRID DE USUARIOS ========== */
+        .usuarios-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tarjeta-usuario {
+            background: white;
+            border: 1px solid var(--color-borde);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .tarjeta-usuario:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-usuario {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f5b042, #ff8c42);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .info-usuario {
+            flex-grow: 1;
+        }
+
+        .info-usuario strong {
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .info-usuario small {
+            font-size: 0.7rem;
+            color: var(--color-texto-claro);
+        }
+
+        .rol-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .rol-admin {
+            background: #dc3545;
+            color: white;
+        }
+
+        .rol-usuario {
+            background: #28a745;
+            color: white;
+        }
+
+        /* Paginación */
+        .paginacion {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .paginacion-botones {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pagina {
+            padding: 0.3rem 0.8rem;
+            border: 1px solid var(--color-borde);
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagina:hover {
+            background: var(--color-fondo);
+        }
+
+        .pagina.activa {
+            background: var(--color-primario);
+            color: white;
+            border-color: var(--color-primario);
+        }
+
+        /* Header decorativo */
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem 1rem;
+            background: linear-gradient(135deg, #1e4620, #2b7a2b);
+            border-radius: 1rem;
+            color: white;
+        }
+
+        .admin-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .admin-header p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Estilos para formularios */
+        .formulario {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .campo {
+            margin-bottom: 1rem;
+        }
+
+        .campo label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--color-borde);
+            border-radius: 0.5rem;
+            font-family: inherit;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .preview-container {
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .preview-imagen {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-borde);
+        }
+
+        /* Botones principales */
+        .boton {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #f5b042, #ff8c42);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .boton:hover {
+            background: linear-gradient(135deg, #e69a2e, #e67300);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .boton-peligro {
+            background: #dc3545;
+        }
+
+        .boton-peligro:hover {
+            background: #c82333;
+        }
+
+        .boton-exito {
+            background: #28a745;
+        }
+
+        .boton-exito:hover {
+            background: #218838;
+        }
+
+        /* Estilos para la tabla de moderación */
+        .admin-tabla-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-borde);
+            margin-top: 15px;
+        }
+
+        .tabla-admin {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        .tabla-admin th,
+        .tabla-admin td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--color-borde);
+        }
+
+        .tabla-admin th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        /* Estilo para selectores de estado */
+        .select-estado {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--color-borde);
+            background: white;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .select-estado.pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .select-estado.activo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .select-estado.rechazado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .admin-filtros-flex {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 0.5rem;
+            border: 1px solid var(--color-borde);
+            flex-wrap: wrap;
+        }
+
+        .admin-filtros-flex div {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .badge-estado {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: bold;
+        }
+
+        .badge-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-activo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rechazado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Botones de acción en tabla */
+        .acciones-botones {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+
+        .accion-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .accion-editar {
+            background: #007bff;
+            color: white;
+        }
+
+        .accion-eliminar {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .avisos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
+            }
+
+            .tarjeta.destacada {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .avisos-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .tarjeta.destacada {
+                grid-column: span 1;
+                order: -1;
+            }
+
+            .tarjeta.destacada .tarjeta-titulo {
+                font-size: 1.1rem;
+            }
+
+            .usuarios-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tarjeta-usuario {
+                padding: 0.8rem;
+            }
+
+            .admin-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .grupo-botones {
+                flex-direction: column;
+            }
+
+            .boton-chico {
+                width: 100%;
+                text-align: center;
+            }
+
+            .tabla-admin,
+            .tabla-admin thead,
+            .tabla-admin tbody,
+            .tabla-admin th,
+            .tabla-admin td,
+            .tabla-admin tr {
+                display: block;
+            }
+
+            .tabla-admin thead tr {
+                display: none;
+            }
+
+            .tabla-admin tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--color-borde);
+                border-radius: 8px;
+                padding: 10px;
+            }
+
+            .tabla-admin td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .tabla-admin td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 40%;
+            }
+
+            .acciones-botones {
+                justify-content: flex-end;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+
+            .tarjeta-imagen,
+            .tarjeta.destacada .tarjeta-imagen {
+                height: 140px;
+            }
+
+            .tarjeta-video iframe,
+            .tarjeta.destacada .tarjeta-video iframe {
+                height: 140px;
+            }
+
+            .tarjeta-titulo {
+                font-size: 1rem;
+            }
+
+            .reciente-badge {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .avisos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+
+            .tarjeta.destacada {
+                grid-column: span 2;
+                grid-row: span 1;
+            }
+
+            .usuarios-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        .filtro.activo {
+            background: linear-gradient(135deg, #f5b042, #ff8c42);
+            color: white;
+            border-color: transparent;
+        }
+
+        .filtro:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .cargando {
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-texto-claro);
+        }
+    </style>
+    <style>
+        #tab-usuarios-btn {
+            display: none;
+        }
+
+        #tab-usuarios-btn[style*="block"] {
+            display: block !important;
+        }
+    </style>
+    <style>
+        /* Buscador Universal */
+        .buscador-universal {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-borde);
+        }
+
+        .buscador-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .buscador-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 1.1rem;
+            color: #aaa;
+        }
+
+        .buscador-universal-input {
+            width: 100%;
+            padding: 0.8rem 2.5rem 0.8rem 2.5rem;
+            border: 2px solid var(--color-borde);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .buscador-universal-input:focus {
+            outline: none;
+            border-color: var(--color-primario);
+            box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
+        }
+
+        .buscador-limpiar {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #999;
+            padding: 0 5px;
+        }
+
+        .buscador-limpiar:hover {
+            color: #e74c3c;
+        }
+
+        .buscador-filtros {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .filtro-busqueda {
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: var(--color-fondo);
+            transition: all 0.2s;
+        }
+
+        .filtro-busqueda:hover {
+            background: var(--color-borde);
+        }
+
+        .filtro-busqueda.activo {
+            background: var(--color-primario);
+            color: white;
+        }
+
+        /* Resultados de búsqueda */
+        .resultados-busqueda {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            display: none;
+        }
+
+        .resultados-busqueda span {
+            font-weight: bold;
+            color: var(--color-primario);
+        }
+
+        .sin-resultados {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-container"></div>
+
+    <main class="contenedor">
+        <div id="mensaje-container"></div>
+
+        <div class="filtros" id="admin-tabs">
+            <button class="filtro activo" data-tab="nuevo">📝 Nuevo aviso</button>
+            <button class="filtro" data-tab="lista">📋 Mis avisos</button>
+            <button class="filtro" data-tab="perfil">👤 Mi perfil</button>
+            <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥 Usuarios</button>
+        </div>
+
+        <!-- Buscador Universal -->
+        <div class="buscador-universal">
+            <div class="buscador-input-wrapper">
+                <span class="buscador-icon">🔍</span>
+                <input type="text" id="buscadorAdmin" class="buscador-universal-input"
+                    placeholder="Buscar en avisos y usuarios... (título, contenido, email, teléfono, ID)">
+                <button id="limpiarBusqueda" class="buscador-limpiar" style="display: none;">✕</button>
+            </div>
+        </div>
+
+        <!-- Pestaña: Nuevo aviso -->
+        <div id="tab-nuevo" class="tab activo">
+            <form id="form-aviso" class="formulario" style="max-width: 100%;">
+                <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
+
+                <div class="campo" style="display: none;">
+                    <label for="categoria">Categoría</label>
+                    <select id="categoria" required>
+                        <option value="varios" selected>📢 VARIOS</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo" required placeholder="Ej: Kermés vecinal">
+                </div>
+
+                <div class="campo">
+                    <label for="contenido">Descripción</label>
+                    <textarea id="contenido" required placeholder="Escribe los detalles del aviso..."></textarea>
+                </div>
+
+                <div class="campo">
+                    <label for="ubicacion">Ubicación (opcional)</label>
+                    <input type="text" id="ubicacion" placeholder="Ej: Calle Principal #123">
+                </div>
+
+                <div class="campo">
+                    <label for="contacto">Contacto (opcional)</label>
+                    <input type="text" id="contacto" placeholder="Ej: Teléfono o email">
+                </div>
+
+                <div class="campo">
+                    <label for="fecha_evento">Fecha del evento (opcional)</label>
+                    <input type="date" id="fecha_evento">
+                </div>
+
+                <!-- ========== NUEVA SECCIÓN: ARCHIVO MULTIMEDIA ========== -->
+                <div class="campo">
+                    <label>🎬 Subir imagen o video</label>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button type="button" id="btn-seleccionar-imagen" class="boton"
+                            style="background: #2c7da0; flex:1;">📸 Seleccionar imagen</button>
+                        <button type="button" id="btn-seleccionar-video" class="boton"
+                            style="background: #5a6e7c; flex:1;">🎥 Seleccionar video</button>
+                    </div>
+                    <input type="file" id="archivo-multimedia" accept="image/*,video/*" style="display: none;">
+                    <div id="vista-previa-multimedia" style="margin-top: 12px; text-align: center;"></div>
+                    <small style="color: #666;">Selecciona una imagen (jpg/png) o un video (mp4).</small>
+                </div>
+
+                <!-- Campos ocultos para guardar las URLs -->
+                <input type="hidden" id="imagen_url" name="imagen_url">
+                <input type="hidden" id="video_url" name="video_url">
+
+                <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="urgente" style="width: auto;">
+                    <label for="urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+                </div>
+
+                <div class="grupo-botones">
+                    <button type="submit" class="boton">Publicar aviso</button>
+                    <button type="button" class="boton boton-secundario" id="cancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Pestaña: Lista de avisos -->
+        <div id="tab-lista" class="tab">
+
+            <!-- Tabla de avisos -->
+            <div class="admin-tabla-wrapper">
+                <table class="tabla-admin">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Título / Categoría</th>
+                            <th>Contacto</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-avisos-cuerpo">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 15px; color: #777;">Cargando registros
+                                vecinales...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="paginacion-admin" class="paginacion"></div>
+        </div>
+
+        <!-- Pestaña: Perfil -->
+        <div id="tab-perfil" class="tab">
+            <div class="formulario" style="max-width: 100%;">
+                <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
+                <div id="perfil-info"></div>
+                <div style="margin-top: 32px;">
+                    <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
+                    <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
+                        🔔 Activar notificaciones
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pestaña: Usuarios -->
+        <div id="tab-usuarios" class="tab">
+            <div class="formulario" style="max-width: 100%;">
+                <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
+
+                <form id="form-usuario">
+                    <div class="campo">
+                        <label for="user-email">Email</label>
+                        <input type="email" id="user-email" required placeholder="ejemplo@correo.com">
+                    </div>
+
+                    <div class="campo">
+                        <label for="user-nombre">Nombre completo</label>
+                        <input type="text" id="user-nombre" required placeholder="Nombre del usuario">
+                    </div>
+
+                    <div class="campo">
+                        <label for="user-rol">Rol</label>
+                        <select id="user-rol" required>
+                            <option value="usuario">Usuario</option>
+                            <option value="admin">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="user-password">Contraseña</label>
+                        <input type="password" id="user-password" required placeholder="Contraseña temporal">
+                    </div>
+
+                    <input type="hidden" id="user-categorias" value="todas">
+                    <button type="submit" class="boton" style="margin-top: 10px;">👥 Crear Cuenta de Usuario</button>
+                </form>
+                <!-- Tabla de usuarios existentes -->
+                <div style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 16px;">📋 Usuarios registrados</h3>
+                    <div class="admin-tabla-wrapper">
+                        <table class="tabla-admin">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Nombre</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-usuarios-cuerpo">
+                                <tr>
+                                    <td colspan="5">Cargando usuarios...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <div id="footer-container"></div>
+
+    <!-- Inclusión de tus archivos JavaScript -->
+    <script src="/barrio/js/auth.js"></script>
+    <script src="/barrio/js/api.js"></script>
+    <script src="/barrio/js/ui.js"></script>
+    <script src="/barrio/js/admin.js"></script>
+
+    <script>
+        // ==================== CONTROL DE ACCESO ====================
+        (function verificarAcceso() {
+            const usuario = API.getUsuarioActual();
+            const apiKey = localStorage.getItem('api_key');
+
+            // Si no hay sesión, redirigir al login
+            if (!usuario || !apiKey) {
+                console.warn('🔒 Acceso denegado: No hay sesión activa');
+                window.location.href = '/barrio/login.html?redirect=admin.html';
+                return;
+            }
+
+            // ✅ Permitir acceso a ambos roles (admin y usuario normal)
+            console.log(`✅ Acceso concedido como: ${usuario.rol} - ${usuario.email}`);
+
+            // Solo mostrar la pestaña de usuarios si es admin
+            if (usuario.rol === 'admin') {
+                const tabUsuarios = document.getElementById('tab-usuarios-btn');
+                if (tabUsuarios) tabUsuarios.style.display = 'block';
+                console.log('👥 Pestaña de usuarios visible para admin');
+            } else {
+                console.log('👤 Usuario normal: solo verá sus propios avisos');
+            }
+        })();
+    </script>
+
+    <!-- Modal de edición -->
+    <div id="modal-editar"
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div
+            style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">✏️ Editar aviso</h2>
+                <button id="cerrar-modal"
+                    style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+            </div>
+
+            <form id="form-editar">
+                <input type="hidden" id="edit-id">
+
+                <!-- <div class="campo">
+                    <label for="edit-categoria">Categoría</label>
+                    <select id="edit-categoria" required>
+                        <option value="urgente">🚨 URGENTE</option>
+                        <option value="escuelas">🏫 ESCUELAS</option>
+                        <option value="servicios">🛠️ SERVICIOS</option>
+                        <option value="comercios">🛒 COMERCIOS</option>
+                        <option value="eventos">📅 EVENTOS</option>
+                        <option value="gobierno">🏛️ GOBIERNO</option>
+                        <option value="varios">📢 VARIOS</option>
+                    </select>
+                </div> -->
+
+                <div class="campo" style="display: none;">
+                    <label for="edit-categoria">Categoría</label>
+                    <select id="edit-categoria" required>
+                        <option value="varios" selected>📢 VARIOS</option>
+                    </select>
+                </div>
+
+                <div class="campo">
+                    <label for="edit-titulo">Título</label>
+                    <input type="text" id="edit-titulo" required>
+                </div>
+
+                <div class="campo">
+                    <label for="edit-contenido">Descripción</label>
+                    <textarea id="edit-contenido" rows="5" required></textarea>
+                </div>
+
+                <div class="campo">
+                    <label for="edit-ubicacion">Ubicación</label>
+                    <input type="text" id="edit-ubicacion">
+                </div>
+
+                <div class="campo">
+                    <label for="edit-contacto">Contacto</label>
+                    <input type="text" id="edit-contacto">
+                </div>
+
+                <div class="campo">
+                    <label for="edit-fecha_evento">Fecha del evento</label>
+                    <input type="date" id="edit-fecha_evento">
+                </div>
+
+                <div class="campo">
+                    <label for="edit-imagen_url">URL de imagen</label>
+                    <input type="url" id="edit-imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
+
+                    <!-- Subir imagen desde móvil en edición -->
+                    <div style="margin-top: 8px;">
+                        <label>📸 Subir imagen desde móvil:</label>
+                        <input type="file" id="edit-upload-imagen" accept="image/*" capture="environment">
+                    </div>
+
+                    <div id="preview-editar" class="preview-container" style="display: none;">
+                        <img id="preview-imagen-editar" class="preview-imagen" alt="Vista previa">
+                    </div>
+                </div>
+
+                <div class="campo">
+                    <label for="edit-video_url">URL de video</label>
+                    <input type="url" id="edit-video_url" placeholder="https://www.youtube.com/watch?v=...">
+                </div>
+
+                <div class="grupo-botones">
+                    <button type="submit" class="boton">💾 Guardar cambios</button>
+                    <button type="button" class="boton boton-secundario" id="cancelar-editar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de categorías -->
+    <div id="modalCategorias" class="modal-categorias" style="display: none;">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h3>📋 Categorías de avisos</h3>
+                <button class="modal-cerrar" onclick="cerrarModalCategorias()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="categoria-info">
+                    <h4>🚨 URGENTE</h4>
+                    <p>⚠️ <strong>Solo para emergencias reales</strong> que requieren atención inmediata.</p>
+                    <p>Ejemplos: Bache peligroso, fuga de agua, perro perdido.</p>
+                    <small>❌ No uses esta categoría para promociones.</small>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏫 ESCUELAS</h4>
+                    <p>📚 Actividades escolares y avisos de instituciones educativas.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛠️ SERVICIOS</h4>
+                    <p>🔧 Profesionistas y oficios que ofrecen servicios a la comunidad.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🛒 COMERCIOS</h4>
+                    <p>🏪 Negocios locales, promociones y productos.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📅 EVENTOS</h4>
+                    <p>🎉 Reuniones vecinales, festividades y actividades comunitarias.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>🏛️ GOBIERNO</h4>
+                    <p>📢 Avisos oficiales, servicios públicos y trámites.</p>
+                </div>
+                <div class="categoria-info">
+                    <h4>📢 VARIOS</h4>
+                    <p>📌 Lo que no encaja en las categorías anteriores.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="cerrarModalCategorias()" class="boton">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== ADMINISTRACIÓN - CONEXIÓN REAL CON TU API ====================
+
+        // Variables globales
+        let todosLosAvisos = [];
+        let filtroCategoriaActual = 'todos';
+        let filtroStatusActual = 'todos';
+
+        // Función de escape HTML (existente)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Helper para íconos de categoría
+        function getCategoriaIcono(categoria) {
+            const iconos = {
+                'urgente': '🚨',
+                'escuelas': '🏫',
+                'servicios': '🛠️',
+                'comercios': '🛒',
+                'eventos': '📅',
+                'gobierno': '🏛️',
+                'varios': '📢'
+            };
+            return iconos[categoria] || '📢';
+        }
+
+        // ==================== CARGAR AVISOS REALES DESDE TU API ====================
+        async function cargarAvisosParaAdmin() {
+            const tbody = document.getElementById('tabla-avisos-cuerpo');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
+            }
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
+
+                if (!apiKey || !usuario) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
+                    return;
+                }
+
+                console.log(`👤 Usuario logueado: ${usuario.rol} - ${usuario.email}`);
+
+                // ✅ Para admin: obtener TODOS los avisos (sin paginación)
+                // Para usuario normal: solo sus avisos
+                let respuesta;
+                if (usuario.rol === 'admin') {
+                    // Intentar obtener todos los avisos (sin límite)
+                    respuesta = await API.peticion('LISTAR_TODOS_AVISOS', {}, apiKey);
+                    if (!respuesta || !respuesta.success) {
+                        // Si LISTAR_TODOS_AVISOS no existe, usar LISTAR_MIS_AVISOS con páginas
+                        respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
+                    }
+                } else {
+                    respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
+                }
+
+                console.log('📡 Respuesta de la API:', respuesta);
+
+                let avisos = [];
+
+                if (respuesta && respuesta.success) {
+                    if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                        avisos = respuesta.data.datos;
+                    } else if (respuesta.data && Array.isArray(respuesta.data)) {
+                        avisos = respuesta.data;
+                    } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                        avisos = respuesta.datos;
+                    }
+                } else {
+                    throw new Error(respuesta?.error || 'Error al obtener avisos');
+                }
+
+                if (!avisos || avisos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
+                    todosLosAvisos = [];
+                    return;
+                }
+
+                todosLosAvisos = avisos.map(aviso => ({
+                    id: aviso.id,
+                    titulo: aviso.titulo || 'Sin título',
+                    contenido: aviso.contenido || '',
+                    categoria: aviso.categoria || 'varios',
+                    status: aviso.status || 'pendiente',
+                    contacto: aviso.contacto || '',
+                    imagen_url: aviso.imagen_url || '',
+                    video_url: aviso.video_url || '',
+                    ubicacion: aviso.ubicacion || '',
+                    fecha_evento: aviso.fecha_evento || '',
+                    created_at: aviso.created_at
+                }));
+
+                console.log(`✅ Cargados ${todosLosAvisos.length} avisos`);
+                renderizarTablaAvisos();
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                if (tbody) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
+                }
+            }
+        }
+
+        // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
+        function renderizarTablaAvisos() {
+            const tbody = document.getElementById('tabla-avisos-cuerpo');
+            if (!tbody) return;
+
+            const usuario = API.getUsuarioActual();
+            const esAdmin = usuario?.rol === 'admin';
+
+            // Solo filtrar por estado (ya no por categoría)
+            let avisosFiltrados = [...todosLosAvisos];
+
+            if (filtroStatusActual !== 'todos') {
+                avisosFiltrados = avisosFiltrados.filter(a => a.status === filtroStatusActual);
+            }
+
+            if (avisosFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = avisosFiltrados.map(aviso => {
+                const estado = aviso.status || 'pendiente';
+                const estadoTexto = estado === 'activo' ? '🟢 Activo' : (estado === 'rechazado' ? '🔴 Rechazado' : '⏳ Pendiente');
+
+                return `
+        <tr data-id="${aviso.id}">
+            <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : 'N/A'}..</td>
+            <td data-label="Imagen">
+                ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
+            </td>
+            <td data-label="Título">
+                <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
+                <small>📢 VARIOS</small>
+                ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
+            </td>
+            <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
+            <td data-label="Estado">
+                ${esAdmin ? `
+                <select class="select-estado ${estado}" onchange="cambiarEstadoAviso('${aviso.id}', this.value)">
+                    <option value="pendiente" ${estado === 'pendiente' ? 'selected' : ''}>⏳ Pendiente</option>
+                    <option value="activo" ${estado === 'activo' ? 'selected' : ''}>🟢 Activo</option>
+                    <option value="rechazado" ${estado === 'rechazado' ? 'selected' : ''}>🔴 Rechazado</option>
+                </select>
+                ` : `<span class="badge-estado badge-${estado}">${estadoTexto}</span>`}
+            </td>
+            <td data-label="Acciones">
+                <div class="acciones-botones">
+                    <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
+                    ${esAdmin ? `<button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>` : ''}
+                </div>
+            </td>
+        </tr>`;
+            }).join('');
+        }
+
+        // Cambiar estado del aviso
+        window.cambiarEstadoAviso = async function (id, nuevoStatus) {
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
+
+                if (!apiKey || usuario?.rol !== 'admin') {
+                    alert('Solo administradores pueden cambiar el estado');
+                    return;
+                }
+
+                console.log(`Cambiando aviso ${id} a ${nuevoStatus}`);
+
+                // Usar la misma estructura que funciona en LISTAR_MIS_AVISOS
+                const resultado = await API.peticion('ACTUALIZAR', {
+                    coleccion: 'AVISOS',
+                    id: id,
+                    datos: { status: nuevoStatus }
+                }, apiKey);
+
+                console.log('Respuesta completa:', resultado);
+
+                if (resultado && resultado.success) {
+                    // Actualizar localmente
+                    const index = todosLosAvisos.findIndex(a => a.id == id);
+                    if (index !== -1) {
+                        todosLosAvisos[index].status = nuevoStatus;
+                    }
+                    renderizarTablaAvisos();
+                    alert(`✅ Estado actualizado a: ${nuevoStatus}`);
+                } else {
+                    alert('❌ La API respondió pero no actualizó: ' + (resultado?.error || 'Error desconocido'));
+                }
+            } catch (error) {
+                console.error('Error detallado:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        };
+
+        // Eliminar aviso
+        window.eliminarAviso = async function (id) {
+            if (!confirm('¿Eliminar este aviso?')) return;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('ELIMINAR', {
+                    coleccion: 'AVISOS',
+                    id: id
+                }, apiKey);
+
+                if (resultado && resultado.success) {
+                    todosLosAvisos = todosLosAvisos.filter(a => a.id != id);
+                    renderizarTablaAvisos();
+                    alert('✅ Aviso eliminado');
+                } else {
+                    throw new Error(resultado?.error || 'Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        };
+        // ==================== EDITAR AVISO ====================
+        window.editarAviso = function (id) {
+            const aviso = todosLosAvisos.find(a => a.id == id);
+            if (!aviso) {
+                alert('No se encontró el aviso');
+                return;
+            }
+
+            // Abrir modal de edición
+            document.getElementById('edit-id').value = aviso.id;
+            document.getElementById('edit-titulo').value = aviso.titulo || '';
+            document.getElementById('edit-contenido').value = aviso.contenido || '';
+            document.getElementById('edit-categoria').value = aviso.categoria || 'eventos';
+            document.getElementById('edit-ubicacion').value = aviso.ubicacion || '';
+            document.getElementById('edit-contacto').value = aviso.contacto || '';
+            document.getElementById('edit-fecha_evento').value = aviso.fecha_evento || '';
+            document.getElementById('edit-imagen_url').value = aviso.imagen_url || '';
+            document.getElementById('edit-video_url').value = aviso.video_url || '';
+
+            const previewContainer = document.getElementById('preview-editar');
+            const previewImg = document.getElementById('preview-imagen-editar');
+            if (aviso.imagen_url && (aviso.imagen_url.startsWith('http://') || aviso.imagen_url.startsWith('https://'))) {
+                previewImg.src = aviso.imagen_url;
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+            }
+
+            document.getElementById('modal-editar').style.display = 'flex';
+        }
+
+        /* aqui va el subir img */
+
+        // ==================== INICIALIZACIÓN ====================
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cargar avisos al iniciar
+            setTimeout(cargarAvisosParaAdmin, 500);
+
+            // ✅ Cargar usuarios al iniciar (por si la pestaña de usuarios está visible)
+            setTimeout(cargarUsuariosAdmin, 500);
+
+            // Configurar filtros (solo estado)
+            const btnFiltros = document.getElementById('aplicar-filtros');
+            const filtroStatus = document.getElementById('filtro-status-admin');
+
+            if (btnFiltros) {
+                btnFiltros.addEventListener('click', function () {
+                    filtroStatusActual = filtroStatus?.value || 'todos';
+                    renderizarTablaAvisos();
+                });
+            }
+
+            if (filtroStatus) {
+                filtroStatus.addEventListener('change', function () {
+                    filtroStatusActual = this.value;
+                    renderizarTablaAvisos();
+                });
+            }
+
+            // Modal: cerrar
+            document.getElementById('cerrar-modal')?.addEventListener('click', () => {
+                document.getElementById('modal-editar').style.display = 'none';
+            });
+            document.getElementById('cancelar-editar')?.addEventListener('click', () => {
+                document.getElementById('modal-editar').style.display = 'none';
+            });
+
+            // ✅ Cuando se cambie de pestaña, recargar usuarios si es necesario
+            const tabs = document.querySelectorAll('.filtro');
+            tabs.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    if (this.dataset.tab === 'usuarios') {
+                        cargarUsuariosAdmin();
+                    }
+                });
+            });
+        });
+
+        // ==================== FORMULARIO DE EDICIÓN ====================
+        document.getElementById('form-editar')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const apiKey = localStorage.getItem('api_key');
+
+            const datos = {
+                titulo: document.getElementById('edit-titulo').value,
+                contenido: document.getElementById('edit-contenido').value,
+                categoria: document.getElementById('edit-categoria').value,
+                ubicacion: document.getElementById('edit-ubicacion').value,
+                contacto: document.getElementById('edit-contacto').value,
+                fecha_evento: document.getElementById('edit-fecha_evento').value,
+                imagen_url: document.getElementById('edit-imagen_url').value,
+                video_url: document.getElementById('edit-video_url').value
+            };
+
+            try {
+                const resultado = await API.actualizarAviso(id, datos, apiKey);
+
+                if (resultado && resultado.success) {
+                    const index = todosLosAvisos.findIndex(a => a.id == id);
+                    if (index !== -1) {
+                        todosLosAvisos[index] = { ...todosLosAvisos[index], ...datos };
+                    }
+                    renderizarTablaAvisos();
+                    if (API.mostrarExito) API.mostrarExito('✅ Aviso actualizado correctamente');
+                    else alert('✅ Aviso actualizado correctamente');
+                    document.getElementById('modal-editar').style.display = 'none';
+                } else {
+                    throw new Error(resultado?.error || 'Error al actualizar');
+                }
+            } catch (error) {
+                console.error('Error al actualizar:', error);
+                if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+                else alert('❌ Error: ' + error.message);
+            }
+        });
+
+        // ==================== SUBIR IMAGEN EN EDICIÓN ====================
+        document.getElementById('edit-upload-imagen')?.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Mostrar preview local
+            const previewContainer = document.getElementById('preview-editar');
+            const previewImg = document.getElementById('preview-imagen-editar');
+            const readerLocal = new FileReader();
+            readerLocal.onload = (ev) => {
+                previewImg.src = ev.target.result;
+                previewContainer.style.display = 'block';
+            };
+            readerLocal.readAsDataURL(file);
+
+            try {
+                const url = await subirImagenImgBB(file);  // ✅ Usar la función correcta
+                document.getElementById('edit-imagen_url').value = url;
+                if (API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+            } catch (error) {
+                console.error('Error al subir imagen:', error);
+                if (API.mostrarError) API.mostrarError('❌ Error: ' + error.message);
+                previewContainer.style.display = 'none';
+            }
+        });
+
+        // Cargar header y footer
+        if (typeof UI !== 'undefined' && UI.cargarHeader) {
+            UI.cargarHeader();
+        }
+
+        // Footer
+        fetch('/barrio/common/footer-admin.html')
+            .then(response => response.ok ? response.text() : Promise.reject())
+            .then(data => {
+                const footerContainer = document.getElementById('footer-container');
+                if (footerContainer) {
+                    footerContainer.innerHTML = data;
+                    const yearSpan = footerContainer.querySelector('#copyright-year');
+                    if (yearSpan) {
+                        yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
+                    }
+                    const scripts = footerContainer.querySelectorAll('script');
+                    scripts.forEach(oldScript => {
+                        const newScript = document.createElement('script');
+                        newScript.textContent = oldScript.textContent;
+                        document.body.appendChild(newScript);
+                        oldScript.remove();
+                    });
+                }
+            })
+            .catch(() => console.log('Footer no disponible'));
+
+        console.log('✅ Script de administración cargado - Conectado a API real');
+    </script>
+
+    <script>
+        // ==================== CARGAR USUARIOS ====================
+        async function cargarUsuariosAdmin() {
+            const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
+            if (!tablaUsuarios) return;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
+
+                if (!apiKey || usuario?.rol !== 'admin') {
+                    console.warn('No autorizado para ver usuarios');
+                    tablaUsuarios.innerHTML = '<tr><td colspan="5">⚠️ Solo administradores pueden ver esta sección</td></tr>';
+                    return;
+                }
+
+                tablaUsuarios.innerHTML = '<tr><td colspan="5">🔄 Cargando usuarios...</td></tr>';
+
+                // Probar diferentes acciones posibles
+                let respuesta = null;
+                let accionUsada = '';
+
+                // Intentar LISTAR_USUARIOS
+                try {
+                    respuesta = await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+                    accionUsada = 'LISTAR_USUARIOS';
+                    console.log('Respuesta LISTAR_USUARIOS:', respuesta);
+                } catch (e) {
+                    console.log('LISTAR_USUARIOS falló:', e);
+                }
+
+                // Si falló, intentar OBTENER_USUARIOS
+                if (!respuesta || !respuesta.success) {
+                    try {
+                        respuesta = await API.peticion('OBTENER_USUARIOS', {}, apiKey);
+                        accionUsada = 'OBTENER_USUARIOS';
+                        console.log('Respuesta OBTENER_USUARIOS:', respuesta);
+                    } catch (e) {
+                        console.log('OBTENER_USUARIOS falló:', e);
+                    }
+                }
+
+                // Si falló, intentar LISTAR
+                if (!respuesta || !respuesta.success) {
+                    try {
+                        respuesta = await API.peticion('LISTAR', { coleccion: 'USUARIOS' }, apiKey);
+                        accionUsada = 'LISTAR';
+                        console.log('Respuesta LISTAR:', respuesta);
+                    } catch (e) {
+                        console.log('LISTAR falló:', e);
+                    }
+                }
+
+                if (!respuesta || !respuesta.success) {
+                    tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
+                    return;
+                }
+
+                let usuarios = [];
+
+                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                    usuarios = respuesta.data.datos;
+                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                    usuarios = respuesta.datos;
+                } else if (Array.isArray(respuesta.data)) {
+                    usuarios = respuesta.data;
+                }
+
+                if (!usuarios || usuarios.length === 0) {
+                    tablaUsuarios.innerHTML = '<tr><td colspan="5">📭 No hay usuarios registrados</td></tr>';
+                    return;
+                }
+
+                const escapeHtml = (str) => {
+                    if (!str) return '';
+                    return String(str).replace(/[&<>]/g, function (m) {
+                        if (m === '&') return '&amp;';
+                        if (m === '<') return '&lt;';
+                        if (m === '>') return '&gt;';
+                        return m;
+                    });
+                };
+
+                tablaUsuarios.innerHTML = usuarios.map(user => {
+                    const email = escapeHtml(user.email || '');
+                    const nombre = escapeHtml(user.nombre || email.split('@')[0]);
+                    const rol = user.rol === 'admin' ? 'admin' : 'usuario';
+                    const activo = user.activo === 'TRUE' || user.activo === true ? '✅ Activo' : '❌ Inactivo';
+
+                    return `
+            <tr>
+                <td data-label="Email">${email}</td>
+                <td data-label="Nombre">${nombre}</td>
+                <td data-label="Rol"><span class="rol-badge ${rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${rol}</span></td>
+                <td data-label="Estado">${activo}</td>
+                <td data-label="Acciones">
+                    <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button>
+                </td>
+            </tr>
+        `}).join('');
+
+                console.log(`✅ Cargados ${usuarios.length} usuarios`);
+
+            } catch (error) {
+                console.error('Error cargando usuarios:', error);
+                tablaUsuarios.innerHTML = `<td><td colspan="5">❌ Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // Función para eliminar usuario
+        window.eliminarUsuario = async function (id) {
+            if (!confirm('¿Eliminar este usuario?')) return;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                const resultado = await API.peticion('ELIMINAR_USUARIO', { id: id }, apiKey);
+
+                if (resultado && resultado.success) {
+                    alert('✅ Usuario eliminado');
+                    cargarUsuariosAdmin();
+                } else {
+                    throw new Error(resultado?.error || 'Error al eliminar');
+                }
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        };
+    </script>
+
+    <script>
+        // ========== CONFIGURACIÓN CLOUDINARY ==========
+        const CLOUDINARY_CLOUD_NAME = "dwnmdkido";
+        const CLOUDINARY_UPLOAD_PRESET = "barrio_uploads";
+
+        // ========== SUBIR IMAGEN A IMGBB (sigue igual) ==========
+        async function subirImagenImgBB(file) {
+            const API_KEY_IMGBB = "e62413ac76628956dbce8a7658610d1a";
+            const formData = new FormData();
+            formData.append("key", API_KEY_IMGBB);
+            formData.append("image", file);
+
+            const res = await fetch("https://api.imgbb.com/1/upload", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) return data.data.url;
+            throw new Error(data.error?.message || "Error subiendo imagen");
+        }
+
+        // ========== SUBIR VIDEO A CLOUDINARY (NUEVA VERSIÓN) ==========
+        async function subirVideoCloudinary(file) {
+            // Validar que sea un video
+            if (!file.type.startsWith('video/')) {
+                throw new Error("El archivo no es un video válido");
+            }
+
+            // Validar tamaño (Cloudinary gratis permite hasta 25MB por archivo)
+            if (file.size > 25 * 1024 * 1024) {
+                throw new Error("El video es demasiado grande. Máximo 25MB");
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+            // Subir a Cloudinary
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error?.message || `Error HTTP ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            if (data.secure_url) {
+                console.log("✅ Video subido a Cloudinary:", data.secure_url);
+                return data.secure_url;
+            } else {
+                throw new Error("No se recibió URL del video");
+            }
+        }
+
+        // ========== CONFIGURAR INPUT MULTIMEDIA ==========
+        const inputMultimedia = document.getElementById('archivo-multimedia');
+        const btnImagen = document.getElementById('btn-seleccionar-imagen');
+        const btnVideo = document.getElementById('btn-seleccionar-video');
+        const vistaPrevia = document.getElementById('vista-previa-multimedia');
+        const campoImagenUrl = document.getElementById('imagen_url');
+        const campoVideoUrl = document.getElementById('video_url');
+
+        let tipoSeleccionado = '';
+
+        btnImagen.addEventListener('click', () => {
+            tipoSeleccionado = 'imagen';
+            inputMultimedia.accept = 'image/*';
+            inputMultimedia.click();
+        });
+
+        btnVideo.addEventListener('click', () => {
+            tipoSeleccionado = 'video';
+            inputMultimedia.accept = 'video/*';
+            inputMultimedia.click();
+        });
+
+        inputMultimedia.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Limpiar campos anteriores
+            campoImagenUrl.value = '';
+            campoVideoUrl.value = '';
+
+            // Mostrar preview local
+            vistaPrevia.innerHTML = `<p>🔄 Subiendo archivo... por favor espera</p>`;
+            const urlLocal = URL.createObjectURL(file);
+
+            if (tipoSeleccionado === 'imagen') {
+                vistaPrevia.innerHTML = `<img src="${urlLocal}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
+                try {
+                    const urlFinal = await subirImagenImgBB(file);
+                    campoImagenUrl.value = urlFinal;
+                    vistaPrevia.innerHTML += `<p style="color:green; font-size:12px;">✅ Imagen lista</p>`;
+                    if (window.API && API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+                } catch (err) {
+                    vistaPrevia.innerHTML += `<p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>`;
+                    if (window.API && API.mostrarError) API.mostrarError(err.message);
+                }
+            }
+            else if (tipoSeleccionado === 'video') {
+                vistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
+                vistaPrevia.innerHTML += `<p style="color:#666; font-size:12px;">⏳ Subiendo a Cloudinary... puede tomar unos segundos</p>`;
+
+                try {
+                    const urlFinal = await subirVideoCloudinary(file);
+                    campoVideoUrl.value = urlFinal;
+                    vistaPrevia.innerHTML = `
+            <video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>
+            <p style="color:green; font-size:12px;">✅ Video listo: <a href="${urlFinal}" target="_blank">ver en Cloudinary</a></p>
+            `;
+                    if (window.API && API.mostrarExito) API.mostrarExito('✅ Video subido correctamente');
+                } catch (err) {
+                    console.error("Error detallado:", err);
+                    vistaPrevia.innerHTML = `
+            <video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>
+            <p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>
+            <p style="color:#666; font-size:11px;">Consejo: El video debe ser menor a 25MB</p>
+                `;
+                    if (window.API && API.mostrarError) API.mostrarError('❌ Error: ' + err.message);
+                }
+            }
+
+            // Limpiar el input para permitir otra subida
+            setTimeout(() => { inputMultimedia.value = ''; }, 1000);
+        });
+
+        // Forzar categoría "varios" antes de enviar
+        document.getElementById('form-aviso')?.addEventListener('submit', function () {
+            document.getElementById('categoria').value = 'varios';
+        });
+
+        // También en edición
+        document.getElementById('form-editar')?.addEventListener('submit', function () {
+            document.getElementById('edit-categoria').value = 'varios';
+        });
+    </script>
+
+    <script>
+        // Forzar actualización del header para mostrar el nombre del usuario
+        (function actualizarHeaderForce() {
+            const usuario = API.getUsuarioActual();
+            if (usuario && window.actualizarHeaderPorSesion) {
+                setTimeout(() => {
+                    window.actualizarHeaderPorSesion();
+                }, 100);
+            }
+        })();
+    </script>
+
+    <script>
+        // ========== FUNCIONES DEL MODAL DE CATEGORÍAS ==========
+        function abrirModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else {
+                console.warn('Modal no encontrado');
+            }
+        }
+
+        function cerrarModalCategorias() {
+            const modal = document.getElementById('modalCategorias');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Cerrar modal al hacer click fuera del contenido
+        document.addEventListener('click', function (event) {
+            const modal = document.getElementById('modalCategorias');
+            if (modal && modal.style.display === 'flex') {
+                if (event.target === modal) {
+                    cerrarModalCategorias();
+                }
+            }
+        });
+    </script>
+
+    <script>// ========== BUSCADOR UNIVERSAL ==========
+        let busquedaActual = '';
+        let avisosOriginales = [];
+        let usuariosOriginales = [];
+
+        function buscarEnAviso(aviso, termino) {
+            const texto = termino.toLowerCase();
+            const campos = [
+                aviso.titulo,
+                aviso.contenido,
+                aviso.categoria,
+                aviso.contacto,
+                aviso.ubicacion,
+                aviso.id,
+                aviso.created_by,
+                aviso.email,
+                aviso.status,
+                aviso.fecha_evento
+            ];
+            return campos.some(campo => campo && campo.toString().toLowerCase().includes(texto));
+        }
+
+        function buscarEnUsuario(usuario, termino) {
+            const texto = termino.toLowerCase();
+            const campos = [
+                usuario.email,
+                usuario.nombre,
+                usuario.rol,
+                usuario.id,
+                usuario.telefono,
+                usuario.direccion
+            ];
+            return campos.some(campo => campo && campo.toString().toLowerCase().includes(texto));
+        }
+
+        function aplicarBusqueda() {
+            const input = document.getElementById('buscadorAdmin');
+            const texto = input.value.trim();
+            busquedaActual = texto;
+
+            const limpiarBtn = document.getElementById('limpiarBusqueda');
+            if (limpiarBtn) limpiarBtn.style.display = texto ? 'block' : 'none';
+
+            if (!texto) {
+                // Restaurar datos originales
+                if (avisosOriginales.length) {
+                    todosLosAvisos = [...avisosOriginales];
+                    renderizarTablaAvisos();
+                }
+                if (usuariosOriginales.length) {
+                    cargarUsuariosAdmin();
+                }
+                const resultadosDiv = document.getElementById('resultados-busqueda');
+                if (resultadosDiv) resultadosDiv.style.display = 'none';
+                return;
+            }
+
+            // Buscar en avisos
+            if (avisosOriginales.length) {
+                const avisosFiltrados = avisosOriginales.filter(a => buscarEnAviso(a, texto));
+                todosLosAvisos = [...avisosFiltrados];
+                renderizarTablaAvisos();
+            }
+
+            // Buscar en usuarios (solo si la pestaña está visible)
+            const tabUsuarios = document.getElementById('tab-usuarios');
+            if (tabUsuarios && tabUsuarios.style.display !== 'none') {
+                if (usuariosOriginales.length) {
+                    const usuariosFiltrados = usuariosOriginales.filter(u => buscarEnUsuario(u, texto));
+                    const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
+                    if (tablaUsuarios) {
+                        if (usuariosFiltrados.length === 0) {
+                            tablaUsuarios.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
+                        } else {
+                            const escapeHtml = (str) => {
+                                if (!str) return '';
+                                return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+                            };
+                            tablaUsuarios.innerHTML = usuariosFiltrados.map(user => `
+                        <tr>
+                            <td data-label="Email">${escapeHtml(user.email || '')}</td>
+                            <td data-label="Nombre">${escapeHtml(user.nombre || '')}</td>
+                            <td data-label="Rol"><span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol || 'usuario'}</span></td>
+                            <td data-label="Estado">${user.activo === 'TRUE' ? '✅ Activo' : '❌ Inactivo'}</td>
+                            <td data-label="Acciones">
+                                <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button>
+                            </td>
+                        </td>
+                    `).join('');
+                        }
+                    }
+                }
+            }
+
+            // Mostrar resumen
+            const resultadosDiv = document.getElementById('resultados-busqueda');
+            if (resultadosDiv) {
+                resultadosDiv.innerHTML = `<span>🔍 ${todosLosAvisos.length} avisos encontrados para "${escapeHTML(texto)}"</span>`;
+                resultadosDiv.style.display = 'block';
+            }
+        }
+
+        function limpiarBusqueda() {
+            const input = document.getElementById('buscadorAdmin');
+            if (input) {
+                input.value = '';
+                aplicarBusqueda();
+            }
+        }
+
+        function inicializarBuscador() {
+            // Guardar copias originales
+            if (todosLosAvisos.length) {
+                avisosOriginales = [...todosLosAvisos];
+            }
+
+            // Configurar evento
+            const input = document.getElementById('buscadorAdmin');
+            if (input) {
+                input.addEventListener('input', aplicarBusqueda);
+                input.addEventListener('keyup', (e) => {
+                    if (e.key === 'Escape') limpiarBusqueda();
+                });
+            }
+
+            // Botón limpiar
+            const limpiarBtn = document.getElementById('limpiarBusqueda');
+            if (limpiarBtn) {
+                limpiarBtn.addEventListener('click', limpiarBusqueda);
+            }
+        }
+
+        // Modificar cargarAvisosParaAdmin para guardar originales
+        const originalCargarAvisos = cargarAvisosParaAdmin;
+        window.cargarAvisosParaAdmin = async function () {
+            await originalCargarAvisos();
+            if (todosLosAvisos.length) {
+                avisosOriginales = [...todosLosAvisos];
+            }
+            inicializarBuscador();
+        };
+
+        // Modificar cargarUsuariosAdmin para guardar originales
+        const originalCargarUsuarios = cargarUsuariosAdmin;
+        window.cargarUsuariosAdmin = async function () {
+            await originalCargarUsuarios();
+            // Guardar usuarios de la tabla
+            setTimeout(() => {
+                const tabla = document.getElementById('tabla-usuarios-cuerpo');
+                if (tabla && !usuariosOriginales.length) {
+                    const filas = tabla.querySelectorAll('tr');
+                    const usuarios = [];
+                    for (let i = 0; i < filas.length; i++) {
+                        const celdas = filas[i].querySelectorAll('td');
+                        if (celdas.length >= 5) {
+                            usuarios.push({
+                                email: celdas[0]?.textContent || '',
+                                nombre: celdas[1]?.textContent || '',
+                                rol: celdas[2]?.textContent?.includes('admin') ? 'admin' : 'usuario',
+                                activo: celdas[3]?.textContent?.includes('Activo') ? 'TRUE' : 'FALSE',
+                                id: celdas[4]?.querySelector('button')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || ''
+                            });
+                        }
+                    }
+                    usuariosOriginales = usuarios;
+                }
+            }, 500);
+        };
+
+        // Agregar div de resultados
+        function agregarResultadosDiv() {
+            if (!document.getElementById('resultados-busqueda')) {
+                const wrapper = document.querySelector('.buscador-universal');
+                if (wrapper) {
+                    const div = document.createElement('div');
+                    div.id = 'resultados-busqueda';
+                    div.className = 'resultados-busqueda';
+                    wrapper.appendChild(div);
+                }
+            }
+        }
+
+        // Inicializar
+        setTimeout(() => {
+            agregarResultadosDiv();
+            inicializarBuscador();
+        }, 1000);
+    </script>
+</body>
+
+</html>
