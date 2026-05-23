@@ -373,14 +373,13 @@
     ====================================================== */
         @media (max-width: 767px) {
 
-            <<<<<<< HEAD
-
-            /* Contenedor scrollable unificado */
+            /* Contenedor scrollable */
             .scrollable-container {
-                height: calc(100vh - 60px);
+                height: 100vh;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
                 scroll-snap-type: y mandatory;
+                scroll-snap-stop: always;
                 scroll-behavior: smooth;
             }
 
@@ -388,24 +387,27 @@
                 display: none;
             }
 
-            /* Grid se convierte en bloque */
+            /* Grid como bloque */
             #avisos-container {
                 display: block !important;
                 scroll-snap-type: none !important;
                 height: auto !important;
             }
 
-            /* Tarjeta: pantalla completa + imagen como fondo */
+            /* Cada card es snap point */
             .aviso-card {
                 scroll-snap-align: start;
                 scroll-snap-stop: always;
-                min-height: calc(100vh - 60px);
+                height: 100vh;
+                min-height: 100vh;
                 margin-bottom: 0 !important;
                 border-radius: 0 !important;
                 background: #000;
+                position: relative;
+                overflow: hidden;
             }
 
-            /* Imagen/video como fondo absoluto */
+            /* Imagen como fondo */
             .aviso-imagen,
             .aviso-video {
                 position: absolute;
@@ -416,14 +418,15 @@
                 object-fit: cover;
                 z-index: 1;
                 border-radius: 0 !important;
-                margin-bottom: 0;
             }
 
             .aviso-video video {
                 object-fit: cover;
+                height: 100%;
+                width: 100%;
             }
 
-            /* Overlay oscuro para legibilidad */
+            /* Overlay oscuro */
             .aviso-card::after {
                 content: '';
                 position: absolute;
@@ -434,7 +437,7 @@
                 background: linear-gradient(to bottom,
                         rgba(0, 0, 0, 0.2) 0%,
                         rgba(0, 0, 0, 0.5) 50%,
-                        rgba(0, 0, 0, 0.8) 100%);
+                        rgba(0, 0, 0, 0.85) 100%);
                 z-index: 2;
                 pointer-events: none;
             }
@@ -446,163 +449,25 @@
                 background: transparent !important;
                 color: white !important;
                 padding: 20px;
-                min-height: 100%;
+                height: 100%;
                 display: flex;
                 flex-direction: column;
                 justify-content: flex-end;
                 text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
             }
 
-            .card-titulo-moderno,
-            .card-preview-moderno,
-            .card-fecha-moderna,
-            .aviso-footer span {
-                color: white !important;
-            }
-
-            .card-preview-moderno {
-                -webkit-line-clamp: 2;
-            }
-
-            /* Stats con fondo semitransparente */
-            .card-stats-moderno .stat-item {
-                color: white !important;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                border-radius: 20px;
-                padding: 4px 10px;
-            }
-
-            .card-stats-moderno .stat-item.liked {
-                color: #ff4757 !important;
-            }
-
-            .card-stats-moderno .stat-item.disliked {
-                color: #aaa !important;
-            }
-
-            /* Badge con fondo oscuro */
-            /* Badges con color original pero legibles sobre cualquier fondo */
+            /* Badge: color original + legible */
             .categoria-badge {
-                background: var(--badge-color) !important;
+                position: absolute;
+                top: 12px;
+                left: 12px;
+                z-index: 4;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
                 text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
                 backdrop-filter: blur(4px);
             }
 
-            /* WhatsApp más grande */
-            .whatsapp-btn {
-                width: 44px;
-                height: 44px;
-                bottom: 16px;
-                right: 16px;
-                background-size: 60%;
-                z-index: 4;
-            }
-
-            /* Animación de "clic" del engranaje */
-            .post-card-ios.gear-click {
-                animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            }
-
-            .post-card-ios.active {
-                transform: scale(1.02);
-            }
-
-            @keyframes gearClick {
-                0% {
-                    transform: scale(1);
-                }
-
-                50% {
-                    transform: scale(0.98);
-                }
-
-                100% {
-                    transform: scale(1);
-                }
-            }
-
-            =======
-
-            /* Contenedor scrollable unificado */
-            .scrollable-container {
-                height: calc(100vh - 60px);
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                scroll-snap-type: y mandatory;
-                scroll-behavior: smooth;
-            }
-
-            .scrollable-container::-webkit-scrollbar {
-                display: none;
-            }
-
-            /* Grid se convierte en bloque */
-            #avisos-container {
-                display: block !important;
-                scroll-snap-type: none !important;
-                height: auto !important;
-            }
-
-            /* Tarjeta: pantalla completa + imagen como fondo */
-            .aviso-card {
-                scroll-snap-align: start;
-                scroll-snap-stop: always;
-                min-height: calc(100vh - 60px);
-                margin-bottom: 0 !important;
-                border-radius: 0 !important;
-                background: #000;
-            }
-
-            /* Imagen/video como fondo absoluto */
-            .aviso-imagen,
-            .aviso-video {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100% !important;
-                object-fit: cover;
-                z-index: 1;
-                border-radius: 0 !important;
-                margin-bottom: 0;
-            }
-
-            .aviso-video video {
-                object-fit: cover;
-            }
-
-            /* Overlay oscuro para legibilidad */
-            .aviso-card::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(to bottom,
-                        rgba(0, 0, 0, 0.2) 0%,
-                        rgba(0, 0, 0, 0.5) 50%,
-                        rgba(0, 0, 0, 0.8) 100%);
-                z-index: 2;
-                pointer-events: none;
-            }
-
-            /* Contenido superpuesto */
-            .card-contenido-moderno {
-                position: relative;
-                z-index: 3;
-                background: transparent !important;
-                color: white !important;
-                padding: 20px;
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            }
-
+            /* Textos en blanco */
             .card-titulo-moderno,
             .card-preview-moderno,
             .card-fecha-moderna,
@@ -614,7 +479,7 @@
                 -webkit-line-clamp: 2;
             }
 
-            /* Stats con fondo semitransparente */
+            /* Stats semitransparentes */
             .card-stats-moderno .stat-item {
                 color: white !important;
                 background: rgba(0, 0, 0, 0.5);
@@ -631,12 +496,6 @@
                 color: #aaa !important;
             }
 
-            /* Badge con fondo oscuro */
-            .categoria-badge {
-                background: rgba(0, 0, 0, 0.7) !important;
-                z-index: 4;
-            }
-
             /* WhatsApp más grande */
             .whatsapp-btn {
                 width: 44px;
@@ -647,7 +506,7 @@
                 z-index: 4;
             }
 
-            /* Animación de "clic" del engranaje */
+            /* Animación de clic */
             .post-card-ios.gear-click {
                 animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             }
@@ -669,8 +528,154 @@
                     transform: scale(1);
                 }
             }
+        }
 
-            >>>>>>>ba2dcb081b8917b13ca9b805081bf51d6cb2a827
+        /* Contenedor scrollable unificado */
+        .scrollable-container {
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .scrollable-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Grid se convierte en bloque */
+        #avisos-container {
+            display: block !important;
+            scroll-snap-type: none !important;
+            height: auto !important;
+        }
+
+        /* Tarjeta: pantalla completa + imagen como fondo */
+        .aviso-card {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            min-height: calc(100vh - 60px);
+            margin-bottom: 0 !important;
+            border-radius: 0 !important;
+            background: #000;
+        }
+
+        /* Imagen/video como fondo absoluto */
+        .aviso-imagen,
+        .aviso-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 1;
+            border-radius: 0 !important;
+            margin-bottom: 0;
+        }
+
+        .aviso-video video {
+            object-fit: cover;
+        }
+
+        /* Overlay oscuro para legibilidad */
+        .aviso-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.2) 0%,
+                    rgba(0, 0, 0, 0.5) 50%,
+                    rgba(0, 0, 0, 0.8) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Contenido superpuesto */
+        .card-contenido-moderno {
+            position: relative;
+            z-index: 3;
+            background: transparent !important;
+            color: white !important;
+            padding: 20px;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-titulo-moderno,
+        .card-preview-moderno,
+        .card-fecha-moderna,
+        .aviso-footer span {
+            color: white !important;
+        }
+
+        .card-preview-moderno {
+            -webkit-line-clamp: 2;
+        }
+
+        /* Stats con fondo semitransparente */
+        .card-stats-moderno .stat-item {
+            color: white !important;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 4px 10px;
+        }
+
+        .card-stats-moderno .stat-item.liked {
+            color: #ff4757 !important;
+        }
+
+        .card-stats-moderno .stat-item.disliked {
+            color: #aaa !important;
+        }
+
+        /* Badge con fondo oscuro */
+        .categoria-badge {
+            background: rgba(0, 0, 0, 0.7) !important;
+            z-index: 4;
+        }
+
+        /* WhatsApp más grande */
+        .whatsapp-btn {
+            width: 44px;
+            height: 44px;
+            bottom: 16px;
+            right: 16px;
+            background-size: 60%;
+            z-index: 4;
+        }
+
+        /* Animación de "clic" del engranaje */
+        .post-card-ios.gear-click {
+            animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .post-card-ios.active {
+            transform: scale(1.02);
+        }
+
+        @keyframes gearClick {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0.98);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        >>>>>>>ba2dcb081b8917b13ca9b805081bf51d6cb2a827
         }
 
         /* ======================================================
@@ -1524,9 +1529,9 @@
 <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" 
      data-id="${aviso.id}" 
      onclick="verAviso(this.getAttribute('data-id'))">
-<div class="categoria-badge" style="--badge-color: ${getColorCategoria(aviso.categoria)}; background: var(--badge-color); color: white;">
-        ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
-    </div>
+<div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white; display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; backdrop-filter: blur(4px);">
+    ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
+</div>
             ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
@@ -1593,17 +1598,15 @@
 
                     avisosCargados = true;
                     applyFiltersAndSearch();
-                    // ✅ INICIALIZAR EL EFECTO ENGRANE (después de que los posts existan)
                     // En cargarAvisos(), dentro del setTimeout:
                     setTimeout(() => {
-                        // Usar el contenedor scrollable, no avisos-container
-                        const container = document.querySelector('.scrollable-container');
-                        if (container && !window.barrioScrollSnap) {
+                        const scrollContainer = document.querySelector('.scrollable-container');
+                        if (scrollContainer && !window.barrioScrollSnap) {
                             window.barrioScrollSnap = new BarrioScrollSnap('.scrollable-container', '.aviso-card');
                         } else if (window.barrioScrollSnap) {
                             window.barrioScrollSnap.refresh();
                         }
-                    }, 200);
+                    }, 300);
 
                 } else {
                     if (container) container.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
@@ -2237,9 +2240,10 @@
                 this.container = document.querySelector(containerSelector);
                 if (!this.container) return;
 
+                // Detectar móvil por ancho o soporte táctil
                 const isMobile = window.innerWidth < 768 || ('ontouchstart' in window);
                 if (!isMobile) {
-                    console.log('🖥️ Desktop: efecto desactivado');
+                    console.log('Desktop: efecto desactivado');
                     return;
                 }
 
@@ -2247,130 +2251,131 @@
                 this.currentIndex = 0;
                 this.init();
             }
+        }
 
-            init() {
-                // Agregar clase al contenedor
-                this.container.classList.add('posts-container-ios');
+        init() {
+            // Agregar clase al contenedor
+            this.container.classList.add('posts-container-ios');
 
-                // Aplicar clase a cada post existente y futuro
-                this.aplicarClaseAPosts();
+            // Aplicar clase a cada post existente y futuro
+            this.aplicarClaseAPosts();
 
-                // Detectar cambios de scroll
-                this.container.addEventListener('scroll', () => this.handleScroll());
+            // Detectar cambios de scroll
+            this.container.addEventListener('scroll', () => this.handleScroll());
 
-                // También detectar cuando termina de hacer scroll (para snap más preciso)
-                this.container.addEventListener('scrollend', () => this.handleScrollEnd());
-            }
+            // También detectar cuando termina de hacer scroll (para snap más preciso)
+            this.container.addEventListener('scrollend', () => this.handleScrollEnd());
+        }
 
-            aplicarClaseAPosts() {
-                const posts = this.items();
-                posts.forEach(post => {
-                    if (!post.classList.contains('post-card-ios')) {
-                        post.classList.add('post-card-ios');
-                    }
-                });
-            }
-
-            handleScroll() {
-                if (this.scrollTimer) clearTimeout(this.scrollTimer);
-
-                // Calcular cuál post está más cerca del centro de la pantalla
-                const containerRect = this.container.getBoundingClientRect();
-                const centerY = containerRect.top + containerRect.height / 2;
-
-                const posts = this.items();
-                let closestIndex = this.currentIndex;
-                let closestDistance = Infinity;
-
-                posts.forEach((post, idx) => {
-                    const postRect = post.getBoundingClientRect();
-                    const postCenter = postRect.top + postRect.height / 2;
-                    const distance = Math.abs(centerY - postCenter);
-
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestIndex = idx;
-                    }
-                });
-
-                // Si cambió el índice, disparar el efecto "engranaje"
-                if (closestIndex !== this.currentIndex) {
-                    this.currentIndex = closestIndex;
-                    this.triggerGearEffect(closestIndex);
+        aplicarClaseAPosts() {
+            const posts = this.items();
+            posts.forEach(post => {
+                if (!post.classList.contains('post-card-ios')) {
+                    post.classList.add('post-card-ios');
                 }
+            });
+        }
 
-                // Marcar el post activo visualmente
-                this.markActivePost(closestIndex);
-            }
+        handleScroll() {
+            if (this.scrollTimer) clearTimeout(this.scrollTimer);
 
-            handleScrollEnd() {
-                // Al soltar, asegurar el snap más preciso
-                const posts = this.items();
-                if (posts[this.currentIndex]) {
-                    posts[this.currentIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Calcular cuál post está más cerca del centro de la pantalla
+            const containerRect = this.container.getBoundingClientRect();
+            const centerY = containerRect.top + containerRect.height / 2;
+
+            const posts = this.items();
+            let closestIndex = this.currentIndex;
+            let closestDistance = Infinity;
+
+            posts.forEach((post, idx) => {
+                const postRect = post.getBoundingClientRect();
+                const postCenter = postRect.top + postRect.height / 2;
+                const distance = Math.abs(centerY - postCenter);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestIndex = idx;
                 }
+            });
+
+            // Si cambió el índice, disparar el efecto "engranaje"
+            if (closestIndex !== this.currentIndex) {
+                this.currentIndex = closestIndex;
+                this.triggerGearEffect(closestIndex);
             }
 
-            triggerGearEffect(index) {
-                const posts = this.items();
-                const activePost = posts[index];
-                if (!activePost) return;
+            // Marcar el post activo visualmente
+            this.markActivePost(closestIndex);
+        }
 
-                // 1. Efecto visual de "clic"
-                activePost.classList.add('gear-click');
-                setTimeout(() => {
-                    activePost.classList.remove('gear-click');
-                }, 150);
+        handleScrollEnd() {
+            // Al soltar, asegurar el snap más preciso
+            const posts = this.items();
+            if (posts[this.currentIndex]) {
+                posts[this.currentIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
 
-                // 2. Feedback háptico (vibración) - solo si el dispositivo lo soporta
-                if (window.navigator && window.navigator.vibrate) {
-                    window.navigator.vibrate(8);  // Vibración sutil de 8ms
+        triggerGearEffect(index) {
+            const posts = this.items();
+            const activePost = posts[index];
+            if (!activePost) return;
+
+            // 1. Efecto visual de "clic"
+            activePost.classList.add('gear-click');
+            setTimeout(() => {
+                activePost.classList.remove('gear-click');
+            }, 150);
+
+            // 2. Feedback háptico (vibración) - solo si el dispositivo lo soporta
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(8);  // Vibración sutil de 8ms
+            }
+
+            // 3. Sonido opcional (Web Audio - muy sutil, solo si quieres)
+            // this.playTickSound();
+
+            // 4. Disparar evento personalizado (por si quieres hacer algo más)
+            const event = new CustomEvent('postChanged', {
+                detail: { index: index, post: activePost }
+            });
+            this.container.dispatchEvent(event);
+
+            console.log(`⚙️ Engranaje: post ${index} activado`);
+        }
+
+        markActivePost(activeIndex) {
+            const posts = this.items();
+            posts.forEach((post, idx) => {
+                if (idx === activeIndex) {
+                    post.classList.add('active');
+                } else {
+                    post.classList.remove('active');
                 }
+            });
+        }
 
-                // 3. Sonido opcional (Web Audio - muy sutil, solo si quieres)
-                // this.playTickSound();
+        playTickSound() {
+            try {
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const osc = this.audioCtx.createOscillator();
+                const gain = this.audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(this.audioCtx.destination);
+                osc.frequency.value = 1200;
+                gain.gain.value = 0.03;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.08);
+                osc.stop(this.audioCtx.currentTime + 0.08);
+            } catch (e) { /* silencio */ }
+        }
 
-                // 4. Disparar evento personalizado (por si quieres hacer algo más)
-                const event = new CustomEvent('postChanged', {
-                    detail: { index: index, post: activePost }
-                });
-                this.container.dispatchEvent(event);
-
-                console.log(`⚙️ Engranaje: post ${index} activado`);
-            }
-
-            markActivePost(activeIndex) {
-                const posts = this.items();
-                posts.forEach((post, idx) => {
-                    if (idx === activeIndex) {
-                        post.classList.add('active');
-                    } else {
-                        post.classList.remove('active');
-                    }
-                });
-            }
-
-            playTickSound() {
-                try {
-                    if (!this.audioCtx) {
-                        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    }
-                    const osc = this.audioCtx.createOscillator();
-                    const gain = this.audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(this.audioCtx.destination);
-                    osc.frequency.value = 1200;
-                    gain.gain.value = 0.03;
-                    osc.start();
-                    gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.08);
-                    osc.stop(this.audioCtx.currentTime + 0.08);
-                } catch (e) { /* silencio */ }
-            }
-
-            // Actualizar la referencia a los posts (útil si se cargan dinámicamente)
-            refresh() {
-                this.aplicarClaseAPosts();
-            }
+        // Actualizar la referencia a los posts (útil si se cargan dinámicamente)
+        refresh() {
+            this.aplicarClaseAPosts();
+        }
         }
     </script>
     <script>
