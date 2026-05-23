@@ -800,8 +800,21 @@
     // Calcular estadísticas
     function calculateStats(notices) {
         const total = notices.length;
-        const activos = notices.filter(a => a.status === 'activo' || a.status === 'aprobado').length;
-        const pendientes = notices.filter(a => a.status === 'pendiente' || !a.status).length;
+
+        // ✅ Versión mejorada - cuenta TODO lo que NO sea 'pendiente', 'rechazado', 'eliminado'
+        const activos = notices.filter(a => {
+            const status = a.status;
+            // Si no tiene status o es undefined, también contarlo como activo
+            if (!status) return true;
+            // Excluir solo estos estados
+            const excluidos = ['pendiente', 'rechazado', 'eliminado', 'inactivo'];
+            return !excluidos.includes(status.toLowerCase());
+        }).length;
+
+        const pendientes = notices.filter(a => {
+            const status = a.status;
+            return status && status.toLowerCase() === 'pendiente';
+        }).length;
 
         // Categorías únicas en uso
         const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c));
