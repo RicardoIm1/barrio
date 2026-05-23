@@ -113,7 +113,7 @@ main,
 ========================= */
 
 .header {
-/*     position: sticky; */
+    /*     position: sticky; */
     position: -webkit-sticky;
 
     top: 0;
@@ -773,7 +773,7 @@ html {
 }
 
 body {
-    overflow-x: hidden;
+    min-height: 100vh;
 }
 
 /* CONTENEDOR DEL HEADER */
@@ -786,6 +786,10 @@ body {
     z-index: 999999;
 
     width: 100%;
+}
+
+.contenido-principal {
+    min-height: calc(100vh - 200px);
 }
 
 /* HEADER */
