@@ -964,6 +964,39 @@
             }
         }
     </style>
+    <style>
+        /* Botón flotante sobre el hero */
+        .hero-button-wrapper {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 5;
+        }
+
+        .hero-button-wrapper .btn-login {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            padding: 12px 24px;
+            font-size: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -972,20 +1005,22 @@
 
     <!-- Contenedor scrollable -->
     <div id="scrollable-content" class="scrollable-container">
-        <!-- ✅ BOTÓN AHORA ENCIMA DEL HERO -->
-        <div style="display: flex; justify-content: center; width: 100%; padding: 12px 16px 0 16px;">
-            <button id="btnProbarNotificacion" class="btn-login">
-                📝 Regístrate y publica tus avisos gratis
-            </button>
+
+        <!-- Contenedor relativo para el hero + botón superpuesto -->
+        <div style="position: relative;">
+            <picture>
+                <source srcset="/barrio/img/banner-elbarrio2.webp" type="image/webp">
+                <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" alt="El Barrio">
+            </picture>
+
+            <div class="hero-button-wrapper">
+                <button id="btnProbarNotificacion" class="btn-login">
+                    📝 Regístrate y publica tus avisos gratis
+                </button>
+            </div>
         </div>
 
-        <picture>
-            <source srcset="/barrio/img/banner-elbarrio2.webp" type="image/webp">
-            <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" alt="El Barrio">
-        </picture>
-
         <main class="contenedor">
-            <!-- AVISOS: ya no hay buscador aquí, está en el header -->
             <div id="avisos-container" class="grid-avisos">
                 <div class="cargando">📰 Cargando avisos...</div>
             </div>
