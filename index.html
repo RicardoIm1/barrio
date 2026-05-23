@@ -10,682 +10,839 @@
     <link rel="stylesheet" href="/barrio/css/estilo.css">
     <link rel="manifest" href="/barrio/manifest.json">
     <meta name="theme-color" content="#2c3e50">
-<style>
-    /* ======================================================
+    <style>
+        /* ======================================================
        EL BARRIO - ESTILOS UNIFICADOS
        Organizado por: Global → Móvil → Desktop → Componentes
     ====================================================== */
 
-    /* ---------- VARIABLES GLOBALES ---------- */
-    :root {
-        --color-primario: #2c3e50;
-        --color-fondo: #f5f5f5;
-        --color-texto: #1c1c1e;
-        --color-texto-claro: #8e8e93;
-        --color-borde: #e9e9ef;
-        --color-urgente: #dc3545;
-        --color-escuelas: #3498db;
-        --color-servicios: #f39c12;
-        --color-comercios: #27ae60;
-        --color-eventos: #9b59b6;
-        --color-gobierno: #1abc9c;
-        --color-varios: #7f8c8d;
-    }
+        /* ---------- VARIABLES GLOBALES ---------- */
+        :root {
+            --color-primario: #2c3e50;
+            --color-fondo: #f5f5f5;
+            --color-texto: #1c1c1e;
+            --color-texto-claro: #8e8e93;
+            --color-borde: #e9e9ef;
+            --color-urgente: #dc3545;
+            --color-escuelas: #3498db;
+            --color-servicios: #f39c12;
+            --color-comercios: #27ae60;
+            --color-eventos: #9b59b6;
+            --color-gobierno: #1abc9c;
+            --color-varios: #7f8c8d;
+        }
 
-    /* ---------- RESET Y BASE ---------- */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+        /* ---------- RESET Y BASE ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-        background: var(--color-fondo);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+        body {
+            background: var(--color-fondo);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-    /* ---------- HERO BANNER ---------- */
-    .hero-banner {
-        width: 100%;
-        height: auto;
-        max-height: 65vh;
-        object-fit: contain;
-        display: block;
-        background-color: #f0f0f0;
-    }
-
-    @media (prefers-color-scheme: dark) {
+        /* ---------- HERO BANNER ---------- */
         .hero-banner {
-            opacity: 0.95;
-        }
-    }
-
-    /* ---------- BUSCADOR Y FILTROS ---------- */
-    .filtros-buscador-wrapper {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .buscador-container {
-        flex: 1;
-        min-width: 220px;
-    }
-
-    .buscador-input {
-        width: 100%;
-        padding: 0.6rem 1rem;
-        border-radius: 40px;
-        border: 1px solid var(--color-borde);
-        font-size: 0.9rem;
-        transition: all 0.2s;
-        background: white;
-    }
-
-    .buscador-input:focus {
-        outline: none;
-        border-color: var(--color-primario);
-        box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
-    }
-
-    /* ---------- TARJETAS / AVISOS (BASE) ---------- */
-    .aviso-card {
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
-        opacity: 0;
-        transform: translateY(30px);
-        animation: fadeInUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-        width: 100%;
-        box-sizing: border-box;
-        background: white;
-        border-radius: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
-        transition: transform 0.15s ease, box-shadow 0.2s ease;
-    }
-
-    .aviso-card:active {
-        transform: scale(0.99);
-    }
-
-    .aviso-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
-    }
-
-    @keyframes fadeInUp {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Tarjeta destacada (borde rojo + canica) */
-    .aviso-card.aviso-destacado {
-        border-left: 6px solid var(--color-urgente) !important;
-        border-radius: 20px !important;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .aviso-card.aviso-destacado::before {
-        content: '●';
-        position: absolute;
-        top: 0;
-        left: -4px;
-        font-size: 18px;
-        color: #ff3333;
-        animation: canicaSubeYBaja 7s ease-in-out infinite alternate;
-        pointer-events: none;
-        z-index: 3;
-        width: 6px;
-        text-align: center;
-        line-height: 1;
-        font-weight: bold;
-    }
-
-    .aviso-card.aviso-destacado:nth-child(6n+1)::before { animation-delay: 0s; animation-duration: 5s; }
-    .aviso-card.aviso-destacado:nth-child(6n+2)::before { animation-delay: 0.6s; animation-duration: 6s; }
-    .aviso-card.aviso-destacado:nth-child(6n+3)::before { animation-delay: 1.2s; animation-duration: 7s; }
-    .aviso-card.aviso-destacado:nth-child(6n+4)::before { animation-delay: 1.8s; animation-duration: 5.5s; }
-    .aviso-card.aviso-destacado:nth-child(6n+5)::before { animation-delay: 2.4s; animation-duration: 6.5s; }
-    .aviso-card.aviso-destacado:nth-child(6n+6)::before { animation-delay: 3s; animation-duration: 8s; }
-
-    @keyframes canicaSubeYBaja {
-        0% { top: 2%; transform: scale(1); }
-        100% { top: 94%; transform: scale(1.1); }
-    }
-
-    /* Categoría badge */
-    .categoria-badge {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        z-index: 4;
-        font-size: 0.7rem;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        backdrop-filter: blur(4px);
-    }
-
-    /* Imagen y video (base) */
-    .aviso-imagen,
-    .aviso-video {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-        background: #000;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .aviso-imagen {
-        border-radius: 8px 8px 0 0;
-        margin-bottom: 0.8rem;
-    }
-
-    .aviso-video {
-        border-radius: 8px 8px 0 0;
-    }
-
-    .aviso-video video {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        background: #000;
-    }
-
-    /* Contenido de la tarjeta */
-    .card-contenido-moderno {
-        padding: 16px;
-    }
-
-    .card-header-moderno {
-        margin-bottom: 12px;
-    }
-
-    .card-titulo-moderno {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0 0 4px 0;
-        color: var(--color-texto);
-        line-height: 1.3;
-    }
-
-    .card-fecha-moderna {
-        font-size: 0.7rem;
-        color: var(--color-texto-claro);
-        margin-top: 4px;
-    }
-
-    .card-preview-moderno {
-        font-size: 0.85rem;
-        color: #3a3a3c;
-        line-height: 1.4;
-        margin-bottom: 12px;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    /* Stats (likes, dislikes, etc.) */
-    .card-stats-moderno {
-        display: flex;
-        gap: 20px;
-        padding-top: 12px;
-        border-top: 0.5px solid var(--color-borde);
-        margin-top: 4px;
-    }
-
-    .card-stats-moderno .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.8rem;
-        color: #5a5a5e;
-        background: none;
-        padding: 0;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .stat-item.like-btn:hover {
-        background: rgba(255, 71, 87, 0.1);
-        transform: scale(1.05);
-        border-radius: 20px;
-        padding: 0 0.4rem;
-    }
-
-    .stat-item.liked {
-        color: #ff4757;
-    }
-
-    .stat-item.disliked {
-        color: #7f8c8d;
-    }
-
-    /* Footer del aviso */
-    .aviso-footer {
-        margin-top: 0.8rem;
-        padding-top: 0.8rem;
-        border-top: 1px solid var(--color-borde);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.7rem;
-        color: var(--color-texto-claro);
-    }
-
-    /* Botón WhatsApp flotante */
-    .whatsapp-btn {
-        position: absolute;
-        bottom: 12px;
-        right: 12px;
-        background-color: #25D366;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        transition: all 0.25s ease;
-        z-index: 4;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png');
-        background-size: 55%;
-        background-position: center;
-        background-repeat: no-repeat;
-        border: none;
-        cursor: pointer;
-    }
-
-    .whatsapp-btn:hover {
-        transform: scale(1.12);
-        background-color: #128C7E;
-    }
-
-    /* Loading y misc */
-    .loading-trigger {
-        text-align: center;
-        padding: 2rem;
-        color: var(--color-texto-claro);
-    }
-
-    .toast-notification {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: rgba(0, 0, 0, 0.85);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 40px;
-        font-size: 0.9rem;
-        z-index: 1100;
-        transition: transform 0.3s ease;
-        pointer-events: none;
-    }
-
-    .toast-notification.show {
-        transform: translateX(-50%) translateY(0);
-    }
-
-    /* ======================================================
-       MÓVIL (ancho < 768px) - EFECTO ENGRANE + FONDO COMPLETO
-    ====================================================== */
-    @media (max-width: 767px) {
-
-        /* Contenedor scrollable unificado */
-        .scrollable-container {
-            height: calc(100vh - 60px);
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
+            width: 100%;
+            height: auto;
+            max-height: 65vh;
+            object-fit: contain;
+            display: block;
+            background-color: #f0f0f0;
         }
 
-        .scrollable-container::-webkit-scrollbar {
-            display: none;
+        @media (prefers-color-scheme: dark) {
+            .hero-banner {
+                opacity: 0.95;
+            }
         }
 
-        /* Grid se convierte en bloque */
-        #avisos-container {
-            display: block !important;
-            scroll-snap-type: none !important;
-            height: auto !important;
+        /* ---------- BUSCADOR Y FILTROS ---------- */
+        .filtros-buscador-wrapper {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Tarjeta: pantalla completa + imagen como fondo */
+        .buscador-container {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .buscador-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            border: 1px solid var(--color-borde);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .buscador-input:focus {
+            outline: none;
+            border-color: var(--color-primario);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        /* ---------- TARJETAS / AVISOS (BASE) ---------- */
         .aviso-card {
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
-            min-height: calc(100vh - 60px);
-            margin-bottom: 0 !important;
-            border-radius: 0 !important;
-            background: #000;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            width: 100%;
+            box-sizing: border-box;
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
         }
 
-        /* Imagen/video como fondo absoluto */
-        .aviso-imagen,
-        .aviso-video {
+        .aviso-card:active {
+            transform: scale(0.99);
+        }
+
+        .aviso-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tarjeta destacada (borde rojo + canica) */
+        .aviso-card.aviso-destacado {
+            border-left: 6px solid var(--color-urgente) !important;
+            border-radius: 20px !important;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aviso-card.aviso-destacado::before {
+            content: '●';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -4px;
+            font-size: 18px;
+            color: #ff3333;
+            animation: canicaSubeYBaja 7s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 3;
+            width: 6px;
+            text-align: center;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+1)::before {
+            animation-delay: 0s;
+            animation-duration: 5s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+2)::before {
+            animation-delay: 0.6s;
+            animation-duration: 6s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+3)::before {
+            animation-delay: 1.2s;
+            animation-duration: 7s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+4)::before {
+            animation-delay: 1.8s;
+            animation-duration: 5.5s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+5)::before {
+            animation-delay: 2.4s;
+            animation-duration: 6.5s;
+        }
+
+        .aviso-card.aviso-destacado:nth-child(6n+6)::before {
+            animation-delay: 3s;
+            animation-duration: 8s;
+        }
+
+        @keyframes canicaSubeYBaja {
+            0% {
+                top: 2%;
+                transform: scale(1);
+            }
+
+            100% {
+                top: 94%;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Categoría badge */
+        .categoria-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 4;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Imagen y video (base) */
+        .aviso-imagen,
+        .aviso-video {
             width: 100%;
-            height: 100% !important;
+            height: 180px;
             object-fit: cover;
-            z-index: 1;
-            border-radius: 0 !important;
-            margin-bottom: 0;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .aviso-imagen {
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0.8rem;
+        }
+
+        .aviso-video {
+            border-radius: 8px 8px 0 0;
         }
 
         .aviso-video video {
-            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
         }
 
-        /* Overlay oscuro para legibilidad */
-        .aviso-card::after {
-            content: '';
+        /* Contenido de la tarjeta */
+        .card-contenido-moderno {
+            padding: 16px;
+        }
+
+        .card-header-moderno {
+            margin-bottom: 12px;
+        }
+
+        .card-titulo-moderno {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            color: var(--color-texto);
+            line-height: 1.3;
+        }
+
+        .card-fecha-moderna {
+            font-size: 0.7rem;
+            color: var(--color-texto-claro);
+            margin-top: 4px;
+        }
+
+        .card-preview-moderno {
+            font-size: 0.85rem;
+            color: #3a3a3c;
+            line-height: 1.4;
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Stats (likes, dislikes, etc.) */
+        .card-stats-moderno {
+            display: flex;
+            gap: 20px;
+            padding-top: 12px;
+            border-top: 0.5px solid var(--color-borde);
+            margin-top: 4px;
+        }
+
+        .card-stats-moderno .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: #5a5a5e;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stat-item.like-btn:hover {
+            background: rgba(255, 71, 87, 0.1);
+            transform: scale(1.05);
+            border-radius: 20px;
+            padding: 0 0.4rem;
+        }
+
+        .stat-item.liked {
+            color: #ff4757;
+        }
+
+        .stat-item.disliked {
+            color: #7f8c8d;
+        }
+
+        /* Footer del aviso */
+        .aviso-footer {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--color-borde);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--color-texto-claro);
+        }
+
+        /* Botón WhatsApp flotante */
+        .whatsapp-btn {
             position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background-color: #25D366;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            z-index: 4;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/960px-WhatsApp.svg.png');
+            background-size: 55%;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            cursor: pointer;
+        }
+
+        .whatsapp-btn:hover {
+            transform: scale(1.12);
+            background-color: #128C7E;
+        }
+
+        /* Loading y misc */
+        .loading-trigger {
+            text-align: center;
+            padding: 2rem;
+            color: var(--color-texto-claro);
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            z-index: 1100;
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ======================================================
+       MÓVIL (ancho < 768px) - EFECTO ENGRANE + FONDO COMPLETO
+    ====================================================== */
+        @media (max-width: 767px) {
+
+            /* Contenedor scrollable unificado */
+            .scrollable-container {
+                height: calc(100vh - 60px);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: y mandatory;
+                scroll-behavior: smooth;
+            }
+
+            .scrollable-container::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Grid se convierte en bloque */
+            #avisos-container {
+                display: block !important;
+                scroll-snap-type: none !important;
+                height: auto !important;
+            }
+
+            /* Tarjeta: pantalla completa + imagen como fondo */
+            .aviso-card {
+                scroll-snap-align: start;
+                scroll-snap-stop: always;
+                min-height: calc(100vh - 60px);
+                margin-bottom: 0 !important;
+                border-radius: 0 !important;
+                background: #000;
+            }
+
+            /* Imagen/video como fondo absoluto */
+            .aviso-imagen,
+            .aviso-video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100% !important;
+                object-fit: cover;
+                z-index: 1;
+                border-radius: 0 !important;
+                margin-bottom: 0;
+            }
+
+            .aviso-video video {
+                object-fit: cover;
+            }
+
+            /* Overlay oscuro para legibilidad */
+            .aviso-card::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to bottom,
+                        rgba(0, 0, 0, 0.2) 0%,
+                        rgba(0, 0, 0, 0.5) 50%,
+                        rgba(0, 0, 0, 0.8) 100%);
+                z-index: 2;
+                pointer-events: none;
+            }
+
+            /* Contenido superpuesto */
+            .card-contenido-moderno {
+                position: relative;
+                z-index: 3;
+                background: transparent !important;
+                color: white !important;
+                padding: 20px;
+                min-height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            }
+
+            .card-titulo-moderno,
+            .card-preview-moderno,
+            .card-fecha-moderna,
+            .aviso-footer span {
+                color: white !important;
+            }
+
+            .card-preview-moderno {
+                -webkit-line-clamp: 2;
+            }
+
+            /* Stats con fondo semitransparente */
+            .card-stats-moderno .stat-item {
+                color: white !important;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                border-radius: 20px;
+                padding: 4px 10px;
+            }
+
+            .card-stats-moderno .stat-item.liked {
+                color: #ff4757 !important;
+            }
+
+            .card-stats-moderno .stat-item.disliked {
+                color: #aaa !important;
+            }
+
+            /* Badge con fondo oscuro */
+            .categoria-badge {
+                background: rgba(0, 0, 0, 0.7) !important;
+                z-index: 4;
+            }
+
+            /* WhatsApp más grande */
+            .whatsapp-btn {
+                width: 44px;
+                height: 44px;
+                bottom: 16px;
+                right: 16px;
+                background-size: 60%;
+                z-index: 4;
+            }
+
+            /* Animación de "clic" del engranaje */
+            .post-card-ios.gear-click {
+                animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            }
+
+            .post-card-ios.active {
+                transform: scale(1.02);
+            }
+
+            @keyframes gearClick {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(0.98);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+        }
+
+        /* ======================================================
+       DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
+    ====================================================== */
+        @media (min-width: 768px) {
+            .scrollable-container {
+                height: auto;
+                overflow-y: visible;
+                scroll-snap-type: none;
+            }
+
+            #avisos-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                height: auto !important;
+                overflow-y: visible !important;
+                scroll-snap-type: none !important;
+            }
+
+            .aviso-card {
+                min-height: auto !important;
+                height: auto !important;
+                margin-bottom: 0 !important;
+                scroll-snap-align: none !important;
+            }
+
+            .aviso-imagen,
+            .aviso-video {
+                height: 180px !important;
+                border-radius: 20px 20px 0 0 !important;
+                position: relative;
+            }
+
+            /* Quitar overlay en desktop */
+            .aviso-card::after {
+                display: none;
+            }
+
+            .card-contenido-moderno {
+                background: white !important;
+                color: var(--color-texto) !important;
+                text-shadow: none;
+            }
+
+            .card-titulo-moderno,
+            .card-preview-moderno,
+            .card-fecha-moderna,
+            .aviso-footer span {
+                color: var(--color-texto) !important;
+            }
+
+            .card-stats-moderno .stat-item {
+                background: transparent !important;
+                backdrop-filter: none;
+                color: #5a5a5e !important;
+                padding: 0;
+            }
+
+            .categoria-badge {
+                background: rgba(0, 0, 0, 0.6) !important;
+            }
+        }
+
+        /* Desktop más grande: más columnas */
+        @media (min-width: 1024px) {
+            #avisos-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1280px) {
+            #avisos-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* ======================================================
+       MODAL DE CATEGORÍAS
+    ====================================================== */
+        .modal-categorias {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.2) 0%,
-                rgba(0,0,0,0.5) 50%,
-                rgba(0,0,0,0.8) 100%
-            );
-            z-index: 2;
-            pointer-events: none;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
         }
 
-        /* Contenido superpuesto */
-        .card-contenido-moderno {
-            position: relative;
-            z-index: 3;
-            background: transparent !important;
-            color: white !important;
-            padding: 20px;
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .card-titulo-moderno,
-        .card-preview-moderno,
-        .card-fecha-moderna,
-        .aviso-footer span {
-            color: white !important;
-        }
-
-        .card-preview-moderno {
-            -webkit-line-clamp: 2;
-        }
-
-        /* Stats con fondo semitransparente */
-        .card-stats-moderno .stat-item {
-            color: white !important;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+        .modal-contenido {
+            background: white;
+            max-width: 500px;
+            width: 90%;
+            margin: 20px auto;
             border-radius: 20px;
-            padding: 4px 10px;
+            overflow: hidden;
+            animation: modalFadeIn 0.3s ease;
         }
 
-        .card-stats-moderno .stat-item.liked {
-            color: #ff4757 !important;
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .card-stats-moderno .stat-item.disliked {
-            color: #aaa !important;
+        .modal-header {
+            background: linear-gradient(135deg, #1e4620, #2b7a2b);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Badge con fondo oscuro */
-        .categoria-badge {
-            background: rgba(0,0,0,0.7) !important;
-            z-index: 4;
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
         }
 
-        /* WhatsApp más grande */
-        .whatsapp-btn {
-            width: 44px;
-            height: 44px;
-            bottom: 16px;
-            right: 16px;
-            background-size: 60%;
-            z-index: 4;
+        .modal-cerrar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
-        /* Animación de "clic" del engranaje */
-        .post-card-ios.gear-click {
-            animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        .modal-body {
+            padding: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
-        .post-card-ios.active {
-            transform: scale(1.02);
+        .categoria-info {
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eee;
         }
 
-        @keyframes gearClick {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.98); }
-            100% { transform: scale(1); }
-        }
-    }
-
-    /* ======================================================
-       DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
-    ====================================================== */
-    @media (min-width: 768px) {
-        .scrollable-container {
-            height: auto;
-            overflow-y: visible;
-            scroll-snap-type: none;
+        .categoria-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--color-primario);
         }
 
-        #avisos-container {
-            display: grid !important;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            height: auto !important;
-            overflow-y: visible !important;
-            scroll-snap-type: none !important;
+        .categoria-info p {
+            margin: 0.3rem 0;
+            font-size: 0.85rem;
+            color: #444;
+            line-height: 1.4;
         }
 
-        .aviso-card {
-            min-height: auto !important;
-            height: auto !important;
-            margin-bottom: 0 !important;
-            scroll-snap-align: none !important;
+        .categoria-info small {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.7rem;
+            color: #e74c3c;
         }
 
-        .aviso-imagen,
-        .aviso-video {
-            height: 180px !important;
-            border-radius: 20px 20px 0 0 !important;
-            position: relative;
+        .modal-footer {
+            padding: 1rem;
+            border-top: 1px solid #eee;
+            text-align: center;
         }
 
-        /* Quitar overlay en desktop */
-        .aviso-card::after {
-            display: none;
+        @media (max-width: 600px) {
+            .modal-contenido {
+                width: 95%;
+                margin: 10px auto;
+            }
+
+            .categoria-info h4 {
+                font-size: 0.95rem;
+            }
+
+            .categoria-info p {
+                font-size: 0.8rem;
+            }
         }
 
-        .card-contenido-moderno {
-            background: white !important;
-            color: var(--color-texto) !important;
-            text-shadow: none;
-        }
-
-        .card-titulo-moderno,
-        .card-preview-moderno,
-        .card-fecha-moderna,
-        .aviso-footer span {
-            color: var(--color-texto) !important;
-        }
-
-        .card-stats-moderno .stat-item {
-            background: transparent !important;
-            backdrop-filter: none;
-            color: #5a5a5e !important;
-            padding: 0;
-        }
-
-        .categoria-badge {
-            background: rgba(0,0,0,0.6) !important;
-        }
-    }
-
-    /* Desktop más grande: más columnas */
-    @media (min-width: 1024px) {
-        #avisos-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    @media (min-width: 1280px) {
-        #avisos-container {
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-
-    /* ======================================================
-       MODAL DE CATEGORÍAS
-    ====================================================== */
-    .modal-categorias {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        z-index: 2000;
-        justify-content: center;
-        align-items: center;
-        overflow-y: auto;
-    }
-
-    .modal-contenido {
-        background: white;
-        max-width: 500px;
-        width: 90%;
-        margin: 20px auto;
-        border-radius: 20px;
-        overflow: hidden;
-        animation: modalFadeIn 0.3s ease;
-    }
-
-    @keyframes modalFadeIn {
-        from { opacity: 0; transform: translateY(-30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-header {
-        background: linear-gradient(135deg, #1e4620, #2b7a2b);
-        color: white;
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-header h3 { margin: 0; font-size: 1.2rem; }
-    .modal-cerrar { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-    .modal-body { padding: 1rem; max-height: 60vh; overflow-y: auto; }
-    .categoria-info { margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid #eee; }
-    .categoria-info h4 { margin: 0 0 0.5rem 0; color: var(--color-primario); }
-    .categoria-info p { margin: 0.3rem 0; font-size: 0.85rem; color: #444; line-height: 1.4; }
-    .categoria-info small { display: block; margin-top: 0.3rem; font-size: 0.7rem; color: #e74c3c; }
-    .modal-footer { padding: 1rem; border-top: 1px solid #eee; text-align: center; }
-
-    @media (max-width: 600px) {
-        .modal-contenido { width: 95%; margin: 10px auto; }
-        .categoria-info h4 { font-size: 0.95rem; }
-        .categoria-info p { font-size: 0.8rem; }
-    }
-
-    /* ======================================================
+        /* ======================================================
        PANEL DE COMENTARIOS
     ====================================================== */
-    .comments-panel {
-        position: fixed;
-        bottom: 0;
-        right: 0;
-        width: 100%;
-        max-width: 400px;
-        background: white;
-        border-radius: 20px 20px 0 0;
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        max-height: 80vh;
-    }
+        .comments-panel {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            max-height: 80vh;
+        }
 
-    .comments-panel.open { transform: translateY(0); }
-    .comments-header { padding: 1rem; background: var(--color-primario); color: white; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; }
-    .comments-header h3 { margin: 0; font-size: 1rem; }
-    .close-comments { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
-    .comments-list { flex: 1; overflow-y: auto; padding: 1rem; max-height: 400px; }
-    .comment-item { background: var(--color-fondo); border-radius: 12px; padding: 0.8rem; margin-bottom: 0.8rem; }
-    .comment-author { font-weight: 700; font-size: 0.8rem; color: var(--color-primario); margin-bottom: 0.3rem; }
-    .comment-text { font-size: 0.85rem; color: var(--color-texto); line-height: 1.4; }
-    .comment-date { font-size: 0.6rem; color: var(--color-texto-claro); margin-top: 0.3rem; }
-    .comment-input-area { padding: 1rem; border-top: 1px solid var(--color-borde); display: flex; gap: 0.5rem; }
-    .comment-input-area input { flex: 1; padding: 0.6rem; border: 1px solid var(--color-borde); border-radius: 20px; font-size: 0.85rem; }
-    .comment-input-area button { background: var(--color-primario); color: white; border: none; padding: 0.6rem 1rem; border-radius: 20px; cursor: pointer; }
+        .comments-panel.open {
+            transform: translateY(0);
+        }
 
-    /* Ajustes específicos para móvil en comentarios */
-    @media (max-width: 767px) {
-        .comments-panel { max-width: 100%; border-radius: 20px 20px 0 0; }
-    }
-</style>
+        .comments-header {
+            padding: 1rem;
+            background: var(--color-primario);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comments-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .close-comments {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .comments-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            max-height: 400px;
+        }
+
+        .comment-item {
+            background: var(--color-fondo);
+            border-radius: 12px;
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .comment-author {
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--color-primario);
+            margin-bottom: 0.3rem;
+        }
+
+        .comment-text {
+            font-size: 0.85rem;
+            color: var(--color-texto);
+            line-height: 1.4;
+        }
+
+        .comment-date {
+            font-size: 0.6rem;
+            color: var(--color-texto-claro);
+            margin-top: 0.3rem;
+        }
+
+        .comment-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--color-borde);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .comment-input-area input {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--color-borde);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .comment-input-area button {
+            background: var(--color-primario);
+            color: white;
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* Ajustes específicos para móvil en comentarios */
+        @media (max-width: 767px) {
+            .comments-panel {
+                max-width: 100%;
+                border-radius: 20px 20px 0 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div id="header-container"></div>
+    <!-- Header fijo con blur -->
+    <div id="header-container" class="header-fixed"></div>
 
+    <!-- Contenedor scrollable (el header NO está dentro) -->
     <div id="scrollable-content" class="scrollable-container">
-        <!-- ========== BANNER HERO ========== -->
+        <!-- El banner hero ya no tiene buscador -->
         <picture>
             <source srcset="/barrio/img/banner-elbarrio2.webp" type="image/webp">
-            <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" decoding="async"
-                alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager"
-                fetchpriority="high" decoding="async"
-                onerror="this.onerror=null; this.src='/barrio/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
+            <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" alt="El Barrio">
         </picture>
 
         <main class="contenedor">
+            <!-- El botón de registro puede quedar o no -->
             <div style="display: flex; justify-content: center; width: 100%;">
-                <button id="btnProbarNotificacion" class="btn-login">
-                    <!-- style="background:#2c3e50; color:white; padding:8px 16px; border-radius:20px; margin:10px; border:none; cursor: pointer; "-->
-                    📝 Regístrate y publica tus avisos gratis
-                </button>
-            </div>
-            <div class="filtros-buscador-wrapper">
-                <div class="buscador-container">
-                    <input type="text" id="buscador-input" class="buscador-input" placeholder="🔍 Buscar...">
-                </div>
+                <button id="btnProbarNotificacion" class="btn-login">📝 Regístrate y publica tus avisos gratis</button>
             </div>
 
+            <!-- AVISOS: ya no hay buscador aquí, está en el header -->
             <div id="avisos-container" class="grid-avisos">
                 <div class="cargando">📰 Cargando avisos...</div>
             </div>
-
-            <div id="loading-trigger" class="loading-trigger" style="display: none;">📡 Cargando más avisos...</div>
-            <div id="paginacion" class="paginacion"></div>
         </main>
     </div>
 
@@ -1376,6 +1533,7 @@
             setupSearch();
             setupInfiniteScroll();
             cargarAvisos();
+            injectBuscadorEnHeader();
 
             fetch('/barrio/common/header.html')
                 .then(res => res.ok ? res.text() : Promise.reject())
@@ -2090,6 +2248,47 @@
                 }
             }, 250);
         });
+    </script>
+
+    <script>
+        // ========== INYECTAR BUSCADOR EN EL HEADER ==========
+        function injectBuscadorEnHeader() {
+            const headerContainer = document.getElementById('header-container');
+            if (!headerContainer) return;
+
+            // Esperar a que el header cargue completamente
+            const checkHeader = setInterval(() => {
+                const nav = headerContainer.querySelector('nav');
+                if (nav && !document.querySelector('.header-buscador')) {
+                    clearInterval(checkHeader);
+
+                    const buscadorHTML = `
+                <div class="header-buscador">
+                    <input type="text" id="buscador-input-header" class="buscador-input-header" 
+                           placeholder="🔍 Buscar avisos...">
+                </div>
+            `;
+                    nav.insertAdjacentHTML('beforeend', buscadorHTML);
+
+                    // Conectar el evento del nuevo buscador
+                    const buscadorHeader = document.getElementById('buscador-input-header');
+                    if (buscadorHeader) {
+                        buscadorHeader.addEventListener('input', (e) => {
+                            currentSearchTerm = e.target.value;
+                            // También actualizar el buscador viejo si existe (por si acaso)
+                            const buscadorViejo = document.getElementById('buscador-input');
+                            if (buscadorViejo) buscadorViejo.value = currentSearchTerm;
+                            applyFiltersAndSearch();
+                        });
+                    }
+
+                    console.log('✅ Buscador inyectado en el header');
+                }
+            }, 100);
+
+            // Timeout por si no aparece el nav
+            setTimeout(() => clearInterval(checkHeader), 5000);
+        }
     </script>
 
 
