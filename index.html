@@ -1198,6 +1198,9 @@
 <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" 
      data-id="${aviso.id}" 
      onclick="verAviso(this.getAttribute('data-id'))">
+     <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
+        ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
+    </div>
             ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
@@ -1233,12 +1236,12 @@
             ${aviso.contacto ? `<button 
     type="button"
     class="whatsapp-btn"
-    onclick="abrirWhatsApp(
+    onclick='abrirWhatsApp(
         '${whatsappNumber}',
         ${JSON.stringify(mensaje)},
         '${aviso.id}',
         event
-    )">
+    )'>
 </button>` : ''}
         </div>`;
             }).join('');
