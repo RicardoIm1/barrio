@@ -1141,17 +1141,16 @@
         let filtroStatusActual = 'todos';
 
         // Función de escape HTML (existente)
-        function escapeHTML(str) {
-            // ✅ Si no es string, convertir a string o retornar vacío
-            if (str === undefined || str === null) return '';
-            if (typeof str !== 'string') str = String(str);
-
-            return str.replace(/[&<>]/g, function (m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+        function safeHTML(valor) {
+            if (valor === undefined || valor === null) return '';
+            if (typeof valor === 'number') return valor.toString();
+            if (typeof valor !== 'string') valor = String(valor);
+            return valor
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
         // Helper para íconos de categoría
