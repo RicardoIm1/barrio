@@ -1060,15 +1060,13 @@
             html += `</div>`; // cierre article-body
 
             <!-- ========== NUEVO CONTENEDOR DE PUBLICIDAD ========== -->
-            html += `
-<div class="ad-container">
-    <div class="ad-content">
-        <a href="https://ricardoim1.github.io/jeronimoricardo/" target="_blank">
-            <img src="/barrio/img/banner-jr.png" alt="Publicidad" style="max-width:100%; border-radius:12px;">
-        </a>
-    </div>
-</div>
-`;
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; margin: 1rem 0; text-align: center; color: white;">
+                <div style="font-size: 0.7rem; opacity: 0.8;">Patrocinado</div>
+                <div style="font-size: 1.2rem; font-weight: 600;">Lleva tu negocio al siguiente nivel</div>
+                <div style="margin-top: 1rem;">
+                    <a href="#" style="background: white; color: #667eea; padding: 0.5rem 1.5rem; border-radius: 25px; text-decoration: none; font-weight: 600;">Saber más →</a>
+                </div>
+            </div>
 
             document.getElementById('aviso-container').innerHTML = html;
             iniciarPolling();
