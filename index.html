@@ -756,26 +756,27 @@
 
             #avisos-container {
                 display: grid !important;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
                 height: auto !important;
                 overflow-y: visible !important;
                 scroll-snap-type: none !important;
             }
 
-            /* ✅ POSTS DESTACADOS: primeros 3 ocupan toda la fila (cada uno 1fr) */
-            /* En grid de 3 columnas, cada uno ya ocupa su espacio natural */
+            /* POSTS DESTACADOS: primeros 3 */
+            #avisos-container .aviso-card:nth-child(1) {
+                grid-column: span 2;
+            }
 
-            /* ✅ Para que sean más grandes visualmente, aumentamos la altura de imagen */
+            #avisos-container .aviso-card:nth-child(2),
+            #avisos-container .aviso-card:nth-child(3) {
+                grid-column: span 1;
+            }
+
+            /* Imagen más alta en los primeros 3 posts */
             #avisos-container .aviso-card:nth-child(-n+3) .aviso-imagen,
             #avisos-container .aviso-card:nth-child(-n+3) .aviso-video {
                 height: 280px !important;
-            }
-
-            /* Opcional: darle un poco más de énfasis a los destacados */
-            #avisos-container .aviso-card:nth-child(-n+3) {
-                transform: scale(1.02);
-                transition: transform 0.3s ease;
             }
 
             .aviso-card {
@@ -783,23 +784,19 @@
                 height: auto !important;
                 margin-bottom: 0 !important;
                 scroll-snap-align: none !important;
+                border-radius: 20px !important;
+                overflow: hidden;
+                background: white;
             }
 
-            .aviso-imagen,
-            .aviso-video {
-                height: 180px !important;
-                border-radius: 20px 20px 0 0 !important;
-                position: relative !important;
-            }
-
-            .aviso-card::after {
-                display: none;
-            }
-
+            /* ✅ CONTENIDO VISIBLE EN DESKTOP */
             .card-contenido-moderno {
+                position: relative !important;
                 background: white !important;
                 color: var(--color-texto) !important;
                 text-shadow: none;
+                padding: 16px;
+                z-index: 1;
             }
 
             .card-titulo-moderno,
@@ -807,17 +804,59 @@
             .card-fecha-moderna,
             .aviso-footer span {
                 color: var(--color-texto) !important;
+                display: block !important;
+                opacity: 1 !important;
+                visibility: visible !important;
             }
 
+            .card-preview-moderno {
+                -webkit-line-clamp: 3;
+                margin-bottom: 12px;
+            }
+
+            /* Imagen normal (no absoluta) */
+            .aviso-imagen,
+            .aviso-video {
+                position: relative !important;
+                height: 180px !important;
+                border-radius: 20px 20px 0 0 !important;
+            }
+
+            /* Stats visibles */
             .card-stats-moderno .stat-item {
                 background: transparent !important;
                 backdrop-filter: none;
                 color: #5a5a5e !important;
                 padding: 0;
+                display: inline-flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+
+            .card-stats-moderno .stat-item.liked {
+                color: #ff4757 !important;
+            }
+
+            .card-stats-moderno .stat-item.disliked {
+                color: #7f8c8d !important;
+            }
+
+            /* Eliminar overlay */
+            .aviso-card::after {
+                display: none !important;
             }
 
             .categoria-badge {
                 background: rgba(0, 0, 0, 0.6) !important;
+            }
+
+            /* WhatsApp button normal */
+            .whatsapp-btn {
+                width: 34px;
+                height: 34px;
+                bottom: 12px;
+                right: 12px;
+                background-size: 55%;
             }
         }
 
