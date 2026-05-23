@@ -1,30 +1,25 @@
 <footer class="footer dashboard-footer">
     <div class="contenedor">
-        <!-- DASHBOARD HEADER -->
+        <!-- HEADER -->
         <div class="dashboard-header">
             <div class="dashboard-titulo">
                 <span class="dashboard-icon">📊</span>
                 <h3>Panel de Estadísticas</h3>
                 <span class="dashboard-badge" id="userRoleBadge">Usuario</span>
             </div>
-            <div class="dashboard-fecha">
-                <span id="fechaActual"></span>
-            </div>
+            <div class="dashboard-fecha" id="fechaActual"></div>
         </div>
 
-        <!-- DASHBOARD CARDS -->
-        <div class="dashboard-grid" id="dashboardGrid">
-            <!-- Tarjeta Total Avisos -->
+        <!-- CARDS PRINCIPALES -->
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📰</div>
                 <div class="stat-info">
                     <h4>Total Avisos</h4>
                     <div class="stat-number" id="totalAvisos">0</div>
-                    <span class="stat-label">avisos publicados</span>
+                    <span class="stat-label">publicados</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Activos -->
             <div class="stat-card">
                 <div class="stat-icon">✅</div>
                 <div class="stat-info">
@@ -33,8 +28,6 @@
                     <span class="stat-label">en circulación</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Pendientes (solo admin) -->
             <div class="stat-card pending-card" id="pendingCard" style="display: none;">
                 <div class="stat-icon">⏳</div>
                 <div class="stat-info">
@@ -43,8 +36,6 @@
                     <span class="stat-label">por aprobar</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Categorías -->
             <div class="stat-card">
                 <div class="stat-icon">📁</div>
                 <div class="stat-info">
@@ -53,958 +44,593 @@
                     <span class="stat-label">en uso</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Interacción -->
             <div class="stat-card">
                 <div class="stat-icon">👁️</div>
                 <div class="stat-info">
-                    <h4>Total Visitas</h4>
+                    <h4>Visitas Totales</h4>
                     <div class="stat-number" id="totalVisitas">0</div>
                     <span class="stat-label">visualizaciones</span>
                 </div>
             </div>
-
-            <!-- Tarjeta Engagement -->
             <div class="stat-card">
                 <div class="stat-icon">💬</div>
                 <div class="stat-info">
                     <h4>Interacciones</h4>
                     <div class="stat-number" id="totalInteracciones">0</div>
-                    <span class="stat-label">me gusta + comentarios</span>
+                    <span class="stat-label">likes + comentarios</span>
                 </div>
             </div>
         </div>
 
-        <!-- GRÁFICO DE AVISOS POR CATEGORÍA (SOLO ADMIN) -->
-        <div class="dashboard-chart" id="chartCategorias" style="display: none;">
+        <!-- FILA DE RESÚMENES RÁPIDOS -->
+        <div class="quick-stats" id="statsSummary" style="display: none;">
+            <div class="quick-item">
+                <span class="quick-label">📊 Promedio diario usuarios</span>
+                <strong class="quick-value" id="promUsuarios">0</strong>
+            </div>
+            <div class="quick-item">
+                <span class="quick-label">📝 Promedio diario avisos</span>
+                <strong class="quick-value" id="promAvisos">0</strong>
+            </div>
+            <div class="quick-item">
+                <span class="quick-label">👥 Total usuarios</span>
+                <strong class="quick-value" id="totalUsuarios">0</strong>
+            </div>
+        </div>
+
+        <!-- GRÁFICA POR CATEGORÍA -->
+        <div class="chart-container" id="chartCategorias" style="display: none;">
             <div class="chart-header">
                 <h4>📊 Distribución por Categoría</h4>
-                <button class="chart-toggle" onclick="toggleChartView()">📈 Vista detallada</button>
+                <button class="chart-toggle" onclick="toggleChartView()">Ver números</button>
             </div>
-            <div class="chart-bars" id="chartBars">
-                <!-- Barras generadas dinámicamente -->
+            <div class="bars-list" id="chartBars"></div>
+            <div class="chart-footer" id="chartStatsMini"></div>
+        </div>
+
+        <!-- GRÁFICA DE EVOLUCIÓN DIARIA -->
+        <div class="chart-container" id="chartTemporal" style="display: none;">
+            <div class="chart-header">
+                <h4>📈 Evolución Diaria</h4>
+                <div class="metric-buttons">
+                    <button class="metric-btn active" data-metric="usuarios">👥 Usuarios</button>
+                    <button class="metric-btn" data-metric="avisos">📰 Avisos</button>
+                    <button class="metric-btn" data-metric="conexiones">🟢 Conexiones</button>
+                </div>
             </div>
-            <div class="chart-stats-mini" id="chartStatsMini"></div>
-        </div>
-    </div>
-
-    <!-- GRÁFICAS TEMPORALES (USUARIOS, AVISOS, CONEXIONES) -->
-    <div class="dashboard-chart" id="chartTemporal" style="display: none;">
-        <div class="chart-header">
-            <h4>📈 Evolución Diaria (últimos 30 días)</h4>
-            <div class="chart-toggles">
-                <button class="chart-toggle" onclick="toggleMetric('usuarios')">👥 Usuarios</button>
-                <button class="chart-toggle" onclick="toggleMetric('avisos')">📰 Avisos</button>
-                <button class="chart-toggle" onclick="toggleMetric('conexiones')">🟢 Conexiones</button>
+            <div class="chart-canvas-container">
+                <canvas id="temporalChart"></canvas>
             </div>
+            <div class="chart-footer" id="temporalStats"></div>
         </div>
-        <div class="temporal-chart-container">
-            <canvas id="temporalChart" width="400" height="200"
-                style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
-        </div>
-        <div class="chart-stats-mini" id="temporalStats"></div>
-    </div>
 
-    <!-- USUARIOS EN LÍNEA (TIEMPO REAL) -->
-    <div class="dashboard-chart" id="chartOnline" style="display: none;">
-        <div class="chart-header">
-            <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
-            <span class="online-badge" id="onlineCount">0 conectados</span>
-        </div>
-        <div class="online-users-list" id="onlineUsersList">
-            <p style="color:#888;">Cargando...</p>
-        </div>
-    </div>
-
-    <!-- RESÚMENES RÁPIDOS -->
-    <div class="stats-summary" id="statsSummary" style="display: none;">
-        <div class="summary-item">
-            <span class="summary-label">📊 Promedio diario usuarios:</span>
-            <span class="summary-value" id="promUsuarios">0</span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">📝 Promedio diario avisos:</span>
-            <span class="summary-value" id="promAvisos">0</span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label">👥 Total usuarios registrados:</span>
-            <span class="summary-value" id="totalUsuarios">0</span>
+        <!-- USUARIOS EN LÍNEA -->
+        <div class="online-container" id="chartOnline" style="display: none;">
+            <div class="online-header">
+                <h4>🟢 Usuarios en Línea</h4>
+                <span class="online-badge" id="onlineCount">0 conectados</span>
+            </div>
+            <div class="online-list" id="onlineUsersList">
+                <p>Cargando...</p>
+            </div>
         </div>
     </div>
 </footer>
+
 <style>
-    /* Gráficas temporales */
-    .temporal-chart-container {
-        padding: 15px 0;
-        min-height: 250px;
-    }
+/* ========== DASHBOARD FOOTER - VERSIÓN MEJORADA ========== */
+.dashboard-footer {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+    margin-top: 60px;
+    padding: 30px 0 40px;
+}
 
-    .chart-toggles {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
+/* Header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid rgba(245, 176, 66, 0.3);
+}
 
-    .online-badge {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
+.dashboard-titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 
-    .online-users-list {
-        max-height: 200px;
-        overflow-y: auto;
-    }
+.dashboard-icon { font-size: 2rem; }
+.dashboard-titulo h3 {
+    color: #f5b042;
+    font-size: 1.5rem;
+    margin: 0;
+}
+.dashboard-badge {
+    background: rgba(245, 176, 66, 0.2);
+    color: #f5b042;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid rgba(245, 176, 66, 0.4);
+}
+.dashboard-fecha {
+    color: #888;
+    font-size: 0.85rem;
+}
 
-    .online-user-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        font-size: 0.85rem;
-    }
+/* Grid de tarjetas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-    .online-user-email {
-        color: #ccc;
-    }
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-    .online-user-time {
-        color: #4caf50;
-        font-size: 0.7rem;
-    }
+.stat-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(245, 176, 66, 0.3);
+}
 
-    .stats-summary {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 15px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
-        padding: 15px 20px;
-        margin-top: 20px;
-    }
+.stat-icon { font-size: 2.2rem; }
+.stat-info h4 {
+    color: #aaa;
+    font-size: 0.7rem;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.stat-number {
+    color: #f5b042;
+    font-size: 1.8rem;
+    font-weight: bold;
+    line-height: 1;
+}
+.stat-label {
+    color: #777;
+    font-size: 0.65rem;
+}
+.pending-card { border-left: 3px solid #ff9800; }
 
-    .summary-item {
-        text-align: center;
-    }
+/* Resúmenes rápidos */
+.quick-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 16px;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+}
 
-    .summary-label {
-        display: block;
-        font-size: 0.7rem;
-        color: #888;
-        margin-bottom: 5px;
-    }
+.quick-item {
+    text-align: center;
+}
+.quick-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    margin-bottom: 5px;
+}
+.quick-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #f5b042;
+}
 
-    .summary-value {
-        font-size: 1.3rem;
-        font-weight: bold;
-        color: #f5b042;
-    }
+/* Contenedores de gráficas */
+.chart-container, .online-container {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-    /* Mostrar solo para admin */
-    .dashboard-chart {
-        display: none;
-    }
-</style>
-<style>
-    /* ========== DASHBOARD FOOTER ESTYLES ========== */
-    .dashboard-footer {
-        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
-        margin-top: 60px;
-        padding-top: 30px;
-    }
+.chart-header, .online-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
 
-    /* Dashboard Header */
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid rgba(245, 176, 66, 0.3);
-        flex-wrap: wrap;
-        gap: 15px;
-    }
+.chart-header h4, .online-header h4 {
+    color: #f5b042;
+    margin: 0;
+    font-size: 1rem;
+}
 
-    .dashboard-titulo {
-        display: flex;
-        align-items: center;
+.chart-toggle, .metric-btn {
+    background: rgba(245, 176, 66, 0.2);
+    border: 1px solid #f5b042;
+    color: #f5b042;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+}
+
+.chart-toggle:hover, .metric-btn:hover {
+    background: #f5b042;
+    color: #1a1a2e;
+}
+
+.metric-btn.active {
+    background: #f5b042;
+    color: #1a1a2e;
+}
+
+.metric-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Barras de categorías */
+.bars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.bar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.bar-label {
+    width: 100px;
+    font-size: 0.8rem;
+    color: #ccc;
+}
+.bar-track {
+    flex: 1;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f5b042, #ff8c42);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: #1a1a2e;
+    font-size: 0.7rem;
+    font-weight: bold;
+    transition: width 0.4s ease;
+}
+.bar-count {
+    min-width: 35px;
+    text-align: right;
+    font-size: 0.8rem;
+    color: #f5b042;
+    font-weight: bold;
+}
+
+/* Canvas para gráfica temporal */
+.chart-canvas-container {
+    min-height: 250px;
+    position: relative;
+}
+#temporalChart {
+    max-width: 100%;
+    max-height: 250px;
+    width: 100%;
+    height: auto;
+}
+
+/* Usuarios en línea */
+.online-badge {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.online-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.online-user {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.85rem;
+}
+.online-user-email {
+    color: #ccc;
+    word-break: break-all;
+}
+.online-user-time {
+    color: #4caf50;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+/* Chart footer */
+.chart-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.7rem;
+    color: #888;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
-        flex-wrap: wrap;
     }
-
-    .dashboard-icon {
-        font-size: 2rem;
-    }
-
-    .dashboard-titulo h3 {
-        color: #f5b042;
-        font-size: 1.5rem;
-        margin: 0;
-    }
-
-    .dashboard-badge {
-        background: rgba(245, 176, 66, 0.2);
-        color: #f5b042;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        border: 1px solid rgba(245, 176, 66, 0.4);
-    }
-
-    .dashboard-fecha {
-        color: #888;
-        font-size: 0.85rem;
-    }
-
-    /* Dashboard Grid Cards */
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
     .stat-card {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 15px 12px;
     }
+    .stat-icon { font-size: 1.8rem; }
+    .stat-number { font-size: 1.4rem; }
+    .bar-label { width: 85px; font-size: 0.7rem; }
+    .quick-stats { gap: 15px; }
+    .quick-value { font-size: 1.1rem; }
+}
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(245, 176, 66, 0.3);
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
-
-    .stat-icon {
-        font-size: 2.5rem;
-    }
-
-    .stat-info h4 {
-        color: #aaa;
-        font-size: 0.8rem;
-        margin: 0 0 5px 0;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
-    .stat-number {
-        color: #f5b042;
-        font-size: 1.8rem;
-        font-weight: bold;
-        line-height: 1;
-        margin: 5px 0;
-    }
-
-    .stat-label {
-        color: #777;
-        font-size: 0.7rem;
-    }
-
-    .pending-card {
-        border-left: 3px solid #ff9800;
-    }
-
-    /* Dashboard Chart */
-    .dashboard-chart {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .chart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .chart-header h4 {
-        color: #f5b042;
-        margin: 0;
-    }
-
-    .chart-toggle {
-        background: rgba(245, 176, 66, 0.2);
-        border: 1px solid #f5b042;
-        color: #f5b042;
-        padding: 5px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: all 0.3s;
-    }
-
-    .chart-toggle:hover {
-        background: #f5b042;
-        color: #1a1a2e;
-    }
-
-    .chart-bars {
-        display: flex;
+    .dashboard-header {
         flex-direction: column;
-        gap: 12px;
-    }
-
-    .bar-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .bar-label {
-        width: 120px;
-        font-size: 0.85rem;
-        color: #ccc;
-    }
-
-    .bar-container {
-        flex: 1;
-        height: 28px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 14px;
-        overflow: hidden;
-        position: relative;
-    }
-
-    .bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #f5b042, #ff8c42);
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding-right: 10px;
-        color: #1a1a2e;
-        font-size: 0.7rem;
-        font-weight: bold;
-        transition: width 0.5s ease;
-    }
-
-    .bar-count {
-        min-width: 40px;
-        text-align: right;
-        font-size: 0.8rem;
-        color: #f5b042;
-        font-weight: bold;
-    }
-
-    .chart-stats-mini {
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        font-size: 0.75rem;
-        color: #888;
         text-align: center;
     }
-
-    /* Recent Posts Table */
-    .dashboard-recent {
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 15px;
-        padding: 20px;
-        margin-bottom: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+    .dashboard-titulo {
+        justify-content: center;
     }
-
-    .recent-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+    .chart-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .metric-buttons {
+        justify-content: center;
+    }
+    .bar-item {
         flex-wrap: wrap;
-        gap: 10px;
     }
-
-    .recent-header h4 {
-        color: #f5b042;
-        margin: 0;
-    }
-
-    .refresh-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: #ccc;
-        padding: 5px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.75rem;
-        transition: all 0.3s;
-    }
-
-    .refresh-btn:hover {
-        background: rgba(245, 176, 66, 0.2);
-        color: #f5b042;
-    }
-
-    .recent-table-wrapper {
-        overflow-x: auto;
-    }
-
-    .recent-table {
+    .bar-label {
         width: 100%;
-        border-collapse: collapse;
-        font-size: 0.85rem;
     }
-
-    .recent-table th {
-        text-align: left;
-        padding: 12px 10px;
-        background: rgba(245, 176, 66, 0.1);
-        color: #f5b042;
-        font-weight: 600;
+    .online-user {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
     }
-
-    .recent-table td {
-        padding: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: #bbb;
+    .online-user-time {
+        margin-left: 0;
     }
-
-    .recent-table tr:hover td {
-        background: rgba(255, 255, 255, 0.03);
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 3px 8px;
-        border-radius: 12px;
-        font-size: 0.7rem;
-        font-weight: bold;
-    }
-
-    .status-active {
-        background: rgba(76, 175, 80, 0.2);
-        color: #4caf50;
-    }
-
-    .status-pending {
-        background: rgba(255, 152, 0, 0.2);
-        color: #ff9800;
-    }
-
-    .status-inactive {
-        background: rgba(244, 67, 54, 0.2);
-        color: #f44336;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .dashboard-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
-        .stat-card {
-            padding: 15px;
-        }
-
-        .stat-number {
-            font-size: 1.4rem;
-        }
-
-        .bar-label {
-            width: 100px;
-            font-size: 0.75rem;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .dashboard-titulo {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-    }
+}
 </style>
 
 <script>
-    // ========== VARIABLES PARA GRÁFICAS TEMPORALES ==========
-    let temporalChart = null;
-    let currentMetric = 'usuarios'; // 'usuarios', 'avisos', 'conexiones'
-    let temporalData = null;
+// ========== FUNCIÓN ESCAPE HTML MEJORADA ==========
+function escapeHTML(str) {
+    if (str === undefined || str === null) return '';
+    if (typeof str === 'number') return str.toString();
+    if (typeof str !== 'string') str = String(str);
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
 
-    // Cargar estadísticas avanzadas desde API
-    async function loadAdvancedStats() {
-        try {
-            const apiKey = localStorage.getItem('api_key');
-            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+// ========== VARIABLES GRÁFICAS ==========
+let temporalChart = null;
+let currentMetric = 'usuarios';
+let temporalData = null;
 
-            if (response && response.success && response.data) {
-                temporalData = response.data;
-
-                // Actualizar resúmenes
-                if (response.data.resumen) {
-                    document.getElementById('promUsuarios').innerText = response.data.resumen.promedioDiarioUsuarios;
-                    document.getElementById('promAvisos').innerText = response.data.resumen.promedioDiarioAvisos;
-                    document.getElementById('totalUsuarios').innerText = response.data.resumen.totalUsuarios;
-                }
-
-                // Actualizar usuarios en línea
-                updateOnlineUsers(response.data.enLinea);
-
-                // Renderizar gráfica
-                renderTemporalChart();
-
-                // Mostrar secciones
-                document.getElementById('chartTemporal').style.display = 'block';
-                document.getElementById('chartOnline').style.display = 'block';
-                document.getElementById('statsSummary').style.display = 'flex';
+// ========== CARGAR ESTADÍSTICAS AVANZADAS ==========
+async function loadAdvancedStats() {
+    try {
+        const apiKey = localStorage.getItem('api_key');
+        const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+        if (response && response.success && response.data) {
+            temporalData = response.data;
+            if (response.data.resumen) {
+                document.getElementById('promUsuarios').innerText = response.data.resumen.promedioDiarioUsuarios || 0;
+                document.getElementById('promAvisos').innerText = response.data.resumen.promedioDiarioAvisos || 0;
+                document.getElementById('totalUsuarios').innerText = response.data.resumen.totalUsuarios || 0;
             }
-        } catch (error) {
-            console.error('Error cargando estadísticas avanzadas:', error);
+            updateOnlineUsers(response.data.enLinea);
+            renderTemporalChart();
+            document.getElementById('chartTemporal').style.display = 'block';
+            document.getElementById('chartOnline').style.display = 'block';
+            document.getElementById('statsSummary').style.display = 'flex';
         }
+    } catch (error) {
+        console.error('Error cargando estadísticas avanzadas:', error);
     }
+}
 
-    // Actualizar lista de usuarios en línea
-    function updateOnlineUsers(onlineData) {
-        const countSpan = document.getElementById('onlineCount');
-        const listDiv = document.getElementById('onlineUsersList');
-
-        if (countSpan) {
-            countSpan.innerHTML = `${onlineData.total} conectado${onlineData.total !== 1 ? 's' : ''}`;
+function updateOnlineUsers(onlineData) {
+    const countSpan = document.getElementById('onlineCount');
+    const listDiv = document.getElementById('onlineUsersList');
+    if (countSpan) countSpan.innerHTML = `${onlineData.total || 0} conectado${onlineData.total !== 1 ? 's' : ''}`;
+    if (listDiv) {
+        if (!onlineData.usuarios || onlineData.usuarios.length === 0) {
+            listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados</p>';
+            return;
         }
-
-        if (listDiv) {
-            if (onlineData.usuarios.length === 0) {
-                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
-                return;
-            }
-
-            listDiv.innerHTML = onlineData.usuarios.map(user => `
-            <div class="online-user-item">
+        listDiv.innerHTML = onlineData.usuarios.map(user => `
+            <div class="online-user">
                 <span class="online-user-email">${escapeHTML(user.email)}</span>
                 <span class="online-user-time">🟢 activo</span>
             </div>
         `).join('');
-        }
     }
+}
 
-    // Renderizar gráfica temporal con Chart.js
-    function renderTemporalChart() {
-        if (!temporalData || !temporalData.diario) return;
-
-        const ctx = document.getElementById('temporalChart').getContext('2d');
-
-        // Preparar datos
-        const labels = temporalData.diario.map(d => {
-            const [year, month, day] = d.fecha.split('-');
-            return `${day}/${month}`;
-        });
-
-        let dataValues = [];
-        let labelY = '';
-
-        switch (currentMetric) {
-            case 'usuarios':
-                dataValues = temporalData.diario.map(d => d.usuarios);
-                labelY = 'Nuevos usuarios';
-                break;
-            case 'avisos':
-                dataValues = temporalData.diario.map(d => d.avisos);
-                labelY = 'Avisos publicados';
-                break;
-            case 'conexiones':
-                dataValues = temporalData.diario.map(d => d.conexiones);
-                labelY = 'Usuarios activos';
-                break;
-        }
-
-        // Destruir gráfica anterior si existe
-        if (temporalChart) {
-            temporalChart.destroy();
-        }
-
-        temporalChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: labelY,
-                    data: dataValues,
-                    backgroundColor: 'rgba(245, 176, 66, 0.6)',
-                    borderColor: '#f5b042',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    barPercentage: 0.7
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        labels: { color: '#ccc' }
-                    },
-                    tooltip: {
-                        backgroundColor: '#1a1a2e',
-                        titleColor: '#f5b042',
-                        bodyColor: '#ccc'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#888', stepSize: 1 }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { color: '#888', maxRotation: 45, minRotation: 45 }
-                    }
-                }
-            }
-        });
-
-        // Actualizar mini stats
-        const maxValue = Math.max(...dataValues);
-        const maxIndex = dataValues.indexOf(maxValue);
-        const statsDiv = document.getElementById('temporalStats');
-        if (statsDiv) {
-            statsDiv.innerHTML = `📊 Día con más ${labelY.toLowerCase()}: ${labels[maxIndex]} (${maxValue})`;
-        }
+function renderTemporalChart() {
+    if (!temporalData || !temporalData.diario) return;
+    const ctx = document.getElementById('temporalChart').getContext('2d');
+    const labels = temporalData.diario.map(d => { let [y, m, d2] = d.fecha.split('-'); return `${d2}/${m}`; });
+    let dataValues = [], labelY = '';
+    switch(currentMetric) {
+        case 'usuarios': dataValues = temporalData.diario.map(d => d.usuarios); labelY = 'Nuevos usuarios'; break;
+        case 'avisos': dataValues = temporalData.diario.map(d => d.avisos); labelY = 'Avisos publicados'; break;
+        case 'conexiones': dataValues = temporalData.diario.map(d => d.conexiones); labelY = 'Usuarios activos'; break;
     }
+    if (temporalChart) temporalChart.destroy();
+    temporalChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: labelY, data: dataValues, backgroundColor: 'rgba(245, 176, 66, 0.6)', borderColor: '#f5b042', borderWidth: 1, borderRadius: 4 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#ccc' } }, tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } }, x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } } } }
+    });
+    const maxValue = Math.max(...dataValues);
+    const maxIndex = dataValues.indexOf(maxValue);
+    const statsDiv = document.getElementById('temporalStats');
+    if (statsDiv) statsDiv.innerHTML = `📊 Día con más ${labelY.toLowerCase()}: ${labels[maxIndex]} (${maxValue})`;
+}
 
-    // Cambiar métrica mostrada
-    function toggleMetric(metric) {
-        currentMetric = metric;
-        renderTemporalChart();
+function toggleMetric(metric) {
+    currentMetric = metric;
+    renderTemporalChart();
+    document.querySelectorAll('.metric-btn').forEach(btn => {
+        if (btn.dataset.metric === metric) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+}
 
-        // Actualizar estilo de botones
-        document.querySelectorAll('.chart-toggles .chart-toggle').forEach(btn => {
-            btn.style.opacity = '0.6';
-        });
-        event.target.style.opacity = '1';
-    }
+// ========== DASHBOARD PRINCIPAL ==========
+let currentUserRole = 'user';
+let currentUser = null;
+let chartDetailedView = false;
 
-    // Función auxiliar para escapar HTML
-    function escapeHTML(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, function (m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-</script>
-<script>
-    // ========== DASHBOARD FUNCTIONS - CONECTADO A API REAL ==========
-    let currentUserRole = 'user';
-    let currentUser = null;
-    let chartDetailedView = false;
-
-    // Detectar usuario actual desde API
-    // Detectar usuario actual desde API
-    async function detectUserRole() {
-        try {
-            currentUser = API.getUsuarioActual();
-            if (currentUser && currentUser.rol === 'admin') {
-                currentUserRole = 'admin';
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) {
-                    // ✅ Mostrar nombre del usuario admin
-                    badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
-                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
-                }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'flex';
-                const chartCategorias = document.getElementById('chartCategorias');
-                if (chartCategorias) chartCategorias.style.display = 'block';
-            } else if (currentUser) {
-                currentUserRole = 'user';
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) {
-                    // ✅ Mostrar nombre del usuario normal
-                    badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
-                }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'none';
-            } else {
-                // Sin sesión
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) badge.innerHTML = '👤 Invitado';
-            }
-            return true;
-        } catch (e) {
-            console.error('Error detectando usuario:', e);
-            return false;
-        }
-    }
-
-    // Formatear fecha
-    function formatDate(dateString) {
-        if (!dateString) return 'Fecha desconocida';
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
-        } catch (e) {
-            return dateString;
-        }
-    }
-
-    // Obtener todos los avisos desde la API
-    async function getAllNoticesFromAPI() {
-        try {
-            const apiKey = localStorage.getItem('api_key');
-            let respuesta;
-
-            if (currentUserRole === 'admin') {
-                // Admin obtiene TODOS los avisos
-                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', {}, apiKey);
-            } else {
-                // Usuario normal obtiene SOLO sus avisos
-                respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
-            }
-
-            console.log('Dashboard - Respuesta API:', respuesta);
-
-            if (respuesta && respuesta.success) {
-                let avisos = [];
-                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
-                    avisos = respuesta.data.datos;
-                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
-                    avisos = respuesta.datos;
-                } else if (Array.isArray(respuesta.data)) {
-                    avisos = respuesta.data;
-                }
-                return avisos;
-            }
-            return [];
-        } catch (error) {
-            console.error('Error obteniendo avisos:', error);
-            return [];
-        }
-    }
-
-    // Calcular estadísticas
-    function calculateStats(notices) {
-        const total = notices.length;
-        const activos = notices.filter(a => a.status === 'activo' || a.status === 'aprobado').length;
-        const pendientes = notices.filter(a => a.status === 'pendiente' || !a.status).length;
-
-        // Categorías únicas en uso
-        const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c));
-        const totalCategorias = categoriasSet.size;
-
-        // Visitas totales
-        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
-
-        // Interacciones (likes + comentarios)
-        const totalInteracciones = notices.reduce((sum, a) => {
-            const likes = parseInt(a.intereses) || 0;
-            const comentarios = parseInt(a.comentarios_count) || 0;
-            return sum + likes + comentarios;
-        }, 0);
-
-        return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
-    }
-
-    // Estadísticas por categoría
-    function getStatsByCategory(notices) {
-        const categories = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
-        const stats = {};
-        categories.forEach(cat => {
-            stats[cat] = notices.filter(a => a.categoria === cat).length;
-        });
-        return stats;
-    }
-
-    // Actualizar tarjetas
-    function updateCards(stats) {
-        const totalAvisos = document.getElementById('totalAvisos');
-        const avisosActivos = document.getElementById('avisosActivos');
-        const totalCategorias = document.getElementById('totalCategorias');
-        const totalVisitas = document.getElementById('totalVisitas');
-        const totalInteracciones = document.getElementById('totalInteracciones');
-
-        if (totalAvisos) totalAvisos.innerText = stats.total;
-        if (avisosActivos) avisosActivos.innerText = stats.activos;
-        if (currentUserRole === 'admin') {
-            const avisosPendientes = document.getElementById('avisosPendientes');
-            if (avisosPendientes) avisosPendientes.innerText = stats.pendientes;
-        }
-        if (totalCategorias) totalCategorias.innerText = stats.totalCategorias;
-        if (totalVisitas) totalVisitas.innerText = stats.totalVisitas.toLocaleString();
-        if (totalInteracciones) totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
-    }
-
-    // Renderizar gráfico de barras
-    function renderChart(notices) {
-        const stats = getStatsByCategory(notices);
-        const maxValue = Math.max(...Object.values(stats), 1);
-        const categoryNames = {
-            'urgente': '🚨 Urgente',
-            'escuelas': '🏫 Escuelas',
-            'servicios': '🛠️ Servicios',
-            'comercios': '🛒 Comercios',
-            'eventos': '📅 Eventos',
-            'gobierno': '🏛️ Gobierno',
-            'varios': '📢 Varios'
-        };
-
-        let barsHtml = '';
-        for (const [key, value] of Object.entries(stats)) {
-            const percentage = (value / maxValue) * 100;
-            barsHtml += `
-                <div class="bar-item">
-                    <div class="bar-label">${categoryNames[key]}</div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${percentage}%;">
-                            ${chartDetailedView && value > 0 ? value : ''}
-                        </div>
-                    </div>
-                    <div class="bar-count">${value}</div>
-                </div>
-            `;
-        }
-
-        const chartBars = document.getElementById('chartBars');
-        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
-
-        const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
-        const chartStatsMini = document.getElementById('chartStatsMini');
-        if (chartStatsMini) {
-            if (topCategory && topCategory[1] > 0) {
-                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
-            } else {
-                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
-            }
-        }
-    }
-
-    // Renderizar últimos avisos en la tabla
-    function renderRecentNotices(notices) {
-        const recent = [...notices].sort((a, b) => {
-            const dateA = new Date(a.created_at || a.fecha || 0);
-            const dateB = new Date(b.created_at || b.fecha || 0);
-            return dateB - dateA;
-        }).slice(0, 5);
-
-        const tbody = document.getElementById('recentTableBody');
-        if (!tbody) return;
-
-        if (recent.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay avisos publicados</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = recent.map(aviso => {
-            let statusClass = 'status-active';
-            let statusText = 'Activo';
-            if (aviso.status === 'pendiente' || !aviso.status) {
-                statusClass = 'status-pending';
-                statusText = 'Pendiente';
-            } else if (aviso.status === 'rechazado') {
-                statusClass = 'status-inactive';
-                statusText = 'Rechazado';
-            }
-
-            const fecha = formatDate(aviso.created_at || aviso.fecha);
-            const titulo = (aviso.titulo || 'Sin título').substring(0, 40);
-            const categoriaIcon = {
-                'urgente': '🚨', 'escuelas': '🏫', 'servicios': '🛠️',
-                'comercios': '🛒', 'eventos': '📅', 'gobierno': '🏛️', 'varios': '📢'
-            }[aviso.categoria] || '📋';
-
-            return `
-                <tr>
-                    <td>${categoriaIcon} ${titulo}${aviso.titulo?.length > 40 ? '...' : ''}</td>
-                    <td>${aviso.categoria || 'General'}</td>
-                    <td>${fecha}</td>
-                    <td>${parseInt(aviso.vistas) || 0}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // Función principal de actualización
-    async function refreshDashboardData() {
-        try {
-            // ✅ Actualizar badge con el usuario actual
-            const usuarioActual = API.getUsuarioActual();
+async function detectUserRole() {
+    try {
+        currentUser = API.getUsuarioActual();
+        if (currentUser && currentUser.rol === 'admin') {
+            currentUserRole = 'admin';
             const badge = document.getElementById('userRoleBadge');
-            if (badge && usuarioActual) {
-                if (usuarioActual.rol === 'admin') {
-                    badge.innerHTML = `👑 ${usuarioActual.nombre || usuarioActual.email}`;
-                } else {
-                    badge.innerHTML = `👤 ${usuarioActual.nombre || usuarioActual.email}`;
-                }
-            }
-
-            const notices = await getAllNoticesFromAPI();
-            const stats = calculateStats(notices);
-            updateCards(stats);
-
-            if (currentUserRole === 'admin') {
-                renderChart(notices);
-            }
-
-            renderRecentNotices(notices);
-
-            const now = new Date();
-            const fechaSpan = document.getElementById('fechaActual');
-            if (fechaSpan) {
-                fechaSpan.innerHTML = `📅 ${now.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
-            }
-        } catch (error) {
-            console.error('Error actualizando dashboard:', error);
+            if (badge) badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Admin'}`;
+            const pendingCard = document.getElementById('pendingCard');
+            if (pendingCard) pendingCard.style.display = 'flex';
+            const chartCategorias = document.getElementById('chartCategorias');
+            if (chartCategorias) chartCategorias.style.display = 'block';
+        } else if (currentUser) {
+            currentUserRole = 'user';
+            const badge = document.getElementById('userRoleBadge');
+            if (badge) badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
         }
+        return true;
+    } catch(e) { return false; }
+}
+
+async function getAllNoticesFromAPI() {
+    try {
+        const apiKey = localStorage.getItem('api_key');
+        let respuesta;
+        if (currentUserRole === 'admin') respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', {}, apiKey);
+        else respuesta = await API.peticion('LISTAR_MIS_AVISOS', {}, apiKey);
+        if (respuesta && respuesta.success) {
+            if (respuesta.data?.datos) return respuesta.data.datos;
+            if (respuesta.datos) return respuesta.datos;
+            if (Array.isArray(respuesta.data)) return respuesta.data;
+        }
+        return [];
+    } catch(error) { return []; }
+}
+
+function calculateStats(notices) {
+    const total = notices.length;
+    const activos = notices.filter(a => a.status === 'activo' || a.status === 'aprobado').length;
+    const pendientes = notices.filter(a => a.status === 'pendiente' || !a.status).length;
+    const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c));
+    const totalVisitas = notices.reduce((s, a) => s + (parseInt(a.vistas) || 0), 0);
+    const totalInteracciones = notices.reduce((s, a) => s + (parseInt(a.intereses) || 0) + (parseInt(a.comentarios_count) || 0), 0);
+    return { total, activos, pendientes, totalCategorias: categoriasSet.size, totalVisitas, totalInteracciones };
+}
+
+function getStatsByCategory(notices) {
+    const cats = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
+    return Object.fromEntries(cats.map(c => [c, notices.filter(a => a.categoria === c).length]));
+}
+
+function updateCards(stats) {
+    document.getElementById('totalAvisos') && (document.getElementById('totalAvisos').innerText = stats.total);
+    document.getElementById('avisosActivos') && (document.getElementById('avisosActivos').innerText = stats.activos);
+    if (currentUserRole === 'admin' && document.getElementById('avisosPendientes')) document.getElementById('avisosPendientes').innerText = stats.pendientes;
+    document.getElementById('totalCategorias') && (document.getElementById('totalCategorias').innerText = stats.totalCategorias);
+    document.getElementById('totalVisitas') && (document.getElementById('totalVisitas').innerText = stats.totalVisitas.toLocaleString());
+    document.getElementById('totalInteracciones') && (document.getElementById('totalInteracciones').innerText = stats.totalInteracciones.toLocaleString());
+}
+
+function renderChart(notices) {
+    const stats = getStatsByCategory(notices);
+    const maxValue = Math.max(...Object.values(stats), 1);
+    const names = { 'urgente':'🚨 Urgente', 'escuelas':'🏫 Escuelas', 'servicios':'🛠️ Servicios', 'comercios':'🛒 Comercios', 'eventos':'📅 Eventos', 'gobierno':'🏛️ Gobierno', 'varios':'📢 Varios' };
+    let barsHtml = '';
+    for (const [key, value] of Object.entries(stats)) {
+        const percent = (value / maxValue) * 100;
+        barsHtml += `<div class="bar-item"><div class="bar-label">${names[key]}</div><div class="bar-track"><div class="bar-fill" style="width: ${percent}%;">${chartDetailedView && value > 0 ? value : ''}</div></div><div class="bar-count">${value}</div></div>`;
     }
+    const chartBars = document.getElementById('chartBars');
+    if (chartBars) chartBars.innerHTML = barsHtml || '<p>No hay datos</p>';
+    const top = Object.entries(stats).sort((a,b) => b[1] - a[1])[0];
+    const mini = document.getElementById('chartStatsMini');
+    if (mini) mini.innerHTML = top && top[1] > 0 ? `📌 Más avisos: ${names[top[0]]} (${top[1]})` : '📌 Publica tu primer aviso';
+}
 
-    // Alternar vista del gráfico
-    window.toggleChartView = function () {
-        chartDetailedView = !chartDetailedView;
-        refreshDashboardData();
-        const btn = document.querySelector('.chart-toggle');
-        if (btn) {
-            btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
-        }
-    };
+async function refreshDashboardData() {
+    try {
+        const usuarioActual = API.getUsuarioActual();
+        const badge = document.getElementById('userRoleBadge');
+        if (badge && usuarioActual) badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
+        const notices = await getAllNoticesFromAPI();
+        const stats = calculateStats(notices);
+        updateCards(stats);
+        if (currentUserRole === 'admin') renderChart(notices);
+        const fechaSpan = document.getElementById('fechaActual');
+        if (fechaSpan) fechaSpan.innerHTML = `📅 ${new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+    } catch(e) { console.error('Error:', e); }
+}
 
-    // Inicializar dashboard
-    async function initDashboard() {
-        await detectUserRole();
-        await refreshDashboardData();
+window.toggleChartView = function() { chartDetailedView = !chartDetailedView; refreshDashboardData(); };
+async function initDashboard() { await detectUserRole(); await refreshDashboardData(); if (currentUserRole === 'admin') await loadAdvancedStats(); setInterval(refreshDashboardData, 30000); if (currentUserRole === 'admin') setInterval(() => loadAdvancedStats(), 60000); }
 
-        if (currentUserRole === 'admin') {
-            await loadAdvancedStats();
-        }
-
-        // Actualizar automáticamente cada 30 segundos
-        setInterval(refreshDashboardData, 30000);
-
-        // Actualizar usuarios en línea cada 60 segundos
-        if (currentUserRole === 'admin') {
-            setInterval(() => loadAdvancedStats(), 60000);
-        }
-    }
-
-    // Iniciar cuando el DOM esté listo
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDashboard);
-    } else {
-        initDashboard();
-    }
+// Eventos para botones de métrica
+document.addEventListener('DOMContentLoaded', () => {
+    initDashboard();
+    document.querySelectorAll('.metric-btn').forEach(btn => {
+        btn.addEventListener('click', () => toggleMetric(btn.dataset.metric));
+    });
+});
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
