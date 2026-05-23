@@ -87,8 +87,129 @@
             <div class="chart-stats-mini" id="chartStatsMini"></div>
         </div>
     </div>
-</footer>
 
+    <!-- GRÁFICAS TEMPORALES (USUARIOS, AVISOS, CONEXIONES) -->
+    <div class="dashboard-chart" id="chartTemporal" style="display: none;">
+        <div class="chart-header">
+            <h4>📈 Evolución Diaria (últimos 30 días)</h4>
+            <div class="chart-toggles">
+                <button class="chart-toggle" onclick="toggleMetric('usuarios')">👥 Usuarios</button>
+                <button class="chart-toggle" onclick="toggleMetric('avisos')">📰 Avisos</button>
+                <button class="chart-toggle" onclick="toggleMetric('conexiones')">🟢 Conexiones</button>
+            </div>
+        </div>
+        <div class="temporal-chart-container">
+            <canvas id="temporalChart" width="400" height="200"
+                style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+        </div>
+        <div class="chart-stats-mini" id="temporalStats"></div>
+    </div>
+
+    <!-- USUARIOS EN LÍNEA (TIEMPO REAL) -->
+    <div class="dashboard-chart" id="chartOnline" style="display: none;">
+        <div class="chart-header">
+            <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
+            <span class="online-badge" id="onlineCount">0 conectados</span>
+        </div>
+        <div class="online-users-list" id="onlineUsersList">
+            <p style="color:#888;">Cargando...</p>
+        </div>
+    </div>
+
+    <!-- RESÚMENES RÁPIDOS -->
+    <div class="stats-summary" id="statsSummary" style="display: none;">
+        <div class="summary-item">
+            <span class="summary-label">📊 Promedio diario usuarios:</span>
+            <span class="summary-value" id="promUsuarios">0</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">📝 Promedio diario avisos:</span>
+            <span class="summary-value" id="promAvisos">0</span>
+        </div>
+        <div class="summary-item">
+            <span class="summary-label">👥 Total usuarios registrados:</span>
+            <span class="summary-value" id="totalUsuarios">0</span>
+        </div>
+    </div>
+</footer>
+<style>
+    /* Gráficas temporales */
+    .temporal-chart-container {
+        padding: 15px 0;
+        min-height: 250px;
+    }
+
+    .chart-toggles {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .online-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .online-users-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .online-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+
+    .online-user-email {
+        color: #ccc;
+    }
+
+    .online-user-time {
+        color: #4caf50;
+        font-size: 0.7rem;
+    }
+
+    .stats-summary {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 15px;
+        padding: 15px 20px;
+        margin-top: 20px;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-label {
+        display: block;
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #f5b042;
+    }
+
+    /* Mostrar solo para admin */
+    .dashboard-chart {
+        display: none;
+    }
+</style>
 <style>
     /* ========== DASHBOARD FOOTER ESTYLES ========== */
     .dashboard-footer {
@@ -418,6 +539,176 @@
 </style>
 
 <script>
+    // ========== VARIABLES PARA GRÁFICAS TEMPORALES ==========
+    let temporalChart = null;
+    let currentMetric = 'usuarios'; // 'usuarios', 'avisos', 'conexiones'
+    let temporalData = null;
+
+    // Cargar estadísticas avanzadas desde API
+    async function loadAdvancedStats() {
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+
+            if (response && response.success && response.data) {
+                temporalData = response.data;
+
+                // Actualizar resúmenes
+                if (response.data.resumen) {
+                    document.getElementById('promUsuarios').innerText = response.data.resumen.promedioDiarioUsuarios;
+                    document.getElementById('promAvisos').innerText = response.data.resumen.promedioDiarioAvisos;
+                    document.getElementById('totalUsuarios').innerText = response.data.resumen.totalUsuarios;
+                }
+
+                // Actualizar usuarios en línea
+                updateOnlineUsers(response.data.enLinea);
+
+                // Renderizar gráfica
+                renderTemporalChart();
+
+                // Mostrar secciones
+                document.getElementById('chartTemporal').style.display = 'block';
+                document.getElementById('chartOnline').style.display = 'block';
+                document.getElementById('statsSummary').style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error cargando estadísticas avanzadas:', error);
+        }
+    }
+
+    // Actualizar lista de usuarios en línea
+    function updateOnlineUsers(onlineData) {
+        const countSpan = document.getElementById('onlineCount');
+        const listDiv = document.getElementById('onlineUsersList');
+
+        if (countSpan) {
+            countSpan.innerHTML = `${onlineData.total} conectado${onlineData.total !== 1 ? 's' : ''}`;
+        }
+
+        if (listDiv) {
+            if (onlineData.usuarios.length === 0) {
+                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
+                return;
+            }
+
+            listDiv.innerHTML = onlineData.usuarios.map(user => `
+            <div class="online-user-item">
+                <span class="online-user-email">${escapeHTML(user.email)}</span>
+                <span class="online-user-time">🟢 activo</span>
+            </div>
+        `).join('');
+        }
+    }
+
+    // Renderizar gráfica temporal con Chart.js
+    function renderTemporalChart() {
+        if (!temporalData || !temporalData.diario) return;
+
+        const ctx = document.getElementById('temporalChart').getContext('2d');
+
+        // Preparar datos
+        const labels = temporalData.diario.map(d => {
+            const [year, month, day] = d.fecha.split('-');
+            return `${day}/${month}`;
+        });
+
+        let dataValues = [];
+        let labelY = '';
+
+        switch (currentMetric) {
+            case 'usuarios':
+                dataValues = temporalData.diario.map(d => d.usuarios);
+                labelY = 'Nuevos usuarios';
+                break;
+            case 'avisos':
+                dataValues = temporalData.diario.map(d => d.avisos);
+                labelY = 'Avisos publicados';
+                break;
+            case 'conexiones':
+                dataValues = temporalData.diario.map(d => d.conexiones);
+                labelY = 'Usuarios activos';
+                break;
+        }
+
+        // Destruir gráfica anterior si existe
+        if (temporalChart) {
+            temporalChart.destroy();
+        }
+
+        temporalChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: labelY,
+                    data: dataValues,
+                    backgroundColor: 'rgba(245, 176, 66, 0.6)',
+                    borderColor: '#f5b042',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#ccc' }
+                    },
+                    tooltip: {
+                        backgroundColor: '#1a1a2e',
+                        titleColor: '#f5b042',
+                        bodyColor: '#ccc'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#888', stepSize: 1 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888', maxRotation: 45, minRotation: 45 }
+                    }
+                }
+            }
+        });
+
+        // Actualizar mini stats
+        const maxValue = Math.max(...dataValues);
+        const maxIndex = dataValues.indexOf(maxValue);
+        const statsDiv = document.getElementById('temporalStats');
+        if (statsDiv) {
+            statsDiv.innerHTML = `📊 Día con más ${labelY.toLowerCase()}: ${labels[maxIndex]} (${maxValue})`;
+        }
+    }
+
+    // Cambiar métrica mostrada
+    function toggleMetric(metric) {
+        currentMetric = metric;
+        renderTemporalChart();
+
+        // Actualizar estilo de botones
+        document.querySelectorAll('.chart-toggles .chart-toggle').forEach(btn => {
+            btn.style.opacity = '0.6';
+        });
+        event.target.style.opacity = '1';
+    }
+
+    // Función auxiliar para escapar HTML
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function (m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+</script>
+<script>
     // ========== DASHBOARD FUNCTIONS - CONECTADO A API REAL ==========
     let currentUserRole = 'user';
     let currentUser = null;
@@ -681,7 +972,7 @@
             console.error('Error actualizando dashboard:', error);
         }
     }
-    
+
     // Alternar vista del gráfico
     window.toggleChartView = function () {
         chartDetailedView = !chartDetailedView;
@@ -697,8 +988,17 @@
         await detectUserRole();
         await refreshDashboardData();
 
+        if (currentUserRole === 'admin') {
+            await loadAdvancedStats();
+        }
+
         // Actualizar automáticamente cada 30 segundos
         setInterval(refreshDashboardData, 30000);
+
+        // Actualizar usuarios en línea cada 60 segundos
+        if (currentUserRole === 'admin') {
+            setInterval(() => loadAdvancedStats(), 60000);
+        }
     }
 
     // Iniciar cuando el DOM esté listo
@@ -708,3 +1008,4 @@
         initDashboard();
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
