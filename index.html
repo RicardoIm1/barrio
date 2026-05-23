@@ -502,153 +502,245 @@
         }
 
         /* ======================================================
-       MÓVIL (ancho < 768px) - EFECTO ENGRANE + FONDO COMPLETO
-    ====================================================== */
-        @media (max-width: 767px) {
+   DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
+   ====================================================== */
+        @media (min-width: 768px) {
             .scrollable-container {
-                height: 100vh;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                scroll-snap-type: y mandatory;
-                scroll-snap-stop: always;
-                scroll-behavior: smooth;
+                height: auto;
+                overflow-y: visible;
+                scroll-snap-type: none;
                 padding-top: 70px;
             }
 
-            .scrollable-container::-webkit-scrollbar {
-                display: none;
+            #avisos-container {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                height: auto !important;
+                overflow-y: visible !important;
+                scroll-snap-type: none !important;
             }
 
-            #avisos-container {
-                display: block !important;
-                scroll-snap-type: none !important;
-                height: auto !important;
+            /* ✅ POSTS DESTACADOS: primeros 3 ocupan toda la primera fila */
+            /* En grid de 2 columnas, necesitamos que los primeros 3 se distribuyan bien */
+            #avisos-container .aviso-card:nth-child(1) {
+                grid-column: span 2;
+                /* El primero ocupa toda la fila */
+            }
+
+            #avisos-container .aviso-card:nth-child(2),
+            #avisos-container .aviso-card:nth-child(3) {
+                grid-column: span 1;
+                /* Segundo y tercero uno al lado del otro */
+            }
+
+            /* ✅ Imagen más alta en los primeros 3 posts */
+            #avisos-container .aviso-card:nth-child(-n+3) .aviso-imagen,
+            #avisos-container .aviso-card:nth-child(-n+3) .aviso-video {
+                height: 280px !important;
+            }
+
+            /* Opcional: darle un poco más de énfasis a los destacados (sin scale que desborda) */
+            #avisos-container .aviso-card:nth-child(-n+3) {
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             }
 
             .aviso-card {
-                scroll-snap-align: start;
-                scroll-snap-stop: always;
-                height: 100vh;
-                min-height: 100vh;
+                min-height: auto !important;
+                height: auto !important;
                 margin-bottom: 0 !important;
-                border-radius: 0 !important;
-                background: #000;
+                scroll-snap-align: none !important;
             }
 
             .aviso-imagen,
             .aviso-video {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100% !important;
-                object-fit: cover;
-                z-index: 1;
-                border-radius: 0 !important;
-                margin-bottom: 0;
-            }
-
-            .aviso-video video {
-                object-fit: cover;
-                height: 100%;
-                width: 100%;
+                height: 180px !important;
+                border-radius: 20px 20px 0 0 !important;
+                position: relative !important;
             }
 
             .aviso-card::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(to bottom,
-                        rgba(0, 0, 0, 0.2) 0%,
-                        rgba(0, 0, 0, 0.5) 50%,
-                        rgba(0, 0, 0, 0.85) 100%);
-                z-index: 2;
-                pointer-events: none;
+                display: none;
             }
 
             .card-contenido-moderno {
-                position: relative;
-                z-index: 3;
-                background: transparent !important;
-                color: white !important;
-                padding: 20px;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            }
-
-            .categoria-badge {
-                position: absolute;
-                top: 12px;
-                left: 12px;
-                z-index: 4;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
-                backdrop-filter: blur(4px);
+                background: white !important;
+                color: var(--color-texto) !important;
+                text-shadow: none;
             }
 
             .card-titulo-moderno,
             .card-preview-moderno,
             .card-fecha-moderna,
             .aviso-footer span {
-                color: white !important;
-            }
-
-            .card-preview-moderno {
-                -webkit-line-clamp: 2;
+                color: var(--color-texto) !important;
             }
 
             .card-stats-moderno .stat-item {
-                color: white !important;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(4px);
-                border-radius: 20px;
-                padding: 4px 10px;
+                background: transparent !important;
+                backdrop-filter: none;
+                color: #5a5a5e !important;
+                padding: 0;
             }
 
-            .card-stats-moderno .stat-item.liked {
-                color: #ff4757 !important;
+            .categoria-badge {
+                background: rgba(0, 0, 0, 0.6) !important;
+            }
+        }
+
+        /* Desktop mediano (≥ 1024px) - 3 columnas */
+        @media (min-width: 1024px) {
+            #avisos-container {
+                grid-template-columns: repeat(3, 1fr);
             }
 
-            .card-stats-moderno .stat-item.disliked {
-                color: #aaa !important;
+            /* En grid de 3 columnas, los primeros 3 posts ocupan toda la primera fila */
+            #avisos-container .aviso-card:nth-child(1),
+            #avisos-container .aviso-card:nth-child(2),
+            #avisos-container .aviso-card:nth-child(3) {
+                grid-column: span 1;
+                /* Cada uno en su columna */
+            }
+        }
+
+        /* Desktop grande (≥ 1280px) - 4 columnas */
+        @media (min-width: 1280px) {
+            #avisos-container {
+                grid-template-columns: repeat(4, 1fr);
             }
 
-            .whatsapp-btn {
-                width: 44px;
-                height: 44px;
-                bottom: 16px;
-                right: 16px;
-                background-size: 60%;
-                z-index: 4;
+            /* En grid de 4 columnas, los primeros 3 posts ocupan las primeras 3 columnas */
+            #avisos-container .aviso-card:nth-child(1),
+            #avisos-container .aviso-card:nth-child(2),
+            #avisos-container .aviso-card:nth-child(3) {
+                grid-column: span 1;
+            }
+        }
+
+        .aviso-card {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            height: 100vh;
+            min-height: 100vh;
+            margin-bottom: 0 !important;
+            border-radius: 0 !important;
+            background: #000;
+        }
+
+        .aviso-imagen,
+        .aviso-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100% !important;
+            object-fit: cover;
+            z-index: 1;
+            border-radius: 0 !important;
+            margin-bottom: 0;
+        }
+
+        .aviso-video video {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+        }
+
+        .aviso-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.2) 0%,
+                    rgba(0, 0, 0, 0.5) 50%,
+                    rgba(0, 0, 0, 0.85) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .card-contenido-moderno {
+            position: relative;
+            z-index: 3;
+            background: transparent !important;
+            color: white !important;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .categoria-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 4;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .card-titulo-moderno,
+        .card-preview-moderno,
+        .card-fecha-moderna,
+        .aviso-footer span {
+            color: white !important;
+        }
+
+        .card-preview-moderno {
+            -webkit-line-clamp: 2;
+        }
+
+        .card-stats-moderno .stat-item {
+            color: white !important;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 4px 10px;
+        }
+
+        .card-stats-moderno .stat-item.liked {
+            color: #ff4757 !important;
+        }
+
+        .card-stats-moderno .stat-item.disliked {
+            color: #aaa !important;
+        }
+
+        .whatsapp-btn {
+            width: 44px;
+            height: 44px;
+            bottom: 16px;
+            right: 16px;
+            background-size: 60%;
+            z-index: 4;
+        }
+
+        .post-card-ios.gear-click {
+            animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .post-card-ios.active {
+            transform: scale(1.02);
+        }
+
+        @keyframes gearClick {
+            0% {
+                transform: scale(1);
             }
 
-            .post-card-ios.gear-click {
-                animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            50% {
+                transform: scale(0.98);
             }
 
-            .post-card-ios.active {
-                transform: scale(1.02);
+            100% {
+                transform: scale(1);
             }
-
-            @keyframes gearClick {
-                0% {
-                    transform: scale(1);
-                }
-
-                50% {
-                    transform: scale(0.98);
-                }
-
-                100% {
-                    transform: scale(1);
-                }
-            }
+        }
         }
 
         /* ======================================================
