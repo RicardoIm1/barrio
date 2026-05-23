@@ -957,34 +957,31 @@
             // ========== SECCIÓN DE CONTACTO (igual que en index) ==========
             html += `<div class="contact-info-row">`;
 
-            // Ubicación y fecha en la misma línea dentro de contact-info-item
-            let ubicacionFecha = '';
+            let partes = [];
 
             if (avisoActual.ubicacion) {
-                ubicacionFecha += `📍 ${escapeHTML(avisoActual.ubicacion)}`;
+                partes.push(`📍 ${escapeHTML(avisoActual.ubicacion)}`);
             }
 
             if (avisoActual.fecha_evento && avisoActual.fecha_evento.trim() !== '') {
-                let fechaEvento = avisoActual.fecha_evento;
+                let fechaFormateada = avisoActual.fecha_evento;
                 try {
-                    const fechaObj = new Date(fechaEvento);
+                    const fechaObj = new Date(fechaFormateada);
                     if (!isNaN(fechaObj.getTime())) {
-                        fechaEvento = fechaObj.toLocaleDateString('es-MX', {
+                        fechaFormateada = fechaObj.toLocaleDateString('es-MX', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric'
                         });
                     }
                 } catch (e) { }
-
-                if (ubicacionFecha) ubicacionFecha += ' • ';
-                ubicacionFecha += `📅 ${escapeHTML(fechaEvento)}`;
+                partes.push(`📅 ${escapeHTML(fechaFormateada)}`);
             }
 
-            if (ubicacionFecha) {
-                html += `<div class="contact-info-item" style="display: flex; gap: 16px; flex-wrap: wrap;">
-        ${avisoActual.ubicacion ? `<span>📍 ${escapeHTML(avisoActual.ubicacion)}</span>` : ''}
-        ${avisoActual.fecha_evento ? `<span>📅 ${fechaEventoFormateada}</span>` : ''}
+            if (partes.length > 0) {
+                html += `<div class="contact-info-item">
+        <span class="icon">📍📅</span>
+        <span>${partes.join(' • ')}</span>
     </div>`;
             }
 
