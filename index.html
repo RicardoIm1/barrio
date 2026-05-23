@@ -373,6 +373,158 @@
     ====================================================== */
         @media (max-width: 767px) {
 
+            <<<<<<< HEAD
+
+            /* Contenedor scrollable unificado */
+            .scrollable-container {
+                height: calc(100vh - 60px);
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: y mandatory;
+                scroll-behavior: smooth;
+            }
+
+            .scrollable-container::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Grid se convierte en bloque */
+            #avisos-container {
+                display: block !important;
+                scroll-snap-type: none !important;
+                height: auto !important;
+            }
+
+            /* Tarjeta: pantalla completa + imagen como fondo */
+            .aviso-card {
+                scroll-snap-align: start;
+                scroll-snap-stop: always;
+                min-height: calc(100vh - 60px);
+                margin-bottom: 0 !important;
+                border-radius: 0 !important;
+                background: #000;
+            }
+
+            /* Imagen/video como fondo absoluto */
+            .aviso-imagen,
+            .aviso-video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100% !important;
+                object-fit: cover;
+                z-index: 1;
+                border-radius: 0 !important;
+                margin-bottom: 0;
+            }
+
+            .aviso-video video {
+                object-fit: cover;
+            }
+
+            /* Overlay oscuro para legibilidad */
+            .aviso-card::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to bottom,
+                        rgba(0, 0, 0, 0.2) 0%,
+                        rgba(0, 0, 0, 0.5) 50%,
+                        rgba(0, 0, 0, 0.8) 100%);
+                z-index: 2;
+                pointer-events: none;
+            }
+
+            /* Contenido superpuesto */
+            .card-contenido-moderno {
+                position: relative;
+                z-index: 3;
+                background: transparent !important;
+                color: white !important;
+                padding: 20px;
+                min-height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            }
+
+            .card-titulo-moderno,
+            .card-preview-moderno,
+            .card-fecha-moderna,
+            .aviso-footer span {
+                color: white !important;
+            }
+
+            .card-preview-moderno {
+                -webkit-line-clamp: 2;
+            }
+
+            /* Stats con fondo semitransparente */
+            .card-stats-moderno .stat-item {
+                color: white !important;
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(4px);
+                border-radius: 20px;
+                padding: 4px 10px;
+            }
+
+            .card-stats-moderno .stat-item.liked {
+                color: #ff4757 !important;
+            }
+
+            .card-stats-moderno .stat-item.disliked {
+                color: #aaa !important;
+            }
+
+            /* Badge con fondo oscuro */
+            /* Badges con color original pero legibles sobre cualquier fondo */
+            .categoria-badge {
+                background: var(--badge-color) !important;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(4px);
+            }
+
+            /* WhatsApp más grande */
+            .whatsapp-btn {
+                width: 44px;
+                height: 44px;
+                bottom: 16px;
+                right: 16px;
+                background-size: 60%;
+                z-index: 4;
+            }
+
+            /* Animación de "clic" del engranaje */
+            .post-card-ios.gear-click {
+                animation: gearClick 0.12s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            }
+
+            .post-card-ios.active {
+                transform: scale(1.02);
+            }
+
+            @keyframes gearClick {
+                0% {
+                    transform: scale(1);
+                }
+
+                50% {
+                    transform: scale(0.98);
+                }
+
+                100% {
+                    transform: scale(1);
+                }
+            }
+
+            =======
+
             /* Contenedor scrollable unificado */
             .scrollable-container {
                 height: calc(100vh - 60px);
@@ -517,6 +669,8 @@
                     transform: scale(1);
                 }
             }
+
+            >>>>>>>ba2dcb081b8917b13ca9b805081bf51d6cb2a827
         }
 
         /* ======================================================
@@ -1370,7 +1524,7 @@
 <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" 
      data-id="${aviso.id}" 
      onclick="verAviso(this.getAttribute('data-id'))">
-     <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
+<div class="categoria-badge" style="--badge-color: ${getColorCategoria(aviso.categoria)}; background: var(--badge-color); color: white;">
         ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
     </div>
             ${multimediaHTML}
