@@ -1157,7 +1157,6 @@
                 const whatsappNumber = aviso.contacto ? String(aviso.contacto).replace(/[^0-9]/g, '') : '';
 
                 // ✅ Título limpio para WhatsApp
-                // ✅ Título limpio para WhatsApp
                 const tituloLimpio = limpiarTitulo(aviso.titulo);
                 const mensaje = `Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`;
 
@@ -1196,7 +1195,7 @@
                 }
 
                 return `
-        <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" data-id="${aviso.id}" onclick="verAviso(this.getAttribute('data-id'))">
+        <div class="aviso-card tarjeta-moderna ${aviso.destacado ? 'aviso-destacado' : ''}" data-id="${aviso.id}" onclick="abrirWhatsApp('${whatsappNumber}', '${mensaje}', '${aviso.id}', event)"
             <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
                 ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || 'GENERAL'}
             </div>
