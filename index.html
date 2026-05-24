@@ -554,9 +554,14 @@
 
             .aviso-imagen,
             .aviso-video {
-                height: 180px !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: 200px;
+                max-height: 300px;
+                object-fit: cover !important;
                 border-radius: 20px 20px 0 0 !important;
                 position: relative !important;
+                display: block !important;
             }
 
             .aviso-card::after {
