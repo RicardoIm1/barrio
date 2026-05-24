@@ -52,197 +52,151 @@
     </div>
 </header>
 
-<!-- <style>
-    .header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+<style>
+    /* ========== NOTIFICACIONES EN HEADER ========== */
+    .notifications-wrapper {
+        position: relative;
     }
 
-    .header .contenedor {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 0 1rem;
-    }
-
-    .header-contenido {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        min-height: 6rem;
-    }
-
-    .header-logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        text-decoration: none;
-        flex-shrink: 1;
-        min-width: 0;
-    }
-
-    .logo-icon {
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #2b7a2b, #1e4620);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .logo-texto h1 {
-        margin: 0;
-        font-size: 1.3rem;
-        line-height: 1.2;
-        background: linear-gradient(135deg, #2b7a2b, #d4a043);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        white-space: nowrap;
-    }
-
-    .header-slogan {
-        font-size: 0.65rem;
-        color: #6b7280;
-        margin: 0;
-        white-space: nowrap;
-    }
-
-    .header-acciones {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-shrink: 0;
-    }
-
-    .user-area {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .btn-login,
-    .btn-perfil,
-    .btn-logout {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 20px;
-        border-radius: 40px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        white-space: nowrap;
-        cursor: pointer;
+    .notif-bell {
+        background: none;
         border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        position: relative;
+        padding: 6px;
+        border-radius: 30px;
+        transition: background 0.2s;
     }
 
-    .btn-login {
-        background: linear-gradient(135deg, #f5b042, #ff8c42);
+    .notif-bell:hover {
+        background: rgba(245, 176, 66, 0.2);
+    }
+
+    .notif-badge {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        background: #ff4757;
         color: white;
-        box-shadow: 0 2px 8px rgba(245, 176, 66, 0.3);
+        font-size: 0.6rem;
+        font-weight: bold;
+        padding: 2px 6px;
+        border-radius: 30px;
+        min-width: 18px;
+        text-align: center;
     }
 
-    .btn-login:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(245, 176, 66, 0.4);
-    }
-
-    .btn-perfil {
-        background: linear-gradient(135deg, #3498db, #2980b9);
-        color: white;
-    }
-
-    .btn-perfil:hover {
-        transform: translateY(-2px);
-    }
-
-    .btn-logout {
-        border: 2px solid #d4a043;
-        color: #d4a043;
-        background: transparent;
-    }
-
-    .btn-logout:hover {
-        background: rgba(212, 160, 67, 0.1);
-        transform: translateY(-2px);
-    }
-
-    .user-name {
-        font-size: 0.85rem;
-        color: #9ca3af;
-        font-weight: 500;
-        padding: 0 8px;
-        border-right: 1px solid #e5e7eb;
-        white-space: nowrap;
+    .notif-panel {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 320px;
+        max-width: 90vw;
+        background: rgba(26, 26, 46, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1001;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 150px;
+        animation: slideDown 0.2s ease;
     }
 
-    @media (max-width: 768px) {
-        .header-contenido {
-            min-height: 4rem;
-            gap: 0.75rem;
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
         }
 
-        .logo-icon {
-            width: 34px;
-            height: 34px;
-            font-size: 1.5rem;
-        }
-
-        .logo-texto h1 {
-            font-size: 0.85rem;
-        }
-
-        .header-slogan {
-            font-size: 0.5rem;
-        }
-
-        .btn-login,
-        .btn-perfil,
-        .btn-logout {
-            padding: 5px 12px;
-            font-size: 0.75rem;
-            gap: 5px;
-        }
-
-        .user-name {
-            font-size: 0.7rem;
-            max-width: 100px;
-        }
-
-        #reputacion-widget {
-            display: none !important;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
     }
 
-    @media (max-width: 400px) {
-        .btn-text {
-            display: none;
-        }
+    .notif-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: bold;
+        color: #f5b042;
+    }
 
-        .btn-login,
-        .btn-perfil,
-        .btn-logout {
-            padding: 5px 10px;
-            font-size: 1rem;
-        }
+    .notif-clear-all {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #ccc;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
 
-        .user-name {
-            display: none;
+    .notif-clear-all:hover {
+        background: rgba(255, 71, 87, 0.2);
+        color: #ff4757;
+    }
+
+    .notif-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .notif-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: background 0.2s;
+        cursor: pointer;
+    }
+
+    .notif-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .notif-item.no-leida {
+        background: rgba(245, 176, 66, 0.1);
+    }
+
+    .notif-icon {
+        font-size: 1.2rem;
+    }
+
+    .notif-content {
+        flex: 1;
+    }
+
+    .notif-mensaje {
+        font-size: 0.8rem;
+        color: #ddd;
+        line-height: 1.3;
+    }
+
+    .notif-tiempo {
+        font-size: 0.65rem;
+        color: #888;
+        margin-top: 4px;
+    }
+
+    .notif-empty {
+        text-align: center;
+        padding: 30px 20px;
+        color: #888;
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 550px) {
+        .notif-panel {
+            width: 280px;
+            right: -50px;
         }
     }
-</style> -->
-
+</style>
 <script>
     (function () {
         function obtenerUsuarioLocal() {
@@ -323,4 +277,152 @@
         window.actualizarHeaderSesion = actualizarBotones;
         window._headerActualizarBotones = actualizarBotones;
     })();
+</script>
+<script>
+    // ========== NOTIFICACIONES EN EL HEADER ==========
+    let notificacionesInterval = null;
+    let notificacionesCache = [];
+
+    function toggleNotificaciones() {
+        const panel = document.getElementById('notifPanel');
+        if (panel) {
+            const isVisible = panel.style.display === 'block';
+            panel.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                cargarNotificaciones();
+            }
+        }
+    }
+
+    // Cerrar panel al hacer clic fuera
+    document.addEventListener('click', function (event) {
+        const widget = document.getElementById('notificationsWidget');
+        const panel = document.getElementById('notifPanel');
+        if (widget && panel && !widget.contains(event.target)) {
+            panel.style.display = 'none';
+        }
+    });
+
+    async function cargarNotificaciones() {
+        const apiKey = localStorage.getItem('api_key');
+        const usuario = obtenerUsuarioLocal();
+
+        if (!apiKey || !usuario) return;
+
+        try {
+            const response = await fetch(`https://script.google.com/macros/s/AKfycbxfKbjZuNLervPF3JTpNRAv_Cn5dGkk1vCLt3x-WX-NLRWdb-TxbBtMkJdDEGypggDY/exec?accion=OBTENER_NOTIFICACIONES&email=${encodeURIComponent(usuario.email)}&soloNoLeidas=true&api_key=${apiKey}`);
+            const data = await response.json();
+
+            if (data && data.success) {
+                const notificaciones = data.data || [];
+                notificacionesCache = notificaciones;
+                actualizarBadge(notificaciones.length);
+                renderizarNotificaciones(notificaciones);
+            }
+        } catch (error) {
+            console.error('Error cargando notificaciones:', error);
+        }
+    }
+
+    function actualizarBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    function renderizarNotificaciones(notificaciones) {
+        const container = document.getElementById('notifList');
+        if (!container) return;
+
+        if (!notificaciones || notificaciones.length === 0) {
+            container.innerHTML = '<p class="notif-empty">📭 No hay notificaciones nuevas</p>';
+            return;
+        }
+
+        container.innerHTML = notificaciones.map(notif => `
+        <div class="notif-item no-leida" data-id="${notif.id}" onclick="marcarNotificacionLeida('${notif.id}', '${notif.aviso_id}')">
+            <div class="notif-icon">${notif.tipo === 'like' ? '👍' : '💬'}</div>
+            <div class="notif-content">
+                <div class="notif-mensaje">${escapeHTML(notif.mensaje)}</div>
+                <div class="notif-tiempo">${tiempoRelativo(notif.fecha)}</div>
+            </div>
+        </div>
+    `).join('');
+    }
+
+    async function marcarNotificacionLeida(id, avisoId) {
+        const apiKey = localStorage.getItem('api_key');
+        try {
+            await fetch(`https://script.google.com/macros/s/AKfycbxfKbjZuNLervPF3JTpNRAv_Cn5dGkk1vCLt3x-WX-NLRWdb-TxbBtMkJdDEGypggDY/exec?accion=MARCAR_NOTIFICACION_LEIDA&id=${id}&api_key=${apiKey}`);
+            if (avisoId) {
+                window.location.href = `/barrio/aviso.html?id=${avisoId}`;
+            }
+            cargarNotificaciones();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    async function marcarTodasLeidas() {
+        const apiKey = localStorage.getItem('api_key');
+        const ids = notificacionesCache.map(n => n.id);
+        if (ids.length === 0) return;
+
+        try {
+            await fetch(`https://script.google.com/macros/s/AKfycbxfKbjZuNLervPF3JTpNRAv_Cn5dGkk1vCLt3x-WX-NLRWdb-TxbBtMkJdDEGypggDY/exec?accion=MARCAR_NOTIFICACIONES_LEIDAS&ids=${JSON.stringify(ids)}&api_key=${apiKey}`);
+            cargarNotificaciones();
+            const panel = document.getElementById('notifPanel');
+            if (panel) panel.style.display = 'none';
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    function tiempoRelativo(fechaISO) {
+        if (!fechaISO) return 'reciente';
+        const ahora = new Date();
+        const fecha = new Date(fechaISO);
+        const diffSegundos = Math.floor((ahora - fecha) / 1000);
+
+        if (diffSegundos < 60) return 'ahora';
+        if (diffSegundos < 3600) return `hace ${Math.floor(diffSegundos / 60)} min`;
+        if (diffSegundos < 86400) return `hace ${Math.floor(diffSegundos / 3600)} h`;
+        return `hace ${Math.floor(diffSegundos / 86400)} d`;
+    }
+
+    function escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function (m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Iniciar polling cada 30 segundos
+    function iniciarPollingNotificaciones() {
+        if (notificacionesInterval) clearInterval(notificacionesInterval);
+
+        setTimeout(cargarNotificaciones, 1000);
+
+        notificacionesInterval = setInterval(() => {
+            if (localStorage.getItem('api_key')) {
+                cargarNotificaciones();
+            }
+        }, 30000);
+    }
+
+    // Iniciar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', iniciarPollingNotificaciones);
+    } else {
+        iniciarPollingNotificaciones();
+    }
 </script>
