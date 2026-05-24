@@ -23,15 +23,32 @@
 
 
         <div class="header-acciones" id="header-acciones">
+            <!-- CAMPANA DE NOTIFICACIONES -->
+            <div class="notifications-wrapper" id="notificationsWidget">
+                <button class="notif-bell" id="notifBellBtn" onclick="toggleNotificaciones()">
+                    🔔
+                    <span id="notifBadge" class="notif-badge" style="display: none;">0</span>
+                </button>
+                <div id="notifPanel" class="notif-panel" style="display: none;">
+                    <div class="notif-header">
+                        <span>🔔 Notificaciones</span>
+                        <button onclick="marcarTodasLeidas()" class="notif-clear-all">✕ Todas</button>
+                    </div>
+                    <div id="notifList" class="notif-list">
+                        <p class="notif-empty">📭 No hay notificaciones nuevas</p>
+                    </div>
+                </div>
+            </div>
+
             <a href="/barrio/login.html" id="login-link" class="btn-login">🔑 <span class="btn-text">Iniciar
                     sesión</span></a>
 
             <div class="user-area" id="user-area" style="display: none;">
                 <span class="user-name" id="user-name"></span>
-                <!-- <a href="#" id="perfil-link" class="btn-perfil">👤 <span class="btn-text">Mi perfil</span></a> -->
                 <a href="#" id="cerrar-sesion" class="btn-logout">🔒 <span class="btn-text">Cerrar sesión</span></a>
             </div>
         </div>
+    </div>
     </div>
 </header>
 
