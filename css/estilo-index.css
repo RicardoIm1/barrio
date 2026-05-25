@@ -149,8 +149,8 @@
         .aviso-card {
             scroll-snap-align: start;
             scroll-snap-stop: always;
-            height: 70vh;
-            min-height: 70vh;
+            height: 71vh;
+            min-height: 71vh;
             margin-bottom: 0 !important;
             border-radius: 20px !important;
             background: #000;
