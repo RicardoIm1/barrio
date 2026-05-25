@@ -20,7 +20,7 @@
 
     <!-- Contenedor scrollable -->
     <div id="scrollable-content" class="scrollable-container">
-<div class="cargando">📰 Cargando avisos...</div>
+        <div class="cargando">📰 Cargando avisos...</div>
         <!-- Contenedor relativo para el hero + botón superpuesto -->
         <div style="position: relative;">
             <picture>
@@ -1496,6 +1496,36 @@
             // Timeout por si no aparece el nav
             setTimeout(() => clearInterval(checkHeader), 5000);
         }
+    </script>
+
+    <script>
+        // ========== FORZAR AUTOPLAY DE VIDEOS ==========
+        function iniciarVideos() {
+            const videos = document.querySelectorAll('.aviso-video video');
+            videos.forEach(video => {
+                // Intentar reproducir
+                video.play().catch(e => {
+                    console.log('Error reproduciendo video:', e);
+                    // Si falla, recargar y reintentar
+                    video.load();
+                    video.play().catch(err => console.log('Error again:', err));
+                });
+            });
+        }
+
+        // Ejecutar cuando la página esté completamente cargada
+        document.addEventListener('DOMContentLoaded', iniciarVideos);
+
+        // También ejecutar después de cargar avisos dinámicos (si usas infinite scroll)
+        const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+                if (mutation.addedNodes.length) {
+                    iniciarVideos();
+                }
+            });
+        });
+
+        observer.observe(document.getElementById('avisos-container'), { childList: true, subtree: true });
     </script>
 
 
