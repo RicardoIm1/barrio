@@ -156,6 +156,7 @@
             background: #000;
         }
 
+        /* ✅ IMAGEN/VIDEO COMO FONDO */
         .aviso-imagen,
         .aviso-video {
             position: absolute;
