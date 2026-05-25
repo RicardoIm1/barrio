@@ -149,8 +149,8 @@
         .aviso-card {
             scroll-snap-align: start;
             scroll-snap-stop: always;
-            height: 100vh;
-            min-height: 100vh;
+            height: 85vh;
+            min-height: 85vh;
             margin-bottom: 0 !important;
             border-radius: 0 !important;
             background: #000;
@@ -262,6 +262,7 @@
             border-radius: 20px !important;
             overflow: hidden;
             background: white;
+            border-radius: 20px !important;
         }
 
         /* ✅ IMAGEN QUE ABARCA TODO EL ANCHO */
