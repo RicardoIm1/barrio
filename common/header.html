@@ -236,6 +236,40 @@
         }
     }
 </style>
+<style>
+    /* ========== BUSCADOR EN HEADER ========== */
+    .header-buscador {
+        flex: 1;
+        max-width: 300px;
+        margin: 0 15px;
+    }
+
+    .buscador-input-header {
+        width: 100%;
+        padding: 8px 16px;
+        border-radius: 30px;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    .buscador-input-header:focus {
+        outline: none;
+        border-color: #f5b042;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(245, 176, 66, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .header-buscador {
+            order: 3;
+            max-width: none;
+            width: 100%;
+            margin: 8px 0 0;
+        }
+    }
+</style>
 
 <script>
     (function () {
