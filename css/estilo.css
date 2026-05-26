@@ -810,7 +810,6 @@ body {
     min-height: calc(100vh - 200px);
 }
 
-* {
+/* * {
     outline: 1px solid rgba(255, 0, 0, 0.1);
-    /* temporal para ver cajas */
-}
+} */
