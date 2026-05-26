@@ -458,3 +458,15 @@
     setInterval(() => { if (localStorage.getItem('api_key')) cargarNotificaciones(); }, 30000);
     setTimeout(cargarNotificaciones, 1000);
 </script>
+<script>
+    // Conectar buscador del header después de que cargue
+    setTimeout(() => {
+        const buscadorHeader = document.getElementById('buscador-input-header');
+        if (buscadorHeader) {
+            buscadorHeader.addEventListener('input', (e) => {
+                currentSearchTerm = e.target.value;
+                applyFiltersAndSearch();
+            });
+        }
+    }, 500);
+</script>
