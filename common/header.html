@@ -473,3 +473,10 @@
         }
     }, 500);
 </script>
+<script>
+    // Mostrar buscador solo en index.html
+    if (window.location.pathname === '/barrio/index.html' || window.location.pathname === '/barrio/') {
+        const buscador = document.querySelector('.header-buscador');
+        if (buscador) buscador.style.display = 'block';
+    }
+</script>
