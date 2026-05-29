@@ -11,7 +11,7 @@
 
 // ==================== API CLIENT - Jardines PVR ====================
 
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbynPHNUPkVqPerIh8QKkq6ZJJDsju_tknWBbcKXQULTZcGYDnmee0F9otPn2cB_gfaA/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwuW3cD6UbaFguuz39HNubyqHJmTqu3nuRAA5CmRfVHvc4A0Zye-mthmySwfuLMGQRZ/exec';
 
 // Al inicio del archivo, después de const API_BASE_URL
 if (window.location.hostname !== 'localhost') {
