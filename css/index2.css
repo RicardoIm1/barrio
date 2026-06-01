@@ -608,16 +608,23 @@
         }
     }
 
+    main,
+    .scrollable-container,
+    #avisos-container {
+        padding-top: 90px;
+    }
+
     /* ======================================================
    HEADER STICKY
 ====================================================== */
     .header {
-        position: -webkit-sticky;
-        position: sticky;
+        position: fixed;
         top: 0;
-        z-index: 1000;
+        left: 0;
+        right: 0;
+
+        z-index: 9999;
         background: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     /* Estilo para el contenido del header */
