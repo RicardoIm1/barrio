@@ -238,12 +238,12 @@
        DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
     ====================================================== */
     @media (min-width: 768px) {
-        /* .scrollable-container {
+        .scrollable-container {
             height: auto;
             overflow-y: visible;
             scroll-snap-type: none;
             padding-top: 70px;
-        } */
+        } 
 
         #avisos-container {
             display: grid !important;
