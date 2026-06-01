@@ -127,13 +127,11 @@
     ====================================================== */
     @media (max-width: 767px) {
         .scrollable-container {
-            height: 100vh;
+            height: calc(100vh - 70px);
             overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
             scroll-snap-type: y mandatory;
             scroll-snap-stop: always;
             scroll-behavior: smooth;
-            padding-top: 70px;
         }
 
         .scrollable-container::-webkit-scrollbar {
@@ -239,12 +237,12 @@
        DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
     ====================================================== */
     @media (min-width: 768px) {
-        .scrollable-container {
+        /* .scrollable-container {
             height: auto;
             overflow-y: visible;
             scroll-snap-type: none;
             padding-top: 70px;
-        }
+        } */
 
         #avisos-container {
             display: grid !important;
