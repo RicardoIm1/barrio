@@ -1224,7 +1224,7 @@
                     ubicacion: aviso.ubicacion || '',
                     fecha_evento: aviso.fecha_evento || '',
                     created_at: aviso.created_at,
-                    destacado: aviso.destacado|| 0
+                    destacado: aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1
                 }));
 
                 console.log(`✅ Cargados ${todosLosAvisos.length} avisos`);
@@ -1378,7 +1378,7 @@
             document.getElementById('edit-video_url').value = aviso.video_url || '';
 
             // Marcar checkbox urgente
-            document.getElementById('edit-urgente').checked = (aviso.destacado == TRUE);
+            document.getElementById('edit-urgente').checked = (aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1);
 
             // Mostrar vista previa si ya tiene imagen o video
             const vista = document.getElementById('edit-vista-previa');
@@ -1468,7 +1468,7 @@
                 fecha_evento: document.getElementById('edit-fecha_evento').value,
                 imagen_url: document.getElementById('edit-imagen_url').value,
                 video_url: document.getElementById('edit-video_url').value,
-                destacado: document.getElementById('edit-urgente').checked ? 1 : 0
+                destacado: document.getElementById('urgente').checked ? true : false
             };
 
             try {
