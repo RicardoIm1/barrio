@@ -909,8 +909,8 @@
 
         <!-- Pestaña: Usuarios -->
         <div id="tab-usuarios" class="tab">
-            <!-- <div class="formulario" style="max-width: 100%;">
-                <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
+            <div class="formulario" style="max-width: 100%;">
+                <!-- <h2 style="margin-bottom: 24px; font-weight: 500;">Administrar usuarios</h2>
 
                 <form id="form-usuario">
                     <div class="campo">
@@ -939,6 +939,7 @@
                     <input type="hidden" id="user-categorias" value="todas">
                     <button type="submit" class="boton" style="margin-top: 10px;">👥 Crear Cuenta de Usuario</button>
                 </form> -->
+
                 <!-- Tabla de usuarios existentes -->
                 <div style="margin-top: 30px;">
                     <h3 style="margin-bottom: 16px;">📋 Usuarios registrados</h3>
@@ -1656,7 +1657,7 @@
                 tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ Error: ${error.message}</td></tr>`;
             }
         }
-        
+
         // Función para eliminar usuario
         window.eliminarUsuario = async function (id) {
             if (!confirm('¿Eliminar este usuario?')) return;
