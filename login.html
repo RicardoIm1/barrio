@@ -66,6 +66,13 @@
       color: var(--color-primario);
     }
 
+    /* Contenedor para input con botón de ver contraseña */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
     .campo input {
       width: 100%;
       padding: 0.8rem 1rem;
@@ -74,6 +81,31 @@
       font-size: 0.95rem;
       font-family: inherit;
       background: white;
+    }
+
+    /* Ajuste para el input de contraseña con botón */
+    .password-wrapper input {
+      flex: 1;
+      padding-right: 3rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-password:hover {
+      color: var(--color-acento, #3498db);
     }
 
     .campo input:focus {
@@ -206,12 +238,6 @@
   <main class="contenedor-chico">
     <div class="login-container">
 
-      <!-- Header -->
-      <!-- <div class="login-header">
-        <h1>🔐 Iniciar sesión</h1>
-        <p>Accede a tu cuenta de la colonia</p>
-      </div> -->
-
       <!-- Formulario -->
       <div class="login-content">
         <div id="mensaje-container"></div>
@@ -224,7 +250,12 @@
 
           <div class="campo">
             <label for="password">Contraseña</label>
-            <input type="password" id="password" name="password" required placeholder="Tu contraseña">
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password" required placeholder="Tu contraseña">
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
+                👁️
+              </button>
+            </div>
           </div>
 
           <button type="submit" class="btn-login-form" id="btnLogin">
@@ -307,11 +338,31 @@
           }
         })
         .catch(error => console.error('Error cargando el footer:', error));
+    });
+
+    // Funcionalidad para mostrar/ocultar contraseña
+    function initPasswordToggle() {
+      const toggleBtn = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+
+      if (toggleBtn && passwordInput) {
+        toggleBtn.addEventListener('click', function () {
+          // Cambiar el tipo de input entre password y text
+          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+          passwordInput.setAttribute('type', type);
+
+          // Cambiar el ícono (opcional)
+          this.textContent = type === 'password' ? '👁️' : '🙈';
+          this.setAttribute('aria-label', type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
+        });
+      }
     }
-    );
 
     // Lógica de login
     document.addEventListener('DOMContentLoaded', function () {
+      // Inicializar el toggle de contraseña
+      initPasswordToggle();
+
       const form = document.getElementById('form-login');
       const btn = document.getElementById('btnLogin');
 
