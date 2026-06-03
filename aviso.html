@@ -987,10 +987,10 @@
             // ========== WHATSAPP DEL ANUNCIANTE (botón circular, IGUAL QUE EN INDEX) ==========
             if (tieneContacto) {
                 html += `<div class="contact-info-item" style="margin-left: auto;">
-                    <button class="whatsapp-btn-circle" 
-                            onclick="handleWhatsAppClick('${avisoActual.id}', '${numero}', '${mensaje.replace(/'/g, "\\'")}', event)">
-                    </button>
-                </div>`;
+                <button class="whatsapp-btn-circle" 
+                        onclick="abrirWhatsApp('${numero}', '${mensaje.replace(/'/g, "\\'")}', '${avisoActual.id}', event)">
+                </button>
+            </div>`;
             }
 
             html += `</div>`;
@@ -1149,6 +1149,33 @@
                 if (resultado?.success) { alert('✅ Aviso eliminado'); window.location.href = '/barrio/index.html'; }
                 else alert('❌ Error: ' + (resultado?.error || 'Error desconocido'));
             } catch (e) { alert('❌ Error al eliminar'); }
+        };
+
+        // ========== FUNCIÓN WHATSAPP IGUAL QUE EN INDEX ==========
+        window.abrirWhatsApp = function (numero, texto, id, event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            // 🔐 VALIDACIÓN DE SESIÓN - OBLIGATORIA
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                if (typeof showToast === 'function') {
+                    showToast('🔐 Inicia sesión para contactar por WhatsApp', 2000);
+                } else {
+                    alert('🔐 Debes iniciar sesión para contactar por WhatsApp');
+                }
+                return;
+            }
+
+            let numeroLimpio = String(numero).replace(/[^0-9]/g, '');
+            const url = `https://wa.me/52${numeroLimpio}?text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+
+            if (id) {
+                registrarClickWhatsApp(id).catch(e => console.warn('Error registrando click:', e));
+            }
         };
 
         // Exponer funciones globales
