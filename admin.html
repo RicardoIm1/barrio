@@ -1015,19 +1015,7 @@
             <form id="form-editar">
                 <input type="hidden" id="edit-id">
 
-                <!-- <div class="campo">
-                    <label for="edit-categoria">Categoría</label>
-                    <select id="edit-categoria" required>
-                        <option value="urgente">🚨 URGENTE</option>
-                        <option value="escuelas">🏫 ESCUELAS</option>
-                        <option value="servicios">🛠️ SERVICIOS</option>
-                        <option value="comercios">🛒 COMERCIOS</option>
-                        <option value="eventos">📅 EVENTOS</option>
-                        <option value="gobierno">🏛️ GOBIERNO</option>
-                        <option value="varios">📢 VARIOS</option>
-                    </select>
-                </div> -->
-
+                <!-- Categoría oculta (siempre "varios") -->
                 <div class="campo" style="display: none;">
                     <label for="edit-categoria">Categoría</label>
                     <select id="edit-categoria" required>
@@ -1046,38 +1034,42 @@
                 </div>
 
                 <div class="campo">
-                    <label for="edit-ubicacion">Ubicación</label>
-                    <input type="text" id="edit-ubicacion">
+                    <label for="edit-ubicacion">Ubicación (opcional)</label>
+                    <input type="text" id="edit-ubicacion" placeholder="Ej: Calle Principal #123">
                 </div>
 
                 <div class="campo">
-                    <label for="edit-contacto">Contacto</label>
-                    <input type="text" id="edit-contacto">
+                    <label for="edit-contacto">Contacto (opcional)</label>
+                    <input type="text" id="edit-contacto" placeholder="Ej: Teléfono o email">
                 </div>
 
                 <div class="campo">
-                    <label for="edit-fecha_evento">Fecha del evento</label>
+                    <label for="edit-fecha_evento">Fecha del evento (opcional)</label>
                     <input type="date" id="edit-fecha_evento">
                 </div>
 
+                <!-- ========== SECCIÓN MULTIMEDIA (igual que en creación) ========== -->
                 <div class="campo">
-                    <label for="edit-imagen_url">URL de imagen</label>
-                    <input type="url" id="edit-imagen_url" placeholder="https://ejemplo.com/imagen.jpg">
-
-                    <!-- Subir imagen desde móvil en edición -->
-                    <div style="margin-top: 8px;">
-                        <label>📸 Subir imagen desde móvil:</label>
-                        <input type="file" id="edit-upload-imagen" accept="image/*" capture="environment">
+                    <label>🎬 Subir imagen o video</label>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
+                        <button type="button" id="edit-btn-imagen" class="boton" style="background: #2c7da0; flex:1;">📸
+                            Seleccionar imagen</button>
+                        <button type="button" id="edit-btn-video" class="boton" style="background: #5a6e7c; flex:1;">🎥
+                            Seleccionar video</button>
                     </div>
-
-                    <div id="preview-editar" class="preview-container" style="display: none;">
-                        <img id="preview-imagen-editar" class="preview-imagen" alt="Vista previa">
-                    </div>
+                    <input type="file" id="edit-archivo-multimedia" accept="image/*,video/*" style="display: none;">
+                    <div id="edit-vista-previa" style="margin-top: 12px; text-align: center;"></div>
+                    <small style="color: #666;">Selecciona una imagen (jpg/png) o un video (mp4).</small>
                 </div>
 
-                <div class="campo">
-                    <label for="edit-video_url">URL de video</label>
-                    <input type="url" id="edit-video_url" placeholder="https://www.youtube.com/watch?v=...">
+                <!-- Campos ocultos para guardar las URLs (igual que en creación) -->
+                <input type="hidden" id="edit-imagen_url" name="imagen_url">
+                <input type="hidden" id="edit-video_url" name="video_url">
+
+                <!-- Checkbox urgente -->
+                <div class="campo" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="edit-urgente" style="width: auto;">
+                    <label for="edit-urgente" style="margin-bottom: 0;">Marcar como urgente</label>
                 </div>
 
                 <div class="grupo-botones">
@@ -1374,20 +1366,39 @@
             document.getElementById('edit-id').value = aviso.id;
             document.getElementById('edit-titulo').value = aviso.titulo || '';
             document.getElementById('edit-contenido').value = aviso.contenido || '';
-            document.getElementById('edit-categoria').value = aviso.categoria || 'eventos';
+            document.getElementById('edit-categoria').value = aviso.categoria || 'varios';  // Cambiado a 'varios' por defecto
             document.getElementById('edit-ubicacion').value = aviso.ubicacion || '';
             document.getElementById('edit-contacto').value = aviso.contacto || '';
             document.getElementById('edit-fecha_evento').value = aviso.fecha_evento || '';
+
+            // Cargar URLs existentes en los campos ocultos
             document.getElementById('edit-imagen_url').value = aviso.imagen_url || '';
             document.getElementById('edit-video_url').value = aviso.video_url || '';
 
-            const previewContainer = document.getElementById('preview-editar');
-            const previewImg = document.getElementById('preview-imagen-editar');
+            // Cargar checkbox urgente
+            document.getElementById('edit-urgente').checked = aviso.urgente === true || aviso.urgente === '1' || aviso.urgente === 1;
+
+            // Mostrar vista previa si ya tiene imagen o video
+            const vista = document.getElementById('edit-vista-previa');
             if (aviso.imagen_url && (aviso.imagen_url.startsWith('http://') || aviso.imagen_url.startsWith('https://'))) {
-                previewImg.src = aviso.imagen_url;
-                previewContainer.style.display = 'block';
+                vista.innerHTML = `<img src="${aviso.imagen_url}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
+            } else if (aviso.video_url) {
+                let videoEmbed = aviso.video_url;
+                // Si es YouTube, convertir a embed
+                if (aviso.video_url.includes('youtube.com/watch?v=')) {
+                    videoEmbed = aviso.video_url.replace('watch?v=', 'embed/');
+                } else if (aviso.video_url.includes('youtu.be/')) {
+                    const id = aviso.video_url.split('/').pop();
+                    videoEmbed = `https://www.youtube.com/embed/${id}`;
+                } else if (aviso.video_url.includes('cloudinary.com')) {
+                    // Si es video de Cloudinary, usar el video tag directamente
+                    vista.innerHTML = `<video src="${aviso.video_url}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
+                } else {
+                    // Para otras URLs de video, intentar iframe
+                    vista.innerHTML = `<iframe src="${videoEmbed}" frameborder="0" allowfullscreen style="width:100%; height:180px; border-radius:12px;"></iframe>`;
+                }
             } else {
-                previewContainer.style.display = 'none';
+                vista.innerHTML = '';
             }
 
             document.getElementById('modal-editar').style.display = 'flex';
@@ -1454,7 +1465,8 @@
                 contacto: document.getElementById('edit-contacto').value,
                 fecha_evento: document.getElementById('edit-fecha_evento').value,
                 imagen_url: document.getElementById('edit-imagen_url').value,
-                video_url: document.getElementById('edit-video_url').value
+                video_url: document.getElementById('edit-video_url').value,
+                urgente: document.getElementById('edit-urgente').checked ? 1 : 0  // ← Campo agregado
             };
 
             try {
@@ -1478,7 +1490,7 @@
                 else alert('❌ Error: ' + error.message);
             }
         });
-
+        
         // ==================== SUBIR IMAGEN EN EDICIÓN ====================
         document.getElementById('edit-upload-imagen')?.addEventListener('change', async (e) => {
             const file = e.target.files[0];
@@ -2050,6 +2062,83 @@
             agregarResultadosDiv();
             inicializarBuscador();
         }, 1000);
+    </script>
+
+    <script>
+        // ========== MANEJAR MULTIMEDIA EN MODAL DE EDICIÓN ==========
+        const editInputMultimedia = document.getElementById('edit-archivo-multimedia');
+        const editBtnImagen = document.getElementById('edit-btn-imagen');
+        const editBtnVideo = document.getElementById('edit-btn-video');
+        const editVistaPrevia = document.getElementById('edit-vista-previa');
+        const editCampoImagenUrl = document.getElementById('edit-imagen_url');
+        const editCampoVideoUrl = document.getElementById('edit-video_url');
+        let editTipoSeleccionado = '';
+
+        if (editBtnImagen) {
+            editBtnImagen.addEventListener('click', () => {
+                editTipoSeleccionado = 'imagen';
+                editInputMultimedia.accept = 'image/*';
+                editInputMultimedia.click();
+            });
+        }
+
+        if (editBtnVideo) {
+            editBtnVideo.addEventListener('click', () => {
+                editTipoSeleccionado = 'video';
+                editInputMultimedia.accept = 'video/*';
+                editInputMultimedia.click();
+            });
+        }
+
+        editInputMultimedia.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Limpiar campos anteriores
+            editCampoImagenUrl.value = '';
+            editCampoVideoUrl.value = '';
+
+            // Mostrar preview local
+            editVistaPrevia.innerHTML = `<p>🔄 Subiendo archivo... por favor espera</p>`;
+            const urlLocal = URL.createObjectURL(file);
+
+            if (editTipoSeleccionado === 'imagen') {
+                editVistaPrevia.innerHTML = `<img src="${urlLocal}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
+                try {
+                    const urlFinal = await subirImagenImgBB(file);
+                    editCampoImagenUrl.value = urlFinal;
+                    editVistaPrevia.innerHTML += `<p style="color:green; font-size:12px;">✅ Imagen lista</p>`;
+                    if (window.API && API.mostrarExito) API.mostrarExito('✅ Imagen subida correctamente');
+                } catch (err) {
+                    editVistaPrevia.innerHTML += `<p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>`;
+                    if (window.API && API.mostrarError) API.mostrarError(err.message);
+                }
+            }
+            else if (editTipoSeleccionado === 'video') {
+                editVistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
+                editVistaPrevia.innerHTML += `<p style="color:#666; font-size:12px;">⏳ Subiendo a Cloudinary... puede tomar unos segundos</p>`;
+                try {
+                    const urlFinal = await subirVideoCloudinary(file);
+                    editCampoVideoUrl.value = urlFinal;
+                    editVistaPrevia.innerHTML = `
+                <video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>
+                <p style="color:green; font-size:12px;">✅ Video listo: <a href="${urlFinal}" target="_blank">ver en Cloudinary</a></p>
+            `;
+                    if (window.API && API.mostrarExito) API.mostrarExito('✅ Video subido correctamente');
+                } catch (err) {
+                    console.error("Error detallado:", err);
+                    editVistaPrevia.innerHTML = `
+                <video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>
+                <p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>
+                <p style="color:#666; font-size:11px;">Consejo: El video debe ser menor a 25MB</p>
+            `;
+                    if (window.API && API.mostrarError) API.mostrarError('❌ Error: ' + err.message);
+                }
+            }
+
+            // Limpiar el input para permitir otra subida
+            setTimeout(() => { editInputMultimedia.value = ''; }, 1000);
+        });
     </script>
 </body>
 
