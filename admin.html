@@ -1224,7 +1224,7 @@
                     ubicacion: aviso.ubicacion || '',
                     fecha_evento: aviso.fecha_evento || '',
                     created_at: aviso.created_at,
-                    urgente: aviso.urgente || 0
+                    destacado: aviso.urgente || 0
                 }));
 
                 console.log(`✅ Cargados ${todosLosAvisos.length} avisos`);
@@ -1467,7 +1467,7 @@
                 fecha_evento: document.getElementById('edit-fecha_evento').value,
                 imagen_url: document.getElementById('edit-imagen_url').value,
                 video_url: document.getElementById('edit-video_url').value,
-                urgente: document.getElementById('edit-urgente').checked ? 1 : 0  // ← Campo agregado
+                destacado: document.getElementById('edit-urgente').checked ? 1 : 0
             };
 
             try {
