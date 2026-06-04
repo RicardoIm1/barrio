@@ -106,19 +106,24 @@
             color: #2c3e2f;
         }
 
-         /* --- ESTILOS MODIFICADOS PARA LAS COLUMNAS --- */
+        /* --- ESTILOS MODIFICADOS PARA LAS COLUMNAS --- */
         .article-content {
-            column-count: 2;          /* Dos columnas por defecto (pantallas medianas/grandes) */
-            column-gap: 2rem;         /* Espacio entre columnas */
-            column-rule: 1px solid rgba(0, 0, 0, 0.08); /* Línea divisoria */
+            column-count: 2;
+            /* Dos columnas por defecto (pantallas medianas/grandes) */
+            column-gap: 2rem;
+            /* Espacio entre columnas */
+            column-rule: 1px solid rgba(0, 0, 0, 0.08);
+            /* Línea divisoria */
             hyphens: auto;
         }
 
         .article-content p {
-            break-inside: avoid;      /* Evita que un párrafo se corte entre columnas */
+            break-inside: avoid;
+            /* Evita que un párrafo se corte entre columnas */
             margin-top: 0;
             margin-bottom: 1rem;
         }
+
         /* ------------------------------------------- */
 
         .gallery-section {
@@ -973,7 +978,7 @@
             html += `<div class="article-body">`;
             html += `<div class="article-content">${formatearContenido(avisoActual.contenido)}</div>`;
 
-            // ========== SECCIÓN DE CONTACTO (igual que en index) ==========
+            // ========== SECCIÓN DE CONTACTO (corregida) ==========
             html += `<div class="contact-info-row">`;
 
             let partes = [];
@@ -997,9 +1002,9 @@
                 partes.push(`📅 ${escapeHTML(fechaFormateada)}`);
             }
 
+            // ✅ SOLO mostrar el bloque si hay información (ubicación o fecha)
             if (partes.length > 0) {
-                html += `<div class="red">
-        <span class="icon">📍📅</span>
+                html += `<div class="red" style="flex:1;">
         <span>${partes.join(' • ')}</span>
     </div>`;
             }
