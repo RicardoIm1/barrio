@@ -106,18 +106,20 @@
             color: #2c3e2f;
         }
 
+         /* --- ESTILOS MODIFICADOS PARA LAS COLUMNAS --- */
         .article-content {
-            column-width: 28rem;
-            column-gap: 2rem;
-            column-rule: 1px solid rgba(0, 0, 0, 0.08);
+            column-count: 2;          /* Dos columnas por defecto (pantallas medianas/grandes) */
+            column-gap: 2rem;         /* Espacio entre columnas */
+            column-rule: 1px solid rgba(0, 0, 0, 0.08); /* Línea divisoria */
             hyphens: auto;
         }
 
         .article-content p {
-            break-inside: avoid;
+            break-inside: avoid;      /* Evita que un párrafo se corte entre columnas */
             margin-top: 0;
             margin-bottom: 1rem;
         }
+        /* ------------------------------------------- */
 
         .gallery-section {
             margin: 1.5rem 0;
