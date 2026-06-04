@@ -1049,12 +1049,16 @@
 
             // 5. WhatsApp en stats-row (otro acceso directo al anunciante, opcional)
             if (tieneContacto) {
-                html += `<button class="stat-item action-btn whatsapp-stat" 
-                                onclick="handleWhatsAppClick('${avisoActual.id}', '${numero}', '${mensaje.replace(/'/g, "\\'")}', event)"
-                                style="background: #25D366; color: white; border: none; cursor: pointer;">
-                            <span class="stat-icon">📱</span>
-                            <span class="stat-value">WhatsApp</span>
-                        </button>`;
+                html += `<button 
+    type="button"
+    class="whatsapp-btn"
+    onclick='abrirWhatsApp(
+        "${whatsappNumber}",
+        ${JSON.stringify(mensaje)},
+        "${aviso.id}",
+        event
+    )'>
+</button>`;
             }
 
             // 6. Botones admin
