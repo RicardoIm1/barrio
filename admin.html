@@ -1294,7 +1294,7 @@
                 ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
             </td>
             <td data-label="Publicó">
-    <strong>👤 ${escapeHTML(aviso.created_by || 'Desconocido')}</strong><br>
+    <strong>👤 ${escapeHTML(aviso.nombre_autor || 'Vecino')}</strong><br>
     <small>
         🕒 ${aviso.created_at
                         ? new Date(aviso.created_at).toLocaleString('es-MX')
