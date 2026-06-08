@@ -432,6 +432,21 @@
             font-weight: 600;
         }
 
+        /*para tabla con scroll*/
+
+        .tabla-admin-wrapper {
+            max-height: 70vh;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .tabla-admin thead th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
         /* Estilo para selectores de estado */
         .select-estado {
             padding: 4px 8px;
@@ -875,15 +890,15 @@
                         <tr>
                             <th>ID</th>
                             <th>Imagen</th>
-                            <th>Título / Categoría</th>
-                            <th>Contacto</th>
+                            <th>Título</th>
+                            <th>Publicado por</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tabla-avisos-cuerpo">
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 15px; color: #777;">Cargando registros
+                            <td colspan="7" style="text-align: center; padding: 15px; color: #777;">Cargando registros
                                 vecinales...</td>
                         </tr>
                     </tbody>
@@ -1162,7 +1177,7 @@
         async function cargarAvisosParaAdmin() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
             }
 
             try {
@@ -1170,7 +1185,7 @@
                 const usuario = API.getUsuarioActual();
 
                 if (!apiKey || !usuario) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
                     return;
                 }
 
@@ -1207,7 +1222,7 @@
                 }
 
                 if (!avisos || avisos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
                     todosLosAvisos = [];
                     return;
                 }
@@ -1233,7 +1248,7 @@
             } catch (error) {
                 console.error('❌ Error:', error);
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
                 }
             }
         }
@@ -1254,7 +1269,7 @@
             }
 
             if (avisosFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
                 return;
             }
 
@@ -1270,10 +1285,22 @@
             </td>
             <td data-label="Título">
                 <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
+<small>
+👁️ ${aviso.vistas || 0}
+&nbsp;•&nbsp;
+💬 ${aviso.comentarios_count || 0}
+</small><br>
                 <small>📢 VARIOS</small>
                 ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
             </td>
-            <td data-label="Contacto">${escapeHTML(aviso.contacto || 'No especificado')}</td>
+            <td data-label="Publicó">
+    <strong>👤 ${escapeHTML(aviso.created_by || 'Desconocido')}</strong><br>
+    <small>
+        🕒 ${aviso.created_at
+                        ? new Date(aviso.created_at).toLocaleString('es-MX')
+                        : 'Sin fecha'}
+    </small>
+</td>
             <td data-label="Estado">
                 ${esAdmin ? `
                 <select class="select-estado ${estado}" onchange="cambiarEstadoAviso('${aviso.id}', this.value)">
