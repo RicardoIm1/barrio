@@ -137,8 +137,8 @@ class API {
       const response = await fetch(API_BASE_URL, {
         method: 'POST',
         headers: {
-/*             'Content-Type': 'text/plain;charset=utf-8' */
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain;charset=utf-8'
+            /* 'Content-Type': 'application/json' */
         },
         body: JSON.stringify(body)
       });
