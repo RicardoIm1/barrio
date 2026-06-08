@@ -337,7 +337,7 @@
         if (!apiKey || !usuario.email) return;
 
         try {
-            const url = `https://script.google.com/macros/s/AKfycbz45YHIU3dm_M2j5asPpItsnJMR5LxkWo6y7o_vy2SL5gjWaEShnsqbsnxqUavbPyWk/exec?accion=OBTENER_NOTIFICACIONES&email=${encodeURIComponent(usuario.email)}&soloNoLeidas=true&api_key=${apiKey}`;
+            const url = `https://script.google.com/macros/s/AKfycbzRCoX4a5qOTlU1mZ4jIFSIHKEcjsFwS8cKHZbbV1MJkwcpBZUz30CyyIQcTb14SeU-/exec?accion=OBTENER_NOTIFICACIONES&email=${encodeURIComponent(usuario.email)}&soloNoLeidas=true&api_key=${apiKey}`;
             const response = await fetch(url);
             const data = await response.json();
 
@@ -384,7 +384,7 @@
     async function marcarNotificacion(id, avisoId) {
         const apiKey = localStorage.getItem('api_key');
         try {
-            await fetch(`https://script.google.com/macros/s/AKfycbz45YHIU3dm_M2j5asPpItsnJMR5LxkWo6y7o_vy2SL5gjWaEShnsqbsnxqUavbPyWk/exec?accion=MARCAR_NOTIFICACION_LEIDA&id=${id}&api_key=${apiKey}`);
+            await fetch(`https://script.google.com/macros/s/AKfycbzRCoX4a5qOTlU1mZ4jIFSIHKEcjsFwS8cKHZbbV1MJkwcpBZUz30CyyIQcTb14SeU-/exec?accion=MARCAR_NOTIFICACION_LEIDA&id=${id}&api_key=${apiKey}`);
             if (avisoId) window.location.href = `/barrio/aviso.html?id=${avisoId}`;
             cargarNotificaciones();
         } catch (e) { console.error(e); }
