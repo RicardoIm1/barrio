@@ -1176,7 +1176,7 @@
                     </thead>
                     <tbody id="tabla-avisos-cuerpo">
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 15px; color: #777;">Cargando registros
+                            <td colspan="6" style="text-align: center; padding: 15px; color: #777;">Cargando registros
                                 vecinales...</td>
                         </tr>
                     </tbody>
@@ -1249,7 +1249,7 @@
                             </thead>
                             <tbody id="tabla-usuarios-cuerpo">
                                 <tr>
-                                    <td colspan="5">Cargando usuarios...</td>
+                                    <td colspan="6">Cargando usuarios...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1455,7 +1455,7 @@
         async function cargarAvisosParaAdmin() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
             }
 
             try {
@@ -1463,7 +1463,7 @@
                 const usuario = API.getUsuarioActual();
 
                 if (!apiKey || !usuario) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
                     return;
                 }
 
@@ -1503,7 +1503,7 @@
                 }
 
                 if (!avisos || avisos.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
                     todosLosAvisos = [];
                     return;
                 }
@@ -1540,7 +1540,7 @@
             } catch (error) {
                 console.error('❌ Error:', error);
                 if (tbody) {
-                    tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || 'Error de conexión'}</td></tr>`;
                 }
             }
         }
@@ -1561,7 +1561,7 @@
             }
 
             if (avisosFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
                 return;
             }
 
@@ -2015,7 +2015,7 @@
 
             } catch (error) {
                 console.error('Error cargando usuarios:', error);
-                tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ Error: ${error.message}</td></tr>`;
+                tablaUsuarios.innerHTML = `<tr><td colspan="6">❌ Error: ${error.message}</td></tr>`;
             }
         }
 
@@ -2296,7 +2296,7 @@
                     const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
                     if (tablaUsuarios) {
                         if (usuariosFiltrados.length === 0) {
-                            tablaUsuarios.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
+                            tablaUsuarios.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
                         } else {
                             const escapeHtml = (str) => {
                                 if (!str) return '';
