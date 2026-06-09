@@ -1222,6 +1222,7 @@
                     return;
                 }
 
+                // Modificar la parte donde se mapean los avisos en cargarAvisosParaAdmin
                 todosLosAvisos = avisos.map(aviso => ({
                     id: aviso.id,
                     titulo: aviso.titulo || 'Sin título',
@@ -1234,7 +1235,17 @@
                     ubicacion: aviso.ubicacion || '',
                     fecha_evento: aviso.fecha_evento || '',
                     created_at: aviso.created_at,
-                    destacado: aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1 || aviso.destacado === 'true'
+                    destacado: aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1 || aviso.destacado === 'true',
+
+                    // === NUEVOS CAMPOS PARA ESTADÍSTICAS ===
+                    vistas: aviso.vistas || aviso.visitas || 0,
+                    comentarios_count: aviso.comentarios_count || aviso.total_comentarios || 0,
+                    votos_positivos: aviso.votos_positivos || aviso.likes || aviso.puntuacion_positiva || 0,
+                    votos_negativos: aviso.votos_negativos || aviso.dislikes || aviso.puntuacion_negativa || 0,
+
+                    // Información del autor
+                    nombre_autor: aviso.nombre_autor || aviso.autor_nombre || aviso.created_by_nombre,
+                    email: aviso.email || aviso.autor_email || aviso.created_by_email
                 }));
 
                 console.log(`✅ Cargados ${todosLosAvisos.length} avisos`);
