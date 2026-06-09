@@ -13,275 +13,299 @@
     <link rel="manifest" href="/barrio/manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
-        /* ===== TABLA CORPORATIVA ELEGANTE ===== */
-        /* Solo para el panel de administración */
+        /* ===== MEJORAS VISUALES - SIN ELIMINAR CLASES ===== */
 
-        /* Contenedor de la tabla */
-        .admin-tabla-wrapper {
-            max-height: 70vh;
-            overflow-y: auto;
-            overflow-x: auto;
+        /* Mejora de tabs - más elegantes */
+        #admin-tabs {
+            margin-bottom: 32px;
+            border-bottom: 1px solid #e2e8f0;
+            gap: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .filtro {
+            font-weight: 500;
+            padding: 0.6rem 1.5rem;
+            border-radius: 40px;
+            transition: all 0.25s ease;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .filtro:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+            border-color: #cbd5e1;
+        }
+
+        /* Tarjetas más elegantes */
+        .tarjeta {
+            border-radius: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #eef2ff;
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+            border-color: #c7d2fe;
+        }
+
+        .tarjeta.destacada {
+            background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+            border: 1px solid #fbbf24;
+        }
+
+        /* Botones más suaves */
+        .boton {
+            border-radius: 40px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .boton:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.02);
+        }
+
+        /* Header más moderno */
+        .admin-header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+        }
+
+        .admin-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        /* Formularios más limpios */
+        .formulario {
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef2ff;
+        }
+
+        .campo input,
+        .campo select,
+        .campo textarea {
             border-radius: 12px;
-            scroll-behavior: smooth;
-            background: transparent;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
         }
 
-        /* Tabla principal */
-        .admin-tabla-wrapper .tabla-admin {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            text-align: left;
-            font-size: 0.85rem;
-            font-family: inherit;
+        .campo input:focus,
+        .campo select:focus,
+        .campo textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        /* Encabezados - Fijos y elegantes */
-        .admin-tabla-wrapper .tabla-admin thead th {
-            position: sticky;
-            top: 0;
+        /* ===== TABLA MEJORADA ===== */
+
+        /* Encabezados más elegantes */
+        .tabla-admin thead th {
             background: #f8fafc;
             color: #1e293b;
             font-weight: 600;
-            padding: 14px 16px;
-            font-size: 0.8rem;
             text-transform: uppercase;
+            font-size: 0.75rem;
             letter-spacing: 0.5px;
-            z-index: 20;
             border-bottom: 2px solid #e2e8f0;
-            white-space: nowrap;
         }
 
-        .admin-tabla-wrapper .tabla-admin th:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-
-        .admin-tabla-wrapper .tabla-admin th:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* Filas - Efecto tarjeta */
-        .admin-tabla-wrapper .tabla-admin tbody tr {
+        /* Filas con mejor contraste */
+        .tabla-admin tbody tr {
             background: white;
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .admin-tabla-wrapper .tabla-admin tbody tr:hover {
-            background: #fefdf8;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px #e2e8f0;
+        .tabla-admin tbody tr:nth-child(even) {
+            background: #fafcff;
+        }
+
+        /* Hover más sutil pero elegante */
+        .tabla-admin tbody tr:hover {
+            background: #ffffff;
+            box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px #e2e8f0;
             transform: translateX(4px);
         }
 
-        /* Celdas */
-        .admin-tabla-wrapper .tabla-admin td {
+        /* Rayo lateral más delgado y elegante */
+        .tabla-admin tbody tr::before {
+            width: 3px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        /* Celdas mejor espaciadas */
+        .tabla-admin td {
             padding: 14px 16px;
-            border: none;
-            vertical-align: middle;
-            background: inherit;
             color: #334155;
         }
 
-        /* Primera celda - ID */
-        .admin-tabla-wrapper .tabla-admin tbody tr td:first-child {
-            border-radius: 12px 0 0 12px;
+        /* ID más visible */
+        .tabla-admin tbody tr td:first-child {
+            font-family: 'SF Mono', 'Monaco', monospace;
             font-weight: 500;
-            font-family: monospace;
             color: #3b82f6;
-            font-size: 0.75rem;
-        }
-
-        /* Última celda */
-        .admin-tabla-wrapper .tabla-admin tbody tr td:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* Miniaturas de imagen */
-        .admin-tabla-wrapper .tabla-admin td img {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            background: #f1f5f9;
-        }
-
-        .admin-tabla-wrapper .tabla-admin tr:hover td img {
-            transform: scale(1.05);
-        }
-
-        /* Estadísticas en línea */
-        .admin-tabla-wrapper .tabla-admin td span[title] {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
             font-size: 0.7rem;
-            color: #64748b;
+            letter-spacing: 0.3px;
         }
 
-        /* Botones de acción */
-        .admin-tabla-wrapper .acciones-botones {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+        /* Imágenes con borde sutil */
+        .tabla-admin td img {
+            border-radius: 10px;
+            border: 1px solid #eef2ff;
         }
 
-        .admin-tabla-wrapper .accion-btn {
-            padding: 6px 14px;
+        /* Estadísticas más limpias */
+        .tabla-admin td span[title] {
+            background: #f1f5f9;
+            padding: 3px 8px;
             border-radius: 20px;
-            border: none;
-            cursor: pointer;
             font-size: 0.7rem;
             font-weight: 500;
-            transition: all 0.2s ease;
-            font-family: inherit;
+            color: #475569;
         }
 
-        .admin-tabla-wrapper .accion-editar {
+        /* Botones de acción modernos */
+        .accion-btn {
+            border-radius: 24px;
+            padding: 5px 14px;
+            font-weight: 500;
+        }
+
+        .accion-editar {
             background: #eef2ff;
             color: #3b82f6;
         }
 
-        .admin-tabla-wrapper .accion-editar:hover {
+        .accion-editar:hover {
             background: #3b82f6;
             color: white;
             transform: translateY(-1px);
         }
 
-        .admin-tabla-wrapper .accion-eliminar {
+        .accion-eliminar {
             background: #fef2f2;
             color: #ef4444;
         }
 
-        .admin-tabla-wrapper .accion-eliminar:hover {
+        .accion-eliminar:hover {
             background: #ef4444;
             color: white;
             transform: translateY(-1px);
         }
 
-        /* Selector de estado */
-        .admin-tabla-wrapper .select-estado {
-            padding: 5px 12px;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            background: white;
-            cursor: pointer;
-            font-size: 0.7rem;
+        /* Selector de estado más refinado */
+        .select-estado {
+            border-radius: 24px;
+            padding: 5px 14px;
             font-weight: 500;
-            transition: all 0.2s ease;
-            font-family: inherit;
+            font-size: 0.7rem;
+            border: 1px solid #e2e8f0;
         }
 
-        .admin-tabla-wrapper .select-estado:hover {
-            border-color: #cbd5e1;
-        }
-
-        .admin-tabla-wrapper .select-estado.pendiente {
+        .select-estado.pendiente {
             background: #fffbeb;
             color: #d97706;
             border-color: #fde68a;
         }
 
-        .admin-tabla-wrapper .select-estado.activo {
+        .select-estado.activo {
             background: #ecfdf5;
             color: #059669;
             border-color: #a7f3d0;
         }
 
-        .admin-tabla-wrapper .select-estado.rechazado {
+        .select-estado.rechazado {
             background: #fef2f2;
             color: #dc2626;
             border-color: #fecaca;
         }
 
-        /* Badges de estado */
-        .admin-tabla-wrapper .badge-estado {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
+        /* Badges más elegantes */
+        .badge-estado {
+            border-radius: 24px;
+            padding: 4px 14px;
             font-weight: 500;
         }
 
-        .admin-tabla-wrapper .badge-pendiente {
-            background: #fffbeb;
-            color: #d97706;
+        /* Paginación mejorada */
+        .pagina {
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
-        .admin-tabla-wrapper .badge-activo {
+        .pagina:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .pagina.activa {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* Buscador más moderno */
+        .buscador-universal {
+            border-radius: 20px;
+            border: 1px solid #eef2ff;
+            background: white;
+        }
+
+        .buscador-universal-input {
+            border-radius: 40px;
+            border: 1px solid #e2e8f0;
+            background: #fafcff;
+        }
+
+        .buscador-universal-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Tarjetas de usuario mejoradas */
+        .tarjeta-usuario {
+            border-radius: 16px;
+            transition: all 0.25s ease;
+        }
+
+        .tarjeta-usuario:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-usuario {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+
+        .rol-admin {
+            background: #eef2ff;
+            color: #3b82f6;
+        }
+
+        .rol-usuario {
             background: #ecfdf5;
             color: #059669;
         }
 
-        .admin-tabla-wrapper .badge-rechazado {
-            background: #fef2f2;
-            color: #dc2626;
+        /* Grids mejor espaciados */
+        .avisos-grid {
+            gap: 1.75rem;
         }
 
-        /* ===== RESPONSIVE SOLO PARA LA TABLA ===== */
-        @media (max-width: 768px) {
-
-            .admin-tabla-wrapper .tabla-admin,
-            .admin-tabla-wrapper .tabla-admin thead,
-            .admin-tabla-wrapper .tabla-admin tbody,
-            .admin-tabla-wrapper .tabla-admin tr,
-            .admin-tabla-wrapper .tabla-admin th,
-            .admin-tabla-wrapper .tabla-admin td {
-                display: block;
-            }
-
-            .admin-tabla-wrapper .tabla-admin thead tr {
-                display: none;
-            }
-
-            .admin-tabla-wrapper .tabla-admin tbody tr {
-                margin-bottom: 16px;
-                border-radius: 16px;
-                padding: 8px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            }
-
-            .admin-tabla-wrapper .tabla-admin tbody tr:hover {
-                transform: translateX(4px);
-            }
-
-            .admin-tabla-wrapper .tabla-admin td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 12px;
-                border-bottom: 1px solid #f1f5f9;
-            }
-
-            .admin-tabla-wrapper .tabla-admin td:last-child {
-                border-bottom: none;
-            }
-
-            .admin-tabla-wrapper .tabla-admin td:before {
-                content: attr(data-label);
-                font-weight: 600;
-                font-size: 0.7rem;
-                width: 35%;
-                color: #64748b;
-                text-transform: uppercase;
-                letter-spacing: 0.3px;
-            }
-
-            .admin-tabla-wrapper .tabla-admin tbody tr td:first-child {
-                border-radius: 12px 12px 0 0;
-            }
-
-            .admin-tabla-wrapper .tabla-admin tbody tr td:last-child {
-                border-radius: 0 0 12px 12px;
-            }
-
-            .admin-tabla-wrapper .acciones-botones {
-                justify-content: flex-end;
-                width: 100%;
-            }
+        .usuarios-grid {
+            gap: 1.25rem;
         }
     </style>
+
 </head>
 
 <body>
@@ -761,6 +785,7 @@
             }
         }
 
+        // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
         // ==================== RENDERIZAR TABLA COMPLETA CON TODOS LOS DATOS ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
