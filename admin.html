@@ -13,6 +13,22 @@
     <link rel="manifest" href="/barrio/manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
+        /* Eliminar las barras de scroll */
+        /* Ocultar todas las barras de scroll del body */
+        body {
+            overflow-y: scroll;
+            /* Mantiene el scroll funcional */
+        }
+
+        body::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Para Firefox */
+        body {
+            scrollbar-width: none;
+        }
+
         /* Estilos adicionales para asegurar que los tabs funcionen */
         .tab {
             display: none;
@@ -1233,26 +1249,26 @@
                     <button type="submit" class="boton" style="margin-top: 10px;">👥 Crear Cuenta de Usuario</button>
                 </form> -->
 
-                <!-- Tabla de usuarios existentes -->
-                <div class="admin-tabla-wrapper">
-                    <table class="tabla-admin">
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Nombre</th>
-                                <th>Rol</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabla-usuarios-cuerpo">
-                            <tr>
-                                <td colspan="5">Cargando usuarios...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Tabla de usuarios existentes -->
+            <div class="admin-tabla-wrapper">
+                <table class="tabla-admin">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Nombre</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-usuarios-cuerpo">
+                        <tr>
+                            <td colspan="5">Cargando usuarios...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
     </main>
     <div id="footer-container"></div>
