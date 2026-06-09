@@ -12,1947 +12,273 @@
     <link rel="stylesheet" href="/barrio/css/estilo.css">
     <link rel="manifest" href="/barrio/manifest.json">
     <meta name="theme-color" content="#2c3e50">
-    <!-- <style>
-        /* Estilos adicionales para asegurar que los tabs funcionen */
-        .tab {
-            display: none;
-        }
+    <style>
+        /* ===== TABLA CORPORATIVA ELEGANTE ===== */
+        /* Solo para el panel de administración */
 
-        .tab.activo {
-            display: block;
-        }
-
-        .filtro.activo {
-            background: var(--color-primario);
-            color: white;
-            border-color: var(--color-primario);
-        }
-
-        #admin-tabs {
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--color-borde);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        .filtro {
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid var(--color-borde);
-            padding: 0.6rem 1.2rem;
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .filtro:hover {
-            background: var(--color-fondo);
-        }
-
-        .filtro.activo {
-            background: var(--color-primario);
-            color: white;
-            border-color: var(--color-primario);
-        }
-
-        /* ========== GRID DE AVISOS ========== */
-        .avisos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        /* Tarjeta de avisos mejorada */
-        .tarjeta {
-            background: white;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tarjeta:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Tarjeta destacada (más reciente) */
-        .tarjeta.destacada {
-            grid-column: span 2;
-            grid-row: span 1;
-            background: linear-gradient(135deg, #fff 0%, #fef9e6 100%);
-            border: 2px solid #ff8c42;
-            box-shadow: 0 4px 15px rgba(255, 140, 66, 0.2);
-        }
-
-        .tarjeta.destacada .tarjeta-titulo {
-            font-size: 1.3rem;
-        }
-
-        .tarjeta.destacada .tarjeta-contenido {
-            font-size: 1rem;
-        }
-
-        /* Badge de "Nuevo" o "Reciente" */
-        .reciente-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #ff8c42, #f5b042);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 1;
-        }
-
-        .tarjeta-titulo {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            padding-right: 60px;
-        }
-
-        .tarjeta-fecha {
-            font-size: 0.7rem;
-            color: var(--color-texto-claro);
-            margin-bottom: 0.5rem;
-        }
-
-        .tarjeta-contenido {
-            font-size: 0.9rem;
-            color: var(--color-texto);
-            margin-bottom: 0.8rem;
-            flex-grow: 1;
-        }
-
-        .tarjeta-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            font-size: 0.75rem;
-            margin-bottom: 0.8rem;
-        }
-
-        /* Miniaturas de imagen */
-        .tarjeta-imagen {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 0.5rem;
-            margin-bottom: 0.8rem;
-            background: #f0f0f0;
-        }
-
-        .tarjeta.destacada .tarjeta-imagen {
-            height: 200px;
-        }
-
-        /* Video embebido pequeño */
-        .tarjeta-video {
-            margin-bottom: 0.8rem;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        .tarjeta-video iframe {
-            width: 100%;
-            height: 160px;
-            border: none;
-        }
-
-        .tarjeta.destacada .tarjeta-video iframe {
-            height: 200px;
-        }
-
-        .grupo-botones {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: auto;
-        }
-
-        .boton-chico {
-            padding: 0.3rem 0.8rem;
-            font-size: 0.75rem;
-            width: auto;
-        }
-
-        .boton-secundario {
-            background: var(--color-fondo);
-            color: var(--color-primario);
-            border: 1px solid var(--color-borde);
-        }
-
-        .boton-secundario:hover {
-            background: var(--color-borde);
-        }
-
-        /* ========== GRID DE USUARIOS ========== */
-        .usuarios-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .tarjeta-usuario {
-            background: white;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .tarjeta-usuario:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar-usuario {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .info-usuario {
-            flex-grow: 1;
-        }
-
-        .info-usuario strong {
-            display: block;
-            font-size: 0.95rem;
-        }
-
-        .info-usuario small {
-            font-size: 0.7rem;
-            color: var(--color-texto-claro);
-        }
-
-        .rol-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .rol-admin {
-            background: #dc3545;
-            color: white;
-        }
-
-        .rol-usuario {
-            background: #28a745;
-            color: white;
-        }
-
-        /* Paginación */
-        .paginacion {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .paginacion-botones {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .pagina {
-            padding: 0.3rem 0.8rem;
-            border: 1px solid var(--color-borde);
-            background: white;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pagina:hover {
-            background: var(--color-fondo);
-        }
-
-        .pagina.activa {
-            background: var(--color-primario);
-            color: white;
-            border-color: var(--color-primario);
-        }
-
-        /* Header decorativo */
-        .admin-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem 1rem;
-            background: linear-gradient(135deg, #1e4620, #2b7a2b);
-            border-radius: 1rem;
-            color: white;
-        }
-
-        .admin-header h1 {
-            font-size: 1.6rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .admin-header p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-
-        /* Estilos para formularios */
-        .formulario {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-        }
-
-        .campo {
-            margin-bottom: 1rem;
-        }
-
-        .campo label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .campo input,
-        .campo select,
-        .campo textarea {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.5rem;
-            font-family: inherit;
-        }
-
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .preview-container {
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .preview-imagen {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 0.5rem;
-            border: 1px solid var(--color-borde);
-        }
-
-        /* Botones principales */
-        .boton {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .boton:hover {
-            background: linear-gradient(135deg, #e69a2e, #e67300);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .boton-peligro {
-            background: #dc3545;
-        }
-
-        .boton-peligro:hover {
-            background: #c82333;
-        }
-
-        .boton-exito {
-            background: #28a745;
-        }
-
-        .boton-exito:hover {
-            background: #218838;
-        }
-
-        /* ========== TABLA MEJORADA CON MOVIMIENTO ========== */
-
-        /* Contenedor de la tabla con scroll suave */
+        /* Contenedor de la tabla */
         .admin-tabla-wrapper {
             max-height: 70vh;
             overflow-y: auto;
             overflow-x: auto;
             border-radius: 12px;
             scroll-behavior: smooth;
+            background: transparent;
         }
 
         /* Tabla principal */
-        .tabla-admin {
+        .admin-tabla-wrapper .tabla-admin {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 8px;
-            /* Espacio entre filas */
+            border-spacing: 0 10px;
             text-align: left;
             font-size: 0.85rem;
-        }
-
-        /* Encabezados fijos */
-        .tabla-admin thead th {
-            position: sticky;
-            top: 0;
-            background: linear-gradient(135deg, #1e4620, #2b7a2b);
-            color: white;
-            font-weight: 600;
-            padding: 14px 12px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            z-index: 20;
-        }
-
-        /* Primera columna (ID) - borde redondeado izquierdo */
-        .tabla-admin th:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-
-        /* Última columna (Acciones) - borde redondeado derecho */
-        .tabla-admin th:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* ========== ESTILO DE FILAS ========== */
-        .tabla-admin tbody tr {
-            background: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 12px;
-            position: relative;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Filas alternadas (zebra) */
-        .tabla-admin tbody tr:nth-child(even) {
-            background: #f9fafb;
-        }
-
-        /* ========== EFECTO HOVER CON MOVIMIENTO ========== */
-        .tabla-admin tbody tr:hover {
-            transform: translateX(8px) translateY(-2px);
-            background: linear-gradient(135deg, #fff8e7, #ffffff);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 0 0 2px #ff8c42 inset;
-            cursor: pointer;
-        }
-
-        /* Efecto de escala sutil en la imagen al hacer hover */
-        .tabla-admin tbody tr:hover td:first-child {
-            border-radius: 12px 0 0 12px;
-        }
-
-        /* Celdas internas */
-        .tabla-admin td {
-            padding: 14px 12px;
-            border: none;
-            vertical-align: middle;
-            transition: all 0.2s ease;
-        }
-
-        /* Primera celda - borde redondeado izquierdo */
-        .tabla-admin tbody tr td:first-child {
-            border-radius: 12px 0 0 12px;
-            font-weight: 600;
-            font-family: monospace;
-            color: #2c7da0;
-        }
-
-        /* Última celda - borde redondeado derecho */
-        .tabla-admin tbody tr td:last-child {
-            border-radius: 0 12px 12px 0;
-        }
-
-        /* ========== ESTILO DE IMAGEN MINIATURA ========== */
-        .tabla-admin td img {
-            width: 45px;
-            height: 45px;
-            object-fit: cover;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .tabla-admin tr:hover td img {
-            transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        /* ========== ESTADÍSTICAS EN EL TÍTULO ========== */
-        .tabla-admin td span[title] {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            padding: 2px 6px;
-            background: #f0f0f0;
-            border-radius: 20px;
-            transition: all 0.2s;
-        }
-
-        .tabla-admin tr:hover td span[title] {
-            background: #e8e8e8;
-            transform: scale(1.02);
-        }
-
-        /* ========== BOTONES DE ACCIÓN MEJORADOS ========== */
-        .acciones-botones {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .accion-btn {
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .accion-editar {
-            background: #007bff;
-            color: white;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .accion-editar:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-        }
-
-        .accion-eliminar {
-            background: #dc3545;
-            color: white;
-        }
-
-        .accion-eliminar:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-        }
-
-        /* ========== SELECTOR DE ESTADO ========== */
-        .select-estado {
-            padding: 6px 10px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .select-estado:hover {
-            transform: scale(1.02);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .select-estado.pendiente {
-            background: #fff3cd;
-            color: #856404;
-            border-color: #ffc107;
-        }
-
-        .select-estado.activo {
-            background: #d4edda;
-            color: #155724;
-            border-color: #28a745;
-        }
-
-        .select-estado.rechazado {
-            background: #f8d7da;
-            color: #721c24;
-            border-color: #dc3545;
-        }
-
-        /* ========== BADGES DE ESTADO ========== */
-        .badge-estado {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .badge-pendiente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-activo {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-rechazado {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        /* ========== ANIMACIÓN DE CARGA ========== */
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.6;
-            }
-        }
-
-        .cargando-row td {
-            animation: pulse 1.5s infinite;
-        }
-
-        /* ========== EFECTO DE RAYO AL HOVER (opcional) ========== */
-        .tabla-admin tbody tr::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            border-radius: 4px;
-            transition: height 0.3s ease;
-            z-index: 1;
-        }
-
-        .tabla-admin tbody tr:hover::before {
-            height: 100%;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-
-            .tabla-admin,
-            .tabla-admin thead,
-            .tabla-admin tbody,
-            .tabla-admin th,
-            .tabla-admin td,
-            .tabla-admin tr {
-                display: block;
-            }
-
-            .tabla-admin thead tr {
-                display: none;
-            }
-
-            .tabla-admin tbody tr {
-                margin-bottom: 16px;
-                border-radius: 16px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            }
-
-            .tabla-admin tbody tr:hover {
-                transform: translateX(4px);
-            }
-
-            .tabla-admin td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 12px;
-                border-bottom: 1px solid #eee;
-            }
-
-            .tabla-admin td:last-child {
-                border-bottom: none;
-            }
-
-            .tabla-admin td:before {
-                content: attr(data-label);
-                font-weight: 700;
-                width: 35%;
-                color: #2c7da0;
-            }
-
-            .tabla-admin tbody tr td:first-child {
-                border-radius: 12px 12px 0 0;
-            }
-
-            .tabla-admin tbody tr td:last-child {
-                border-radius: 0 0 12px 12px;
-            }
-        }
-
-        /* Estilo para selectores de estado */
-        .select-estado {
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: 1px solid var(--color-borde);
-            background: white;
-            cursor: pointer;
-            font-size: 0.75rem;
-        }
-
-        .select-estado.pendiente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .select-estado.activo {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .select-estado.rechazado {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .admin-filtros-flex {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 0.5rem;
-            border: 1px solid var(--color-borde);
-            flex-wrap: wrap;
-        }
-
-        .admin-filtros-flex div {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        .badge-estado {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: bold;
-        }
-
-        .badge-pendiente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-activo {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-rechazado {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Botones de acción en tabla */
-        .acciones-botones {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .accion-btn {
-            padding: 4px 8px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        .accion-editar {
-            background: #007bff;
-            color: white;
-        }
-
-        .accion-eliminar {
-            background: #dc3545;
-            color: white;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
-            .avisos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
-            }
-
-            .tarjeta.destacada {
-                grid-column: span 1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .avisos-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .tarjeta.destacada {
-                grid-column: span 1;
-                order: -1;
-            }
-
-            .tarjeta.destacada .tarjeta-titulo {
-                font-size: 1.1rem;
-            }
-
-            .usuarios-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tarjeta-usuario {
-                padding: 0.8rem;
-            }
-
-            .admin-header h1 {
-                font-size: 1.3rem;
-            }
-
-            .grupo-botones {
-                flex-direction: column;
-            }
-
-            .boton-chico {
-                width: 100%;
-                text-align: center;
-            }
-
-            .tabla-admin,
-            .tabla-admin thead,
-            .tabla-admin tbody,
-            .tabla-admin th,
-            .tabla-admin td,
-            .tabla-admin tr {
-                display: block;
-            }
-
-            .tabla-admin thead tr {
-                display: none;
-            }
-
-            .tabla-admin tr {
-                margin-bottom: 15px;
-                border: 1px solid var(--color-borde);
-                border-radius: 8px;
-                padding: 10px;
-            }
-
-            .tabla-admin td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 8px;
-                border-bottom: 1px solid #eee;
-            }
-
-            .tabla-admin td:before {
-                content: attr(data-label);
-                font-weight: bold;
-                width: 40%;
-            }
-
-            .acciones-botones {
-                justify-content: flex-end;
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-
-            .tarjeta-imagen,
-            .tarjeta.destacada .tarjeta-imagen {
-                height: 140px;
-            }
-
-            .tarjeta-video iframe,
-            .tarjeta.destacada .tarjeta-video iframe {
-                height: 140px;
-            }
-
-            .tarjeta-titulo {
-                font-size: 1rem;
-            }
-
-            .reciente-badge {
-                font-size: 0.6rem;
-                padding: 3px 8px;
-            }
-        }
-
-        @media (min-width: 1400px) {
-            .avisos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-
-            .tarjeta.destacada {
-                grid-column: span 2;
-                grid-row: span 1;
-            }
-
-            .usuarios-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-        }
-
-        .filtro.activo {
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            color: white;
-            border-color: transparent;
-        }
-
-        .filtro:hover {
-            background: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .cargando {
-            text-align: center;
-            padding: 2rem;
-            color: var(--color-texto-claro);
-        }
-    </style>
-    <style>
-        #tab-usuarios-btn {
-            display: none;
-        }
-
-        #tab-usuarios-btn[style*="block"] {
-            display: block !important;
-        }
-    </style>
-    <style>
-        /* Buscador Universal */
-        .buscador-universal {
-            background: white;
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--color-borde);
-        }
-
-        .buscador-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .buscador-icon {
-            position: absolute;
-            left: 12px;
-            font-size: 1.1rem;
-            color: #aaa;
-        }
-
-        .buscador-universal-input {
-            width: 100%;
-            padding: 0.8rem 2.5rem 0.8rem 2.5rem;
-            border: 2px solid var(--color-borde);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .buscador-universal-input:focus {
-            outline: none;
-            border-color: var(--color-primario);
-            box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
-        }
-
-        .buscador-limpiar {
-            position: absolute;
-            right: 12px;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #999;
-            padding: 0 5px;
-        }
-
-        .buscador-limpiar:hover {
-            color: #e74c3c;
-        }
-
-        .buscador-filtros {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .filtro-busqueda {
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            background: var(--color-fondo);
-            transition: all 0.2s;
-        }
-
-        .filtro-busqueda:hover {
-            background: var(--color-borde);
-        }
-
-        .filtro-busqueda.activo {
-            background: var(--color-primario);
-            color: white;
-        }
-
-        /* Resultados de búsqueda */
-        .resultados-busqueda {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-            color: #666;
-            display: none;
-        }
-
-        .resultados-busqueda span {
-            font-weight: bold;
-            color: var(--color-primario);
-        }
-
-        .sin-resultados {
-            text-align: center;
-            padding: 2rem;
-            color: #999;
-        }
-    </style> -->
-    <style>
-        /* ===== ESTILOS BASE Y TABS ===== */
-        .tab {
-            display: none;
-        }
-
-        .tab.activo {
-            display: block;
-        }
-
-        #admin-tabs {
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--color-borde);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        .filtro {
-            cursor: pointer;
-            background: transparent;
-            border: 1px solid var(--color-borde);
-            padding: 0.6rem 1.2rem;
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .filtro:hover {
-            background: var(--color-fondo);
-            transform: translateY(-2px);
-        }
-
-        .filtro.activo {
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            color: white;
-            border-color: transparent;
-        }
-
-        /* ===== BOTONES PRINCIPALES ===== */
-        .boton {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .boton:hover {
-            background: linear-gradient(135deg, #e69a2e, #e67300);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .boton-peligro {
-            background: #dc3545;
-        }
-
-        .boton-peligro:hover {
-            background: #c82333;
-        }
-
-        .boton-exito {
-            background: #28a745;
-        }
-
-        .boton-exito:hover {
-            background: #218838;
-        }
-
-        .boton-secundario {
-            background: var(--color-fondo);
-            color: var(--color-primario);
-            border: 1px solid var(--color-borde);
-        }
-
-        .boton-secundario:hover {
-            background: var(--color-borde);
-        }
-
-        .boton-chico {
-            padding: 0.3rem 0.8rem;
-            font-size: 0.75rem;
-            width: auto;
-        }
-
-        .grupo-botones {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: auto;
-        }
-
-        /* ===== FORMULARIOS ===== */
-        .formulario {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-        }
-
-        .campo {
-            margin-bottom: 1rem;
-        }
-
-        .campo label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .campo input,
-        .campo select,
-        .campo textarea {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.5rem;
             font-family: inherit;
         }
 
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .preview-container {
-            margin-top: 0.5rem;
-            display: none;
-        }
-
-        .preview-imagen {
-            max-width: 100%;
-            max-height: 150px;
-            border-radius: 0.5rem;
-            border: 1px solid var(--color-borde);
-        }
-
-        /* ===== HEADER DECORATIVO ===== */
-        .admin-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem 1rem;
-            background: linear-gradient(135deg, #1e4620, #2b7a2b);
-            border-radius: 1rem;
-            color: white;
-        }
-
-        .admin-header h1 {
-            font-size: 1.6rem;
-            margin-bottom: 0.3rem;
-        }
-
-        .admin-header p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-        }
-
-        /* ===== GRID DE AVISOS (TARJETAS) ===== */
-        .avisos-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .tarjeta {
-            background: white;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tarjeta:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .tarjeta.destacada {
-            grid-column: span 2;
-            grid-row: span 1;
-            background: linear-gradient(135deg, #fff 0%, #fef9e6 100%);
-            border: 2px solid #ff8c42;
-            box-shadow: 0 4px 15px rgba(255, 140, 66, 0.2);
-        }
-
-        .tarjeta.destacada .tarjeta-titulo {
-            font-size: 1.3rem;
-        }
-
-        .tarjeta.destacada .tarjeta-contenido {
-            font-size: 1rem;
-        }
-
-        .tarjeta-titulo {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            padding-right: 60px;
-        }
-
-        .tarjeta-fecha {
-            font-size: 0.7rem;
-            color: var(--color-texto-claro);
-            margin-bottom: 0.5rem;
-        }
-
-        .tarjeta-contenido {
-            font-size: 0.9rem;
-            color: var(--color-texto);
-            margin-bottom: 0.8rem;
-            flex-grow: 1;
-        }
-
-        .tarjeta-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            font-size: 0.75rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .tarjeta-imagen {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 0.5rem;
-            margin-bottom: 0.8rem;
-            background: #f0f0f0;
-        }
-
-        .tarjeta.destacada .tarjeta-imagen {
-            height: 200px;
-        }
-
-        .tarjeta-video {
-            margin-bottom: 0.8rem;
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-
-        .tarjeta-video iframe {
-            width: 100%;
-            height: 160px;
-            border: none;
-        }
-
-        .tarjeta.destacada .tarjeta-video iframe {
-            height: 200px;
-        }
-
-        .reciente-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #ff8c42, #f5b042);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 1;
-        }
-
-        /* ===== GRID DE USUARIOS ===== */
-        .usuarios-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .tarjeta-usuario {
-            background: white;
-            border: 1px solid var(--color-borde);
-            border-radius: 0.75rem;
-            padding: 1rem;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .tarjeta-usuario:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar-usuario {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-        }
-
-        .info-usuario {
-            flex-grow: 1;
-        }
-
-        .info-usuario strong {
-            display: block;
-            font-size: 0.95rem;
-        }
-
-        .info-usuario small {
-            font-size: 0.7rem;
-            color: var(--color-texto-claro);
-        }
-
-        .rol-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .rol-admin {
-            background: #dc3545;
-            color: white;
-        }
-
-        .rol-usuario {
-            background: #28a745;
-            color: white;
-        }
-
-        /* ===== PAGINACIÓN ===== */
-        .paginacion {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .paginacion-botones {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .pagina {
-            padding: 0.3rem 0.8rem;
-            border: 1px solid var(--color-borde);
-            background: white;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .pagina:hover {
-            background: var(--color-fondo);
-        }
-
-        .pagina.activa {
-            background: var(--color-primario);
-            color: white;
-            border-color: var(--color-primario);
-        }
-
-        /* ===== FILTROS ADMIN ===== */
-        .admin-filtros-flex {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 0.5rem;
-            border: 1px solid var(--color-borde);
-            flex-wrap: wrap;
-        }
-
-        .admin-filtros-flex div {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        /* ===== TABLA MEJORADA CON MOVIMIENTO ===== */
-        .admin-tabla-wrapper {
-            max-height: 70vh;
-            overflow-y: auto;
-            overflow-x: auto;
-            border-radius: 12px;
-            scroll-behavior: smooth;
-        }
-
-        .tabla-admin {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 8px;
-            text-align: left;
-            font-size: 0.85rem;
-        }
-
-        .tabla-admin thead th {
+        /* Encabezados - Fijos y elegantes */
+        .admin-tabla-wrapper .tabla-admin thead th {
             position: sticky;
             top: 0;
-            background: linear-gradient(135deg, #1e4620, #2b7a2b);
-            color: white;
+            background: #f8fafc;
+            color: #1e293b;
             font-weight: 600;
-            padding: 14px 12px;
-            font-size: 0.85rem;
+            padding: 14px 16px;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             z-index: 20;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
         }
 
-        .tabla-admin th:first-child {
+        .admin-tabla-wrapper .tabla-admin th:first-child {
             border-radius: 12px 0 0 12px;
         }
 
-        .tabla-admin th:last-child {
+        .admin-tabla-wrapper .tabla-admin th:last-child {
             border-radius: 0 12px 12px 0;
         }
 
-        .tabla-admin tbody tr {
+        /* Filas - Efecto tarjeta */
+        .admin-tabla-wrapper .tabla-admin tbody tr {
             background: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
             border-radius: 12px;
-            position: relative;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .tabla-admin tbody tr:nth-child(even) {
-            background: #f9fafb;
+        .admin-tabla-wrapper .tabla-admin tbody tr:hover {
+            background: #fefdf8;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08), 0 0 0 1px #e2e8f0;
+            transform: translateX(4px);
         }
 
-        .tabla-admin tbody tr:hover {
-            transform: translateX(8px) translateY(-2px);
-            background: linear-gradient(135deg, #fff8e7, #ffffff);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 0 0 2px #ff8c42 inset;
-            cursor: pointer;
-        }
-
-        .tabla-admin tbody tr::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 0;
-            background: linear-gradient(135deg, #f5b042, #ff8c42);
-            border-radius: 4px;
-            transition: height 0.3s ease;
-            z-index: 1;
-        }
-
-        .tabla-admin tbody tr:hover::before {
-            height: 100%;
-        }
-
-        .tabla-admin td {
-            padding: 14px 12px;
+        /* Celdas */
+        .admin-tabla-wrapper .tabla-admin td {
+            padding: 14px 16px;
             border: none;
             vertical-align: middle;
-            transition: all 0.2s ease;
+            background: inherit;
+            color: #334155;
         }
 
-        .tabla-admin tbody tr td:first-child {
+        /* Primera celda - ID */
+        .admin-tabla-wrapper .tabla-admin tbody tr td:first-child {
             border-radius: 12px 0 0 12px;
-            font-weight: 600;
+            font-weight: 500;
             font-family: monospace;
-            color: #2c7da0;
+            color: #3b82f6;
+            font-size: 0.75rem;
         }
 
-        .tabla-admin tbody tr td:last-child {
+        /* Última celda */
+        .admin-tabla-wrapper .tabla-admin tbody tr td:last-child {
             border-radius: 0 12px 12px 0;
         }
 
-        .tabla-admin td img {
-            width: 45px;
-            height: 45px;
+        /* Miniaturas de imagen */
+        .admin-tabla-wrapper .tabla-admin td img {
+            width: 40px;
+            height: 40px;
             object-fit: cover;
             border-radius: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            background: #f1f5f9;
         }
 
-        .tabla-admin tr:hover td img {
+        .admin-tabla-wrapper .tabla-admin tr:hover td img {
             transform: scale(1.05);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
-        .tabla-admin td span[title] {
+        /* Estadísticas en línea */
+        .admin-tabla-wrapper .tabla-admin td span[title] {
             display: inline-flex;
             align-items: center;
-            gap: 3px;
-            padding: 2px 6px;
-            background: #f0f0f0;
-            border-radius: 20px;
-            transition: all 0.2s;
+            gap: 4px;
+            font-size: 0.7rem;
+            color: #64748b;
         }
 
-        .tabla-admin tr:hover td span[title] {
-            background: #e8e8e8;
-            transform: scale(1.02);
-        }
-
-        /* ===== BOTONES DE ACCIÓN EN TABLA ===== */
-        .acciones-botones {
+        /* Botones de acción */
+        .admin-tabla-wrapper .acciones-botones {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
 
-        .accion-btn {
-            padding: 6px 12px;
-            border-radius: 8px;
+        .admin-tabla-wrapper .accion-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
             border: none;
             cursor: pointer;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 500;
             transition: all 0.2s ease;
+            font-family: inherit;
         }
 
-        .accion-editar {
-            background: #007bff;
+        .admin-tabla-wrapper .accion-editar {
+            background: #eef2ff;
+            color: #3b82f6;
+        }
+
+        .admin-tabla-wrapper .accion-editar:hover {
+            background: #3b82f6;
             color: white;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
         }
 
-        .accion-editar:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        .admin-tabla-wrapper .accion-eliminar {
+            background: #fef2f2;
+            color: #ef4444;
         }
 
-        .accion-eliminar {
-            background: #dc3545;
+        .admin-tabla-wrapper .accion-eliminar:hover {
+            background: #ef4444;
             color: white;
+            transform: translateY(-1px);
         }
 
-        .accion-eliminar:hover {
-            background: #c82333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
-        }
-
-        /* ===== SELECTOR DE ESTADO ===== */
-        .select-estado {
-            padding: 6px 10px;
+        /* Selector de estado */
+        .admin-tabla-wrapper .select-estado {
+            padding: 5px 12px;
             border-radius: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid #e2e8f0;
             background: white;
             cursor: pointer;
             font-size: 0.7rem;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
 
-        .select-estado:hover {
-            transform: scale(1.02);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .admin-tabla-wrapper .select-estado:hover {
+            border-color: #cbd5e1;
         }
 
-        .select-estado.pendiente {
-            background: #fff3cd;
-            color: #856404;
-            border-color: #ffc107;
+        .admin-tabla-wrapper .select-estado.pendiente {
+            background: #fffbeb;
+            color: #d97706;
+            border-color: #fde68a;
         }
 
-        .select-estado.activo {
-            background: #d4edda;
-            color: #155724;
-            border-color: #28a745;
+        .admin-tabla-wrapper .select-estado.activo {
+            background: #ecfdf5;
+            color: #059669;
+            border-color: #a7f3d0;
         }
 
-        .select-estado.rechazado {
-            background: #f8d7da;
-            color: #721c24;
-            border-color: #dc3545;
+        .admin-tabla-wrapper .select-estado.rechazado {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
         }
 
-        /* ===== BADGES DE ESTADO ===== */
-        .badge-estado {
+        /* Badges de estado */
+        .admin-tabla-wrapper .badge-estado {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 500;
         }
 
-        .badge-pendiente {
-            background: #fff3cd;
-            color: #856404;
+        .admin-tabla-wrapper .badge-pendiente {
+            background: #fffbeb;
+            color: #d97706;
         }
 
-        .badge-activo {
-            background: #d4edda;
-            color: #155724;
+        .admin-tabla-wrapper .badge-activo {
+            background: #ecfdf5;
+            color: #059669;
         }
 
-        .badge-rechazado {
-            background: #f8d7da;
-            color: #721c24;
+        .admin-tabla-wrapper .badge-rechazado {
+            background: #fef2f2;
+            color: #dc2626;
         }
 
-        /* ===== BUSCADOR UNIVERSAL ===== */
-        .buscador-universal {
-            background: white;
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--color-borde);
-        }
-
-        .buscador-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .buscador-icon {
-            position: absolute;
-            left: 12px;
-            font-size: 1.1rem;
-            color: #aaa;
-        }
-
-        .buscador-universal-input {
-            width: 100%;
-            padding: 0.8rem 2.5rem 0.8rem 2.5rem;
-            border: 2px solid var(--color-borde);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .buscador-universal-input:focus {
-            outline: none;
-            border-color: var(--color-primario);
-            box-shadow: 0 0 0 3px rgba(30, 70, 32, 0.1);
-        }
-
-        .buscador-limpiar {
-            position: absolute;
-            right: 12px;
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #999;
-            padding: 0 5px;
-        }
-
-        .buscador-limpiar:hover {
-            color: #e74c3c;
-        }
-
-        .buscador-filtros {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .filtro-busqueda {
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            background: var(--color-fondo);
-            transition: all 0.2s;
-        }
-
-        .filtro-busqueda:hover {
-            background: var(--color-borde);
-        }
-
-        .filtro-busqueda.activo {
-            background: var(--color-primario);
-            color: white;
-        }
-
-        .resultados-busqueda {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-            color: #666;
-            display: none;
-        }
-
-        .resultados-busqueda span {
-            font-weight: bold;
-            color: var(--color-primario);
-        }
-
-        .sin-resultados {
-            text-align: center;
-            padding: 2rem;
-            color: #999;
-        }
-
-        /* ===== ANIMACIONES ===== */
-        @keyframes pulse {
-            0% {
-                opacity: 0.6;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.6;
-            }
-        }
-
-        .cargando-row td {
-            animation: pulse 1.5s infinite;
-        }
-
-        .cargando {
-            text-align: center;
-            padding: 2rem;
-            color: var(--color-texto-claro);
-        }
-
-        /* ===== UTILERIA ===== */
-        #tab-usuarios-btn {
-            display: none;
-        }
-
-        #tab-usuarios-btn[style*="block"] {
-            display: block !important;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .avisos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 2fr));
-            }
-
-            .tarjeta.destacada {
-                grid-column: span 1;
-            }
-        }
-
+        /* ===== RESPONSIVE SOLO PARA LA TABLA ===== */
         @media (max-width: 768px) {
-            .avisos-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
 
-            .tarjeta.destacada {
-                grid-column: span 1;
-                order: -1;
-            }
-
-            .tarjeta.destacada .tarjeta-titulo {
-                font-size: 1.1rem;
-            }
-
-            .usuarios-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .tarjeta-usuario {
-                padding: 0.8rem;
-            }
-
-            .admin-header h1 {
-                font-size: 1.3rem;
-            }
-
-            .grupo-botones {
-                flex-direction: column;
-            }
-
-            .boton-chico {
-                width: 100%;
-                text-align: center;
-            }
-
-            /* Tabla responsive */
-            .tabla-admin,
-            .tabla-admin thead,
-            .tabla-admin tbody,
-            .tabla-admin th,
-            .tabla-admin td,
-            .tabla-admin tr {
+            .admin-tabla-wrapper .tabla-admin,
+            .admin-tabla-wrapper .tabla-admin thead,
+            .admin-tabla-wrapper .tabla-admin tbody,
+            .admin-tabla-wrapper .tabla-admin tr,
+            .admin-tabla-wrapper .tabla-admin th,
+            .admin-tabla-wrapper .tabla-admin td {
                 display: block;
             }
 
-            .tabla-admin thead tr {
+            .admin-tabla-wrapper .tabla-admin thead tr {
                 display: none;
             }
 
-            .tabla-admin tbody tr {
+            .admin-tabla-wrapper .tabla-admin tbody tr {
                 margin-bottom: 16px;
                 border-radius: 16px;
-                padding: 12px;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                padding: 8px;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
 
-            .tabla-admin tbody tr:hover {
+            .admin-tabla-wrapper .tabla-admin tbody tr:hover {
                 transform: translateX(4px);
             }
 
-            .tabla-admin td {
+            .admin-tabla-wrapper .tabla-admin td {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
                 padding: 10px 12px;
-                border-bottom: 1px solid #eee;
+                border-bottom: 1px solid #f1f5f9;
             }
 
-            .tabla-admin td:last-child {
+            .admin-tabla-wrapper .tabla-admin td:last-child {
                 border-bottom: none;
             }
 
-            .tabla-admin td:before {
+            .admin-tabla-wrapper .tabla-admin td:before {
                 content: attr(data-label);
-                font-weight: 700;
+                font-weight: 600;
+                font-size: 0.7rem;
                 width: 35%;
-                color: #2c7da0;
+                color: #64748b;
+                text-transform: uppercase;
+                letter-spacing: 0.3px;
             }
 
-            .tabla-admin tbody tr td:first-child {
+            .admin-tabla-wrapper .tabla-admin tbody tr td:first-child {
                 border-radius: 12px 12px 0 0;
             }
 
-            .tabla-admin tbody tr td:last-child {
+            .admin-tabla-wrapper .tabla-admin tbody tr td:last-child {
                 border-radius: 0 0 12px 12px;
             }
 
-            .acciones-botones {
+            .admin-tabla-wrapper .acciones-botones {
                 justify-content: flex-end;
                 width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-
-            .tarjeta-imagen,
-            .tarjeta.destacada .tarjeta-imagen {
-                height: 140px;
-            }
-
-            .tarjeta-video iframe,
-            .tarjeta.destacada .tarjeta-video iframe {
-                height: 140px;
-            }
-
-            .tarjeta-titulo {
-                font-size: 1rem;
-            }
-
-            .reciente-badge {
-                font-size: 0.6rem;
-                padding: 3px 8px;
-            }
-        }
-
-        @media (min-width: 1400px) {
-            .avisos-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            }
-
-            .tarjeta.destacada {
-                grid-column: span 2;
-                grid-row: span 1;
-            }
-
-            .usuarios-grid {
-                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             }
         }
     </style>
