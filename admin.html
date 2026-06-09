@@ -2060,18 +2060,21 @@
 
             try {
                 const apiKey = localStorage.getItem('api_key');
-                const usuario = API.getUsuarioActual();
 
-                // Usar la acción correcta del backend
-                const resultado = await API.peticion('ELIMINAR_USUARIO_SUAVE', {
-                    id: id,
-                    usuario: usuario  // Para el log
+                // Usar ELIMINAR con colección USUARIOS (esto llamará a tu función eliminarUsuarioSuave)
+                const resultado = await API.peticion('ELIMINAR', {
+                    coleccion: 'USUARIOS',
+                    id: id
                 }, apiKey);
 
                 if (resultado && resultado.success) {
                     alert('✅ Usuario desactivado correctamente');
-                    // Recargar la lista actualizada
+                    // Recargar la lista
                     await cargarUsuariosAdmin();
+                    // También recargar avisos por si acaso
+                    if (typeof cargarAvisosParaAdmin === 'function') {
+                        await cargarAvisosParaAdmin();
+                    }
                 } else {
                     throw new Error(resultado?.error || 'Error al desactivar usuario');
                 }
