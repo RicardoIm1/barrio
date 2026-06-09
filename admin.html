@@ -1064,6 +1064,19 @@
         }
 
         /* Eliminar las barras de scroll */
+        /* Ocultar barras de scroll pero mantener funcionalidad */
+        .admin-tabla-wrapper {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE y Edge */
+        }
+
+        .admin-tabla-wrapper::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
         /* Ocultar todas las barras de scroll del body */
         body {
             overflow-y: scroll;
