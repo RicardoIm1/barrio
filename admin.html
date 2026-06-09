@@ -2060,21 +2060,20 @@
 
             try {
                 const apiKey = localStorage.getItem('api_key');
-                const usuario = API.getUsuarioActual();
 
-                // Opción 1: Nombre exacto de la función
-                const resultado = await API.peticion('eliminarUsuarioSuave', {
-                    id: id,
-                    usuario: usuario
+                // Usar POST directamente con la acción 'ELIMINAR_USUARIO'
+                const resultado = await API.post('ELIMINAR_USUARIO', {
+                    id: id
                 }, apiKey);
 
                 if (resultado && resultado.success) {
-                    alert('✅ Usuario desactivado');
-                    location.reload();
+                    alert('✅ Usuario desactivado correctamente');
+                    await cargarUsuariosAdmin();
                 } else {
-                    throw new Error(resultado?.error || 'Error');
+                    throw new Error(resultado?.error || 'Error al desactivar usuario');
                 }
             } catch (error) {
+                console.error('Error:', error);
                 alert('❌ Error: ' + error.message);
             }
         };
