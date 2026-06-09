@@ -2056,19 +2056,27 @@
 
         // Función para eliminar usuario
         window.eliminarUsuario = async function (id) {
-            if (!confirm('¿Eliminar este usuario?')) return;
+            if (!confirm('⚠️ ¿Desactivar este usuario? Podrá ser reactivado más tarde.')) return;
 
             try {
                 const apiKey = localStorage.getItem('api_key');
-                const resultado = await API.peticion('ELIMINAR_USUARIO', { id: id }, apiKey);
+                const usuario = API.getUsuarioActual();
+
+                // Usar la acción correcta del backend
+                const resultado = await API.peticion('ELIMINAR_USUARIO_SUAVE', {
+                    id: id,
+                    usuario: usuario  // Para el log
+                }, apiKey);
 
                 if (resultado && resultado.success) {
-                    alert('✅ Usuario eliminado');
-                    cargarUsuariosAdmin();
+                    alert('✅ Usuario desactivado correctamente');
+                    // Recargar la lista actualizada
+                    await cargarUsuariosAdmin();
                 } else {
-                    throw new Error(resultado?.error || 'Error al eliminar');
+                    throw new Error(resultado?.error || 'Error al desactivar usuario');
                 }
             } catch (error) {
+                console.error('Error:', error);
                 alert('❌ Error: ' + error.message);
             }
         };
