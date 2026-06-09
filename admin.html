@@ -1249,7 +1249,7 @@
                             </thead>
                             <tbody id="tabla-usuarios-cuerpo">
                                 <tr>
-                                    <td colspan="6">Cargando usuarios...</td>
+                                    <td colspan="5">Cargando usuarios...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1947,7 +1947,7 @@
                 }
 
                 if (!respuesta || !respuesta.success) {
-                    tablaUsuarios.innerHTML = `<tr><td colspan="6">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
+                    tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
                     return;
                 }
 
@@ -1962,7 +1962,7 @@
                 }
 
                 if (!usuarios || usuarios.length === 0) {
-                    tablaUsuarios.innerHTML = '<td><td colspan="6">📭 No hay usuarios registrados</td></tr>';
+                    tablaUsuarios.innerHTML = '<td><td colspan="5">📭 No hay usuarios registrados</td></tr>';
                     return;
                 }
 
@@ -2015,7 +2015,7 @@
 
             } catch (error) {
                 console.error('Error cargando usuarios:', error);
-                tablaUsuarios.innerHTML = `<tr><td colspan="6">❌ Error: ${error.message}</td></tr>`;
+                tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ Error: ${error.message}</td></tr>`;
             }
         }
 
@@ -2296,7 +2296,7 @@
                     const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
                     if (tablaUsuarios) {
                         if (usuariosFiltrados.length === 0) {
-                            tablaUsuarios.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
+                            tablaUsuarios.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
                         } else {
                             const escapeHtml = (str) => {
                                 if (!str) return '';
