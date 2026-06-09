@@ -1197,6 +1197,9 @@
                 if (usuario.rol === 'admin') {
                     // Intentar obtener todos los avisos (sin límite)
                     respuesta = await API.peticion('LISTAR_TODOS_AVISOS', {}, apiKey);
+                    console.log('📡 Respuesta API:', respuesta);
+                    console.log('📦 Datos:', respuesta?.data);
+                    console.log('📦 Datos.datos:', respuesta?.data?.datos);
                     if (!respuesta || !respuesta.success) {
                         // Si LISTAR_TODOS_AVISOS no existe, usar LISTAR_MIS_AVISOS con páginas
                         respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
