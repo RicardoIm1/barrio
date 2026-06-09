@@ -486,7 +486,7 @@
             border: none;
             vertical-align: middle;
             transition: all 0.15s ease;
-        } 
+        }
 
         /* Primera celda - borde redondeado izquierdo */
         .tabla-admin tbody tr td:first-child {
@@ -702,7 +702,7 @@
                 align-items: center;
                 padding: 10px 12px;
                 border-bottom: 1px solid #eee;
-            } */ 
+            } */
 
             /* .tabla-admin td:last-child {
                 border-bottom: none;
@@ -2488,6 +2488,31 @@
             // Limpiar el input para permitir otra subida
             setTimeout(() => { editInputMultimedia.value = ''; }, 1000);
         });
+    </script>
+    <script>
+        // Mostrar/ocultar buscador según pestaña activa
+        (function controlarBuscadorPorPestana() {
+            const buscador = document.querySelector('.buscador-universal');
+            if (!buscador) return;
+
+            function actualizarBuscador() {
+                const tabActivo = document.querySelector('.tab.activo');
+                const esAvisos = tabActivo && tabActivo.id === 'tab-lista';
+                const esUsuarios = tabActivo && tabActivo.id === 'tab-usuarios';
+
+                buscador.style.display = (esAvisos || esUsuarios) ? 'block' : 'none';
+            }
+
+            // Escuchar clicks en los botones de pestaña
+            document.querySelectorAll('.filtro').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    setTimeout(actualizarBuscador, 50); // Pequeño delay para que el DOM se actualice
+                });
+            });
+
+            // Ejecutar al cargar
+            actualizarBuscador();
+        })();
     </script>
 </body>
 
