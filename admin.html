@@ -1249,6 +1249,7 @@
         }
 
         // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
+        // ==================== RENDERIZAR TABLA COMPLETA CON TODOS LOS DATOS ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (!tbody) return;
@@ -1272,6 +1273,34 @@
                 const estado = aviso.status || 'pendiente';
                 const estadoTexto = estado === 'activo' ? '🟢 Activo' : (estado === 'rechazado' ? '🔴 Rechazado' : '⏳ Pendiente');
 
+                // Obtener nombre del autor (puede venir en diferentes campos)
+                const nombreAutor = aviso.nombre_autor || aviso.autor_nombre || aviso.created_by_nombre || 'Vecino';
+
+                // Obtener estadísticas con valores por defecto
+                const vistas = aviso.vistas || 0;
+                const comentarios = aviso.comentarios_count || aviso.total_comentarios || 0;
+                const votosPos = aviso.votos_positivos || aviso.likes || 0;
+                const votosNeg = aviso.votos_negativos || aviso.dislikes || 0;
+
+                // Calcular total de votos
+                const totalVotos = votosPos + votosNeg;
+
+                // Formatear fecha
+                let fechaFormateada = 'Sin fecha';
+                if (aviso.created_at) {
+                    try {
+                        fechaFormateada = new Date(aviso.created_at).toLocaleString('es-MX', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    } catch (e) {
+                        fechaFormateada = aviso.created_at;
+                    }
+                }
+
                 return `
         <tr data-id="${aviso.id}">
             <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : 'N/A'}..</td>
@@ -1280,22 +1309,21 @@
             </td>
             <td data-label="Título">
                 <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
-<small>
-👁️ ${aviso.vistas || 0}
-&nbsp;•&nbsp;
-💬 ${aviso.comentarios_count || 0}
-</small><br>
-                <small>📢 VARIOS</small>
-                ${aviso.video_url ? '<br><small>🎥 Video</small>' : ''}
+                <div style="font-size: 0.7rem; margin-top: 5px;">
+                    <span title="Vistas">👁️ ${vistas}</span>
+                    <span style="margin-left: 8px;" title="Comentarios">💬 ${comentarios}</span>
+                    <span style="margin-left: 8px;" title="Votos positivos">👍 ${votosPos}</span>
+                    <span style="margin-left: 8px;" title="Votos negativos">👎 ${votosNeg}</span>
+                    ${totalVotos > 0 ? `<span style="margin-left: 8px;" title="Total de votos">📊 ${totalVotos}</span>` : ''}
+                </div>
+                <small style="display: block; margin-top: 4px;">📢 VARIOS</small>
+                ${aviso.video_url ? '<small>🎥 Video</small>' : ''}
             </td>
             <td data-label="Publicó">
-    <strong>👤 ${escapeHTML(aviso.nombre_autor || 'Vecino')}</strong><br>
-    <small>
-        🕒 ${aviso.created_at
-                        ? new Date(aviso.created_at).toLocaleString('es-MX')
-                        : 'Sin fecha'}
-    </small>
-</td>
+                <strong>👤 ${escapeHTML(nombreAutor)}</strong><br>
+                <small>🕒 ${fechaFormateada}</small>
+                ${aviso.email ? `<br><small>📧 ${escapeHTML(aviso.email)}</small>` : ''}
+            </td>
             <td data-label="Estado">
                 ${esAdmin ? `
                 <select class="select-estado ${estado}" onchange="cambiarEstadoAviso('${aviso.id}', this.value)">
@@ -1314,7 +1342,6 @@
         </tr>`;
             }).join('');
         }
-
         // Cambiar estado del aviso
         window.cambiarEstadoAviso = async function (id, nuevoStatus) {
             try {
