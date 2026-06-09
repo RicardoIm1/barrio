@@ -563,11 +563,10 @@
                 const tituloLimpio = limpiarTitulo(aviso.titulo);
                 const mensaje = `Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`;
 
-                const likes = parseInt(aviso.intereses) || 0;
+                const likes = parseInt(aviso.votos_positivos) || parseInt(aviso.intereses) || 0;
                 const dislikes = parseInt(aviso.votos_negativos) || 0;
                 const comentarios = parseInt(aviso.comentarios_count) || 0;
                 const vistas = parseInt(aviso.vistas) || 0;
-                const whatsappClicks = parseInt(aviso.clicks_whatsapp) || 0;
 
                 // ✅ PRIORIDAD: VIDEO SOBRE IMAGEN
                 let multimediaHTML = '';
