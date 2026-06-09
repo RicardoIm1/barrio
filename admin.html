@@ -405,38 +405,319 @@
             background: #218838;
         }
 
-        /* Estilos para la tabla de moderación */
-        .admin-tabla {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.85rem;
-        }
+        /* ========== TABLA MEJORADA CON MOVIMIENTO ========== */
 
-        .admin-tabla th,
-        .admin-tabla td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--color-borde);
-        }
-
-        .admin-tabla th {
-            background: #f8f9fa;
-            font-weight: 600;
-        }
-
-        /*para tabla con scroll*/
-
+        /* Contenedor de la tabla con scroll suave */
         .admin-tabla-wrapper {
             max-height: 70vh;
             overflow-y: auto;
             overflow-x: auto;
+            border-radius: 12px;
+            scroll-behavior: smooth;
         }
 
-        .admin-tabla thead th {
+        /* Tabla principal */
+        .tabla-admin {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            /* Espacio entre filas */
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        /* Encabezados fijos */
+        .tabla-admin thead th {
             position: sticky;
             top: 0;
+            background: linear-gradient(135deg, #1e4620, #2b7a2b);
+            color: white;
+            font-weight: 600;
+            padding: 14px 12px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 20;
+        }
+
+        /* Primera columna (ID) - borde redondeado izquierdo */
+        .tabla-admin th:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        /* Última columna (Acciones) - borde redondeado derecho */
+        .tabla-admin th:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* ========== ESTILO DE FILAS ========== */
+        .tabla-admin tbody tr {
             background: white;
-            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Filas alternadas (zebra) */
+        .tabla-admin tbody tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        /* ========== EFECTO HOVER CON MOVIMIENTO ========== */
+        .tabla-admin tbody tr:hover {
+            transform: translateX(8px) translateY(-2px);
+            background: linear-gradient(135deg, #fff8e7, #ffffff);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 0 0 2px #ff8c42 inset;
+            cursor: pointer;
+        }
+
+        /* Efecto de escala sutil en la imagen al hacer hover */
+        .tabla-admin tbody tr:hover td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        /* Celdas internas */
+        .tabla-admin td {
+            padding: 14px 12px;
+            border: none;
+            vertical-align: middle;
+            transition: all 0.2s ease;
+        }
+
+        /* Primera celda - borde redondeado izquierdo */
+        .tabla-admin tbody tr td:first-child {
+            border-radius: 12px 0 0 12px;
+            font-weight: 600;
+            font-family: monospace;
+            color: #2c7da0;
+        }
+
+        /* Última celda - borde redondeado derecho */
+        .tabla-admin tbody tr td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* ========== ESTILO DE IMAGEN MINIATURA ========== */
+        .tabla-admin td img {
+            width: 45px;
+            height: 45px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tabla-admin tr:hover td img {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ========== ESTADÍSTICAS EN EL TÍTULO ========== */
+        .tabla-admin td span[title] {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 2px 6px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .tabla-admin tr:hover td span[title] {
+            background: #e8e8e8;
+            transform: scale(1.02);
+        }
+
+        /* ========== BOTONES DE ACCIÓN MEJORADOS ========== */
+        .acciones-botones {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .accion-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .accion-editar {
+            background: #007bff;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .accion-editar:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        }
+
+        .accion-eliminar {
+            background: #dc3545;
+            color: white;
+        }
+
+        .accion-eliminar:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        /* ========== SELECTOR DE ESTADO ========== */
+        .select-estado {
+            padding: 6px 10px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .select-estado:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .select-estado.pendiente {
+            background: #fff3cd;
+            color: #856404;
+            border-color: #ffc107;
+        }
+
+        .select-estado.activo {
+            background: #d4edda;
+            color: #155724;
+            border-color: #28a745;
+        }
+
+        .select-estado.rechazado {
+            background: #f8d7da;
+            color: #721c24;
+            border-color: #dc3545;
+        }
+
+        /* ========== BADGES DE ESTADO ========== */
+        .badge-estado {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-activo {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-rechazado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* ========== ANIMACIÓN DE CARGA ========== */
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .cargando-row td {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* ========== EFECTO DE RAYO AL HOVER (opcional) ========== */
+        .tabla-admin tbody tr::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(135deg, #f5b042, #ff8c42);
+            border-radius: 4px;
+            transition: height 0.3s ease;
+            z-index: 1;
+        }
+
+        .tabla-admin tbody tr:hover::before {
+            height: 100%;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+
+            .tabla-admin,
+            .tabla-admin thead,
+            .tabla-admin tbody,
+            .tabla-admin th,
+            .tabla-admin td,
+            .tabla-admin tr {
+                display: block;
+            }
+
+            .tabla-admin thead tr {
+                display: none;
+            }
+
+            .tabla-admin tbody tr {
+                margin-bottom: 16px;
+                border-radius: 16px;
+                padding: 12px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+
+            .tabla-admin tbody tr:hover {
+                transform: translateX(4px);
+            }
+
+            .tabla-admin td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 12px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .tabla-admin td:last-child {
+                border-bottom: none;
+            }
+
+            .tabla-admin td:before {
+                content: attr(data-label);
+                font-weight: 700;
+                width: 35%;
+                color: #2c7da0;
+            }
+
+            .tabla-admin tbody tr td:first-child {
+                border-radius: 12px 12px 0 0;
+            }
+
+            .tabla-admin tbody tr td:last-child {
+                border-radius: 0 0 12px 12px;
+            }
         }
 
         /* Estilo para selectores de estado */
