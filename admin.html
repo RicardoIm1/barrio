@@ -1638,7 +1638,7 @@
         </tr>`;
             }).join('');
         }
-        
+
         // Cambiar estado del aviso
         window.cambiarEstadoAviso = async function (id, nuevoStatus) {
             try {
@@ -1908,11 +1908,11 @@
 
                 if (!apiKey || usuario?.rol !== 'admin') {
                     console.warn('No autorizado para ver usuarios');
-                    tablaUsuarios.innerHTML = '<tr><td colspan="5">⚠️ Solo administradores pueden ver esta sección</td></tr>';
+                    tablaUsuarios.innerHTML = '<tr><td colspan="6">⚠️ Solo administradores pueden ver esta sección</td></tr>';
                     return;
                 }
 
-                tablaUsuarios.innerHTML = '<tr><td colspan="5">🔄 Cargando usuarios...</td></tr>';
+                tablaUsuarios.innerHTML = '<tr><td colspan="6">🔄 Cargando usuarios...</td></tr>';
 
                 // Intentar diferentes acciones...
                 let respuesta = null;
@@ -1947,7 +1947,7 @@
                 }
 
                 if (!respuesta || !respuesta.success) {
-                    tablaUsuarios.innerHTML = `<tr><td colspan="5">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
+                    tablaUsuarios.innerHTML = `<tr><td colspan="6">❌ No se pudo cargar usuarios. Acción intentada: ${accionUsada}<br>Error: ${respuesta?.error || 'Desconocido'}</td></tr>`;
                     return;
                 }
 
@@ -1962,7 +1962,7 @@
                 }
 
                 if (!usuarios || usuarios.length === 0) {
-                    tablaUsuarios.innerHTML = '<td><td colspan="5">📭 No hay usuarios registrados</td></tr>';
+                    tablaUsuarios.innerHTML = '<td><td colspan="6">📭 No hay usuarios registrados</td></tr>';
                     return;
                 }
 
