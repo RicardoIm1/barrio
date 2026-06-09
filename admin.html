@@ -1091,6 +1091,19 @@
         body {
             scrollbar-width: none;
         }
+
+        .admin-tabla-wrapper {
+            overflow-x: auto;
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE/Edge */
+        }
+
+        .admin-tabla-wrapper::-webkit-scrollbar {
+            height: 0;
+            display: none;
+        }
     </style>
 </head>
 
