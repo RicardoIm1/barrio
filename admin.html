@@ -2224,7 +2224,8 @@
         });
     </script>
 
-    <script>// ========== BUSCADOR UNIVERSAL ==========
+    <script>
+        // ========== BUSCADOR UNIVERSAL (VERSIÓN MEJORADA) ==========
         let busquedaActual = '';
         let avisosOriginales = [];
         let usuariosOriginales = [];
@@ -2259,6 +2260,18 @@
             return campos.some(campo => campo && campo.toString().toLowerCase().includes(texto));
         }
 
+        function actualizarResultadosBusqueda(texto, total) {
+            const resultadosDiv = document.getElementById('resultados-busqueda');
+            if (!resultadosDiv) return;
+
+            if (texto && total !== undefined) {
+                resultadosDiv.innerHTML = `<span>🔍 ${total} resultado${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''} para "${escapeHTML(texto)}"</span>`;
+                resultadosDiv.style.display = 'block';
+            } else {
+                resultadosDiv.style.display = 'none';
+            }
+        }
+
         function aplicarBusqueda() {
             const input = document.getElementById('buscadorAdmin');
             const texto = input.value.trim();
@@ -2267,62 +2280,55 @@
             const limpiarBtn = document.getElementById('limpiarBusqueda');
             if (limpiarBtn) limpiarBtn.style.display = texto ? 'block' : 'none';
 
+            const tabActivo = document.querySelector('.tab.activo');
+            const esTabAvisos = tabActivo && tabActivo.id === 'tab-lista';
+            const esTabUsuarios = tabActivo && tabActivo.id === 'tab-usuarios';
+
             if (!texto) {
-                // Restaurar datos originales
-                if (avisosOriginales.length) {
+                // Restaurar según la pestaña activa
+                if (esTabAvisos && avisosOriginales.length) {
                     todosLosAvisos = [...avisosOriginales];
                     renderizarTablaAvisos();
                 }
-                if (usuariosOriginales.length) {
-                    cargarUsuariosAdmin();
+                if (esTabUsuarios && usuariosOriginales.length) {
+                    awaitOriginalCargarUsuarios();
                 }
-                const resultadosDiv = document.getElementById('resultados-busqueda');
-                if (resultadosDiv) resultadosDiv.style.display = 'none';
+                actualizarResultadosBusqueda('', 0);
                 return;
             }
 
-            // Buscar en avisos
-            if (avisosOriginales.length) {
+            // Buscar según pestaña activa
+            if (esTabAvisos && avisosOriginales.length) {
                 const avisosFiltrados = avisosOriginales.filter(a => buscarEnAviso(a, texto));
                 todosLosAvisos = [...avisosFiltrados];
                 renderizarTablaAvisos();
+                actualizarResultadosBusqueda(texto, avisosFiltrados.length);
             }
-
-            // Buscar en usuarios (solo si la pestaña está visible)
-            const tabUsuarios = document.getElementById('tab-usuarios');
-            if (tabUsuarios && tabUsuarios.style.display !== 'none') {
-                if (usuariosOriginales.length) {
-                    const usuariosFiltrados = usuariosOriginales.filter(u => buscarEnUsuario(u, texto));
-                    const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
-                    if (tablaUsuarios) {
-                        if (usuariosFiltrados.length === 0) {
-                            tablaUsuarios.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td><table>`;
-                        } else {
-                            const escapeHtml = (str) => {
-                                if (!str) return '';
-                                return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
-                            };
-                            tablaUsuarios.innerHTML = usuariosFiltrados.map(user => `
-                        <tr>
-                            <td data-label="Email">${escapeHtml(user.email || '')}</td>
-                            <td data-label="Nombre">${escapeHtml(user.nombre || '')}</td>
-                            <td data-label="Rol"><span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol || 'usuario'}</span></td>
-                            <td data-label="Estado">${user.activo === 'TRUE' ? '✅ Activo' : '❌ Inactivo'}</td>
-                            <td data-label="Acciones">
-                                <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button>
-                            </td>
-                        </tr>
-                    `).join('');
-                        }
+            else if (esTabUsuarios && usuariosOriginales.length) {
+                const usuariosFiltrados = usuariosOriginales.filter(u => buscarEnUsuario(u, texto));
+                const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
+                if (tablaUsuarios) {
+                    if (usuariosFiltrados.length === 0) {
+                        tablaUsuarios.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">🔍 No se encontraron usuarios que coincidan con "${escapeHTML(texto)}"</td></tr>`;
+                    } else {
+                        const escapeHtml = (str) => {
+                            if (!str) return '';
+                            return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+                        };
+                        tablaUsuarios.innerHTML = usuariosFiltrados.map(user => `
+                <tr>
+                    <td data-label="Email">${escapeHtml(user.email || '')}</td>
+                    <td data-label="Nombre">${escapeHtml(user.nombre || '')}</td>
+                    <td data-label="Rol"><span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol || 'usuario'}</span></td>
+                    <td data-label="Estado">${user.activo === 'TRUE' ? '✅ Activo' : '❌ Inactivo'}</td>
+                    <td data-label="Acciones">
+                        <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            `).join('');
                     }
                 }
-            }
-
-            // Mostrar resumen
-            const resultadosDiv = document.getElementById('resultados-busqueda');
-            if (resultadosDiv) {
-                resultadosDiv.innerHTML = `<span>🔍 ${todosLosAvisos.length} avisos encontrados para "${escapeHTML(texto)}"</span>`;
-                resultadosDiv.style.display = 'block';
+                actualizarResultadosBusqueda(texto, usuariosFiltrados.length);
             }
         }
 
@@ -2334,64 +2340,146 @@
             }
         }
 
-        function inicializarBuscador() {
-            // Guardar copias originales
-            if (todosLosAvisos.length) {
+        function guardarCopiasOriginales() {
+            // Guardar avisos
+            if (todosLosAvisos.length && avisosOriginales.length === 0) {
                 avisosOriginales = [...todosLosAvisos];
             }
 
-            // Configurar evento
-            const input = document.getElementById('buscadorAdmin');
-            if (input) {
-                input.addEventListener('input', aplicarBusqueda);
-                input.addEventListener('keyup', (e) => {
-                    if (e.key === 'Escape') limpiarBusqueda();
-                });
+            // Guardar usuarios desde la tabla
+            const tabla = document.getElementById('tabla-usuarios-cuerpo');
+            if (tabla && usuariosOriginales.length === 0) {
+                const filas = tabla.querySelectorAll('tr');
+                const usuarios = [];
+                for (let i = 0; i < filas.length; i++) {
+                    const celdas = filas[i].querySelectorAll('td');
+                    if (celdas.length >= 5 && !filas[i].querySelector('td[colspan]')) {
+                        usuarios.push({
+                            email: celdas[0]?.textContent?.split('📅')[0]?.trim() || '',
+                            nombre: celdas[1]?.textContent || '',
+                            rol: celdas[2]?.textContent?.includes('admin') ? 'admin' : 'usuario',
+                            activo: celdas[3]?.textContent?.includes('Activo') ? 'TRUE' : 'FALSE',
+                            id: celdas[4]?.querySelector('button')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || ''
+                        });
+                    }
+                }
+                if (usuarios.length) usuariosOriginales = usuarios;
             }
+        }
+
+        // Función auxiliar para recargar usuarios originales
+        async function awaitOriginalCargarUsuarios() {
+            if (usuariosOriginales.length) {
+                const tablaUsuarios = document.getElementById('tabla-usuarios-cuerpo');
+                if (tablaUsuarios && usuariosOriginales.length) {
+                    const escapeHtml = (str) => {
+                        if (!str) return '';
+                        return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+                    };
+                    tablaUsuarios.innerHTML = usuariosOriginales.map(user => `
+            <tr>
+                <td data-label="Email">${escapeHtml(user.email || '')}</td>
+                <td data-label="Nombre">${escapeHtml(user.nombre || '')}</td>
+                <td data-label="Rol"><span class="rol-badge ${user.rol === 'admin' ? 'rol-admin' : 'rol-usuario'}">${user.rol || 'usuario'}</span></td>
+                <td data-label="Estado">${user.activo === 'TRUE' ? '✅ Activo' : '❌ Inactivo'}</td>
+                <td data-label="Acciones">
+                    <button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+                }
+            } else {
+                await cargarUsuariosAdmin();
+            }
+        }
+
+        function inicializarBuscador() {
+            const input = document.getElementById('buscadorAdmin');
+            if (!input) return;
+
+            // Eliminar eventos anteriores para evitar duplicados
+            const nuevoInput = input.cloneNode(true);
+            input.parentNode.replaceChild(nuevoInput, input);
+
+            nuevoInput.addEventListener('input', aplicarBusqueda);
+            nuevoInput.addEventListener('keyup', (e) => {
+                if (e.key === 'Escape') limpiarBusqueda();
+            });
 
             // Botón limpiar
             const limpiarBtn = document.getElementById('limpiarBusqueda');
             if (limpiarBtn) {
-                limpiarBtn.addEventListener('click', limpiarBusqueda);
+                const nuevoBtn = limpiarBtn.cloneNode(true);
+                limpiarBtn.parentNode.replaceChild(nuevoBtn, limpiarBtn);
+                nuevoBtn.addEventListener('click', limpiarBusqueda);
             }
         }
 
         // Modificar cargarAvisosParaAdmin para guardar originales
-        const originalCargarAvisos = cargarAvisosParaAdmin;
+        const originalCargarAvisos = window.cargarAvisosParaAdmin;
         window.cargarAvisosParaAdmin = async function () {
             await originalCargarAvisos();
-            if (todosLosAvisos.length) {
+            if (todosLosAvisos.length && avisosOriginales.length === 0) {
                 avisosOriginales = [...todosLosAvisos];
             }
             inicializarBuscador();
         };
 
         // Modificar cargarUsuariosAdmin para guardar originales
-        const originalCargarUsuarios = cargarUsuariosAdmin;
+        const originalCargarUsuariosGlobal = window.cargarUsuariosAdmin;
         window.cargarUsuariosAdmin = async function () {
-            await originalCargarUsuarios();
-            // Guardar usuarios de la tabla
-            setTimeout(() => {
-                const tabla = document.getElementById('tabla-usuarios-cuerpo');
-                if (tabla && !usuariosOriginales.length) {
-                    const filas = tabla.querySelectorAll('tr');
-                    const usuarios = [];
-                    for (let i = 0; i < filas.length; i++) {
-                        const celdas = filas[i].querySelectorAll('td');
-                        if (celdas.length >= 5) {
-                            usuarios.push({
-                                email: celdas[0]?.textContent || '',
-                                nombre: celdas[1]?.textContent || '',
-                                rol: celdas[2]?.textContent?.includes('admin') ? 'admin' : 'usuario',
-                                activo: celdas[3]?.textContent?.includes('Activo') ? 'TRUE' : 'FALSE',
-                                id: celdas[4]?.querySelector('button')?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1] || ''
-                            });
-                        }
-                    }
-                    usuariosOriginales = usuarios;
-                }
-            }, 500);
+            await originalCargarUsuariosGlobal();
+            setTimeout(guardarCopiasOriginales, 300);
         };
+
+        // Controlar visibilidad del buscador al cambiar de pestaña
+        function controlarVisibilidadBuscador() {
+            const buscador = document.querySelector('.buscador-universal');
+            if (!buscador) return;
+
+            const tabActivo = document.querySelector('.tab.activo');
+            const esVisible = tabActivo && (tabActivo.id === 'tab-lista' || tabActivo.id === 'tab-usuarios');
+
+            buscador.style.display = esVisible ? 'block' : 'none';
+
+            // Limpiar búsqueda al cambiar de pestaña
+            if (!esVisible) {
+                const input = document.getElementById('buscadorAdmin');
+                if (input && input.value.trim()) {
+                    input.value = '';
+                    aplicarBusqueda();
+                }
+            }
+        }
+
+        // Escuchar cambios de pestaña
+        const observer = new MutationObserver(() => {
+            controlarVisibilidadBuscador();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                agregarResultadosDiv();
+                inicializarBuscador();
+                controlarVisibilidadBuscador();
+
+                // Observar cambios en clases de tabs
+                const tabs = document.querySelectorAll('.tab');
+                tabs.forEach(tab => {
+                    observer.observe(tab, { attributes: true, attributeFilter: ['class'] });
+                });
+
+                // También observar clicks en botones de pestaña
+                document.querySelectorAll('.filtro').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        setTimeout(() => {
+                            controlarVisibilidadBuscador();
+                            guardarCopiasOriginales();
+                        }, 100);
+                    });
+                });
+            }, 500);
+        });
 
         // Agregar div de resultados
         function agregarResultadosDiv() {
@@ -2405,14 +2493,7 @@
                 }
             }
         }
-
-        // Inicializar
-        setTimeout(() => {
-            agregarResultadosDiv();
-            inicializarBuscador();
-        }, 1000);
     </script>
-
     <script>
         // ========== MANEJAR MULTIMEDIA EN MODAL DE EDICIÓN ==========
         const editInputMultimedia = document.getElementById('edit-archivo-multimedia');
@@ -2489,6 +2570,7 @@
             setTimeout(() => { editInputMultimedia.value = ''; }, 1000);
         });
     </script>
+
     <script>
         // Mostrar/ocultar buscador según pestaña activa
         (function controlarBuscadorPorPestana() {
