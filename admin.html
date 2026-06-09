@@ -1596,9 +1596,9 @@
                 return `
         <tr data-id="${aviso.id}">
             <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : 'N/A'}..</td>
-            <td data-label="Imagen">
-                ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷 No'}
-            </td>
+            <td data-label="Imagen" style="text-align: center;">
+    ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : '📷'}
+</td>
             <td data-label="Título">
                 <strong>${escapeHTML(aviso.titulo || 'Sin título')}</strong><br>
                 <div style="font-size: 0.7rem; margin-top: 5px;">
