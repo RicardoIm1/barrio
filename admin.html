@@ -1168,7 +1168,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Imagen</th>
-                            <th>Título</th>
+                            <th>Título / Estadísticas</th>
                             <th>Publicado por</th>
                             <th>Estado</th>
                             <th>Acciones</th>
@@ -1546,7 +1546,6 @@
         }
 
         // ==================== RENDERIZAR TABLA SOLO CON FILTRO DE ESTADO ====================
-        // ==================== RENDERIZAR TABLA COMPLETA CON TODOS LOS DATOS ====================
         function renderizarTablaAvisos() {
             const tbody = document.getElementById('tabla-avisos-cuerpo');
             if (!tbody) return;
@@ -1639,6 +1638,7 @@
         </tr>`;
             }).join('');
         }
+        
         // Cambiar estado del aviso
         window.cambiarEstadoAviso = async function (id, nuevoStatus) {
             try {
