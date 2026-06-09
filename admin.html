@@ -2056,14 +2056,16 @@
 
         // Función para eliminar usuario
         window.eliminarUsuario = async function (id) {
-            if (!confirm('⚠️ ¿Desactivar este usuario?')) return;
+            if (!confirm('⚠️ ¿Desactivar este usuario? Podrá ser reactivado más tarde.')) return;
 
             try {
                 const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
 
-                // Usar POST directamente con la acción 'ELIMINAR_USUARIO'
-                const resultado = await API.post('ELIMINAR_USUARIO', {
-                    id: id
+                // Usar ELIMINAR_USUARIO (coincide con la acción que agregaste en GAS)
+                const resultado = await API.peticion('ELIMINAR_USUARIO', {
+                    id: id,
+                    usuario: usuario
                 }, apiKey);
 
                 if (resultado && resultado.success) {
