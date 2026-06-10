@@ -3,7 +3,7 @@
     ====================================================== */
 
     /* ---------- VARIABLES GLOBALES ---------- */
-    :root {
+    /* :root {
         --color-primario: #2c3e50;
         --color-fondo: #f5f5f5;
         --color-texto: #1c1c1e;
@@ -16,32 +16,32 @@
         --color-eventos: #9b59b6;
         --color-gobierno: #1abc9c;
         --color-varios: #7f8c8d;
-    }
+    } */
 
     /* ---------- RESET Y BASE ---------- */
-    * {
+    /* * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-    }
+    } */
 
-    body {
+    /* body {
         background: var(--color-fondo);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
+    } */
 
     /* ---------- HERO BANNER ---------- */
-    .hero-banner {
+    /* .hero-banner {
         width: 100%;
         height: auto;
         max-height: 65vh;
         object-fit: contain;
         display: block;
         background-color: #f0f0f0;
-    }
+    } */
 
     /* ---------- TARJETAS / AVISOS (BASE) ---------- */
-    .aviso-card {
+    /* .aviso-card {
         cursor: pointer;
         position: relative;
         overflow: hidden;
@@ -55,17 +55,17 @@
         margin-bottom: 20px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.03);
         transition: transform 0.15s ease, box-shadow 0.2s ease;
-    }
+    } */
 
-    @keyframes fadeInUp {
+    /* @keyframes fadeInUp {
         to {
             opacity: 1;
             transform: translateY(0);
         }
-    }
+    } */
 
     /* Categoría badge */
-    .categoria-badge {
+    /* .categoria-badge {
         position: absolute;
         top: 12px;
         left: 12px;
@@ -76,10 +76,10 @@
         font-weight: 600;
         letter-spacing: 0.5px;
         backdrop-filter: blur(4px);
-    }
+    } */
 
     /* Botón WhatsApp flotante */
-    .whatsapp-btn {
+    /* .whatsapp-btn {
         position: absolute;
         bottom: 12px;
         right: 12px;
@@ -100,10 +100,10 @@
         background-repeat: no-repeat;
         border: none;
         cursor: pointer;
-    }
+    } */
 
     /* Toast */
-    .toast-notification {
+    /* .toast-notification {
         position: fixed;
         bottom: 20px;
         left: 50%;
@@ -120,12 +120,12 @@
 
     .toast-notification.show {
         transform: translateX(-50%) translateY(0);
-    }
+    } */
 
     /* ======================================================
        MÓVIL (ancho < 768px) - EFECTO ENGRANE + FONDO COMPLETO
     ====================================================== */
-    @media (max-width: 767px) {
+    /* @media (max-width: 767px) {
         .scrollable-container {
             height: 100vh;
             overflow-y: auto;
@@ -134,13 +134,13 @@
             scroll-snap-stop: always;
             scroll-behavior: smooth;
             padding-top: 70px;
-        }
+        } */
 
-        .scrollable-container::-webkit-scrollbar {
+        /* .scrollable-container::-webkit-scrollbar {
             display: none;
-        }
+        } */
 
-        #avisos-container {
+        /* #avisos-container {
             display: block !important;
             scroll-snap-type: none !important;
             height: auto !important;
@@ -154,10 +154,10 @@
             margin-bottom: 0 !important;
             border-radius: 20px !important;
             background: #000;
-        }
+        } */
 
         /* ✅ IMAGEN/VIDEO COMO FONDO */
-        .aviso-imagen,
+        /* .aviso-imagen,
         .aviso-video {
             position: absolute;
             top: 0;
@@ -168,10 +168,10 @@
             z-index: 1;
             border-radius: 20px !important;
             margin-bottom: 0;
-        }
+        }*/
 
         /* ✅ VIDEO COMO FONDO */
-        .aviso-video {
+        /*.aviso-video {
             position: absolute !important;
             background: #000;
             overflow: hidden;
@@ -196,9 +196,9 @@
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.85) 100%);
             z-index: 2;
             pointer-events: none;
-        }
+        } */
 
-        .card-contenido-moderno {
+        /*.card-contenido-moderno {
             position: relative;
             z-index: 3;
             background: transparent !important;
@@ -233,12 +233,12 @@
             right: 16px;
             background-size: 60%;
         }
-    }
+    }*/
 
     /* ======================================================
        DESKTOP (ancho ≥ 768px) - CUADRÍCULA NORMAL
     ====================================================== */
-    @media (min-width: 768px) {
+    /* @media (min-width: 768px) {
         .scrollable-container {
             height: auto;
             overflow-y: visible;
@@ -253,20 +253,20 @@
             height: auto !important;
             overflow-y: visible !important;
             scroll-snap-type: none !important;
-        }
+        } */
 
         /* POSTS DESTACADOS: primeros 3 */
-        #avisos-container .aviso-card:nth-child(1) {
+        /* #avisos-container .aviso-card:nth-child(1) {
             grid-column: span 2;
         }
 
         #avisos-container .aviso-card:nth-child(2),
         #avisos-container .aviso-card:nth-child(3) {
             grid-column: span 1;
-        }
+        } */
 
         /* Imagen más alta en los primeros 3 */
-        #avisos-container .aviso-card:nth-child(-n+3) .aviso-imagen,
+        /* #avisos-container .aviso-card:nth-child(-n+3) .aviso-imagen,
         #avisos-container .aviso-card:nth-child(-n+3) .aviso-video {
             height: 280px !important;
         }
@@ -280,10 +280,10 @@
             overflow: hidden;
             background: white;
             border-radius: 20px !important;
-        }
+        } */
 
         /* ✅ IMAGEN QUE ABARCA TODO EL ANCHO */
-        .aviso-imagen,
+        /* .aviso-imagen,
         .aviso-video {
             width: 100% !important;
             height: 180px !important;
@@ -291,18 +291,18 @@
             border-radius: 20px 20px 0 0 !important;
             position: relative !important;
             display: block !important;
-        }
+        } */
 
-        .card-contenido-moderno {
+        /* .card-contenido-moderno {
             position: relative !important;
             background: white !important;
             color: var(--color-texto) !important;
             text-shadow: none;
             padding: 16px;
             z-index: 1;
-        }
+        } */
 
-        .card-titulo-moderno,
+     /*    .card-titulo-moderno,
         .card-preview-moderno,
         .card-fecha-moderna,
         .aviso-footer span {
@@ -323,36 +323,36 @@
         .aviso-card::after {
             display: none;
         }
-    }
+    } */
 
     /* Desktop mediano (≥ 1024px) - 3 columnas */
-    @media (min-width: 1024px) {
+    /* @media (min-width: 1024px) {
         #avisos-container {
             grid-template-columns: repeat(3, 1fr);
         }
     }
 
     /* Desktop grande (≥ 1280px) - 4 columnas */
-    @media (min-width: 1280px) {
+    /*@media (min-width: 1280px) {
         #avisos-container {
             grid-template-columns: repeat(4, 1fr);
         }
-    }
+    } */
 
     /* ======================================================
    POSTS DESTACADOS - BORDE ROJO + CANICA ANIMADA
    ====================================================== */
 
     /* Base del borde rojo */
-    .aviso-card.aviso-destacado {
+    /* .aviso-card.aviso-destacado {
         border-left: 6px solid #dc3545 !important;
         border-radius: 20px !important;
         position: relative;
         overflow: hidden;
-    }
+    } */
 
     /* La canica nítida en el borde */
-    .aviso-card.aviso-destacado::before {
+    /* .aviso-card.aviso-destacado::before {
         content: '●';
         position: absolute;
         top: 0;
@@ -366,10 +366,10 @@
         text-align: center;
         line-height: 1;
         font-weight: bold;
-    }
+    } */
 
     /* Delays diferentes para cada canica */
-    .aviso-card.aviso-destacado:nth-child(6n+1)::before {
+    /* .aviso-card.aviso-destacado:nth-child(6n+1)::before {
         animation-delay: 0s;
         animation-duration: 5s;
     }
@@ -409,10 +409,10 @@
             top: 94%;
             transform: scale(1.1);
         }
-    }
+    } */
 
     /* En dispositivos pequeños, canica más pequeña */
-    @media (max-width: 768px) {
+    /* @media (max-width: 768px) {
         .aviso-card.aviso-destacado::before {
             font-size: 12px;
             left: -3px;
@@ -424,7 +424,7 @@
             font-size: 10px;
             left: -2px;
         }
-    }
+    } */
 
     /* ======================================================
        MODAL DE CATEGORÍAS
