@@ -512,7 +512,7 @@
     /* ======================================================
        PANEL DE COMENTARIOS
     ====================================================== */
-    .comments-panel {
+    /* .comments-panel {
         position: fixed;
         bottom: 0;
         right: 0;
@@ -562,10 +562,10 @@
         border-top: 1px solid var(--color-borde);
         display: flex;
         gap: 0.5rem;
-    }
+    } */
 
     /* Botón flotante sobre hero */
-    .hero-button-wrapper {
+    /* .hero-button-wrapper {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -608,7 +608,7 @@
         100% {
             transform: scale(1);
         }
-    }
+    } */
 
     /* ======================================================
    HEADER STICKY
