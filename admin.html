@@ -1078,10 +1078,10 @@
         <div id="mensaje-container"></div>
 
         <div class="filtros" id="admin-tabs">
-            <button class="filtro activo" data-tab="nuevo">📝</button>
-            <button class="filtro" data-tab="lista">📋</button>
-            <button class="filtro" data-tab="perfil">👤</button>
+            <button class="filtro activo" data-tab="lista">📋</button>
             <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥</button>
+            <button class="filtro" data-tab="perfil">👤</button>
+            <button class="filtro" data-tab="nuevo">📝</button>
         </div>
 
         <!-- Buscador Universal -->
@@ -1095,7 +1095,7 @@
         </div>
 
         <!-- Pestaña: Nuevo aviso -->
-        <div id="tab-nuevo" class="tab activo">
+        <div id="tab-nuevo" class="tab">
             <form id="form-aviso" class="formulario" style="max-width: 100%;">
                 <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar aviso</h2>
 
@@ -1162,7 +1162,7 @@
         </div>
 
         <!-- Pestaña: Lista de avisos -->
-        <div id="tab-lista" class="tab">
+        <div id="tab-lista" class="tab activo">
 
             <!-- Tabla de avisos -->
             <div class="admin-tabla-wrapper">
