@@ -426,12 +426,12 @@
         /* Tabla principal */
         /* .tabla-admin {
             width: 100%; */
-        /* table-layout: fixed; */
-        /* table-layout: auto; */
-        /* ← Fuerza mismo ancho en todas las filas */
-        /* border-collapse: collapse; */
-        /* ← Evita el desfase por spacing */
-        /* text-align: left;
+            /* table-layout: fixed; */
+            /* table-layout: auto; */
+            /* ← Fuerza mismo ancho en todas las filas */
+            /* border-collapse: collapse; */
+            /* ← Evita el desfase por spacing */
+            /* text-align: left;
             font-size: 0.85rem;
         } */
 
@@ -671,7 +671,7 @@
         }
 
         /* ========== RESPONSIVE ========== */
-        /* @media (max-width: 768px) {
+        @media (max-width: 768px) {
 
             .tabla-admin,
             .tabla-admin thead,
@@ -697,6 +697,7 @@
                 transform: translateX(4px);
             }
 
+            /**/
             .tabla-admin td {
                 display: flex;
                 justify-content: space-between;
@@ -716,6 +717,7 @@
                 color: #2c7da0;
             }
 
+            /**/
 
             .tabla-admin tbody tr td:first-child {
                 border-radius: 12px 12px 0 0;
@@ -723,84 +725,6 @@
 
             .tabla-admin tbody tr td:last-child {
                 border-radius: 0 0 12px 12px;
-            }
-        } */
-
-        @media (max-width: 768px) {
-
-            .tabla-admin,
-            .tabla-admin thead,
-            .tabla-admin tbody,
-            .tabla-admin th,
-            .tabla-admin td,
-            .tabla-admin tr {
-                display: block;
-            }
-
-            .tabla-admin thead tr {
-                display: none;
-            }
-
-            .tabla-admin tbody tr {
-                margin-bottom: 10px;
-                /* Reducido de 16px a 10px */
-                border-radius: 12px;
-                padding: 8px;
-                /* Reducido de 12px a 8px */
-                box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-                /* Sombra más suave */
-                background: white;
-            }
-
-            .tabla-admin td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 6px 8px;
-                /* Reducido de 10px 12px a 6px 8px */
-                border-bottom: 1px solid #eee;
-                font-size: 0.75rem;
-                /* Texto más pequeño */
-            }
-
-            .tabla-admin td:last-child {
-                border-bottom: none;
-            }
-
-            .tabla-admin td:before {
-                content: attr(data-label);
-                font-weight: 700;
-                width: 35%;
-                color: #2c7da0;
-                font-size: 0.7rem;
-            }
-
-            /* Compactar imágenes en móvil */
-            .tabla-admin td img {
-                width: 35px;
-                height: 35px;
-            }
-
-            /* Compactar botones en móvil */
-            .acciones-botones {
-                gap: 4px;
-            }
-
-            .accion-btn {
-                padding: 3px 6px;
-                font-size: 0.65rem;
-            }
-
-            /* Compactar badges */
-            .badge-estado {
-                padding: 2px 6px;
-                font-size: 0.6rem;
-            }
-
-            /* Selector de estado más compacto */
-            .select-estado {
-                padding: 2px 6px;
-                font-size: 0.65rem;
             }
         }
 
@@ -904,6 +828,82 @@
                 grid-column: span 1;
             }
         }
+
+        /* @media (max-width: 768px) {
+            .avisos-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .tarjeta.destacada {
+                grid-column: span 1;
+                order: -1;
+            }
+
+            .tarjeta.destacada .tarjeta-titulo {
+                font-size: 1.1rem;
+            }
+
+            .usuarios-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tarjeta-usuario {
+                padding: 0.8rem;
+            }
+
+            .admin-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .grupo-botones {
+                flex-direction: column;
+            }
+
+            .boton-chico {
+                width: 100%;
+                text-align: center;
+            }
+
+            .tabla-admin,
+            .tabla-admin thead,
+            .tabla-admin tbody,
+            .tabla-admin th,
+            .tabla-admin td,
+            .tabla-admin tr {
+                display: block;
+            }
+
+            .tabla-admin thead tr {
+                display: none;
+            }
+
+            .tabla-admin tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--color-borde);
+                border-radius: 8px;
+                padding: 10px;
+            }
+
+            .tabla-admin td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 8px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .tabla-admin td:before {
+                content: attr(data-label);
+                font-weight: bold;
+                width: 40%;
+            }
+
+            .acciones-botones {
+                justify-content: flex-end;
+                width: 100%;
+            }
+        } */
 
         @media (max-width: 480px) {
 
