@@ -623,7 +623,7 @@
     }
 
     /* Estilo para el contenido del header */
-    .header-contenido {
+    /* .header-contenido {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -632,10 +632,10 @@
         max-width: 1400px;
         margin: 0 auto;
         padding: 0 1rem;
-    }
+    } */
 
     /* Logo */
-    .header-logo {
+    /* .header-logo {
         display: flex;
         align-items: center;
         gap: 12px;
@@ -661,17 +661,17 @@
         font-size: 0.65rem;
         color: #6b7280;
         margin: 0;
-    }
+    } */
 
     /* Acciones del header */
-    .header-acciones {
+    /* .header-acciones {
         display: flex;
         gap: 12px;
         align-items: center;
-    }
+    } */
 
     /* Botones */
-    .btn-login,
+    /* .btn-login,
     .btn-logout {
         display: inline-flex;
         align-items: center;
@@ -708,10 +708,10 @@
         font-size: 0.85rem;
         color: #9ca3af;
         font-weight: 500;
-    }
+    } */
 
     /* Responsive */
-    @media (max-width: 768px) {
+    /* @media (max-width: 768px) {
         .header-contenido {
             min-height: 4rem;
         }
@@ -734,6 +734,6 @@
             padding: 5px 12px;
             font-size: 0.75rem;
         }
-    }
+    } */
 
     
