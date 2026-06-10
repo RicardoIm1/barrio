@@ -129,11 +129,14 @@
     @media (max-width: 767px) {
         .scrollable-container {
             height: calc(100vh - 70px);
+            /* height: 100vh; */
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             scroll-snap-type: y mandatory;
             /* scroll-snap-type: y proximity; */
             scroll-snap-stop: always;
             scroll-behavior: smooth;
+            padding-top: 70px;
         }
 
         .scrollable-container::-webkit-scrollbar {
