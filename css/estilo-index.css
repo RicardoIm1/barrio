@@ -429,7 +429,7 @@
     /* ======================================================
        MODAL DE CATEGORÍAS
     ====================================================== */
-    .modal-categorias {
+    /* .modal-categorias {
         position: fixed;
         top: 0;
         left: 0;
@@ -507,7 +507,7 @@
         padding: 1rem;
         border-top: 1px solid #eee;
         text-align: center;
-    }
+    } */
 
     /* ======================================================
        PANEL DE COMENTARIOS
