@@ -8,14 +8,14 @@
     box-sizing: border-box;
 } */
 
-html {
+/* html {
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     scroll-behavior: smooth;
-}
+} */
 
-body {
+/* body {
     min-height: 100vh;
 
     display: flex;
@@ -36,19 +36,19 @@ body {
     font-size: var(--fuente-cuerpo);
 
     overflow-x: hidden;
-}
+} */
 
-main,
+/* main,
 .contenido-principal {
     flex: 1;
     width: 100%;
-}
+} */
 
 /* =========================================================
    VARIABLES
 ========================================================= */
 
-:root {
+/* :root {
     --color-primario: #2c3e50;
     --color-secundario: #34495e;
     --color-acento: #3498db;
@@ -79,18 +79,18 @@ main,
 
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
+} */
 
 /* =========================================================
    LAYOUT
 ========================================================= */
 
-.contenido-principal {
+/* .contenido-principal {
     flex: 1;
     width: 100%;
-}
+} */
 
-.contenedor {
+/* .contenedor {
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--espaciado-md);
@@ -102,7 +102,7 @@ main,
     margin: 0 auto;
     padding: var(--espaciado-md);
     width: 100%;
-}
+} */
 
 /* =========================================================
    HEADER STICKY
