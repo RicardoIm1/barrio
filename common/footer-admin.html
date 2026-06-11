@@ -503,408 +503,187 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
-    // ========== VARIABLES GLOBALES ==========
-    let chartDetailedView = false;
-    let chartUsuarios = null;
-    let chartAvisos = null;
-    let temporalData = null;
-    let allNotices = [];
-    let currentUserRole = 'user';
-    let currentUser = null;
-
-    // ========== FUNCIÓN ESCAPE HTML ==========
-    function escapeHTML(str) {
-        if (str === undefined || str === null) return '';
-        if (typeof str === 'number') return str.toString();
-        if (typeof str !== 'string') str = String(str);
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    // Opciones para Chart.js
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-            legend: { labels: { color: '#ccc' } },
-            tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
-        },
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
-            x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
-        }
-    };
-
-    // ========== ADAPTADOR: mapea 'intereses' a 'votos_positivos' ==========
-    function adaptarAviso(aviso) {
-        return {
-            ...aviso,
-            votos_positivos: aviso.votos_positivos || aviso.intereses || 0,
-            votos_negativos: aviso.votos_negativos || 0,
-            comentarios_count: aviso.comentarios_count || 0
-        };
-    }
-
-    // ========== RENDERIZAR GRÁFICAS ==========
-    function renderAllCharts() {
-        if (!temporalData || !temporalData.diario) {
-            console.warn('No hay datos para gráficas');
-            return;
-        }
-
-        const labels = temporalData.diario.map(d => {
-            const [year, month, day] = d.fecha.split('-');
-            return `${day}/${month}`;
-        });
-
-        const usuariosData = temporalData.diario.map(d => d.usuarios);
-        const avisosData = temporalData.diario.map(d => d.avisos);
-
-        if (chartUsuarios) chartUsuarios.destroy();
-        if (chartAvisos) chartAvisos.destroy();
-
-        const ctxUsuarios = document.getElementById('chartUsuariosCanvas')?.getContext('2d');
-        if (ctxUsuarios && typeof Chart !== 'undefined') {
-            chartUsuarios = new Chart(ctxUsuarios, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Nuevos usuarios',
-                        data: usuariosData,
-                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
-                        borderColor: '#4caf50',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        const ctxAvisos = document.getElementById('chartAvisosCanvas')?.getContext('2d');
-        if (ctxAvisos && typeof Chart !== 'undefined') {
-            chartAvisos = new Chart(ctxAvisos, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Avisos publicados',
-                        data: avisosData,
-                        backgroundColor: 'rgba(245, 176, 66, 0.6)',
-                        borderColor: '#f5b042',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        updateStatsMini('usuariosStats', usuariosData, labels, 'nuevos usuarios');
-        updateStatsMini('avisosStats', avisosData, labels, 'avisos publicados');
-    }
-
-    function updateStatsMini(elementId, dataValues, labels, labelName) {
-        const statsDiv = document.getElementById(elementId);
-        if (!statsDiv) return;
-
-        const maxValue = Math.max(...dataValues);
-        const maxIndex = dataValues.indexOf(maxValue);
-        const total = dataValues.reduce((a, b) => a + b, 0);
-        const promedio = dataValues.length > 0 ? (total / dataValues.length).toFixed(1) : 0;
-
-        if (maxValue > 0 && maxIndex !== -1) {
-            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} ${labelName})`;
-        } else {
-            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio}`;
-        }
-    }
-
-    function updateOnlineUsers(onlineData) {
-        const countSpan = document.getElementById('onlineCount');
-        const listDiv = document.getElementById('onlineUsersList');
-
-        if (countSpan) {
-            const total = onlineData?.total || 0;
-            countSpan.innerHTML = `${total} conectado${total !== 1 ? 's' : ''}`;
-        }
-
-        if (listDiv) {
-            if (!onlineData?.usuarios || onlineData.usuarios.length === 0) {
-                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
-                return;
-            }
-            listDiv.innerHTML = onlineData.usuarios.map(user => `
-                <div class="online-user-item">
-                    <span class="online-user-email">${escapeHTML(user.email)}</span>
-                    <span class="online-user-time">🟢 activo</span>
-                </div>
-            `).join('');
-        }
-    }
-
-    // ========== ESTADÍSTICAS AVANZADAS ==========
     async function loadAdvancedStats() {
         try {
             const apiKey = localStorage.getItem('api_key');
+
             if (!apiKey) {
-                console.warn('No hay API key');
+                console.warn('No existe API Key');
                 return;
             }
 
-            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
-            console.log('📊 Estadísticas avanzadas:', response);
+            const response = await API.peticion(
+                'ESTADISTICAS_AVANZADAS',
+                {},
+                apiKey
+            );
 
-            if (response && response.success && response.data) {
-                temporalData = response.data;
+            console.log('ESTADISTICAS_AVANZADAS =>', response);
 
-                if (response.data.resumen) {
-                    const promUsuarios = document.getElementById('promUsuarios');
-                    const promAvisos = document.getElementById('promAvisos');
-                    const totalUsuarios = document.getElementById('totalUsuarios');
-                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
-                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
-                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
-                }
+            if (!response?.success) {
+                console.error(response?.error || 'Error obteniendo estadísticas');
+                return;
+            }
 
-                updateOnlineUsers(response.data.enLinea);
+            const data = response.data || {};
+
+            // ==================================================
+            // RESUMEN GENERAL
+            // ==================================================
+
+            const resumen = data.resumen || {};
+
+            document.getElementById('totalAvisos').textContent =
+                resumen.total_avisos || 0;
+
+            document.getElementById('avisosActivos').textContent =
+                resumen.avisos_activos || 0;
+
+            document.getElementById('avisosPendientes').textContent =
+                resumen.avisos_pendientes || 0;
+
+            document.getElementById('totalCategorias').textContent =
+                resumen.total_categorias || 0;
+
+            document.getElementById('totalUsuarios').textContent =
+                resumen.total_usuarios || 0;
+
+            document.getElementById('totalVisitas').textContent =
+                resumen.total_visitas || 0;
+
+            document.getElementById('totalInteracciones').textContent =
+                resumen.total_interacciones || 0;
+
+            document.getElementById('promUsuarios').textContent =
+                resumen.promedio_usuarios || 0;
+
+            document.getElementById('promAvisos').textContent =
+                resumen.promedio_avisos || 0;
+
+            // ==================================================
+            // TARJETA PENDIENTES SOLO ADMIN
+            // ==================================================
+
+            if ((resumen.avisos_pendientes || 0) > 0) {
+                document.getElementById('pendingCard').style.display = 'flex';
+            }
+
+            // ==================================================
+            // CATEGORÍAS
+            // ==================================================
+
+            if (
+                data.categorias &&
+                Array.isArray(data.categorias) &&
+                data.categorias.length
+            ) {
+                renderCategorias(data.categorias);
+
+                document.getElementById('chartCategorias').style.display = 'block';
+            }
+
+            // ==================================================
+            // DATOS TEMPORALES
+            // ==================================================
+
+            if (data.diario && Array.isArray(data.diario)) {
+                temporalData = data;
+
+                document.getElementById('chartUsuariosDiarios').style.display =
+                    'block';
+
+                document.getElementById('chartAvisosDiarios').style.display =
+                    'block';
+
+                document.getElementById('chartConexionesDiarias').style.display =
+                    'block';
+
+                document.getElementById('statsSummary').style.display =
+                    'flex';
+
                 renderAllCharts();
-
-                const chartUsuariosDiv = document.getElementById('chartUsuariosDiarios');
-                const chartAvisosDiv = document.getElementById('chartAvisosDiarios');
-                const chartOnlineDiv = document.getElementById('chartOnline');
-                const statsSummaryDiv = document.getElementById('statsSummary');
-
-                if (chartUsuariosDiv) chartUsuariosDiv.style.display = 'block';
-                if (chartAvisosDiv) chartAvisosDiv.style.display = 'block';
-                if (chartOnlineDiv) chartOnlineDiv.style.display = 'block';
-                if (statsSummaryDiv) statsSummaryDiv.style.display = 'flex';
             }
+
+            // ==================================================
+            // USUARIOS ONLINE
+            // ==================================================
+
+            if (data.online) {
+                document.getElementById('chartOnline').style.display = 'block';
+                updateOnlineUsers(data.online);
+            }
+
         } catch (error) {
-            console.error('Error cargando estadísticas avanzadas:', error);
+            console.error('Error cargando estadísticas:', error);
         }
     }
 
-    // ========== DETECTAR ROL ==========
-    async function detectUserRole() {
-        try {
-            currentUser = API.getUsuarioActual();
-            if (currentUser && currentUser.rol === 'admin') {
-                currentUserRole = 'admin';
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) {
-                    badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
-                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
-                }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'flex';
-                const chartCategorias = document.getElementById('chartCategorias');
-                if (chartCategorias) chartCategorias.style.display = 'block';
-            } else if (currentUser) {
-                currentUserRole = 'user';
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) {
-                    badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
-                }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'none';
-            } else {
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) badge.innerHTML = '👤 Invitado';
-            }
-            return true;
-        } catch (e) {
-            console.error('Error detectando usuario:', e);
-            return false;
-        }
-    }
+    /* ===========================================
+       CATEGORÍAS
+    =========================================== */
 
-    // ========== OBTENER AVISOS ==========
-    async function getAllNoticesFromAPI() {
-        try {
-            const apiKey = localStorage.getItem('api_key');
-            let respuesta;
+    function renderCategorias(categorias) {
 
-            if (currentUserRole === 'admin') {
-                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 1000 }, apiKey);
-            } else {
-                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
-            }
-
-            if (respuesta && respuesta.success) {
-                let datos = [];
-                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
-                    datos = respuesta.data.datos;
-                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
-                    datos = respuesta.datos;
-                } else if (Array.isArray(respuesta.data)) {
-                    datos = respuesta.data;
-                }
-                
-                const datosAdaptados = datos.map(adaptarAviso);
-                return { datos: datosAdaptados, total: datosAdaptados.length };
-            }
-            return { datos: [], total: 0 };
-        } catch (error) {
-            console.error('Error obteniendo avisos:', error);
-            return { datos: [], total: 0 };
-        }
-    }
-
-    // ========== CALCULAR ESTADÍSTICAS ==========
-    function calculateStats(notices) {
-        const total = notices.length;
-        
-        const activos = notices.filter(a => {
-            const status = (a.status || '').toLowerCase();
-            return status === 'activo';
-        }).length;
-        
-        const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
-        
-        const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
-        const totalCategorias = categoriasSet.size;
-        
-        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
-        
-        const totalInteracciones = notices.reduce((sum, a) => {
-            const likes = parseInt(a.votos_positivos) || 0;
-            const comentarios = parseInt(a.comentarios_count) || 0;
-            return sum + likes + comentarios;
-        }, 0);
-
-        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
-
-        return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
-    }
-
-    function getStatsByCategory(notices) {
-        const categories = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
-        const stats = {};
-        categories.forEach(cat => {
-            stats[cat] = notices.filter(a => a.categoria === cat).length;
-        });
-        return stats;
-    }
-
-    function updateCards(stats) {
-        const elements = {
-            totalAvisos: document.getElementById('totalAvisos'),
-            avisosActivos: document.getElementById('avisosActivos'),
-            avisosPendientes: document.getElementById('avisosPendientes'),
-            totalCategorias: document.getElementById('totalCategorias'),
-            totalVisitas: document.getElementById('totalVisitas'),
-            totalInteracciones: document.getElementById('totalInteracciones')
-        };
-        if (elements.totalAvisos) elements.totalAvisos.innerText = stats.total;
-        if (elements.avisosActivos) elements.avisosActivos.innerText = stats.activos;
-        if (currentUserRole === 'admin' && elements.avisosPendientes) elements.avisosPendientes.innerText = stats.pendientes;
-        if (elements.totalCategorias) elements.totalCategorias.innerText = stats.totalCategorias;
-        if (elements.totalVisitas) elements.totalVisitas.innerText = stats.totalVisitas.toLocaleString();
-        if (elements.totalInteracciones) elements.totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
-    }
-
-    function renderChart(notices) {
-        const stats = getStatsByCategory(notices);
-        const maxValue = Math.max(...Object.values(stats), 1);
-        const categoryNames = {
-            'urgente': '🚨 Urgente',
-            'escuelas': '🏫 Escuelas',
-            'servicios': '🛠️ Servicios',
-            'comercios': '🛒 Comercios',
-            'eventos': '📅 Eventos',
-            'gobierno': '🏛️ Gobierno',
-            'varios': '📢 Varios'
-        };
-
-        let barsHtml = '';
-        for (const [key, value] of Object.entries(stats)) {
-            const percentage = (value / maxValue) * 100;
-            barsHtml += `
-                <div class="bar-item">
-                    <div class="bar-label">${categoryNames[key]}</div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${percentage}%;">
-                            ${chartDetailedView && value > 0 ? value : ''}
-                        </div>
-                    </div>
-                    <div class="bar-count">${value}</div>
-                </div>
-            `;
-        }
         const chartBars = document.getElementById('chartBars');
-        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
 
-        const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
-        const chartStatsMini = document.getElementById('chartStatsMini');
-        if (chartStatsMini) {
-            if (topCategory && topCategory[1] > 0) {
-                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
-            } else {
-                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
-            }
-        }
+        if (!chartBars) return;
+
+        const max = Math.max(
+            ...categorias.map(c => Number(c.total || c.cantidad || 0)),
+            1
+        );
+
+        chartBars.innerHTML = categorias.map(cat => {
+
+            const total = Number(cat.total || cat.cantidad || 0);
+
+            const porcentaje = (total / max) * 100;
+
+            return `
+            <div class="bar-item">
+
+                <div class="bar-label">
+                    ${escapeHTML(cat.nombre || cat.categoria)}
+                </div>
+
+                <div class="bar-container">
+                    <div
+                        class="bar-fill"
+                        style="width:${porcentaje}%"
+                    >
+                        ${total}
+                    </div>
+                </div>
+
+                <div class="bar-count">
+                    ${total}
+                </div>
+
+            </div>
+        `;
+        }).join('');
     }
 
-    function updateFecha() {
-        const fechaSpan = document.getElementById('fechaActual');
-        if (fechaSpan) {
-            fechaSpan.innerHTML = `📅 ${new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
-        }
-    }
+    /* ===========================================
+       INICIALIZACIÓN
+    =========================================== */
 
-    async function refreshDashboardData() {
-        try {
-            const usuarioActual = API.getUsuarioActual();
-            const badge = document.getElementById('userRoleBadge');
-            if (badge && usuarioActual) {
-                badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
-            }
-            const { datos } = await getAllNoticesFromAPI();
-            allNotices = datos;
-            const stats = calculateStats(datos);
-            updateCards(stats);
-            if (currentUserRole === 'admin') {
-                renderChart(datos);
-            }
-            updateFecha();
-            console.log('📊 Dashboard actualizado con', allNotices.length, 'avisos');
-        } catch (error) {
-            console.error('Error actualizando dashboard:', error);
-        }
-    }
+    document.addEventListener('DOMContentLoaded', () => {
 
-    window.toggleChartView = function() {
-        chartDetailedView = !chartDetailedView;
-        if (allNotices.length > 0) {
-            renderChart(allNotices);
-        }
-        const btn = document.querySelector('.chart-header .chart-toggle');
-        if (btn) {
-            btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
-        }
-    };
+        const fecha = new Date();
 
-    async function initDashboard() {
-        await detectUserRole();
-        await refreshDashboardData();
-        if (currentUserRole === 'admin') {
-            await loadAdvancedStats();
-        }
-        setInterval(refreshDashboardData, 30000);
-        if (currentUserRole === 'admin') {
-            setInterval(() => loadAdvancedStats(), 60000);
-        }
-    }
+        const fechaActual = document.getElementById('fechaActual');
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initDashboard);
-    } else {
-        initDashboard();
-    }
+        if (fechaActual) {
+            fechaActual.textContent =
+                fecha.toLocaleDateString('es-MX', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+        }
+
+        loadAdvancedStats();
+    });
 </script>
