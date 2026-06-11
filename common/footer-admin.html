@@ -500,233 +500,633 @@
     }
 </style>
 
+<style>
+    .dashboard-footer {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        margin-top: 60px;
+        padding: 30px 0 40px;
+    }
+    .dashboard-footer .contenedor {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(245, 176, 66, 0.3);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .dashboard-titulo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .dashboard-icon { font-size: 2rem; }
+    .dashboard-titulo h3 {
+        color: #f5b042;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+    .dashboard-badge {
+        background: rgba(245, 176, 66, 0.2);
+        color: #f5b042;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        border: 1px solid rgba(245, 176, 66, 0.4);
+    }
+    .dashboard-fecha { color: #888; font-size: 0.85rem; }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(245, 176, 66, 0.3);
+    }
+    .stat-icon { font-size: 2.2rem; }
+    .stat-info h4 {
+        color: #aaa;
+        font-size: 0.7rem;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .stat-number {
+        color: #f5b042;
+        font-size: 1.8rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+    .stat-label { color: #777; font-size: 0.65rem; }
+    .pending-card { border-left: 3px solid #ff9800; }
+    .dashboard-chart {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .chart-header h4 { color: #f5b042; margin: 0; font-size: 1rem; }
+    .chart-toggle {
+        background: rgba(245, 176, 66, 0.2);
+        border: 1px solid #f5b042;
+        color: #f5b042;
+        padding: 6px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+    }
+    .chart-toggle:hover { background: #f5b042; color: #1a1a2e; }
+    .chart-bars { display: flex; flex-direction: column; gap: 12px; }
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .bar-label {
+        width: 100px;
+        font-size: 0.8rem;
+        color: #ccc;
+    }
+    .bar-container {
+        flex: 1;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f5b042, #ff8c42);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        color: #1a1a2e;
+        font-size: 0.7rem;
+        font-weight: bold;
+        transition: width 0.4s ease;
+    }
+    .bar-count {
+        min-width: 35px;
+        text-align: right;
+        font-size: 0.8rem;
+        color: #f5b042;
+        font-weight: bold;
+    }
+    .temporal-chart-container { min-height: 250px; }
+    .online-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .online-users-list { max-height: 200px; overflow-y: auto; }
+    .online-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+    .online-user-email { color: #ccc; word-break: break-all; }
+    .online-user-time {
+        color: #4caf50;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        margin-left: 10px;
+    }
+    .stats-summary {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-top: 10px;
+    }
+    .summary-item { text-align: center; }
+    .summary-label {
+        display: block;
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #f5b042;
+    }
+    .chart-stats-mini {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.7rem;
+        color: #888;
+        text-align: center;
+    }
+    @media (max-width: 768px) {
+        .dashboard-footer .contenedor { padding: 0 15px; }
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .stat-card { padding: 15px 12px; }
+        .stat-icon { font-size: 1.8rem; }
+        .stat-number { font-size: 1.4rem; }
+        .bar-label { width: 85px; font-size: 0.7rem; }
+        .stats-summary { gap: 15px; }
+        .summary-value { font-size: 1.1rem; }
+    }
+    @media (max-width: 480px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .dashboard-header { flex-direction: column; text-align: center; }
+        .dashboard-titulo { justify-content: center; }
+        .chart-header { flex-direction: column; text-align: center; }
+        .online-user-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+        .online-user-time { margin-left: 0; }
+    }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
+    // ========== VARIABLES GLOBALES ==========
+    let chartDetailedView = false;
+    let chartUsuarios = null;
+    let chartAvisos = null;
+    let temporalData = null;
+    let allNotices = [];
+    let currentUserRole = 'user';
+    let currentUser = null;
+
+    // ========== FUNCIÓN ESCAPE HTML ==========
+    function escapeHTML(str) {
+        if (str === undefined || str === null) return '';
+        if (typeof str === 'number') return str.toString();
+        if (typeof str !== 'string') str = String(str);
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Opciones para Chart.js
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { labels: { color: '#ccc' } },
+            tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
+            x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
+        }
+    };
+
+    // ========== ADAPTADOR: mapea 'intereses' a 'votos_positivos' ==========
+    function adaptarAviso(aviso) {
+        return {
+            ...aviso,
+            votos_positivos: aviso.votos_positivos || aviso.intereses || 0,
+            votos_negativos: aviso.votos_negativos || 0,
+            comentarios_count: aviso.comentarios_count || 0
+        };
+    }
+
+    // ========== RENDERIZAR GRÁFICAS ==========
+    function renderAllCharts() {
+        if (!temporalData || !temporalData.diario) {
+            console.warn('No hay datos para gráficas');
+            return;
+        }
+
+        const labels = temporalData.diario.map(d => {
+            const [year, month, day] = d.fecha.split('-');
+            return `${day}/${month}`;
+        });
+
+        const usuariosData = temporalData.diario.map(d => d.usuarios);
+        const avisosData = temporalData.diario.map(d => d.avisos);
+
+        if (chartUsuarios) chartUsuarios.destroy();
+        if (chartAvisos) chartAvisos.destroy();
+
+        const ctxUsuarios = document.getElementById('chartUsuariosCanvas')?.getContext('2d');
+        if (ctxUsuarios && typeof Chart !== 'undefined') {
+            chartUsuarios = new Chart(ctxUsuarios, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nuevos usuarios',
+                        data: usuariosData,
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: '#4caf50',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        const ctxAvisos = document.getElementById('chartAvisosCanvas')?.getContext('2d');
+        if (ctxAvisos && typeof Chart !== 'undefined') {
+            chartAvisos = new Chart(ctxAvisos, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Avisos publicados',
+                        data: avisosData,
+                        backgroundColor: 'rgba(245, 176, 66, 0.6)',
+                        borderColor: '#f5b042',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        updateStatsMini('usuariosStats', usuariosData, labels, 'nuevos usuarios');
+        updateStatsMini('avisosStats', avisosData, labels, 'avisos publicados');
+    }
+
+    function updateStatsMini(elementId, dataValues, labels, labelName) {
+        const statsDiv = document.getElementById(elementId);
+        if (!statsDiv) return;
+
+        const maxValue = Math.max(...dataValues);
+        const maxIndex = dataValues.indexOf(maxValue);
+        const total = dataValues.reduce((a, b) => a + b, 0);
+        const promedio = dataValues.length > 0 ? (total / dataValues.length).toFixed(1) : 0;
+
+        if (maxValue > 0 && maxIndex !== -1) {
+            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} ${labelName})`;
+        } else {
+            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio}`;
+        }
+    }
+
+    function updateOnlineUsers(onlineData) {
+        const countSpan = document.getElementById('onlineCount');
+        const listDiv = document.getElementById('onlineUsersList');
+
+        if (countSpan) {
+            const total = onlineData?.total || 0;
+            countSpan.innerHTML = `${total} conectado${total !== 1 ? 's' : ''}`;
+        }
+
+        if (listDiv) {
+            if (!onlineData?.usuarios || onlineData.usuarios.length === 0) {
+                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
+                return;
+            }
+            listDiv.innerHTML = onlineData.usuarios.map(user => `
+                <div class="online-user-item">
+                    <span class="online-user-email">${escapeHTML(user.email)}</span>
+                    <span class="online-user-time">🟢 activo</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    // ========== ESTADÍSTICAS AVANZADAS ==========
     async function loadAdvancedStats() {
         try {
-
             const apiKey = localStorage.getItem('api_key');
-
-            if (!apiKey) return;
-
-            const response = await API.peticion(
-                'ESTADISTICAS_AVANZADAS',
-                {},
-                apiKey
-            );
-
-            console.log('📊 Estadísticas:', response);
-
-            if (!response || !response.success) {
-                console.error('Error cargando estadísticas');
+            if (!apiKey) {
+                console.warn('No hay API key');
                 return;
             }
 
-            temporalData = response.data;
+            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+            console.log('📊 Estadísticas avanzadas:', response);
 
-            const resumen = response.data.resumen || {};
+            if (response && response.success && response.data) {
+                temporalData = response.data;
 
-            // ==========================================
-            // TARJETAS PRINCIPALES
-            // ==========================================
-
-            document.getElementById('totalUsuarios').textContent =
-                resumen.totalUsuarios || 0;
-
-            document.getElementById('totalAvisos').textContent =
-                resumen.totalAvisos || 0;
-
-            document.getElementById('promUsuarios').textContent =
-                resumen.promedioDiarioUsuarios || 0;
-
-            document.getElementById('promAvisos').textContent =
-                resumen.promedioDiarioAvisos || 0;
-
-            // ==========================================
-            // CALCULAR ACTIVOS
-            // ==========================================
-
-            let avisosActivos = 0;
-
-            if (window.allNotices && Array.isArray(window.allNotices)) {
-                avisosActivos = window.allNotices.filter(
-                    a => a.status === 'activo'
-                ).length;
-            }
-
-            document.getElementById('avisosActivos').textContent =
-                avisosActivos;
-
-            // ==========================================
-            // VISITAS E INTERACCIONES
-            // ==========================================
-
-            let totalVisitas = 0;
-            let totalInteracciones = 0;
-
-            if (window.allNotices && Array.isArray(window.allNotices)) {
-
-                window.allNotices.forEach(aviso => {
-
-                    totalVisitas += Number(aviso.vistas || 0);
-
-                    totalInteracciones +=
-                        Number(aviso.votos_positivos || 0) +
-                        Number(aviso.comentarios_count || 0);
-                });
-            }
-
-            document.getElementById('totalVisitas').textContent =
-                totalVisitas.toLocaleString();
-
-            document.getElementById('totalInteracciones').textContent =
-                totalInteracciones.toLocaleString();
-
-            // ==========================================
-            // CATEGORÍAS
-            // ==========================================
-
-            if (
-                window.allNotices &&
-                Array.isArray(window.allNotices) &&
-                window.allNotices.length
-            ) {
-
-                const categorias = {};
-
-                window.allNotices.forEach(aviso => {
-
-                    const categoria =
-                        aviso.categoria || 'Sin categoría';
-
-                    categorias[categoria] =
-                        (categorias[categoria] || 0) + 1;
-                });
-
-                document.getElementById('totalCategorias').textContent =
-                    Object.keys(categorias).length;
-
-                renderCategorias(categorias);
-
-                document.getElementById('chartCategorias').style.display =
-                    'block';
-            }
-
-            // ==========================================
-            // GRÁFICAS
-            // ==========================================
-
-            if (
-                response.data.diario &&
-                response.data.diario.length
-            ) {
-
-                document.getElementById('chartUsuariosDiarios').style.display =
-                    'block';
-
-                document.getElementById('chartAvisosDiarios').style.display =
-                    'block';
-
-                document.getElementById('chartConexionesDiarias').style.display =
-                    'block';
-
-                document.getElementById('statsSummary').style.display =
-                    'flex';
-
-                renderAllCharts();
-            }
-
-            // ==========================================
-            // ONLINE
-            // ==========================================
-
-            if (response.data.enLinea) {
-
-                document.getElementById('chartOnline').style.display =
-                    'block';
+                if (response.data.resumen) {
+                    const promUsuarios = document.getElementById('promUsuarios');
+                    const promAvisos = document.getElementById('promAvisos');
+                    const totalUsuarios = document.getElementById('totalUsuarios');
+                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
+                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
+                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
+                }
 
                 updateOnlineUsers(response.data.enLinea);
+                renderAllCharts();
+
+                const chartUsuariosDiv = document.getElementById('chartUsuariosDiarios');
+                const chartAvisosDiv = document.getElementById('chartAvisosDiarios');
+                const chartOnlineDiv = document.getElementById('chartOnline');
+                const statsSummaryDiv = document.getElementById('statsSummary');
+
+                if (chartUsuariosDiv) chartUsuariosDiv.style.display = 'block';
+                if (chartAvisosDiv) chartAvisosDiv.style.display = 'block';
+                if (chartOnlineDiv) chartOnlineDiv.style.display = 'block';
+                if (statsSummaryDiv) statsSummaryDiv.style.display = 'flex';
             }
-
         } catch (error) {
-
-            console.error(
-                '❌ Error cargando estadísticas:',
-                error
-            );
+            console.error('Error cargando estadísticas avanzadas:', error);
         }
     }
 
-    /* ===========================================
-       CATEGORÍAS
-    =========================================== */
+    // ========== DETECTAR ROL ==========
+    async function detectUserRole() {
+        try {
+            currentUser = API.getUsuarioActual();
+            if (currentUser && currentUser.rol === 'admin') {
+                currentUserRole = 'admin';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) {
+                    badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
+                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
+                }
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'flex';
+                const chartCategorias = document.getElementById('chartCategorias');
+                if (chartCategorias) chartCategorias.style.display = 'block';
+            } else if (currentUser) {
+                currentUserRole = 'user';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) {
+                    badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
+                }
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'none';
+            } else {
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) badge.innerHTML = '👤 Invitado';
+            }
+            return true;
+        } catch (e) {
+            console.error('Error detectando usuario:', e);
+            return false;
+        }
+    }
 
-    function renderCategorias(categorias) {
+    // ========== OBTENER AVISOS ==========
+    async function getAllNoticesFromAPI() {
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            let respuesta;
 
-        const chartBars =
-            document.getElementById('chartBars');
+            if (currentUserRole === 'admin') {
+                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 1000 }, apiKey);
+            } else {
+                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
+            }
 
-        if (!chartBars) return;
+            if (respuesta && respuesta.success) {
+                let datos = [];
+                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                    datos = respuesta.data.datos;
+                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                    datos = respuesta.datos;
+                } else if (Array.isArray(respuesta.data)) {
+                    datos = respuesta.data;
+                }
+                
+                const datosAdaptados = datos.map(adaptarAviso);
+                return { datos: datosAdaptados, total: datosAdaptados.length };
+            }
+            return { datos: [], total: 0 };
+        } catch (error) {
+            console.error('Error obteniendo avisos:', error);
+            return { datos: [], total: 0 };
+        }
+    }
 
-        const valores = Object.values(categorias);
+    // ========== CALCULAR ESTADÍSTICAS ==========
+    function calculateStats(notices) {
+        const total = notices.length;
+        
+        const activos = notices.filter(a => {
+            const status = (a.status || '').toLowerCase();
+            return status === 'activo';
+        }).length;
+        
+        const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
+        
+        const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
+        const totalCategorias = categoriasSet.size;
+        
+        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
+        
+        const totalInteracciones = notices.reduce((sum, a) => {
+            const likes = parseInt(a.votos_positivos) || 0;
+            const comentarios = parseInt(a.comentarios_count) || 0;
+            return sum + likes + comentarios;
+        }, 0);
 
-        const maximo =
-            Math.max(...valores, 1);
+        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
 
-        chartBars.innerHTML = '';
+        return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
+    }
 
-        Object.entries(categorias).forEach(
-            ([nombre, cantidad]) => {
+    function getStatsByCategory(notices) {
+        const categories = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
+        const stats = {};
+        categories.forEach(cat => {
+            stats[cat] = notices.filter(a => a.categoria === cat).length;
+        });
+        return stats;
+    }
 
-                const porcentaje =
-                    (cantidad / maximo) * 100;
+    function updateCards(stats) {
+        const elements = {
+            totalAvisos: document.getElementById('totalAvisos'),
+            avisosActivos: document.getElementById('avisosActivos'),
+            avisosPendientes: document.getElementById('avisosPendientes'),
+            totalCategorias: document.getElementById('totalCategorias'),
+            totalVisitas: document.getElementById('totalVisitas'),
+            totalInteracciones: document.getElementById('totalInteracciones')
+        };
+        if (elements.totalAvisos) elements.totalAvisos.innerText = stats.total;
+        if (elements.avisosActivos) elements.avisosActivos.innerText = stats.activos;
+        if (currentUserRole === 'admin' && elements.avisosPendientes) elements.avisosPendientes.innerText = stats.pendientes;
+        if (elements.totalCategorias) elements.totalCategorias.innerText = stats.totalCategorias;
+        if (elements.totalVisitas) elements.totalVisitas.innerText = stats.totalVisitas.toLocaleString();
+        if (elements.totalInteracciones) elements.totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
+    }
 
-                chartBars.innerHTML += `
+    function renderChart(notices) {
+        const stats = getStatsByCategory(notices);
+        const maxValue = Math.max(...Object.values(stats), 1);
+        const categoryNames = {
+            'urgente': '🚨 Urgente',
+            'escuelas': '🏫 Escuelas',
+            'servicios': '🛠️ Servicios',
+            'comercios': '🛒 Comercios',
+            'eventos': '📅 Eventos',
+            'gobierno': '🏛️ Gobierno',
+            'varios': '📢 Varios'
+        };
+
+        let barsHtml = '';
+        for (const [key, value] of Object.entries(stats)) {
+            const percentage = (value / maxValue) * 100;
+            barsHtml += `
                 <div class="bar-item">
-
-                    <div class="bar-label">
-                        ${escapeHTML(nombre)}
-                    </div>
-
+                    <div class="bar-label">${categoryNames[key]}</div>
                     <div class="bar-container">
-                        <div
-                            class="bar-fill"
-                            style="width:${porcentaje}%"
-                        >
-                            ${cantidad}
+                        <div class="bar-fill" style="width: ${percentage}%;">
+                            ${chartDetailedView && value > 0 ? value : ''}
                         </div>
                     </div>
-
-                    <div class="bar-count">
-                        ${cantidad}
-                    </div>
-
+                    <div class="bar-count">${value}</div>
                 </div>
             `;
-            }
-        );
-    }
-    /* ===========================================
-       INICIALIZACIÓN
-    =========================================== */
-
-    document.addEventListener('DOMContentLoaded', () => {
-
-        const fecha = new Date();
-
-        const fechaActual = document.getElementById('fechaActual');
-
-        if (fechaActual) {
-            fechaActual.textContent =
-                fecha.toLocaleDateString('es-MX', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
         }
+        const chartBars = document.getElementById('chartBars');
+        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
 
-        loadAdvancedStats();
-    });
+        const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
+        const chartStatsMini = document.getElementById('chartStatsMini');
+        if (chartStatsMini) {
+            if (topCategory && topCategory[1] > 0) {
+                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
+            } else {
+                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
+            }
+        }
+    }
+
+    function updateFecha() {
+        const fechaSpan = document.getElementById('fechaActual');
+        if (fechaSpan) {
+            fechaSpan.innerHTML = `📅 ${new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+        }
+    }
+
+    async function refreshDashboardData() {
+        try {
+            const usuarioActual = API.getUsuarioActual();
+            const badge = document.getElementById('userRoleBadge');
+            if (badge && usuarioActual) {
+                badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
+            }
+            const { datos } = await getAllNoticesFromAPI();
+            allNotices = datos;
+            const stats = calculateStats(datos);
+            updateCards(stats);
+            if (currentUserRole === 'admin') {
+                renderChart(datos);
+            }
+            updateFecha();
+            console.log('📊 Dashboard actualizado con', allNotices.length, 'avisos');
+        } catch (error) {
+            console.error('Error actualizando dashboard:', error);
+        }
+    }
+
+    window.toggleChartView = function() {
+        chartDetailedView = !chartDetailedView;
+        if (allNotices.length > 0) {
+            renderChart(allNotices);
+        }
+        const btn = document.querySelector('.chart-header .chart-toggle');
+        if (btn) {
+            btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
+        }
+    };
+
+    async function initDashboard() {
+        await detectUserRole();
+        await refreshDashboardData();
+        if (currentUserRole === 'admin') {
+            await loadAdvancedStats();
+        }
+        setInterval(refreshDashboardData, 30000);
+        if (currentUserRole === 'admin') {
+            setInterval(() => loadAdvancedStats(), 60000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+        initDashboard();
+    }
 </script>
