@@ -720,13 +720,13 @@
     }
 
     .logo-icon {
-        width: 50px;
-        height: 50px;
+        width: 52px;
+        height: 52px;
         object-fit: contain;
     }
 
     .logo-texto h1 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         margin: 0;
         background: linear-gradient(135deg, #2b7a2b, #d4a043);
         background-clip: text;
@@ -736,7 +736,7 @@
 
     .header-slogan {
         font-size: 0.65rem;
-        color: #6b7280;
+        /* color: #6b7280; */
         margin: 0;
     }
 
