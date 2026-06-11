@@ -1469,46 +1469,7 @@
             }
         });
 
-        // Función global para editar aviso (llamada desde admin.html)
-        window.editarAviso = function (aviso) {
-            console.log('✏️ Editando aviso:', aviso);
-
-            // Verificar que todos los elementos existan
-            const elementos = {
-                'edit-id': aviso.id,
-                'edit-titulo': aviso.titulo,
-                'edit-contenido': aviso.contenido,
-                'edit-ubicacion': aviso.ubicacion || '',
-                'edit-contacto': aviso.contacto || '',
-                'edit-fecha_evento': aviso.fecha_evento || '',
-                'edit-imagen_url': aviso.imagen_url || '',
-                'edit-video_url': aviso.video_url || '',
-                'edit-urgente': aviso.destacado || false
-            };
-
-            for (const [id, valor] of Object.entries(elementos)) {
-                const el = document.getElementById(id);
-                if (!el) {
-                    console.error(`❌ Elemento no encontrado: #${id}`);
-                    alert(`Error: El elemento #${id} no existe en la página`);
-                    return;
-                }
-                if (el.type === 'checkbox') {
-                    el.checked = valor === true || valor === 'TRUE' || valor === 1;
-                } else {
-                    el.value = valor || '';
-                }
-            }
-
-            // Mostrar modal
-            const modal = document.getElementById('modal-editar');
-            if (modal) {
-                modal.style.display = 'flex';
-            } else {
-                alert('Error: Modal no encontrado');
-            }
-        };
-    </script>
+        </script>
 
     <!-- Modal de categorías -->
     <div id="modalCategorias" class="modal-categorias" style="display: none;">
