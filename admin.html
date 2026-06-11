@@ -1295,19 +1295,24 @@
 
     <!-- Modal de edición -->
     <div id="modal-editar"
-        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 16px;">
         <div
-            style="background: white; max-width: 600px; width: 90%; border-radius: 16px; padding: 24px; max-height: 90vh; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin: 0;">✏️ Editar aviso</h2>
+            style="background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); width: 100%; max-width: 650px; border-radius: 32px; padding: 28px 24px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.3); transition: all 0.2s ease;">
+
+            <!-- Header premium -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; border-bottom: 2px solid #eef2ff; padding-bottom: 16px;">
+                <h2
+                    style="margin: 0; font-size: 1.8rem; background: linear-gradient(135deg, #1e293b, #2c7da0); background-clip: text; -webkit-background-clip: text; color: transparent; font-weight: 700; letter-spacing: -0.3px;">
+                    ✏️ Editar aviso</h2>
                 <button id="cerrar-modal"
-                    style="background: none; border: none; font-size: 24px; cursor: pointer;">✕</button>
+                    style="background: #f1f5f9; border: none; font-size: 22px; cursor: pointer; width: 38px; height: 38px; border-radius: 60px; display: flex; align-items: center; justify-content: center; color: #475569; transition: 0.2s; font-weight: bold;">✕</button>
             </div>
 
-            <form id="form-editar">
+            <form id="form-editar" style="display: flex; flex-direction: column; gap: 18px;">
                 <input type="hidden" id="edit-id">
 
-                <!-- Categoría oculta (siempre "varios") -->
+                <!-- Categoría oculta -->
                 <div class="campo" style="display: none;">
                     <label for="edit-categoria">Categoría</label>
                     <select id="edit-categoria" required>
@@ -1315,62 +1320,151 @@
                     </select>
                 </div>
 
-                <div class="campo">
-                    <label for="edit-titulo">Título</label>
-                    <input type="text" id="edit-titulo" required>
+                <!-- Campos con estilo premium -->
+                <div class="campo" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="edit-titulo"
+                        style="font-weight: 600; color: #0f172a; font-size: 0.9rem; letter-spacing: 0.3px;">📌
+                        Título</label>
+                    <input type="text" id="edit-titulo" required
+                        style="padding: 14px 16px; border-radius: 20px; border: 1.5px solid #e2e8f0; background: white; font-size: 1rem; transition: 0.2s; outline: none;">
                 </div>
 
-                <div class="campo">
-                    <label for="edit-contenido">Descripción</label>
-                    <textarea id="edit-contenido" rows="5" required></textarea>
+                <div class="campo" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="edit-contenido" style="font-weight: 600; color: #0f172a; font-size: 0.9rem;">📄
+                        Descripción</label>
+                    <textarea id="edit-contenido" rows="4" required
+                        style="padding: 14px 16px; border-radius: 20px; border: 1.5px solid #e2e8f0; font-family: inherit; resize: vertical; font-size: 0.95rem;"></textarea>
                 </div>
 
-                <div class="campo">
-                    <label for="edit-ubicacion">Ubicación (opcional)</label>
-                    <input type="text" id="edit-ubicacion" placeholder="Ej: Calle Principal #123">
+                <div class="campo" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="edit-ubicacion" style="font-weight: 600; color: #0f172a;">📍 Ubicación
+                        (opcional)</label>
+                    <input type="text" id="edit-ubicacion" placeholder="Ej: Calle Principal #123"
+                        style="padding: 14px 16px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
                 </div>
 
-                <div class="campo">
-                    <label for="edit-contacto">Contacto (opcional)</label>
-                    <input type="text" id="edit-contacto" placeholder="Ej: Teléfono o email">
+                <div class="campo" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="edit-contacto" style="font-weight: 600; color: #0f172a;">📞 Contacto (opcional)</label>
+                    <input type="text" id="edit-contacto" placeholder="Ej: Teléfono o email"
+                        style="padding: 14px 16px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
                 </div>
 
-                <div class="campo">
-                    <label for="edit-fecha_evento">Fecha del evento (opcional)</label>
-                    <input type="date" id="edit-fecha_evento">
+                <div class="campo" style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="edit-fecha_evento" style="font-weight: 600; color: #0f172a;">📅 Fecha del evento
+                        (opcional)</label>
+                    <input type="date" id="edit-fecha_evento"
+                        style="padding: 12px 16px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
                 </div>
 
-                <!-- ========== SECCIÓN MULTIMEDIA (igual que en creación) ========== -->
-                <div class="campo">
-                    <label>🎬 Subir imagen o video</label>
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px;">
-                        <button type="button" id="edit-btn-imagen" class="boton" style="background: #2c7da0; flex:1;">📸
-                            Seleccionar imagen</button>
-                        <button type="button" id="edit-btn-video" class="boton" style="background: #5a6e7c; flex:1;">🎥
-                            Seleccionar video</button>
+                <!-- Sección multimedia mejorada -->
+                <div class="campo"
+                    style="display: flex; flex-direction: column; gap: 10px; background: #f8fafc; padding: 18px 16px; border-radius: 28px; margin: 4px 0;">
+                    <label style="font-weight: 700; color: #1e293b;">🎬 Subir imagen o video</label>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button type="button" id="edit-btn-imagen" class="boton"
+                            style="background: #2c7da0; flex: 1; border: none; padding: 12px 6px; border-radius: 60px; font-weight: 600; color: white; cursor: pointer; font-size: 0.9rem;">📸
+                            Imagen</button>
+                        <button type="button" id="edit-btn-video" class="boton"
+                            style="background: #5a6e7c; flex: 1; border: none; padding: 12px 6px; border-radius: 60px; font-weight: 600; color: white; cursor: pointer; font-size: 0.9rem;">🎥
+                            Video</button>
                     </div>
                     <input type="file" id="edit-archivo-multimedia" accept="image/*,video/*" style="display: none;">
-                    <div id="edit-vista-previa" style="margin-top: 12px; text-align: center;"></div>
-                    <small style="color: #666;">Selecciona una imagen (jpg/png) o un video (mp4).</small>
+                    <div id="edit-vista-previa"
+                        style="margin-top: 12px; text-align: center; background: #ffffff; border-radius: 20px; padding: 8px;">
+                    </div>
+                    <small style="color: #5b6e8c; display: block; text-align: center;">Formatos: JPG, PNG o MP4</small>
                 </div>
 
-                <!-- Campos ocultos para guardar las URLs (igual que en creación) -->
                 <input type="hidden" id="edit-imagen_url" name="imagen_url">
                 <input type="hidden" id="edit-video_url" name="video_url">
 
-                <!-- Checkbox urgente -->
-                <div class="campo" style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="edit-urgente" style="width: auto;">
-                    <label for="edit-urgente" style="margin-bottom: 0;">Marcar como urgente</label>
+                <!-- Checkbox urgente con estilo moderno -->
+                <div class="campo"
+                    style="display: flex; align-items: center; gap: 12px; background: #fff0e6; padding: 12px 16px; border-radius: 60px; margin: 5px 0;">
+                    <input type="checkbox" id="edit-urgente" style="width: 20px; height: 20px; accent-color: #e11d48;">
+                    <label for="edit-urgente" style="margin-bottom: 0; font-weight: 600; color: #b91c1c;">⚠️ Marcar como
+                        urgente</label>
                 </div>
 
-                <div class="grupo-botones">
-                    <button type="submit" class="boton">💾 Guardar cambios</button>
-                    <button type="button" class="boton boton-secundario" id="cancelar-editar">Cancelar</button>
+                <!-- Botones premium responsivos -->
+                <div class="grupo-botones" style="display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px;">
+                    <button type="submit" class="boton"
+                        style="flex: 1; background: #0f3b2c; border: none; padding: 14px; border-radius: 60px; color: white; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">💾
+                        Guardar cambios</button>
+                    <button type="button" class="boton boton-secundario" id="cancelar-editar"
+                        style="flex: 1; background: #f1f5f9; border: none; padding: 14px; border-radius: 60px; font-weight: 600; color: #334155; cursor: pointer;">Cancelar</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Estilos adicionales para mejorar la experiencia en móviles (sin afectar funcionamiento) -->
+    <style>
+        /* Responsive extra premium */
+        @media (max-width: 600px) {
+            #modal-editar>div {
+                padding: 20px 18px !important;
+                border-radius: 28px !important;
+            }
+
+            #modal-editar h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .campo input,
+            .campo textarea,
+            .campo select {
+                font-size: 0.9rem !important;
+            }
+
+            .grupo-botones {
+                flex-direction: column !important;
+            }
+
+            #edit-btn-imagen,
+            #edit-btn-video {
+                font-size: 0.85rem !important;
+                padding: 10px 6px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #modal-editar {
+                padding: 8px !important;
+            }
+
+            #modal-editar>div {
+                padding: 18px 14px !important;
+                max-height: 95vh !important;
+            }
+
+            .campo label {
+                font-size: 0.85rem !important;
+            }
+        }
+
+        /* Efectos hover solo para escritorio (no afecta funcionamiento) */
+        @media (hover: hover) {
+            #cerrar-modal:hover {
+                background: #e2e8f0 !important;
+                transform: scale(1.02);
+            }
+
+            .grupo-botones button:hover {
+                opacity: 0.92;
+                transform: translateY(-1px);
+            }
+
+            #edit-titulo:focus,
+            #edit-contenido:focus,
+            #edit-ubicacion:focus,
+            #edit-contacto:focus,
+            #edit-fecha_evento:focus {
+                border-color: #2c7da0 !important;
+                box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
+            }
+        }
+    </style>
 
     <!-- Modal de categorías -->
     <div id="modalCategorias" class="modal-categorias" style="display: none;">
