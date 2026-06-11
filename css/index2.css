@@ -296,7 +296,7 @@
 
         .card-contenido-moderno {
             position: relative !important;
-            background: white !important;
+            /* background: white !important; */
             color: var(--color-texto) !important;
             text-shadow: none;
             padding: 16px;
