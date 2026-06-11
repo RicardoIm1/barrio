@@ -1469,7 +1469,7 @@
             }
         });
 
-        </script>
+    </script>
 
     <!-- Modal de categorías -->
     <div id="modalCategorias" class="modal-categorias" style="display: none;">
@@ -1801,56 +1801,87 @@
         };
 
         // ==================== EDITAR AVISO ====================
+        // ==================== EDITAR AVISO ====================
         window.editarAviso = function (id) {
+            console.log('✏️ Editando aviso con ID:', id);
+
             const aviso = todosLosAvisos.find(a => a.id == id);
             if (!aviso) {
+                console.error('Aviso no encontrado:', id);
                 alert('No se encontró el aviso');
                 return;
             }
 
-            // Abrir modal de edición
-            document.getElementById('edit-id').value = aviso.id;
-            document.getElementById('edit-titulo').value = aviso.titulo || '';
-            document.getElementById('edit-contenido').value = aviso.contenido || '';
-            document.getElementById('edit-categoria').value = aviso.categoria || 'varios';
-            document.getElementById('edit-ubicacion').value = aviso.ubicacion || '';
-            document.getElementById('edit-contacto').value = aviso.contacto || '';
-            document.getElementById('edit-fecha_evento').value = aviso.fecha_evento || '';
+            console.log('Aviso encontrado:', aviso);
 
-            // Cargar URLs existentes en los campos ocultos
-            document.getElementById('edit-imagen_url').value = aviso.imagen_url || '';
-            document.getElementById('edit-video_url').value = aviso.video_url || '';
+            // Verificar que todos los elementos existan antes de asignar valores
+            const campos = {
+                'edit-id': aviso.id,
+                'edit-titulo': aviso.titulo || '',
+                'edit-contenido': aviso.contenido || '',
+                'edit-ubicacion': aviso.ubicacion || '',
+                'edit-contacto': aviso.contacto || '',
+                'edit-fecha_evento': aviso.fecha_evento || '',
+                'edit-imagen_url': aviso.imagen_url || '',
+                'edit-video_url': aviso.video_url || ''
+            };
 
-            // Marcar checkbox urgente
-            const esDestacado = aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1 || aviso.destacado === 'true';
-            document.getElementById('edit-urgente').checked = esDestacado;
+            // Asignar valores a los campos
+            for (const [idCampo, valor] of Object.entries(campos)) {
+                const elemento = document.getElementById(idCampo);
+                if (elemento) {
+                    elemento.value = valor;
+                    console.log(`✅ Campo ${idCampo} asignado:`, valor);
+                } else {
+                    console.warn(`⚠️ Campo ${idCampo} no encontrado en el DOM`);
+                }
+            }
+
+            // Marcar checkbox urgente (destacado)
+            const chkUrgente = document.getElementById('edit-urgente');
+            if (chkUrgente) {
+                const esDestacado = aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1 || aviso.destacado === 'true';
+                chkUrgente.checked = esDestacado;
+                console.log(`✅ Checkbox urgente: ${esDestacado}`);
+            } else {
+                console.warn('⚠️ Campo edit-urgente no encontrado');
+            }
 
             // Mostrar vista previa si ya tiene imagen o video
             const vista = document.getElementById('edit-vista-previa');
-            if (aviso.imagen_url && (aviso.imagen_url.startsWith('http://') || aviso.imagen_url.startsWith('https://'))) {
-                vista.innerHTML = `<img src="${aviso.imagen_url}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
-            } else if (aviso.video_url) {
-                let videoEmbed = aviso.video_url;
-                if (aviso.video_url.includes('youtube.com/watch?v=')) {
-                    videoEmbed = aviso.video_url.replace('watch?v=', 'embed/');
-                } else if (aviso.video_url.includes('youtu.be/')) {
-                    const id = aviso.video_url.split('/').pop();
-                    videoEmbed = `https://www.youtube.com/embed/${id}`;
-                } else if (aviso.video_url.includes('cloudinary.com')) {
-                    vista.innerHTML = `<video src="${aviso.video_url}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
-                    return;
+            if (vista) {
+                if (aviso.imagen_url && (aviso.imagen_url.startsWith('http://') || aviso.imagen_url.startsWith('https://'))) {
+                    vista.innerHTML = `<img src="${aviso.imagen_url}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
+                } else if (aviso.video_url) {
+                    let videoEmbed = aviso.video_url;
+                    if (aviso.video_url.includes('youtube.com/watch?v=')) {
+                        videoEmbed = aviso.video_url.replace('watch?v=', 'embed/');
+                    } else if (aviso.video_url.includes('youtu.be/')) {
+                        const videoId = aviso.video_url.split('/').pop();
+                        videoEmbed = `https://www.youtube.com/embed/${videoId}`;
+                    } else if (aviso.video_url.includes('cloudinary.com')) {
+                        vista.innerHTML = `<video src="${aviso.video_url}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
+                    } else {
+                        vista.innerHTML = `<iframe src="${videoEmbed}" frameborder="0" allowfullscreen style="width:100%; height:180px; border-radius:12px;"></iframe>`;
+                    }
                 } else {
-                    vista.innerHTML = `<iframe src="${videoEmbed}" frameborder="0" allowfullscreen style="width:100%; height:180px; border-radius:12px;"></iframe>`;
-                    return;
+                    vista.innerHTML = '';
                 }
-                vista.innerHTML = `<iframe src="${videoEmbed}" frameborder="0" allowfullscreen style="width:100%; height:180px; border-radius:12px;"></iframe>`;
             } else {
-                vista.innerHTML = '';
+                console.warn('⚠️ edit-vista-previa no encontrado');
             }
 
-            document.getElementById('modal-editar').style.display = 'flex';
+            // Mostrar modal
+            const modal = document.getElementById('modal-editar');
+            if (modal) {
+                modal.style.display = 'flex';
+                console.log('✅ Modal abierto');
+            } else {
+                console.error('❌ Modal no encontrado');
+                alert('Error: Modal no encontrado');
+            }
         }
-
+        
         /* aqui va el subir img */
 
         // ==================== INICIALIZACIÓN ====================
