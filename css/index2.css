@@ -5,13 +5,8 @@
     /* ---------- VARIABLES GLOBALES ---------- */
     :root {
         --color-primario: #2c3e50;
-        --color-secundario: #34495e;
-        --color-acento: #3498db;
-        --color-fondo: #f8f9fa;
-        --color-texto: #2c3e50;
-        --color-error: #e74c3c;
-        --color-exito: #27ae60;
-        --color-urgente: #e67e22;
+        --color-fondo: #f5f5f5;
+        --color-texto: #1c1c1e;
         --color-texto-claro: #8e8e93;
         --color-borde: #e9e9ef;
         --color-urgente: #dc3545;
@@ -21,26 +16,6 @@
         --color-eventos: #9b59b6;
         --color-gobierno: #1abc9c;
         --color-varios: #7f8c8d;
-
-        --color-verde: #2b7a2b;
-        --color-naranja: #f5b042;
-        --color-dorado: #d4a043;
-
-        --espaciado-xs: 4px;
-        --espaciado-sm: 8px;
-        --espaciado-md: 16px;
-        --espaciado-lg: 24px;
-        --espaciado-xl: 32px;
-
-        --fuente-titulo: 24px;
-        --fuente-subtitulo: 20px;
-        --fuente-cuerpo: 18px;
-        --fuente-pequena: 16px;
-
-        --border-radius: 12px;
-
-        --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     /* ---------- RESET Y BASE ---------- */
@@ -50,35 +25,11 @@
         box-sizing: border-box;
     }
 
-    html {
-        height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
-        scroll-behavior: smooth;
-    }
-
     body {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background: var(--color-fondo);
-        color: var(--color-texto);
-        line-height: 1.5;
-        font-size: var(--fuente-cuerpo);
-        overflow-x: hidden;
-    }
-
-    /* Solo si tienes header fijo */
-    body.has-fixed-header {
-        padding-top: 90px;
-    }
-
-    /* body {
         background: var(--color-fondo);
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         padding-top: 90px;
-    } */
+    } 
 
     /* ---------- HERO BANNER ---------- */
     .hero-banner {
@@ -183,8 +134,7 @@
             scroll-snap-type: y mandatory;
             scroll-snap-stop: always;
             scroll-behavior: smooth;
-            padding-top: 70px;
-            /*esta puedes comentarlo */
+            padding-top: 70px; /*esta puedes comentarlo */
         }
 
         .scrollable-container::-webkit-scrollbar {
@@ -244,12 +194,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, 
-            rgba(0, 0, 0, 0.1) 0%, 
-            rgba(0, 0, 0, 0.3) 40%, 
-            rgba(0, 0, 0, 0.75) 100%);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.85) 100%);
             z-index: 2;
             pointer-events: none;
+        }
+
+        .card-contenido-moderno {
+            position: relative;
+            z-index: 3;
+            background: transparent !important;
+            color: white !important;
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .card-titulo-moderno,
@@ -285,7 +245,7 @@
             overflow-y: visible;
             scroll-snap-type: none;
             padding-top: 70px;
-        }
+        } 
 
         #avisos-container {
             display: grid !important;
@@ -335,17 +295,12 @@
         }
 
         .card-contenido-moderno {
-            position: relative;
-            z-index: 3;
-            background: transparent !important;
-            color: white !important;
-            padding: 20px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            border-radius: 25px;
+            position: relative !important;
+            background: white !important;
+            color: var(--color-texto) !important;
+            text-shadow: none;
+            padding: 16px;
+            z-index: 1;
         }
 
         .card-titulo-moderno,
@@ -661,26 +616,6 @@
         padding-top: 0.5rem;
     }
 
-    /* main, */
-    .contenido-principal {
-        flex: 1;
-        width: 100%;
-    }
-
-    .contenedor {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: var(--espaciado-md);
-        width: 100%;
-    }
-
-    .contenedor-chico {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: var(--espaciado-md);
-        width: 100%;
-    }
-
     /* ======================================================
    HEADER STICKY
 ====================================================== */
@@ -723,13 +658,13 @@
     }
 
     .logo-icon {
-        width: 52px;
-        height: 52px;
+        width: 50px;
+        height: 50px;
         object-fit: contain;
     }
 
     .logo-texto h1 {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         margin: 0;
         background: linear-gradient(135deg, #2b7a2b, #d4a043);
         background-clip: text;
@@ -739,7 +674,7 @@
 
     .header-slogan {
         font-size: 0.65rem;
-        /* color: #6b7280; */
+        color: #6b7280;
         margin: 0;
     }
 
