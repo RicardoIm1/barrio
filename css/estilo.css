@@ -85,12 +85,12 @@ main,
    LAYOUT
 ========================================================= */
 
-/* .contenido-principal {
+.contenido-principal {
     flex: 1;
     width: 100%;
-} */
+}
 
-/* .contenedor {
+.contenedor {
     max-width: 1200px;
     margin: 0 auto;
     padding: var(--espaciado-md);
@@ -102,7 +102,7 @@ main,
     margin: 0 auto;
     padding: var(--espaciado-md);
     width: 100%;
-} */
+}
 
 /* =========================================================
    HEADER STICKY
