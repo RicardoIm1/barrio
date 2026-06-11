@@ -664,46 +664,49 @@
 
     function renderCategorias(categorias) {
 
-        const chartBars = document.getElementById('chartBars');
+        const chartBars =
+            document.getElementById('chartBars');
 
         if (!chartBars) return;
 
-        const max = Math.max(
-            ...categorias.map(c => Number(c.total || c.cantidad || 0)),
-            1
-        );
+        const valores = Object.values(categorias);
 
-        chartBars.innerHTML = categorias.map(cat => {
+        const maximo =
+            Math.max(...valores, 1);
 
-            const total = Number(cat.total || cat.cantidad || 0);
+        chartBars.innerHTML = '';
 
-            const porcentaje = (total / max) * 100;
+        Object.entries(categorias).forEach(
+            ([nombre, cantidad]) => {
 
-            return `
-            <div class="bar-item">
+                const porcentaje =
+                    (cantidad / maximo) * 100;
 
-                <div class="bar-label">
-                    ${escapeHTML(cat.nombre || cat.categoria)}
-                </div>
+                chartBars.innerHTML += `
+                <div class="bar-item">
 
-                <div class="bar-container">
-                    <div
-                        class="bar-fill"
-                        style="width:${porcentaje}%"
-                    >
-                        ${total}
+                    <div class="bar-label">
+                        ${escapeHTML(nombre)}
                     </div>
-                </div>
 
-                <div class="bar-count">
-                    ${total}
-                </div>
+                    <div class="bar-container">
+                        <div
+                            class="bar-fill"
+                            style="width:${porcentaje}%"
+                        >
+                            ${cantidad}
+                        </div>
+                    </div>
 
-            </div>
-        `;
-        }).join('');
+                    <div class="bar-count">
+                        ${cantidad}
+                    </div>
+
+                </div>
+            `;
+            }
+        );
     }
-
     /* ===========================================
        INICIALIZACIÓN
     =========================================== */
