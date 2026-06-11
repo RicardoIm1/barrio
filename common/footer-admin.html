@@ -505,12 +505,10 @@
 <script>
     async function loadAdvancedStats() {
         try {
+
             const apiKey = localStorage.getItem('api_key');
 
-            if (!apiKey) {
-                console.warn('No existe API Key');
-                return;
-            }
+            if (!apiKey) return;
 
             const response = await API.peticion(
                 'ESTADISTICAS_AVANZADAS',
@@ -518,76 +516,111 @@
                 apiKey
             );
 
-            console.log('ESTADISTICAS_AVANZADAS =>', response);
+            console.log('📊 Estadísticas:', response);
 
-            if (!response?.success) {
-                console.error(response?.error || 'Error obteniendo estadísticas');
+            if (!response || !response.success) {
+                console.error('Error cargando estadísticas');
                 return;
             }
 
-            const data = response.data || {};
+            temporalData = response.data;
 
-            // ==================================================
-            // RESUMEN GENERAL
-            // ==================================================
+            const resumen = response.data.resumen || {};
 
-            const resumen = data.resumen || {};
-
-            document.getElementById('totalAvisos').textContent =
-                resumen.total_avisos || 0;
-
-            document.getElementById('avisosActivos').textContent =
-                resumen.avisos_activos || 0;
-
-            document.getElementById('avisosPendientes').textContent =
-                resumen.avisos_pendientes || 0;
-
-            document.getElementById('totalCategorias').textContent =
-                resumen.total_categorias || 0;
+            // ==========================================
+            // TARJETAS PRINCIPALES
+            // ==========================================
 
             document.getElementById('totalUsuarios').textContent =
-                resumen.total_usuarios || 0;
+                resumen.totalUsuarios || 0;
 
-            document.getElementById('totalVisitas').textContent =
-                resumen.total_visitas || 0;
-
-            document.getElementById('totalInteracciones').textContent =
-                resumen.total_interacciones || 0;
+            document.getElementById('totalAvisos').textContent =
+                resumen.totalAvisos || 0;
 
             document.getElementById('promUsuarios').textContent =
-                resumen.promedio_usuarios || 0;
+                resumen.promedioDiarioUsuarios || 0;
 
             document.getElementById('promAvisos').textContent =
-                resumen.promedio_avisos || 0;
+                resumen.promedioDiarioAvisos || 0;
 
-            // ==================================================
-            // TARJETA PENDIENTES SOLO ADMIN
-            // ==================================================
+            // ==========================================
+            // CALCULAR ACTIVOS
+            // ==========================================
 
-            if ((resumen.avisos_pendientes || 0) > 0) {
-                document.getElementById('pendingCard').style.display = 'flex';
+            let avisosActivos = 0;
+
+            if (window.allNotices && Array.isArray(window.allNotices)) {
+                avisosActivos = window.allNotices.filter(
+                    a => a.status === 'activo'
+                ).length;
             }
 
-            // ==================================================
+            document.getElementById('avisosActivos').textContent =
+                avisosActivos;
+
+            // ==========================================
+            // VISITAS E INTERACCIONES
+            // ==========================================
+
+            let totalVisitas = 0;
+            let totalInteracciones = 0;
+
+            if (window.allNotices && Array.isArray(window.allNotices)) {
+
+                window.allNotices.forEach(aviso => {
+
+                    totalVisitas += Number(aviso.vistas || 0);
+
+                    totalInteracciones +=
+                        Number(aviso.votos_positivos || 0) +
+                        Number(aviso.comentarios_count || 0);
+                });
+            }
+
+            document.getElementById('totalVisitas').textContent =
+                totalVisitas.toLocaleString();
+
+            document.getElementById('totalInteracciones').textContent =
+                totalInteracciones.toLocaleString();
+
+            // ==========================================
             // CATEGORÍAS
-            // ==================================================
+            // ==========================================
 
             if (
-                data.categorias &&
-                Array.isArray(data.categorias) &&
-                data.categorias.length
+                window.allNotices &&
+                Array.isArray(window.allNotices) &&
+                window.allNotices.length
             ) {
-                renderCategorias(data.categorias);
 
-                document.getElementById('chartCategorias').style.display = 'block';
+                const categorias = {};
+
+                window.allNotices.forEach(aviso => {
+
+                    const categoria =
+                        aviso.categoria || 'Sin categoría';
+
+                    categorias[categoria] =
+                        (categorias[categoria] || 0) + 1;
+                });
+
+                document.getElementById('totalCategorias').textContent =
+                    Object.keys(categorias).length;
+
+                renderCategorias(categorias);
+
+                document.getElementById('chartCategorias').style.display =
+                    'block';
             }
 
-            // ==================================================
-            // DATOS TEMPORALES
-            // ==================================================
+            // ==========================================
+            // GRÁFICAS
+            // ==========================================
 
-            if (data.diario && Array.isArray(data.diario)) {
-                temporalData = data;
+            if (
+                response.data.diario &&
+                response.data.diario.length
+            ) {
 
                 document.getElementById('chartUsuariosDiarios').style.display =
                     'block';
@@ -604,17 +637,24 @@
                 renderAllCharts();
             }
 
-            // ==================================================
-            // USUARIOS ONLINE
-            // ==================================================
+            // ==========================================
+            // ONLINE
+            // ==========================================
 
-            if (data.online) {
-                document.getElementById('chartOnline').style.display = 'block';
-                updateOnlineUsers(data.online);
+            if (response.data.enLinea) {
+
+                document.getElementById('chartOnline').style.display =
+                    'block';
+
+                updateOnlineUsers(response.data.enLinea);
             }
 
         } catch (error) {
-            console.error('Error cargando estadísticas:', error);
+
+            console.error(
+                '❌ Error cargando estadísticas:',
+                error
+            );
         }
     }
 
