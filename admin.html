@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es-MX">
+
 <head>
     <meta name="google-site-verification" content="fmtZKP7ZEDNEcmHyx08vsSQn8wVmqfE2WlKtGyBo968" />
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -1298,175 +1299,216 @@
         })();
     </script>
 
-    <!-- Modal de edición -->
+    <!-- MODAL EDITAR - PONER ESTO ANTES DE CUALQUIER SCRIPT QUE LO USE -->
     <div id="modal-editar"
-     style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 16px;">
-    <div style="background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); width: 100%; max-width: 650px; border-radius: 32px; padding: 24px 20px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef2ff; padding-bottom: 16px;">
-            <h2 style="margin: 0; font-size: 1.5rem; background: linear-gradient(135deg, #1e293b, #2c7da0); background-clip: text; -webkit-background-clip: text; color: transparent;">✏️ Editar aviso</h2>
-            <button id="cerrar-modal" style="background: #f1f5f9; border: none; font-size: 22px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">✕</button>
-        </div>
+        style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 16px;">
+        <div
+            style="background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); width: 100%; max-width: 650px; border-radius: 32px; padding: 24px 20px; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.35);">
 
-        <form id="form-editar">
-            <input type="hidden" id="edit-id">
-
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px;">Título</label>
-                <input type="text" id="edit-titulo" required style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0; font-size: 0.95rem;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #eef2ff; padding-bottom: 16px;">
+                <h2 style="margin: 0; font-size: 1.5rem;">✏️ Editar aviso</h2>
+                <button id="cerrar-modal"
+                    style="background: #f1f5f9; border: none; font-size: 22px; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;">✕</button>
             </div>
 
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px;">Descripción</label>
-                <textarea id="edit-contenido" rows="4" required style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0; font-family: inherit; font-size: 0.95rem;"></textarea>
-            </div>
+            <form id="form-editar">
+                <input type="hidden" id="edit-id">
 
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px;">Ubicación (opcional)</label>
-                <input type="text" id="edit-ubicacion" style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px;">Contacto (opcional)</label>
-                <input type="text" id="edit-contacto" style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px;">Fecha del evento (opcional)</label>
-                <input type="date" id="edit-fecha_evento" style="width: 100%; padding: 10px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
-            </div>
-
-            <div style="margin-bottom: 16px; background: #f8fafc; padding: 14px; border-radius: 24px;">
-                <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 10px;">🎬 Subir imagen o video</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-                    <button type="button" id="edit-btn-imagen" style="flex: 1; background: #2c7da0; border: none; padding: 10px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer;">📸 Imagen</button>
-                    <button type="button" id="edit-btn-video" style="flex: 1; background: #5a6e7c; border: none; padding: 10px; border-radius: 40px; color: white; font-weight: 600; cursor: pointer;">🎥 Video</button>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">Título</label>
+                    <input type="text" id="edit-titulo" required
+                        style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
                 </div>
-                <input type="file" id="edit-archivo-multimedia" accept="image/*,video/*" style="display: none;">
-                <div id="edit-vista-previa" style="margin-top: 10px; text-align: center;"></div>
-                <small style="color: #666;">Selecciona imagen (jpg/png) o video (mp4)</small>
-            </div>
 
-            <input type="hidden" id="edit-imagen_url">
-            <input type="hidden" id="edit-video_url">
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">Descripción</label>
+                    <textarea id="edit-contenido" rows="4" required
+                        style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;"></textarea>
+                </div>
 
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px; background: #fff0e6; padding: 10px 14px; border-radius: 40px;">
-                <input type="checkbox" id="edit-urgente" style="width: 18px; height: 18px; accent-color: #e11d48;">
-                <label style="font-weight: 600; color: #b91c1c;">⚠️ Marcar como urgente</label>
-            </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">Ubicación (opcional)</label>
+                    <input type="text" id="edit-ubicacion"
+                        style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
+                </div>
 
-            <div style="display: flex; gap: 12px; margin-top: 8px;">
-                <button type="submit" style="flex: 1; background: #0f3b2c; border: none; padding: 12px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer;">💾 Guardar cambios</button>
-                <button type="button" id="cancelar-editar" style="flex: 1; background: #f1f5f9; border: none; padding: 12px; border-radius: 40px; font-weight: 600; color: #334155; cursor: pointer;">Cancelar</button>
-            </div>
-        </form>
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">Contacto (opcional)</label>
+                    <input type="text" id="edit-contacto"
+                        style="width: 100%; padding: 12px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">Fecha del evento (opcional)</label>
+                    <input type="date" id="edit-fecha_evento"
+                        style="width: 100%; padding: 10px 14px; border-radius: 20px; border: 1.5px solid #e2e8f0;">
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="font-weight: 600;">🎬 Subir imagen o video</label>
+                    <div style="display: flex; gap: 10px; margin: 10px 0;">
+                        <button type="button" id="edit-btn-imagen"
+                            style="flex:1; background:#2c7da0; border:none; padding:10px; border-radius:40px; color:white; cursor:pointer;">📸
+                            Imagen</button>
+                        <button type="button" id="edit-btn-video"
+                            style="flex:1; background:#5a6e7c; border:none; padding:10px; border-radius:40px; color:white; cursor:pointer;">🎥
+                            Video</button>
+                    </div>
+                    <input type="file" id="edit-archivo-multimedia" accept="image/*,video/*" style="display: none;">
+                    <div id="edit-vista-previa" style="margin-top: 10px; text-align: center;"></div>
+                </div>
+
+                <input type="hidden" id="edit-imagen_url">
+                <input type="hidden" id="edit-video_url">
+
+                <div
+                    style="display: flex; align-items: center; gap: 10px; margin: 15px 0; background: #fff0e6; padding: 10px 14px; border-radius: 40px;">
+                    <input type="checkbox" id="edit-urgente" style="width: 18px; height: 18px;">
+                    <label style="font-weight: 600; color: #b91c1c;">⚠️ Marcar como urgente</label>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit"
+                        style="flex:1; background:#0f3b2c; border:none; padding:12px; border-radius:40px; color:white; font-weight:700; cursor:pointer;">💾
+                        Guardar</button>
+                    <button type="button" id="cancelar-editar"
+                        style="flex:1; background:#f1f5f9; border:none; padding:12px; border-radius:40px; font-weight:600; cursor:pointer;">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<style>
-    /* Ajustes SOLO para dispositivos pequeños */
-    @media (max-width: 600px) {
-        #modal-editar {
-            padding: 8px !important;
-            align-items: flex-start !important;  /* ← CLAVE: evita que se suba */
-        }
-        #modal-editar > div {
-            max-height: 90vh !important;
-            padding: 20px 16px !important;
-            border-radius: 28px !important;
-        }
-        #modal-editar h2 {
-            font-size: 1.3rem !important;
-        }
-        #modal-editar .boton, 
-        #modal-editar button {
-            font-size: 0.85rem !important;
-        }
-        #modal-editar input, 
-        #modal-editar textarea {
-            font-size: 0.9rem !important;
-            padding: 10px 12px !important;
-        }
-    }
-
-    @media (max-width: 480px) {
-        #modal-editar > div {
-            max-height: 92vh !important;
-            padding: 18px 14px !important;
-        }
-        #modal-editar .bar-item {
-            flex-wrap: wrap !important;
-        }
-    }
-</style>
-
-    <!-- Estilos adicionales para mejorar la experiencia en móviles (sin afectar funcionamiento) -->
     <style>
-        /* Responsive extra premium */
         @media (max-width: 600px) {
+            #modal-editar {
+                padding: 8px !important;
+                align-items: flex-start !important;
+            }
+
             #modal-editar>div {
-                padding: 20px 18px !important;
-                border-radius: 28px !important;
+                max-height: 90vh !important;
+                padding: 20px 16px !important;
             }
 
             #modal-editar h2 {
-                font-size: 1.5rem !important;
-            }
-
-            .campo input,
-            .campo textarea,
-            .campo select {
-                font-size: 0.9rem !important;
-            }
-
-            .grupo-botones {
-                flex-direction: column !important;
-            }
-
-            #edit-btn-imagen,
-            #edit-btn-video {
-                font-size: 0.85rem !important;
-                padding: 10px 6px !important;
+                font-size: 1.3rem !important;
             }
         }
 
         @media (max-width: 480px) {
-            #modal-editar {
-                padding: 8px !important;
-            }
-
             #modal-editar>div {
+                max-height: 92vh !important;
                 padding: 18px 14px !important;
-                max-height: 95vh !important;
-            }
-
-            .campo label {
-                font-size: 0.85rem !important;
-            }
-        }
-
-        /* Efectos hover solo para escritorio (no afecta funcionamiento) */
-        @media (hover: hover) {
-            #cerrar-modal:hover {
-                background: #e2e8f0 !important;
-                transform: scale(1.02);
-            }
-
-            .grupo-botones button:hover {
-                opacity: 0.92;
-                transform: translateY(-1px);
-            }
-
-            #edit-titulo:focus,
-            #edit-contenido:focus,
-            #edit-ubicacion:focus,
-            #edit-contacto:focus,
-            #edit-fecha_evento:focus {
-                border-color: #2c7da0 !important;
-                box-shadow: 0 0 0 3px rgba(44, 125, 160, 0.2);
             }
         }
     </style>
+
+    <script>
+        // INICIALIZAR MODAL - Ejecutar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('modal-editar');
+            const cerrarBtn = document.getElementById('cerrar-modal');
+            const cancelarBtn = document.getElementById('cancelar-editar');
+            const form = document.getElementById('form-editar');
+
+            // Cerrar modal
+            if (cerrarBtn) {
+                cerrarBtn.onclick = function () {
+                    if (modal) modal.style.display = 'none';
+                };
+            }
+            if (cancelarBtn) {
+                cancelarBtn.onclick = function () {
+                    if (modal) modal.style.display = 'none';
+                };
+            }
+
+            // Cerrar al hacer clic fuera del modal
+            if (modal) {
+                modal.onclick = function (e) {
+                    if (e.target === modal) modal.style.display = 'none';
+                };
+            }
+
+            // Manejar envío del formulario
+            if (form) {
+                form.onsubmit = async function (e) {
+                    e.preventDefault();
+                    const id = document.getElementById('edit-id').value;
+                    const datos = {
+                        titulo: document.getElementById('edit-titulo').value,
+                        contenido: document.getElementById('edit-contenido').value,
+                        ubicacion: document.getElementById('edit-ubicacion').value,
+                        contacto: document.getElementById('edit-contacto').value,
+                        fecha_evento: document.getElementById('edit-fecha_evento').value,
+                        imagen_url: document.getElementById('edit-imagen_url').value,
+                        video_url: document.getElementById('edit-video_url').value,
+                        urgente: document.getElementById('edit-urgente').checked
+                    };
+
+                    try {
+                        const apiKey = localStorage.getItem('api_key');
+                        const resultado = await API.peticion('ACTUALIZAR', {
+                            coleccion: 'AVISOS',
+                            id: id,
+                            datos: datos
+                        }, apiKey);
+
+                        if (resultado && resultado.success) {
+                            alert('✅ Aviso actualizado correctamente');
+                            modal.style.display = 'none';
+                            location.reload();
+                        } else {
+                            alert('❌ Error: ' + (resultado.error || 'No se pudo actualizar'));
+                        }
+                    } catch (error) {
+                        alert('❌ Error: ' + error.message);
+                    }
+                };
+            }
+        });
+
+        // Función global para editar aviso (llamada desde admin.html)
+        window.editarAviso = function (aviso) {
+            console.log('✏️ Editando aviso:', aviso);
+
+            // Verificar que todos los elementos existan
+            const elementos = {
+                'edit-id': aviso.id,
+                'edit-titulo': aviso.titulo,
+                'edit-contenido': aviso.contenido,
+                'edit-ubicacion': aviso.ubicacion || '',
+                'edit-contacto': aviso.contacto || '',
+                'edit-fecha_evento': aviso.fecha_evento || '',
+                'edit-imagen_url': aviso.imagen_url || '',
+                'edit-video_url': aviso.video_url || '',
+                'edit-urgente': aviso.destacado || false
+            };
+
+            for (const [id, valor] of Object.entries(elementos)) {
+                const el = document.getElementById(id);
+                if (!el) {
+                    console.error(`❌ Elemento no encontrado: #${id}`);
+                    alert(`Error: El elemento #${id} no existe en la página`);
+                    return;
+                }
+                if (el.type === 'checkbox') {
+                    el.checked = valor === true || valor === 'TRUE' || valor === 1;
+                } else {
+                    el.value = valor || '';
+                }
+            }
+
+            // Mostrar modal
+            const modal = document.getElementById('modal-editar');
+            if (modal) {
+                modal.style.display = 'flex';
+            } else {
+                alert('Error: Modal no encontrado');
+            }
+        };
+    </script>
 
     <!-- Modal de categorías -->
     <div id="modalCategorias" class="modal-categorias" style="display: none;">
