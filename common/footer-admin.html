@@ -503,21 +503,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
-    // ========== VARIABLES GLOBALES ==========
-    let chartDetailedView = false;
-    let chartUsuarios = null;
-    let chartAvisos = null;
-    let chartConexiones = null;
-    let temporalData = null;
-    let allNotices = [];
-    let currentUserRole = 'user';
-    let currentUser = null;
-    
-    // Variables para gráfica temporal (si se usa)
-    let currentMetric = 'usuarios';
-    let temporalChart = null;
-
-    // ========== FUNCIÓN ESCAPE HTML ==========
+    // ========== FUNCIÓN ESCAPE HTML MEJORADA ==========
     function escapeHTML(str) {
         if (str === undefined || str === null) return '';
         if (typeof str === 'number') return str.toString();
@@ -530,21 +516,14 @@
         });
     }
 
-    // Opciones comunes para Chart.js
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-            legend: { labels: { color: '#ccc' } },
-            tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
-        },
-        scales: {
-            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
-            x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
-        }
-    };
+    // ========== VARIABLES GLOBALES ==========
+    let chartDetailedView = false;
+    let chartUsuarios = null;
+    let chartAvisos = null;
+    let chartConexiones = null;
+    let temporalData = null;
 
-    // ========== RENDERIZAR GRÁFICAS ==========
+    // Renderizar las 3 gráficas separadas
     function renderAllCharts() {
         if (!temporalData || !temporalData.diario) {
             console.warn('No hay datos para gráficas');
@@ -556,16 +535,19 @@
             return `${day}/${month}`;
         });
 
+        // Datos
         const usuariosData = temporalData.diario.map(d => d.usuarios);
         const avisosData = temporalData.diario.map(d => d.avisos);
         const conexionesData = temporalData.diario.map(d => d.conexiones);
 
+        // Destruir gráficas existentes
         if (chartUsuarios) chartUsuarios.destroy();
         if (chartAvisos) chartAvisos.destroy();
         if (chartConexiones) chartConexiones.destroy();
 
+        // Gráfica 1: Usuarios
         const ctxUsuarios = document.getElementById('chartUsuariosCanvas')?.getContext('2d');
-        if (ctxUsuarios && typeof Chart !== 'undefined') {
+        if (ctxUsuarios) {
             chartUsuarios = new Chart(ctxUsuarios, {
                 type: 'bar',
                 data: {
@@ -583,8 +565,9 @@
             });
         }
 
+        // Gráfica 2: Avisos
         const ctxAvisos = document.getElementById('chartAvisosCanvas')?.getContext('2d');
-        if (ctxAvisos && typeof Chart !== 'undefined') {
+        if (ctxAvisos) {
             chartAvisos = new Chart(ctxAvisos, {
                 type: 'bar',
                 data: {
@@ -602,8 +585,9 @@
             });
         }
 
+        // Gráfica 3: Conexiones
         const ctxConexiones = document.getElementById('chartConexionesCanvas')?.getContext('2d');
-        if (ctxConexiones && typeof Chart !== 'undefined') {
+        if (ctxConexiones) {
             chartConexiones = new Chart(ctxConexiones, {
                 type: 'bar',
                 data: {
@@ -621,10 +605,25 @@
             });
         }
 
+        // Actualizar stats individuales
         updateStatsMini('usuariosStats', usuariosData, labels, 'nuevos usuarios');
         updateStatsMini('avisosStats', avisosData, labels, 'avisos publicados');
         updateStatsMini('conexionesStats', conexionesData, labels, 'usuarios activos');
     }
+
+    // Opciones comunes para todas las gráficas
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: { labels: { color: '#ccc' } },
+            tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
+            x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
+        }
+    };
 
     function updateStatsMini(elementId, dataValues, labels, labelName) {
         const statsDiv = document.getElementById(elementId);
@@ -633,12 +632,62 @@
         const maxValue = Math.max(...dataValues);
         const maxIndex = dataValues.indexOf(maxValue);
         const total = dataValues.reduce((a, b) => a + b, 0);
-        const promedio = dataValues.length > 0 ? (total / dataValues.length).toFixed(1) : 0;
+        const promedio = (total / dataValues.length).toFixed(1);
 
         if (maxValue > 0 && maxIndex !== -1) {
             statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} ${labelName})`;
         } else {
             statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio}`;
+        }
+    }
+
+    // Modificar loadAdvancedStats para mostrar las 3 gráficas
+    async function loadAdvancedStats() {
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) {
+                console.warn('No hay API key');
+                return;
+            }
+
+            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+            console.log('📊 Estadísticas avanzadas:', response);
+
+            if (response && response.success && response.data) {
+                temporalData = response.data;
+
+                // Actualizar resúmenes
+                if (response.data.resumen) {
+                    const promUsuarios = document.getElementById('promUsuarios');
+                    const promAvisos = document.getElementById('promAvisos');
+                    const totalUsuarios = document.getElementById('totalUsuarios');
+
+                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
+                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
+                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
+                }
+
+                // Actualizar usuarios en línea
+                updateOnlineUsers(response.data.enLinea);
+
+                // Renderizar las 3 gráficas
+                renderAllCharts();
+
+                // Mostrar todas las secciones
+                const chartUsuarios = document.getElementById('chartUsuariosDiarios');
+                const chartAvisos = document.getElementById('chartAvisosDiarios');
+                const chartConexiones = document.getElementById('chartConexionesDiarias');
+                const chartOnline = document.getElementById('chartOnline');
+                const statsSummary = document.getElementById('statsSummary');
+
+                if (chartUsuarios) chartUsuarios.style.display = 'block';
+                if (chartAvisos) chartAvisos.style.display = 'block';
+                if (chartConexiones) chartConexiones.style.display = 'block';
+                if (chartOnline) chartOnline.style.display = 'block';
+                if (statsSummary) statsSummary.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error cargando estadísticas avanzadas:', error);
         }
     }
 
@@ -656,60 +705,99 @@
                 listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
                 return;
             }
+
             listDiv.innerHTML = onlineData.usuarios.map(user => `
-                <div class="online-user-item">
-                    <span class="online-user-email">${escapeHTML(user.email)}</span>
-                    <span class="online-user-time">🟢 activo</span>
-                </div>
-            `).join('');
+            <div class="online-user-item">
+                <span class="online-user-email">${escapeHTML(user.email)}</span>
+                <span class="online-user-time">🟢 activo</span>
+            </div>
+        `).join('');
         }
     }
 
-    // ========== ESTADÍSTICAS AVANZADAS ==========
-    async function loadAdvancedStats() {
-        try {
-            const apiKey = localStorage.getItem('api_key');
-            if (!apiKey) {
-                console.warn('No hay API key');
-                return;
-            }
+    function renderTemporalChart() {
+        if (!temporalData || !temporalData.diario) {
+            console.warn('No hay datos para gráfica temporal');
+            return;
+        }
 
-            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
-            console.log('📊 Estadísticas avanzadas:', response);
+        const canvas = document.getElementById('temporalChart');
+        if (!canvas) return;
 
-            if (response && response.success && response.data) {
-                temporalData = response.data;
+        const ctx = canvas.getContext('2d');
+        const labels = temporalData.diario.map(d => {
+            const [year, month, day] = d.fecha.split('-');
+            return `${day}/${month}`;
+        });
 
-                if (response.data.resumen) {
-                    const promUsuarios = document.getElementById('promUsuarios');
-                    const promAvisos = document.getElementById('promAvisos');
-                    const totalUsuarios = document.getElementById('totalUsuarios');
-                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
-                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
-                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
+        let dataValues = [];
+        let labelY = '';
+
+        switch (currentMetric) {
+            case 'usuarios':
+                dataValues = temporalData.diario.map(d => d.usuarios);
+                labelY = 'Nuevos usuarios';
+                break;
+            case 'avisos':
+                dataValues = temporalData.diario.map(d => d.avisos);
+                labelY = 'Avisos publicados';
+                break;
+            case 'conexiones':
+                dataValues = temporalData.diario.map(d => d.conexiones);
+                labelY = 'Usuarios activos';
+                break;
+        }
+
+        if (temporalChart) {
+            temporalChart.destroy();
+        }
+
+        temporalChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: labelY,
+                    data: dataValues,
+                    backgroundColor: 'rgba(245, 176, 66, 0.6)',
+                    borderColor: '#f5b042',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    barPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { labels: { color: '#ccc' } },
+                    tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
+                    x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
                 }
-
-                updateOnlineUsers(response.data.enLinea);
-                renderAllCharts();
-
-                const chartUsuariosDiv = document.getElementById('chartUsuariosDiarios');
-                const chartAvisosDiv = document.getElementById('chartAvisosDiarios');
-                const chartConexionesDiv = document.getElementById('chartConexionesDiarias');
-                const chartOnlineDiv = document.getElementById('chartOnline');
-                const statsSummaryDiv = document.getElementById('statsSummary');
-
-                if (chartUsuariosDiv) chartUsuariosDiv.style.display = 'block';
-                if (chartAvisosDiv) chartAvisosDiv.style.display = 'block';
-                if (chartConexionesDiv) chartConexionesDiv.style.display = 'block';
-                if (chartOnlineDiv) chartOnlineDiv.style.display = 'block';
-                if (statsSummaryDiv) statsSummaryDiv.style.display = 'flex';
             }
-        } catch (error) {
-            console.error('Error cargando estadísticas avanzadas:', error);
+        });
+
+        const maxValue = Math.max(...dataValues);
+        const maxIndex = dataValues.indexOf(maxValue);
+        const statsDiv = document.getElementById('temporalStats');
+        if (statsDiv && maxIndex !== -1) {
+            statsDiv.innerHTML = `📊 Día con más ${labelY.toLowerCase()}: ${labels[maxIndex]} (${maxValue})`;
         }
     }
 
-    // ========== DETECTAR ROL ==========
+    function toggleMetric(metric) {
+        currentMetric = metric;
+        renderTemporalChart();
+        document.querySelectorAll('.chart-toggles .chart-toggle').forEach(btn => {
+            btn.style.opacity = '0.6';
+        });
+        if (event && event.target) event.target.style.opacity = '1';
+    }
+
+    // ========== DETECTAR ROL DE USUARIO ==========
     async function detectUserRole() {
         try {
             currentUser = API.getUsuarioActual();
@@ -743,7 +831,7 @@
         }
     }
 
-    // ========== OBTENER AVISOS ==========
+    // ========== OBTENER AVISOS DESDE API ==========
     async function getAllNoticesFromAPI() {
         try {
             const apiKey = localStorage.getItem('api_key');
@@ -755,16 +843,25 @@
                 respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 100 }, apiKey);
             }
 
+            console.log('Dashboard - Respuesta API:', respuesta);
+
             if (respuesta && respuesta.success) {
+                // Extraer datos y total
                 let datos = [];
+                let total = 0;
+
                 if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
                     datos = respuesta.data.datos;
+                    total = respuesta.data.total || datos.length;
                 } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
                     datos = respuesta.datos;
+                    total = datos.length;
                 } else if (Array.isArray(respuesta.data)) {
                     datos = respuesta.data;
+                    total = datos.length;
                 }
-                return { datos, total: datos.length };
+
+                return { datos, total };
             }
             return { datos: [], total: 0 };
         } catch (error) {
@@ -773,26 +870,38 @@
         }
     }
 
-    // ========== CALCULAR ESTADÍSTICAS ==========
+    // ========== CALCULAR ESTADÍSTICAS REALES ==========
     function calculateStats(notices) {
         const total = notices.length;
+
+        // Contar activos: TODO excepto 'pendiente', 'rechazado', 'eliminado', 'inactivo'
         const activos = notices.filter(a => {
             const status = (a.status || '').toLowerCase();
             return status !== 'pendiente' && status !== 'rechazado' && status !== 'eliminado' && status !== 'inactivo';
         }).length;
+
         const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
+
+        // Categorías únicas en uso
         const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
         const totalCategorias = categoriasSet.size;
+
+        // Visitas totales
         const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
+
+        // Interacciones (likes + comentarios)
         const totalInteracciones = notices.reduce((sum, a) => {
             const likes = parseInt(a.intereses) || 0;
             const comentarios = parseInt(a.comentarios_count) || 0;
             return sum + likes + comentarios;
         }, 0);
 
+        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
+
         return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
     }
 
+    // ========== ESTADÍSTICAS POR CATEGORÍA ==========
     function getStatsByCategory(notices) {
         const categories = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
         const stats = {};
@@ -802,6 +911,7 @@
         return stats;
     }
 
+    // ========== ACTUALIZAR TARJETAS ==========
     function updateCards(stats) {
         const elements = {
             totalAvisos: document.getElementById('totalAvisos'),
@@ -811,14 +921,18 @@
             totalVisitas: document.getElementById('totalVisitas'),
             totalInteracciones: document.getElementById('totalInteracciones')
         };
+
         if (elements.totalAvisos) elements.totalAvisos.innerText = stats.total;
         if (elements.avisosActivos) elements.avisosActivos.innerText = stats.activos;
-        if (currentUserRole === 'admin' && elements.avisosPendientes) elements.avisosPendientes.innerText = stats.pendientes;
+        if (currentUserRole === 'admin' && elements.avisosPendientes) {
+            elements.avisosPendientes.innerText = stats.pendientes;
+        }
         if (elements.totalCategorias) elements.totalCategorias.innerText = stats.totalCategorias;
         if (elements.totalVisitas) elements.totalVisitas.innerText = stats.totalVisitas.toLocaleString();
         if (elements.totalInteracciones) elements.totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
     }
 
+    // ========== RENDERIZAR GRÁFICO DE CATEGORÍAS ==========
     function renderChart(notices) {
         const stats = getStatsByCategory(notices);
         const maxValue = Math.max(...Object.values(stats), 1);
@@ -836,17 +950,18 @@
         for (const [key, value] of Object.entries(stats)) {
             const percentage = (value / maxValue) * 100;
             barsHtml += `
-                <div class="bar-item">
-                    <div class="bar-label">${categoryNames[key]}</div>
-                    <div class="bar-container">
-                        <div class="bar-fill" style="width: ${percentage}%;">
-                            ${chartDetailedView && value > 0 ? value : ''}
-                        </div>
+            <div class="bar-item">
+                <div class="bar-label">${categoryNames[key]}</div>
+                <div class="bar-container">
+                    <div class="bar-fill" style="width: ${percentage}%;">
+                        ${chartDetailedView && value > 0 ? value : ''}
                     </div>
-                    <div class="bar-count">${value}</div>
                 </div>
-            `;
+                <div class="bar-count">${value}</div>
+            </div>
+        `;
         }
+
         const chartBars = document.getElementById('chartBars');
         if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
 
@@ -861,6 +976,7 @@
         }
     }
 
+    // ========== ACTUALIZAR FECHA ==========
     function updateFecha() {
         const fechaSpan = document.getElementById('fechaActual');
         if (fechaSpan) {
@@ -868,26 +984,42 @@
         }
     }
 
+    // ========== FUNCIÓN PRINCIPAL DE ACTUALIZACIÓN ==========
     async function refreshDashboardData() {
-        try {
-            const usuarioActual = API.getUsuarioActual();
-            const badge = document.getElementById('userRoleBadge');
-            if (badge && usuarioActual) {
-                badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
-            }
-            const { datos } = await getAllNoticesFromAPI();
-            allNotices = datos;
-            const stats = calculateStats(datos);
-            updateCards(stats);
-            if (currentUserRole === 'admin') {
-                renderChart(datos);
-            }
-            updateFecha();
-        } catch (error) {
-            console.error('Error actualizando dashboard:', error);
+    try {
+        // Actualizar badge con usuario actual
+        const usuarioActual = API.getUsuarioActual();
+        const badge = document.getElementById('userRoleBadge');
+        if (badge && usuarioActual) {
+            badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
         }
-    }
 
+        // Obtener avisos (datos para el gráfico) y el total real
+        const { datos, total: totalReal } = await getAllNoticesFromAPI();
+        allNotices = datos;
+
+        // Calcular estadísticas basadas en los datos disponibles (para activos, categorías, etc.)
+        const stats = calculateStats(datos);
+        
+        // 🔥 SOBRESCRIBIR el total con el valor REAL de la API
+        stats.total = totalReal;
+        
+        updateCards(stats);
+
+        // Renderizar gráfico de categorías (solo admin)
+        if (currentUserRole === 'admin') {
+            renderChart(datos);
+        }
+
+        // Actualizar fecha
+        updateFecha();
+
+        console.log('📊 Dashboard actualizado:', { ...stats, totalReal });
+    } catch (error) {
+        console.error('Error actualizando dashboard:', error);
+    }
+}
+    // ========== ALTERNAR VISTA DEL GRÁFICO ==========
     window.toggleChartView = function () {
         chartDetailedView = !chartDetailedView;
         if (allNotices.length > 0) {
@@ -899,18 +1031,25 @@
         }
     };
 
+    // ========== INICIALIZAR DASHBOARD ==========
     async function initDashboard() {
         await detectUserRole();
         await refreshDashboardData();
+
         if (currentUserRole === 'admin') {
             await loadAdvancedStats();
         }
+
+        // Actualizar cada 30 segundos
         setInterval(refreshDashboardData, 30000);
+
+        // Actualizar usuarios en línea cada 60 segundos
         if (currentUserRole === 'admin') {
             setInterval(() => loadAdvancedStats(), 60000);
         }
     }
 
+    // ========== INICIAR CUANDO EL DOM ESTÉ LISTO ==========
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initDashboard);
     } else {
