@@ -1,5 +1,6 @@
 <footer class="footer dashboard-footer">
     <div class="contenedor">
+        <!-- DASHBOARD HEADER -->
         <div class="dashboard-header">
             <div class="dashboard-titulo">
                 <span class="dashboard-icon">📊</span>
@@ -9,7 +10,509 @@
             <div class="dashboard-fecha" id="fechaActual"></div>
         </div>
 
-        <!-- 6 TARJETAS -->
+        <!-- DASHBOARD CARDS -->
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📰</div>
+                <div class="stat-info">
+                    <h4>Total Avisos</h4>
+                    <div class="stat-number" id="totalAvisos">0</div>
+                    <span class="stat-label">avisos publicados</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h4>Avisos Activos</h4>
+                    <div class="stat-number" id="avisosActivos">0</div>
+                    <span class="stat-label">en circulación</span>
+                </div>
+            </div>
+            <div class="stat-card pending-card" id="pendingCard" style="display: none;">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-info">
+                    <h4>Pendientes</h4>
+                    <div class="stat-number" id="avisosPendientes">0</div>
+                    <span class="stat-label">por aprobar</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📁</div>
+                <div class="stat-info">
+                    <h4>Categorías</h4>
+                    <div class="stat-number" id="totalCategorias">0</div>
+                    <span class="stat-label">en uso</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🙉</div>
+                <div class="stat-info">
+                    <h4>Total Visitas</h4>
+                    <div class="stat-number" id="totalVisitas">0</div>
+                    <span class="stat-label">visualizaciones</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-info">
+                    <h4>Interacciones</h4>
+                    <div class="stat-number" id="totalInteracciones">0</div>
+                    <span class="stat-label">me gusta + comentarios</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICO CATEGORÍAS -->
+        <div class="dashboard-chart" id="chartCategorias" style="display: none;">
+            <div class="chart-header">
+                <h4>📊 Distribución por Categoría</h4>
+                <button class="chart-toggle" onclick="toggleChartView()">📈 Vista detallada</button>
+            </div>
+            <div class="chart-bars" id="chartBars"></div>
+            <div class="chart-stats-mini" id="chartStatsMini"></div>
+        </div>
+
+        <!-- GRÁFICA 1: USUARIOS REGISTRADOS POR DÍA -->
+        <div class="dashboard-chart" id="chartUsuariosDiarios" style="display: none;">
+            <div class="chart-header">
+                <h4>👥 Usuarios Registrados por Día</h4>
+            </div>
+            <div class="temporal-chart-container">
+                <canvas id="chartUsuariosCanvas" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+            </div>
+            <div class="chart-stats-mini" id="usuariosStats"></div>
+        </div>
+
+        <!-- GRÁFICA 2: AVISOS PUBLICADOS POR DÍA -->
+        <div class="dashboard-chart" id="chartAvisosDiarios" style="display: none;">
+            <div class="chart-header">
+                <h4>📰 Avisos Publicados por Día</h4>
+            </div>
+            <div class="temporal-chart-container">
+                <canvas id="chartAvisosCanvas" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+            </div>
+            <div class="chart-stats-mini" id="avisosStats"></div>
+        </div>
+
+        <!-- GRÁFICA 3: USUARIOS CONECTADOS POR DÍA (actividad) -->
+        <div class="dashboard-chart" id="chartConexionesDiarias" style="display: none;">
+            <div class="chart-header">
+                <h4>🟢 Usuarios Activos por Día</h4>
+            </div>
+            <div class="temporal-chart-container">
+                <canvas id="chartConexionesCanvas" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+            </div>
+            <div class="chart-stats-mini" id="conexionesStats"></div>
+        </div>
+
+        <!-- USUARIOS EN LÍNEA (TIEMPO REAL) -->
+        <div class="dashboard-chart" id="chartOnline" style="display: none;">
+            <div class="chart-header">
+                <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
+                <span class="online-badge" id="onlineCount">0 conectados</span>
+            </div>
+            <div class="online-users-list" id="onlineUsersList">
+                <p style="color:#888;">Cargando...</p>
+            </div>
+        </div>
+
+        <!-- RESÚMENES RÁPIDOS -->
+        <div class="stats-summary" id="statsSummary" style="display: none;">
+            <div class="summary-item">
+                <span class="summary-label">📊 Promedio diario usuarios:</span>
+                <span class="summary-value" id="promUsuarios">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">📝 Promedio diario avisos:</span>
+                <span class="summary-value" id="promAvisos">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">👥 Total usuarios registrados:</span>
+                <span class="summary-value" id="totalUsuarios">0</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    /* ========== DASHBOARD FOOTER STYLES ========== */
+    .dashboard-footer {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        margin-top: 60px;
+        padding: 30px 0 40px;
+    }
+
+    /* Contenedor interno */
+    .dashboard-footer .contenedor {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(245, 176, 66, 0.3);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .dashboard-titulo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .dashboard-icon {
+        font-size: 2rem;
+    }
+
+    .dashboard-titulo h3 {
+        color: #f5b042;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .dashboard-badge {
+        background: rgba(245, 176, 66, 0.2);
+        color: #f5b042;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        border: 1px solid rgba(245, 176, 66, 0.4);
+    }
+
+    .dashboard-fecha {
+        color: #888;
+        font-size: 0.85rem;
+    }
+
+    /* Grid de tarjetas */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(245, 176, 66, 0.3);
+    }
+
+    .stat-icon {
+        font-size: 2.2rem;
+    }
+
+    .stat-info h4 {
+        color: #aaa;
+        font-size: 0.7rem;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .stat-number {
+        color: #f5b042;
+        font-size: 1.8rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+
+    .stat-label {
+        color: #777;
+        font-size: 0.65rem;
+    }
+
+    .pending-card {
+        border-left: 3px solid #ff9800;
+    }
+
+    /* Gráficas */
+    .dashboard-chart {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .chart-header h4 {
+        color: #f5b042;
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    .chart-toggle {
+        background: rgba(245, 176, 66, 0.2);
+        border: 1px solid #f5b042;
+        color: #f5b042;
+        padding: 6px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+    }
+
+    .chart-toggle:hover {
+        background: #f5b042;
+        color: #1a1a2e;
+    }
+
+    .chart-toggles {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    /* Barras de categorías */
+    .chart-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .bar-label {
+        width: 100px;
+        font-size: 0.8rem;
+        color: #ccc;
+    }
+
+    .bar-container {
+        flex: 1;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f5b042, #ff8c42);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        color: #1a1a2e;
+        font-size: 0.7rem;
+        font-weight: bold;
+        transition: width 0.4s ease;
+    }
+
+    .bar-count {
+        min-width: 35px;
+        text-align: right;
+        font-size: 0.8rem;
+        color: #f5b042;
+        font-weight: bold;
+    }
+
+    /* Gráfica temporal */
+    .temporal-chart-container {
+        min-height: 250px;
+    }
+
+    #temporalChart {
+        max-width: 100%;
+        height: auto;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 12px;
+    }
+
+    /* Usuarios en línea */
+    .online-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    .online-users-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .online-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+
+    .online-user-email {
+        color: #ccc;
+        word-break: break-all;
+    }
+
+    .online-user-time {
+        color: #4caf50;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        margin-left: 10px;
+    }
+
+    /* Resúmenes */
+    .stats-summary {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-top: 10px;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-label {
+        display: block;
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #f5b042;
+    }
+
+    .chart-stats-mini {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.7rem;
+        color: #888;
+        text-align: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-footer .contenedor {
+            padding: 0 15px;
+        }
+
+        .dashboard-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 15px 12px;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+        }
+
+        .stat-number {
+            font-size: 1.4rem;
+        }
+
+        .bar-label {
+            width: 85px;
+            font-size: 0.7rem;
+        }
+
+        .stats-summary {
+            gap: 15px;
+        }
+
+        .summary-value {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .dashboard-titulo {
+            justify-content: center;
+        }
+
+        .chart-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .online-user-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .online-user-time {
+            margin-left: 0;
+        }
+    }
+</style>
+
+<footer class="footer dashboard-footer">
+    <div class="contenedor">
+        <!-- DASHBOARD HEADER -->
+        <div class="dashboard-header">
+            <div class="dashboard-titulo">
+                <span class="dashboard-icon">📊</span>
+                <h3>Panel de Estadísticas</h3>
+                <span class="dashboard-badge" id="userRoleBadge">Usuario</span>
+            </div>
+            <div class="dashboard-fecha" id="fechaActual"></div>
+        </div>
+
+        <!-- DASHBOARD CARDS - 6 KPIs principales -->
         <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-icon">📰</div>
@@ -71,13 +574,26 @@
             <div class="chart-stats-mini" id="chartStatsMini"></div>
         </div>
 
-        <!-- GRÁFICA AVISOS POR DÍA -->
+        <!-- GRÁFICA 1: USUARIOS REGISTRADOS POR DÍA -->
+        <div class="dashboard-chart" id="chartUsuariosDiarios" style="display: none;">
+            <div class="chart-header">
+                <h4>👥 Usuarios Registrados por Día</h4>
+            </div>
+            <div class="temporal-chart-container">
+                <canvas id="chartUsuariosCanvas" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
+            </div>
+            <div class="chart-stats-mini" id="usuariosStats"></div>
+        </div>
+
+        <!-- GRÁFICA 2: AVISOS PUBLICADOS POR DÍA -->
         <div class="dashboard-chart" id="chartAvisosDiarios" style="display: none;">
             <div class="chart-header">
                 <h4>📰 Avisos Publicados por Día</h4>
             </div>
             <div class="temporal-chart-container">
-                <canvas id="chartAvisosCanvas" width="400" height="200" style="max-width:100%; background:rgba(0,0,0,0.2); border-radius:12px;"></canvas>
+                <canvas id="chartAvisosCanvas" width="400" height="200"
+                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
             </div>
             <div class="chart-stats-mini" id="avisosStats"></div>
         </div>
@@ -88,71 +604,269 @@
                 <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
                 <span class="online-badge" id="onlineCount">0 conectados</span>
             </div>
-            <div class="online-users-list" id="onlineUsersList">Cargando...</div>
+            <div class="online-users-list" id="onlineUsersList">
+                <p style="color:#888;">Cargando...</p>
+            </div>
         </div>
 
-        <!-- RESUMEN -->
+        <!-- RESÚMENES RÁPIDOS -->
         <div class="stats-summary" id="statsSummary" style="display: none;">
-            <div class="summary-item"><span class="summary-label">👥 Total Usuarios:</span><span class="summary-value" id="totalUsuarios">0</span></div>
-            <div class="summary-item"><span class="summary-label">📊 Promedio diario avisos:</span><span class="summary-value" id="promAvisos">0</span></div>
+            <div class="summary-item">
+                <span class="summary-label">📊 Total Usuarios Registrados:</span>
+                <span class="summary-value" id="totalUsuarios">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">📝 Promedio Diario Avisos:</span>
+                <span class="summary-value" id="promAvisos">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">👥 Promedio Diario Usuarios:</span>
+                <span class="summary-value" id="promUsuarios">0</span>
+            </div>
         </div>
     </div>
 </footer>
 
 <style>
-    .dashboard-footer{background:linear-gradient(135deg,#0f0f1a 0%,#1a1a2e 100%);margin-top:60px;padding:30px 0 40px}
-    .dashboard-footer .contenedor{max-width:1200px;margin:0 auto;padding:0 20px}
-    .dashboard-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;padding-bottom:20px;border-bottom:2px solid rgba(245,176,66,0.3);flex-wrap:wrap;gap:15px}
-    .dashboard-titulo{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-    .dashboard-icon{font-size:2rem}
-    .dashboard-titulo h3{color:#f5b042;font-size:1.5rem;margin:0}
-    .dashboard-badge{background:rgba(245,176,66,0.2);color:#f5b042;padding:5px 12px;border-radius:20px;font-size:0.8rem;font-weight:bold;border:1px solid rgba(245,176,66,0.4)}
-    .dashboard-fecha{color:#888;font-size:0.85rem}
-    .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;margin-bottom:30px}
-    .stat-card{background:rgba(255,255,255,0.05);backdrop-filter:blur(10px);border-radius:20px;padding:20px 15px;display:flex;align-items:center;gap:15px;border:1px solid rgba(255,255,255,0.1)}
-    .stat-card:hover{transform:translateY(-3px);background:rgba(255,255,255,0.08);border-color:rgba(245,176,66,0.3)}
-    .stat-icon{font-size:2.2rem}
-    .stat-info h4{color:#aaa;font-size:0.7rem;margin:0 0 5px 0;text-transform:uppercase}
-    .stat-number{color:#f5b042;font-size:1.8rem;font-weight:bold;line-height:1}
-    .stat-label{color:#777;font-size:0.65rem}
-    .pending-card{border-left:3px solid #ff9800}
-    .dashboard-chart{background:rgba(255,255,255,0.03);border-radius:20px;padding:20px;margin-bottom:30px;border:1px solid rgba(255,255,255,0.1)}
-    .chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-    .chart-header h4{color:#f5b042;margin:0;font-size:1rem}
-    .chart-toggle{background:rgba(245,176,66,0.2);border:1px solid #f5b042;color:#f5b042;padding:6px 14px;border-radius:30px;cursor:pointer;font-size:0.75rem}
-    .chart-toggle:hover{background:#f5b042;color:#1a1a2e}
-    .chart-bars{display:flex;flex-direction:column;gap:12px}
-    .bar-item{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .bar-label{width:100px;font-size:0.8rem;color:#ccc}
-    .bar-container{flex:1;height:30px;background:rgba(255,255,255,0.1);border-radius:15px;overflow:hidden}
-    .bar-fill{height:100%;background:linear-gradient(90deg,#f5b042,#ff8c42);border-radius:15px;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#1a1a2e;font-size:0.7rem;font-weight:bold}
-    .bar-count{min-width:35px;text-align:right;font-size:0.8rem;color:#f5b042}
-    .temporal-chart-container{min-height:250px}
-    .online-badge{background:rgba(76,175,80,0.2);color:#4caf50;padding:4px 12px;border-radius:30px;font-size:0.75rem}
-    .online-users-list{max-height:200px;overflow-y:auto}
-    .online-user-item{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.05)}
-    .online-user-email{color:#ccc}
-    .online-user-time{color:#4caf50;font-size:0.7rem}
-    .stats-summary{display:flex;justify-content:center;gap:30px;flex-wrap:wrap;background:rgba(255,255,255,0.03);border-radius:16px;padding:15px 20px;margin-top:10px}
-    .summary-item{text-align:center}
-    .summary-label{font-size:0.7rem;color:#888;margin-bottom:5px;display:block}
-    .summary-value{font-size:1.3rem;font-weight:bold;color:#f5b042}
-    .chart-stats-mini{margin-top:15px;padding-top:15px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.7rem;color:#888;text-align:center}
-    @media (max-width:768px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}.stat-card{padding:15px 12px}.stat-icon{font-size:1.8rem}.stat-number{font-size:1.4rem}.bar-label{width:85px}}
-    @media (max-width:480px){.dashboard-grid{grid-template-columns:1fr}.dashboard-header,.chart-header{flex-direction:column;text-align:center}}
+    .dashboard-footer {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+        margin-top: 60px;
+        padding: 30px 0 40px;
+    }
+    .dashboard-footer .contenedor {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid rgba(245, 176, 66, 0.3);
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .dashboard-titulo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .dashboard-icon { font-size: 2rem; }
+    .dashboard-titulo h3 {
+        color: #f5b042;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+    .dashboard-badge {
+        background: rgba(245, 176, 66, 0.2);
+        color: #f5b042;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        border: 1px solid rgba(245, 176, 66, 0.4);
+    }
+    .dashboard-fecha { color: #888; font-size: 0.85rem; }
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .stat-card:hover {
+        transform: translateY(-3px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(245, 176, 66, 0.3);
+    }
+    .stat-icon { font-size: 2.2rem; }
+    .stat-info h4 {
+        color: #aaa;
+        font-size: 0.7rem;
+        margin: 0 0 5px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .stat-number {
+        color: #f5b042;
+        font-size: 1.8rem;
+        font-weight: bold;
+        line-height: 1;
+    }
+    .stat-label { color: #777; font-size: 0.65rem; }
+    .pending-card { border-left: 3px solid #ff9800; }
+    .dashboard-chart {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .chart-header h4 { color: #f5b042; margin: 0; font-size: 1rem; }
+    .chart-toggle {
+        background: rgba(245, 176, 66, 0.2);
+        border: 1px solid #f5b042;
+        color: #f5b042;
+        padding: 6px 14px;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.2s;
+    }
+    .chart-toggle:hover { background: #f5b042; color: #1a1a2e; }
+    .chart-bars { display: flex; flex-direction: column; gap: 12px; }
+    .bar-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .bar-label {
+        width: 100px;
+        font-size: 0.8rem;
+        color: #ccc;
+    }
+    .bar-container {
+        flex: 1;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #f5b042, #ff8c42);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        color: #1a1a2e;
+        font-size: 0.7rem;
+        font-weight: bold;
+        transition: width 0.4s ease;
+    }
+    .bar-count {
+        min-width: 35px;
+        text-align: right;
+        font-size: 0.8rem;
+        color: #f5b042;
+        font-weight: bold;
+    }
+    .temporal-chart-container { min-height: 250px; }
+    .online-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4caf50;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+    .online-users-list { max-height: 200px; overflow-y: auto; }
+    .online-user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 0.85rem;
+    }
+    .online-user-email { color: #ccc; word-break: break-all; }
+    .online-user-time {
+        color: #4caf50;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        margin-left: 10px;
+    }
+    .stats-summary {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 15px 20px;
+        margin-top: 10px;
+    }
+    .summary-item { text-align: center; }
+    .summary-label {
+        display: block;
+        font-size: 0.7rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+    .summary-value {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #f5b042;
+    }
+    .chart-stats-mini {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 0.7rem;
+        color: #888;
+        text-align: center;
+    }
+    @media (max-width: 768px) {
+        .dashboard-footer .contenedor { padding: 0 15px; }
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .stat-card { padding: 15px 12px; }
+        .stat-icon { font-size: 1.8rem; }
+        .stat-number { font-size: 1.4rem; }
+        .bar-label { width: 85px; font-size: 0.7rem; }
+        .stats-summary { gap: 15px; }
+        .summary-value { font-size: 1.1rem; }
+    }
+    @media (max-width: 480px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .dashboard-header { flex-direction: column; text-align: center; }
+        .dashboard-titulo { justify-content: center; }
+        .chart-header { flex-direction: column; text-align: center; }
+        .online-user-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+        .online-user-time { margin-left: 0; }
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
+    // ========== VARIABLES GLOBALES ==========
+    let chartDetailedView = false;
+    let chartUsuarios = null;
     let chartAvisos = null;
+    let temporalData = null;
     let allNotices = [];
     let currentUserRole = 'user';
     let currentUser = null;
 
+    // ========== FUNCIÓN ESCAPE HTML ==========
     function escapeHTML(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
+        if (str === undefined || str === null) return '';
+        if (typeof str === 'number') return str.toString();
+        if (typeof str !== 'string') str = String(str);
+        return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
@@ -160,155 +874,386 @@
         });
     }
 
+    // Opciones para Chart.js
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: true,
-        plugins: { legend: { labels: { color: '#ccc' } }, tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042' } },
-        scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } }, x: { ticks: { color: '#888', maxRotation: 45 } } }
+        plugins: {
+            legend: { labels: { color: '#ccc' } },
+            tooltip: { backgroundColor: '#1a1a2e', titleColor: '#f5b042', bodyColor: '#ccc' }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888', stepSize: 1 } },
+            x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
+        }
     };
 
+    // ========== ADAPTADOR: mapea 'intereses' a 'votos_positivos' ==========
+    function adaptarAviso(aviso) {
+        return {
+            ...aviso,
+            votos_positivos: aviso.votos_positivos || aviso.intereses || 0,
+            votos_negativos: aviso.votos_negativos || 0,
+            comentarios_count: aviso.comentarios_count || 0
+        };
+    }
+
+    // ========== RENDERIZAR GRÁFICAS ==========
+    function renderAllCharts() {
+        if (!temporalData || !temporalData.diario) {
+            console.warn('No hay datos para gráficas');
+            return;
+        }
+
+        const labels = temporalData.diario.map(d => {
+            const [year, month, day] = d.fecha.split('-');
+            return `${day}/${month}`;
+        });
+
+        const usuariosData = temporalData.diario.map(d => d.usuarios);
+        const avisosData = temporalData.diario.map(d => d.avisos);
+
+        if (chartUsuarios) chartUsuarios.destroy();
+        if (chartAvisos) chartAvisos.destroy();
+
+        const ctxUsuarios = document.getElementById('chartUsuariosCanvas')?.getContext('2d');
+        if (ctxUsuarios && typeof Chart !== 'undefined') {
+            chartUsuarios = new Chart(ctxUsuarios, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Nuevos usuarios',
+                        data: usuariosData,
+                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
+                        borderColor: '#4caf50',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        const ctxAvisos = document.getElementById('chartAvisosCanvas')?.getContext('2d');
+        if (ctxAvisos && typeof Chart !== 'undefined') {
+            chartAvisos = new Chart(ctxAvisos, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Avisos publicados',
+                        data: avisosData,
+                        backgroundColor: 'rgba(245, 176, 66, 0.6)',
+                        borderColor: '#f5b042',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: chartOptions
+            });
+        }
+
+        updateStatsMini('usuariosStats', usuariosData, labels, 'nuevos usuarios');
+        updateStatsMini('avisosStats', avisosData, labels, 'avisos publicados');
+    }
+
+    function updateStatsMini(elementId, dataValues, labels, labelName) {
+        const statsDiv = document.getElementById(elementId);
+        if (!statsDiv) return;
+
+        const maxValue = Math.max(...dataValues);
+        const maxIndex = dataValues.indexOf(maxValue);
+        const total = dataValues.reduce((a, b) => a + b, 0);
+        const promedio = dataValues.length > 0 ? (total / dataValues.length).toFixed(1) : 0;
+
+        if (maxValue > 0 && maxIndex !== -1) {
+            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} ${labelName})`;
+        } else {
+            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio}`;
+        }
+    }
+
+    function updateOnlineUsers(onlineData) {
+        const countSpan = document.getElementById('onlineCount');
+        const listDiv = document.getElementById('onlineUsersList');
+
+        if (countSpan) {
+            const total = onlineData?.total || 0;
+            countSpan.innerHTML = `${total} conectado${total !== 1 ? 's' : ''}`;
+        }
+
+        if (listDiv) {
+            if (!onlineData?.usuarios || onlineData.usuarios.length === 0) {
+                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
+                return;
+            }
+            listDiv.innerHTML = onlineData.usuarios.map(user => `
+                <div class="online-user-item">
+                    <span class="online-user-email">${escapeHTML(user.email)}</span>
+                    <span class="online-user-time">🟢 activo</span>
+                </div>
+            `).join('');
+        }
+    }
+
+    // ========== ESTADÍSTICAS AVANZADAS ==========
     async function loadAdvancedStats() {
         try {
             const apiKey = localStorage.getItem('api_key');
-            if (!apiKey) return;
-            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
-            if (response?.success && response.data) {
-                const data = response.data;
-                document.getElementById('totalUsuarios').innerText = data.resumen?.totalUsuarios || 0;
-                document.getElementById('promAvisos').innerText = data.resumen?.promedioDiarioAvisos || 0;
-                
-                if (data.enLinea) {
-                    document.getElementById('onlineCount').innerHTML = `${data.enLinea.total || 0} conectado${data.enLinea.total !== 1 ? 's' : ''}`;
-                    const listDiv = document.getElementById('onlineUsersList');
-                    if (data.enLinea.usuarios?.length) {
-                        listDiv.innerHTML = data.enLinea.usuarios.map(u => `<div class="online-user-item"><span class="online-user-email">${escapeHTML(u.email)}</span><span class="online-user-time">🟢 activo</span></div>`).join('');
-                    } else {
-                        listDiv.innerHTML = '📭 No hay usuarios conectados';
-                    }
-                }
-                
-                if (data.diario) {
-                    const labels = data.diario.map(d => { let [y,m,day]=d.fecha.split('-'); return `${day}/${m}`; });
-                    const avisosData = data.diario.map(d => d.avisos);
-                    
-                    if (chartAvisos) chartAvisos.destroy();
-                    const ctx = document.getElementById('chartAvisosCanvas')?.getContext('2d');
-                    if (ctx) {
-                        chartAvisos = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: 'Avisos publicados', data: avisosData, backgroundColor: 'rgba(245,176,66,0.6)', borderColor: '#f5b042', borderRadius: 4 }] }, options: chartOptions });
-                    }
-                    
-                    const total = avisosData.reduce((a,b)=>a+b,0);
-                    const max = Math.max(...avisosData);
-                    const maxIdx = avisosData.indexOf(max);
-                    document.getElementById('avisosStats').innerHTML = max>0 ? `📈 Total: ${total} | 📊 Promedio: ${(total/avisosData.length).toFixed(1)} | 🔥 Día pico: ${labels[maxIdx]} (${max})` : `📈 Total: ${total}`;
-                    
-                    document.getElementById('chartAvisosDiarios').style.display = 'block';
-                    document.getElementById('chartOnline').style.display = 'block';
-                    document.getElementById('statsSummary').style.display = 'flex';
-                }
+            if (!apiKey) {
+                console.warn('No hay API key');
+                return;
             }
-        } catch(e) { console.error(e); }
+
+            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+            console.log('📊 Estadísticas avanzadas:', response);
+
+            if (response && response.success && response.data) {
+                temporalData = response.data;
+
+                if (response.data.resumen) {
+                    const promUsuarios = document.getElementById('promUsuarios');
+                    const promAvisos = document.getElementById('promAvisos');
+                    const totalUsuarios = document.getElementById('totalUsuarios');
+                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
+                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
+                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
+                }
+
+                updateOnlineUsers(response.data.enLinea);
+                renderAllCharts();
+
+                const chartUsuariosDiv = document.getElementById('chartUsuariosDiarios');
+                const chartAvisosDiv = document.getElementById('chartAvisosDiarios');
+                const chartOnlineDiv = document.getElementById('chartOnline');
+                const statsSummaryDiv = document.getElementById('statsSummary');
+
+                if (chartUsuariosDiv) chartUsuariosDiv.style.display = 'block';
+                if (chartAvisosDiv) chartAvisosDiv.style.display = 'block';
+                if (chartOnlineDiv) chartOnlineDiv.style.display = 'block';
+                if (statsSummaryDiv) statsSummaryDiv.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error cargando estadísticas avanzadas:', error);
+        }
     }
 
+    // ========== DETECTAR ROL ==========
     async function detectUserRole() {
         try {
             currentUser = API.getUsuarioActual();
-            if (currentUser?.rol === 'admin') {
+            if (currentUser && currentUser.rol === 'admin') {
                 currentUserRole = 'admin';
-                document.getElementById('userRoleBadge').innerHTML = `👑 ${currentUser.nombre || currentUser.email}`;
-                document.getElementById('pendingCard').style.display = 'flex';
-                document.getElementById('chartCategorias').style.display = 'block';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) {
+                    badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
+                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
+                }
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'flex';
+                const chartCategorias = document.getElementById('chartCategorias');
+                if (chartCategorias) chartCategorias.style.display = 'block';
             } else if (currentUser) {
                 currentUserRole = 'user';
-                document.getElementById('userRoleBadge').innerHTML = `👤 ${currentUser.nombre || currentUser.email}`;
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) {
+                    badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
+                }
+                const pendingCard = document.getElementById('pendingCard');
+                if (pendingCard) pendingCard.style.display = 'none';
             } else {
-                document.getElementById('userRoleBadge').innerHTML = '👤 Invitado';
+                const badge = document.getElementById('userRoleBadge');
+                if (badge) badge.innerHTML = '👤 Invitado';
             }
             return true;
-        } catch(e) { return false; }
+        } catch (e) {
+            console.error('Error detectando usuario:', e);
+            return false;
+        }
     }
 
+    // ========== OBTENER AVISOS ==========
     async function getAllNoticesFromAPI() {
         try {
             const apiKey = localStorage.getItem('api_key');
-            let respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 1000 }, apiKey);
-            if (respuesta?.success) {
-                let datos = respuesta.data?.datos || respuesta.datos || (Array.isArray(respuesta.data) ? respuesta.data : []);
-                return { datos, total: datos.length };
+            let respuesta;
+
+            if (currentUserRole === 'admin') {
+                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 1000 }, apiKey);
+            } else {
+                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
+            }
+
+            if (respuesta && respuesta.success) {
+                let datos = [];
+                if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
+                    datos = respuesta.data.datos;
+                } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
+                    datos = respuesta.datos;
+                } else if (Array.isArray(respuesta.data)) {
+                    datos = respuesta.data;
+                }
+                
+                const datosAdaptados = datos.map(adaptarAviso);
+                return { datos: datosAdaptados, total: datosAdaptados.length };
             }
             return { datos: [], total: 0 };
-        } catch(e) { return { datos: [], total: 0 }; }
+        } catch (error) {
+            console.error('Error obteniendo avisos:', error);
+            return { datos: [], total: 0 };
+        }
     }
 
+    // ========== CALCULAR ESTADÍSTICAS ==========
     function calculateStats(notices) {
         const total = notices.length;
-        const activos = notices.filter(a => (a.status || '').toLowerCase() === 'activo').length;
+        
+        const activos = notices.filter(a => {
+            const status = (a.status || '').toLowerCase();
+            return status === 'activo';
+        }).length;
+        
         const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
-        const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c));
-        const totalVisitas = notices.reduce((s,a) => s + (parseInt(a.vistas)||0), 0);
-        const totalInteracciones = notices.reduce((s,a) => s + (parseInt(a.intereses)||0) + (parseInt(a.comentarios_count)||0), 0);
-        return { total, activos, pendientes, totalCategorias: categoriasSet.size, totalVisitas, totalInteracciones };
+        
+        const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
+        const totalCategorias = categoriasSet.size;
+        
+        const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
+        
+        const totalInteracciones = notices.reduce((sum, a) => {
+            const likes = parseInt(a.votos_positivos) || 0;
+            const comentarios = parseInt(a.comentarios_count) || 0;
+            return sum + likes + comentarios;
+        }, 0);
+
+        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
+
+        return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
     }
 
     function getStatsByCategory(notices) {
-        const cats = ['urgente','escuelas','servicios','comercios','eventos','gobierno','varios'];
-        return cats.reduce((acc,cat) => { acc[cat] = notices.filter(a => a.categoria === cat).length; return acc; }, {});
+        const categories = ['urgente', 'escuelas', 'servicios', 'comercios', 'eventos', 'gobierno', 'varios'];
+        const stats = {};
+        categories.forEach(cat => {
+            stats[cat] = notices.filter(a => a.categoria === cat).length;
+        });
+        return stats;
     }
 
     function updateCards(stats) {
-        document.getElementById('totalAvisos').innerText = stats.total;
-        document.getElementById('avisosActivos').innerText = stats.activos;
-        if (currentUserRole === 'admin') document.getElementById('avisosPendientes').innerText = stats.pendientes;
-        document.getElementById('totalCategorias').innerText = stats.totalCategorias;
-        document.getElementById('totalVisitas').innerText = stats.totalVisitas.toLocaleString();
-        document.getElementById('totalInteracciones').innerText = stats.totalInteracciones.toLocaleString();
+        const elements = {
+            totalAvisos: document.getElementById('totalAvisos'),
+            avisosActivos: document.getElementById('avisosActivos'),
+            avisosPendientes: document.getElementById('avisosPendientes'),
+            totalCategorias: document.getElementById('totalCategorias'),
+            totalVisitas: document.getElementById('totalVisitas'),
+            totalInteracciones: document.getElementById('totalInteracciones')
+        };
+        if (elements.totalAvisos) elements.totalAvisos.innerText = stats.total;
+        if (elements.avisosActivos) elements.avisosActivos.innerText = stats.activos;
+        if (currentUserRole === 'admin' && elements.avisosPendientes) elements.avisosPendientes.innerText = stats.pendientes;
+        if (elements.totalCategorias) elements.totalCategorias.innerText = stats.totalCategorias;
+        if (elements.totalVisitas) elements.totalVisitas.innerText = stats.totalVisitas.toLocaleString();
+        if (elements.totalInteracciones) elements.totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
     }
 
     function renderChart(notices) {
         const stats = getStatsByCategory(notices);
         const maxValue = Math.max(...Object.values(stats), 1);
-        const names = { urgente:'🚨 Urgente', escuelas:'🏫 Escuelas', servicios:'🛠️ Servicios', comercios:'🛒 Comercios', eventos:'📅 Eventos', gobierno:'🏛️ Gobierno', varios:'📢 Varios' };
-        let html = '';
-        for (const [key, val] of Object.entries(stats)) {
-            const pct = (val / maxValue) * 100;
-            html += `<div class="bar-item"><div class="bar-label">${names[key]}</div><div class="bar-container"><div class="bar-fill" style="width:${pct}%">${chartDetailedView && val>0 ? val : ''}</div></div><div class="bar-count">${val}</div></div>`;
+        const categoryNames = {
+            'urgente': '🚨 Urgente',
+            'escuelas': '🏫 Escuelas',
+            'servicios': '🛠️ Servicios',
+            'comercios': '🛒 Comercios',
+            'eventos': '📅 Eventos',
+            'gobierno': '🏛️ Gobierno',
+            'varios': '📢 Varios'
+        };
+
+        let barsHtml = '';
+        for (const [key, value] of Object.entries(stats)) {
+            const percentage = (value / maxValue) * 100;
+            barsHtml += `
+                <div class="bar-item">
+                    <div class="bar-label">${categoryNames[key]}</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%;">
+                            ${chartDetailedView && value > 0 ? value : ''}
+                        </div>
+                    </div>
+                    <div class="bar-count">${value}</div>
+                </div>
+            `;
         }
-        document.getElementById('chartBars').innerHTML = html;
-        const top = Object.entries(stats).sort((a,b)=>b[1]-a[1])[0];
-        document.getElementById('chartStatsMini').innerHTML = top && top[1]>0 ? `📌 Categoría con más avisos: ${names[top[0]]} (${top[1]})` : '📌 Publica tu primer aviso';
+        const chartBars = document.getElementById('chartBars');
+        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
+
+        const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
+        const chartStatsMini = document.getElementById('chartStatsMini');
+        if (chartStatsMini) {
+            if (topCategory && topCategory[1] > 0) {
+                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
+            } else {
+                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
+            }
+        }
     }
 
     function updateFecha() {
-        document.getElementById('fechaActual').innerHTML = `📅 ${new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}`;
+        const fechaSpan = document.getElementById('fechaActual');
+        if (fechaSpan) {
+            fechaSpan.innerHTML = `📅 ${new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`;
+        }
     }
 
     async function refreshDashboardData() {
         try {
+            const usuarioActual = API.getUsuarioActual();
+            const badge = document.getElementById('userRoleBadge');
+            if (badge && usuarioActual) {
+                badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
+            }
             const { datos } = await getAllNoticesFromAPI();
             allNotices = datos;
             const stats = calculateStats(datos);
             updateCards(stats);
-            if (currentUserRole === 'admin') renderChart(datos);
+            if (currentUserRole === 'admin') {
+                renderChart(datos);
+            }
             updateFecha();
-        } catch(e) { console.error(e); }
+            console.log('📊 Dashboard actualizado con', allNotices.length, 'avisos');
+        } catch (error) {
+            console.error('Error actualizando dashboard:', error);
+        }
     }
 
-    let chartDetailedView = false;
     window.toggleChartView = function() {
         chartDetailedView = !chartDetailedView;
-        if (allNotices.length) renderChart(allNotices);
+        if (allNotices.length > 0) {
+            renderChart(allNotices);
+        }
         const btn = document.querySelector('.chart-header .chart-toggle');
-        if (btn) btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
+        if (btn) {
+            btn.innerHTML = chartDetailedView ? '📊 Vista compacta' : '📈 Vista detallada';
+        }
     };
 
     async function initDashboard() {
         await detectUserRole();
         await refreshDashboardData();
-        if (currentUserRole === 'admin') await loadAdvancedStats();
+        if (currentUserRole === 'admin') {
+            await loadAdvancedStats();
+        }
         setInterval(refreshDashboardData, 30000);
-        if (currentUserRole === 'admin') setInterval(() => loadAdvancedStats(), 60000);
+        if (currentUserRole === 'admin') {
+            setInterval(() => loadAdvancedStats(), 60000);
+        }
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initDashboard);
-    else initDashboard();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    } else {
+        initDashboard();
+    }
 </script>
