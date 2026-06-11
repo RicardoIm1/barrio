@@ -441,7 +441,7 @@ function renderizarAvisosGrid(avisos) {
           ${aviso.ubicacion ? `<span>📍 ${escapeHTML(aviso.ubicacion)}</span>` : ''}
         </div>
         <div class="grupo-botones">
-          <button class="boton boton-chico" onclick="verAviso('${aviso.id}')">👁️ Ver</button>
+          <button class="boton boton-chico" onclick="verAviso('${aviso.id}')">🙉 Ver</button>
     `;
 
     if (esAdmin && esPendiente) {

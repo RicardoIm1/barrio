@@ -96,7 +96,7 @@ async function crearVistaDetalle(aviso, puedeEditar = false) {
       <div class="aviso-meta">
         <span>📅 ${fecha}</span>
         ${aviso.ubicacion ? `<span>📍 ${escapeHtml(aviso.ubicacion)}</span>` : ''}
-        <span>👁️ ${aviso.clicks || 0} vistas</span>
+        <span>🙉 ${aviso.clicks || 0} vistas</span>
       </div>
       
       <div class="aviso-contenido">

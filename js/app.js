@@ -282,7 +282,7 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
           
           <div class="aviso-stats">
             <span class="stat-item" title="Veces visto" onclick="event.stopPropagation()">
-              👁️ ${vistas}
+              🙉 ${vistas}
             </span>
             <span class="stat-item" title="Contactos por WhatsApp" onclick="event.stopPropagation()">
               💬 ${clicksWhatsApp}
