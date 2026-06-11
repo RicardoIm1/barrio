@@ -57,7 +57,7 @@
                 <div class="stat-info">
                     <h4>Interacciones</h4>
                     <div class="stat-number" id="totalInteracciones">0</div>
-                    <span class="stat-label">me gusta + comentarios</span>
+                    <span class="stat-label">likes + comentarios</span>
                 </div>
             </div>
         </div>
@@ -96,7 +96,7 @@
             <div class="chart-stats-mini" id="avisosStats"></div>
         </div>
 
-        <!-- GRÁFICA 3: USUARIOS CONECTADOS POR DÍA (actividad) -->
+        <!-- GRÁFICA 3: USUARIOS CONECTADOS POR DÍA -->
         <div class="dashboard-chart" id="chartConexionesDiarias" style="display: none;">
             <div class="chart-header">
                 <h4>🟢 Usuarios Activos por Día</h4>
@@ -108,7 +108,7 @@
             <div class="chart-stats-mini" id="conexionesStats"></div>
         </div>
 
-        <!-- USUARIOS EN LÍNEA (TIEMPO REAL) -->
+        <!-- USUARIOS EN LÍNEA -->
         <div class="dashboard-chart" id="chartOnline" style="display: none;">
             <div class="chart-header">
                 <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
@@ -138,21 +138,16 @@
 </footer>
 
 <style>
-    /* ========== DASHBOARD FOOTER STYLES ========== */
     .dashboard-footer {
         background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
         margin-top: 60px;
         padding: 30px 0 40px;
     }
-
-    /* Contenedor interno */
     .dashboard-footer .contenedor {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 20px;
     }
-
-    /* Header */
     .dashboard-header {
         display: flex;
         justify-content: space-between;
@@ -163,24 +158,18 @@
         flex-wrap: wrap;
         gap: 15px;
     }
-
     .dashboard-titulo {
         display: flex;
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
     }
-
-    .dashboard-icon {
-        font-size: 2rem;
-    }
-
+    .dashboard-icon { font-size: 2rem; }
     .dashboard-titulo h3 {
         color: #f5b042;
         font-size: 1.5rem;
         margin: 0;
     }
-
     .dashboard-badge {
         background: rgba(245, 176, 66, 0.2);
         color: #f5b042;
@@ -190,20 +179,13 @@
         font-weight: bold;
         border: 1px solid rgba(245, 176, 66, 0.4);
     }
-
-    .dashboard-fecha {
-        color: #888;
-        font-size: 0.85rem;
-    }
-
-    /* Grid de tarjetas */
+    .dashboard-fecha { color: #888; font-size: 0.85rem; }
     .dashboard-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 20px;
         margin-bottom: 30px;
     }
-
     .stat-card {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -215,17 +197,12 @@
         transition: all 0.3s ease;
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .stat-card:hover {
         transform: translateY(-3px);
         background: rgba(255, 255, 255, 0.08);
         border-color: rgba(245, 176, 66, 0.3);
     }
-
-    .stat-icon {
-        font-size: 2.2rem;
-    }
-
+    .stat-icon { font-size: 2.2rem; }
     .stat-info h4 {
         color: #aaa;
         font-size: 0.7rem;
@@ -233,24 +210,14 @@
         text-transform: uppercase;
         letter-spacing: 1px;
     }
-
     .stat-number {
         color: #f5b042;
         font-size: 1.8rem;
         font-weight: bold;
         line-height: 1;
     }
-
-    .stat-label {
-        color: #777;
-        font-size: 0.65rem;
-    }
-
-    .pending-card {
-        border-left: 3px solid #ff9800;
-    }
-
-    /* Gráficas */
+    .stat-label { color: #777; font-size: 0.65rem; }
+    .pending-card { border-left: 3px solid #ff9800; }
     .dashboard-chart {
         background: rgba(255, 255, 255, 0.03);
         border-radius: 20px;
@@ -258,7 +225,6 @@
         margin-bottom: 30px;
         border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .chart-header {
         display: flex;
         justify-content: space-between;
@@ -267,13 +233,7 @@
         flex-wrap: wrap;
         gap: 10px;
     }
-
-    .chart-header h4 {
-        color: #f5b042;
-        margin: 0;
-        font-size: 1rem;
-    }
-
+    .chart-header h4 { color: #f5b042; margin: 0; font-size: 1rem; }
     .chart-toggle {
         background: rgba(245, 176, 66, 0.2);
         border: 1px solid #f5b042;
@@ -284,38 +244,19 @@
         font-size: 0.75rem;
         transition: all 0.2s;
     }
-
-    .chart-toggle:hover {
-        background: #f5b042;
-        color: #1a1a2e;
-    }
-
-    .chart-toggles {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    /* Barras de categorías */
-    .chart-bars {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
+    .chart-toggle:hover { background: #f5b042; color: #1a1a2e; }
+    .chart-bars { display: flex; flex-direction: column; gap: 12px; }
     .bar-item {
         display: flex;
         align-items: center;
         gap: 10px;
         flex-wrap: wrap;
     }
-
     .bar-label {
         width: 100px;
         font-size: 0.8rem;
         color: #ccc;
     }
-
     .bar-container {
         flex: 1;
         height: 30px;
@@ -323,7 +264,6 @@
         border-radius: 15px;
         overflow: hidden;
     }
-
     .bar-fill {
         height: 100%;
         background: linear-gradient(90deg, #f5b042, #ff8c42);
@@ -337,7 +277,6 @@
         font-weight: bold;
         transition: width 0.4s ease;
     }
-
     .bar-count {
         min-width: 35px;
         text-align: right;
@@ -345,20 +284,7 @@
         color: #f5b042;
         font-weight: bold;
     }
-
-    /* Gráfica temporal */
-    .temporal-chart-container {
-        min-height: 250px;
-    }
-
-    #temporalChart {
-        max-width: 100%;
-        height: auto;
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 12px;
-    }
-
-    /* Usuarios en línea */
+    .temporal-chart-container { min-height: 250px; }
     .online-badge {
         background: rgba(76, 175, 80, 0.2);
         color: #4caf50;
@@ -367,12 +293,7 @@
         font-size: 0.75rem;
         font-weight: bold;
     }
-
-    .online-users-list {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
+    .online-users-list { max-height: 200px; overflow-y: auto; }
     .online-user-item {
         display: flex;
         justify-content: space-between;
@@ -381,20 +302,13 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         font-size: 0.85rem;
     }
-
-    .online-user-email {
-        color: #ccc;
-        word-break: break-all;
-    }
-
+    .online-user-email { color: #ccc; word-break: break-all; }
     .online-user-time {
         color: #4caf50;
         font-size: 0.7rem;
         white-space: nowrap;
         margin-left: 10px;
     }
-
-    /* Resúmenes */
     .stats-summary {
         display: flex;
         justify-content: center;
@@ -405,24 +319,18 @@
         padding: 15px 20px;
         margin-top: 10px;
     }
-
-    .summary-item {
-        text-align: center;
-    }
-
+    .summary-item { text-align: center; }
     .summary-label {
         display: block;
         font-size: 0.7rem;
         color: #888;
         margin-bottom: 5px;
     }
-
     .summary-value {
         font-size: 1.3rem;
         font-weight: bold;
         color: #f5b042;
     }
-
     .chart-stats-mini {
         margin-top: 15px;
         padding-top: 15px;
@@ -431,72 +339,23 @@
         color: #888;
         text-align: center;
     }
-
-    /* Responsive */
     @media (max-width: 768px) {
-        .dashboard-footer .contenedor {
-            padding: 0 15px;
-        }
-
-        .dashboard-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .stat-card {
-            padding: 15px 12px;
-        }
-
-        .stat-icon {
-            font-size: 1.8rem;
-        }
-
-        .stat-number {
-            font-size: 1.4rem;
-        }
-
-        .bar-label {
-            width: 85px;
-            font-size: 0.7rem;
-        }
-
-        .stats-summary {
-            gap: 15px;
-        }
-
-        .summary-value {
-            font-size: 1.1rem;
-        }
+        .dashboard-footer .contenedor { padding: 0 15px; }
+        .dashboard-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .stat-card { padding: 15px 12px; }
+        .stat-icon { font-size: 1.8rem; }
+        .stat-number { font-size: 1.4rem; }
+        .bar-label { width: 85px; font-size: 0.7rem; }
+        .stats-summary { gap: 15px; }
+        .summary-value { font-size: 1.1rem; }
     }
-
     @media (max-width: 480px) {
-        .dashboard-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .dashboard-header {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .dashboard-titulo {
-            justify-content: center;
-        }
-
-        .chart-header {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .online-user-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 5px;
-        }
-
-        .online-user-time {
-            margin-left: 0;
-        }
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .dashboard-header { flex-direction: column; text-align: center; }
+        .dashboard-titulo { justify-content: center; }
+        .chart-header { flex-direction: column; text-align: center; }
+        .online-user-item { flex-direction: column; align-items: flex-start; gap: 5px; }
+        .online-user-time { margin-left: 0; }
     }
 </style>
 
@@ -512,8 +371,6 @@
     let allNotices = [];
     let currentUserRole = 'user';
     let currentUser = null;
-    
-    // Variables para gráfica temporal (si se usa)
     let currentMetric = 'usuarios';
     let temporalChart = null;
 
@@ -522,7 +379,7 @@
         if (str === undefined || str === null) return '';
         if (typeof str === 'number') return str.toString();
         if (typeof str !== 'string') str = String(str);
-        return str.replace(/[&<>]/g, function (m) {
+        return str.replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
@@ -543,6 +400,17 @@
             x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 45, minRotation: 45 } }
         }
     };
+
+    // ========== ADAPTADOR PARA CAMPOS DEL BACKEND ==========
+    function adaptarAviso(aviso) {
+        return {
+            ...aviso,
+            // Mapear 'intereses' (backend) a 'votos_positivos' (frontend)
+            votos_positivos: aviso.votos_positivos || aviso.intereses || 0,
+            votos_negativos: aviso.votos_negativos || 0,
+            comentarios_count: aviso.comentarios_count || 0
+        };
+    }
 
     // ========== RENDERIZAR GRÁFICAS ==========
     function renderAllCharts() {
@@ -743,17 +611,19 @@
         }
     }
 
-    // ========== OBTENER AVISOS ==========
+    // ========== OBTENER AVISOS (adaptado para backend) ==========
     async function getAllNoticesFromAPI() {
         try {
             const apiKey = localStorage.getItem('api_key');
             let respuesta;
 
             if (currentUserRole === 'admin') {
-                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 100 }, apiKey);
+                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 500 }, apiKey);
             } else {
-                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 100 }, apiKey);
+                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 500 }, apiKey);
             }
+
+            console.log('Dashboard - Respuesta API:', respuesta);
 
             if (respuesta && respuesta.success) {
                 let datos = [];
@@ -764,7 +634,10 @@
                 } else if (Array.isArray(respuesta.data)) {
                     datos = respuesta.data;
                 }
-                return { datos, total: datos.length };
+                
+                // Adaptar cada aviso para mapear 'intereses' a 'votos_positivos'
+                const datosAdaptados = datos.map(adaptarAviso);
+                return { datos: datosAdaptados, total: datosAdaptados.length };
             }
             return { datos: [], total: 0 };
         } catch (error) {
@@ -776,19 +649,28 @@
     // ========== CALCULAR ESTADÍSTICAS ==========
     function calculateStats(notices) {
         const total = notices.length;
+        
         const activos = notices.filter(a => {
             const status = (a.status || '').toLowerCase();
             return status !== 'pendiente' && status !== 'rechazado' && status !== 'eliminado' && status !== 'inactivo';
         }).length;
+        
         const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
+        
         const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
         const totalCategorias = categoriasSet.size;
+        
         const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
+        
+        // Usar votos_positivos (adaptado de intereses)
         const totalInteracciones = notices.reduce((sum, a) => {
-            const likes = parseInt(a.intereses) || 0;
+            const likes = parseInt(a.votos_positivos) || 0;
             const comentarios = parseInt(a.comentarios_count) || 0;
             return sum + likes + comentarios;
         }, 0);
+
+        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
+        console.log('📊 Muestra de datos adaptados:', notices.slice(0, 2).map(a => ({ titulo: a.titulo, votos_positivos: a.votos_positivos, intereses_original: a.intereses })));
 
         return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
     }
@@ -883,12 +765,13 @@
                 renderChart(datos);
             }
             updateFecha();
+            console.log('📊 Dashboard actualizado con', allNotices.length, 'avisos');
         } catch (error) {
             console.error('Error actualizando dashboard:', error);
         }
     }
 
-    window.toggleChartView = function () {
+    window.toggleChartView = function() {
         chartDetailedView = !chartDetailedView;
         if (allNotices.length > 0) {
             renderChart(allNotices);
