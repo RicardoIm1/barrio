@@ -1,6 +1,5 @@
 <footer class="footer dashboard-footer">
     <div class="contenedor">
-        <!-- DASHBOARD HEADER -->
         <div class="dashboard-header">
             <div class="dashboard-titulo">
                 <span class="dashboard-icon">📊</span>
@@ -10,7 +9,6 @@
             <div class="dashboard-fecha" id="fechaActual"></div>
         </div>
 
-        <!-- DASHBOARD CARDS -->
         <div class="dashboard-grid">
             <div class="stat-card">
                 <div class="stat-icon">📰</div>
@@ -62,7 +60,6 @@
             </div>
         </div>
 
-        <!-- GRÁFICO CATEGORÍAS -->
         <div class="dashboard-chart" id="chartCategorias" style="display: none;">
             <div class="chart-header">
                 <h4>📊 Distribución por Categoría</h4>
@@ -72,7 +69,6 @@
             <div class="chart-stats-mini" id="chartStatsMini"></div>
         </div>
 
-        <!-- GRÁFICA 1: USUARIOS REGISTRADOS POR DÍA -->
         <div class="dashboard-chart" id="chartUsuariosDiarios" style="display: none;">
             <div class="chart-header">
                 <h4>👥 Usuarios Registrados por Día</h4>
@@ -84,7 +80,6 @@
             <div class="chart-stats-mini" id="usuariosStats"></div>
         </div>
 
-        <!-- GRÁFICA 2: AVISOS PUBLICADOS POR DÍA -->
         <div class="dashboard-chart" id="chartAvisosDiarios" style="display: none;">
             <div class="chart-header">
                 <h4>📰 Avisos Publicados por Día</h4>
@@ -96,19 +91,6 @@
             <div class="chart-stats-mini" id="avisosStats"></div>
         </div>
 
-        <!-- GRÁFICA 3: USUARIOS CONECTADOS POR DÍA -->
-        <div class="dashboard-chart" id="chartConexionesDiarias" style="display: none;">
-            <div class="chart-header">
-                <h4>🟢 Usuarios Activos por Día</h4>
-            </div>
-            <div class="temporal-chart-container">
-                <canvas id="chartConexionesCanvas" width="400" height="200"
-                    style="max-width: 100%; height: auto; background: rgba(0,0,0,0.2); border-radius: 12px;"></canvas>
-            </div>
-            <div class="chart-stats-mini" id="conexionesStats"></div>
-        </div>
-
-        <!-- USUARIOS EN LÍNEA -->
         <div class="dashboard-chart" id="chartOnline" style="display: none;">
             <div class="chart-header">
                 <h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>
@@ -119,19 +101,14 @@
             </div>
         </div>
 
-        <!-- RESÚMENES RÁPIDOS -->
         <div class="stats-summary" id="statsSummary" style="display: none;">
             <div class="summary-item">
-                <span class="summary-label">📊 Promedio diario usuarios:</span>
-                <span class="summary-value" id="promUsuarios">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">📝 Promedio diario avisos:</span>
-                <span class="summary-value" id="promAvisos">0</span>
-            </div>
-            <div class="summary-item">
-                <span class="summary-label">👥 Total usuarios registrados:</span>
+                <span class="summary-label">📊 Total usuarios registrados:</span>
                 <span class="summary-value" id="totalUsuarios">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">📝 Total avisos:</span>
+                <span class="summary-value" id="totalAvisosResumen">0</span>
             </div>
         </div>
     </div>
@@ -366,13 +343,9 @@
     let chartDetailedView = false;
     let chartUsuarios = null;
     let chartAvisos = null;
-    let chartConexiones = null;
-    let temporalData = null;
     let allNotices = [];
     let currentUserRole = 'user';
     let currentUser = null;
-    let currentMetric = 'usuarios';
-    let temporalChart = null;
 
     // ========== FUNCIÓN ESCAPE HTML ==========
     function escapeHTML(str) {
@@ -387,7 +360,7 @@
         });
     }
 
-    // Opciones comunes para Chart.js
+    // Opciones para Chart.js
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: true,
@@ -405,55 +378,108 @@
     function adaptarAviso(aviso) {
         return {
             ...aviso,
-            // Mapear 'intereses' (backend) a 'votos_positivos' (frontend)
             votos_positivos: aviso.votos_positivos || aviso.intereses || 0,
             votos_negativos: aviso.votos_negativos || 0,
             comentarios_count: aviso.comentarios_count || 0
         };
     }
 
-    // ========== RENDERIZAR GRÁFICAS ==========
-    function renderAllCharts() {
-        if (!temporalData || !temporalData.diario) {
-            console.warn('No hay datos para gráficas');
+    // ========== ESTADÍSTICAS AVANZADAS (SIMPLE) ==========
+    async function loadAdvancedStats() {
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            if (!apiKey) return;
+
+            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
+            console.log('📊 Estadísticas avanzadas (respuesta real):', response);
+
+            if (response && response.success && response.data) {
+                const data = response.data;
+                
+                // Actualizar total de usuarios
+                const totalUsuarios = document.getElementById('totalUsuarios');
+                if (totalUsuarios && data.resumen) {
+                    totalUsuarios.innerText = data.resumen.totalUsuarios || 0;
+                }
+                
+                // Actualizar total avisos en resumen
+                const totalAvisosResumen = document.getElementById('totalAvisosResumen');
+                if (totalAvisosResumen && data.resumen) {
+                    totalAvisosResumen.innerText = data.resumen.totalAvisos || 0;
+                }
+                
+                // Actualizar usuarios en línea
+                if (data.enLinea) {
+                    const onlineCount = document.getElementById('onlineCount');
+                    const onlineList = document.getElementById('onlineUsersList');
+                    
+                    if (onlineCount) onlineCount.innerHTML = `${data.enLinea.total || 0} conectado${data.enLinea.total !== 1 ? 's' : ''}`;
+                    
+                    if (onlineList) {
+                        if (!data.enLinea.usuarios || data.enLinea.usuarios.length === 0) {
+                            onlineList.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados</p>';
+                        } else {
+                            onlineList.innerHTML = data.enLinea.usuarios.map(user => `
+                                <div class="online-user-item">
+                                    <span class="online-user-email">${escapeHTML(user.email)}</span>
+                                    <span class="online-user-time">🟢 activo</span>
+                                </div>
+                            `).join('');
+                        }
+                    }
+                }
+                
+                // Mostrar secciones
+                document.getElementById('chartOnline').style.display = 'block';
+                document.getElementById('statsSummary').style.display = 'flex';
+            }
+        } catch (error) {
+            console.error('Error cargando estadísticas:', error);
+        }
+    }
+
+    // ========== RENDERIZAR GRÁFICA DE AVISOS POR DÍA ==========
+    function renderAvisosChart(avisos) {
+        if (!avisos || avisos.length === 0) {
+            console.warn('No hay avisos para gráfica');
             return;
         }
-
-        const labels = temporalData.diario.map(d => {
-            const [year, month, day] = d.fecha.split('-');
-            return `${day}/${month}`;
+        
+        // Agrupar avisos por día (últimos 30 días)
+        const avisosPorDia = {};
+        const hoy = new Date();
+        const hace30Dias = new Date();
+        hace30Dias.setDate(hoy.getDate() - 30);
+        
+        avisos.forEach(aviso => {
+            if (aviso.created_at) {
+                const fecha = new Date(aviso.created_at);
+                if (fecha >= hace30Dias) {
+                    const diaKey = fecha.toISOString().split('T')[0];
+                    avisosPorDia[diaKey] = (avisosPorDia[diaKey] || 0) + 1;
+                }
+            }
         });
-
-        const usuariosData = temporalData.diario.map(d => d.usuarios);
-        const avisosData = temporalData.diario.map(d => d.avisos);
-        const conexionesData = temporalData.diario.map(d => d.conexiones);
-
-        if (chartUsuarios) chartUsuarios.destroy();
-        if (chartAvisos) chartAvisos.destroy();
-        if (chartConexiones) chartConexiones.destroy();
-
-        const ctxUsuarios = document.getElementById('chartUsuariosCanvas')?.getContext('2d');
-        if (ctxUsuarios && typeof Chart !== 'undefined') {
-            chartUsuarios = new Chart(ctxUsuarios, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Nuevos usuarios',
-                        data: usuariosData,
-                        backgroundColor: 'rgba(76, 175, 80, 0.6)',
-                        borderColor: '#4caf50',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: chartOptions
-            });
+        
+        // Generar arrays para los últimos 30 días
+        const labels = [];
+        const avisosData = [];
+        
+        for (let i = 29; i >= 0; i--) {
+            const fecha = new Date();
+            fecha.setDate(fecha.getDate() - i);
+            const diaKey = fecha.toISOString().split('T')[0];
+            const diaLabel = `${fecha.getDate()}/${fecha.getMonth() + 1}`;
+            labels.push(diaLabel);
+            avisosData.push(avisosPorDia[diaKey] || 0);
         }
-
-        const ctxAvisos = document.getElementById('chartAvisosCanvas')?.getContext('2d');
-        if (ctxAvisos && typeof Chart !== 'undefined') {
-            chartAvisos = new Chart(ctxAvisos, {
+        
+        // Destruir gráfica existente
+        if (chartAvisos) chartAvisos.destroy();
+        
+        const ctx = document.getElementById('chartAvisosCanvas')?.getContext('2d');
+        if (ctx && typeof Chart !== 'undefined') {
+            chartAvisos = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -469,112 +495,23 @@
                 options: chartOptions
             });
         }
-
-        const ctxConexiones = document.getElementById('chartConexionesCanvas')?.getContext('2d');
-        if (ctxConexiones && typeof Chart !== 'undefined') {
-            chartConexiones = new Chart(ctxConexiones, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Usuarios activos',
-                        data: conexionesData,
-                        backgroundColor: 'rgba(33, 150, 243, 0.6)',
-                        borderColor: '#2196f3',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: chartOptions
-            });
-        }
-
-        updateStatsMini('usuariosStats', usuariosData, labels, 'nuevos usuarios');
-        updateStatsMini('avisosStats', avisosData, labels, 'avisos publicados');
-        updateStatsMini('conexionesStats', conexionesData, labels, 'usuarios activos');
-    }
-
-    function updateStatsMini(elementId, dataValues, labels, labelName) {
-        const statsDiv = document.getElementById(elementId);
-        if (!statsDiv) return;
-
-        const maxValue = Math.max(...dataValues);
-        const maxIndex = dataValues.indexOf(maxValue);
-        const total = dataValues.reduce((a, b) => a + b, 0);
-        const promedio = dataValues.length > 0 ? (total / dataValues.length).toFixed(1) : 0;
-
-        if (maxValue > 0 && maxIndex !== -1) {
-            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} ${labelName})`;
-        } else {
-            statsDiv.innerHTML = `📈 Total: ${total} | 📊 Promedio diario: ${promedio}`;
-        }
-    }
-
-    function updateOnlineUsers(onlineData) {
-        const countSpan = document.getElementById('onlineCount');
-        const listDiv = document.getElementById('onlineUsersList');
-
-        if (countSpan) {
-            const total = onlineData?.total || 0;
-            countSpan.innerHTML = `${total} conectado${total !== 1 ? 's' : ''}`;
-        }
-
-        if (listDiv) {
-            if (!onlineData?.usuarios || onlineData.usuarios.length === 0) {
-                listDiv.innerHTML = '<p style="color:#888;">📭 No hay usuarios conectados en este momento</p>';
-                return;
+        
+        // Estadísticas
+        const total = avisosData.reduce((a, b) => a + b, 0);
+        const maxValue = Math.max(...avisosData);
+        const maxIndex = avisosData.indexOf(maxValue);
+        const promedio = avisosData.length > 0 ? (total / avisosData.length).toFixed(1) : 0;
+        
+        const statsDiv = document.getElementById('avisosStats');
+        if (statsDiv) {
+            if (maxValue > 0 && maxIndex !== -1) {
+                statsDiv.innerHTML = `📈 Total últimos 30 días: ${total} | 📊 Promedio diario: ${promedio} | 🔥 Día pico: ${labels[maxIndex]} (${maxValue} avisos)`;
+            } else {
+                statsDiv.innerHTML = `📈 Total últimos 30 días: ${total} | 📊 Promedio diario: ${promedio}`;
             }
-            listDiv.innerHTML = onlineData.usuarios.map(user => `
-                <div class="online-user-item">
-                    <span class="online-user-email">${escapeHTML(user.email)}</span>
-                    <span class="online-user-time">🟢 activo</span>
-                </div>
-            `).join('');
         }
-    }
-
-    // ========== ESTADÍSTICAS AVANZADAS ==========
-    async function loadAdvancedStats() {
-        try {
-            const apiKey = localStorage.getItem('api_key');
-            if (!apiKey) {
-                console.warn('No hay API key');
-                return;
-            }
-
-            const response = await API.peticion('ESTADISTICAS_AVANZADAS', {}, apiKey);
-            console.log('📊 Estadísticas avanzadas:', response);
-
-            if (response && response.success && response.data) {
-                temporalData = response.data;
-
-                if (response.data.resumen) {
-                    const promUsuarios = document.getElementById('promUsuarios');
-                    const promAvisos = document.getElementById('promAvisos');
-                    const totalUsuarios = document.getElementById('totalUsuarios');
-                    if (promUsuarios) promUsuarios.innerText = response.data.resumen.promedioDiarioUsuarios || 0;
-                    if (promAvisos) promAvisos.innerText = response.data.resumen.promedioDiarioAvisos || 0;
-                    if (totalUsuarios) totalUsuarios.innerText = response.data.resumen.totalUsuarios || 0;
-                }
-
-                updateOnlineUsers(response.data.enLinea);
-                renderAllCharts();
-
-                const chartUsuariosDiv = document.getElementById('chartUsuariosDiarios');
-                const chartAvisosDiv = document.getElementById('chartAvisosDiarios');
-                const chartConexionesDiv = document.getElementById('chartConexionesDiarias');
-                const chartOnlineDiv = document.getElementById('chartOnline');
-                const statsSummaryDiv = document.getElementById('statsSummary');
-
-                if (chartUsuariosDiv) chartUsuariosDiv.style.display = 'block';
-                if (chartAvisosDiv) chartAvisosDiv.style.display = 'block';
-                if (chartConexionesDiv) chartConexionesDiv.style.display = 'block';
-                if (chartOnlineDiv) chartOnlineDiv.style.display = 'block';
-                if (statsSummaryDiv) statsSummaryDiv.style.display = 'flex';
-            }
-        } catch (error) {
-            console.error('Error cargando estadísticas avanzadas:', error);
-        }
+        
+        document.getElementById('chartAvisosDiarios').style.display = 'block';
     }
 
     // ========== DETECTAR ROL ==========
@@ -586,23 +523,18 @@
                 const badge = document.getElementById('userRoleBadge');
                 if (badge) {
                     badge.innerHTML = `👑 ${currentUser.nombre || currentUser.email || 'Administrador'}`;
-                    badge.style.background = 'rgba(255, 193, 7, 0.2)';
                 }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'flex';
-                const chartCategorias = document.getElementById('chartCategorias');
-                if (chartCategorias) chartCategorias.style.display = 'block';
+                document.getElementById('pendingCard').style.display = 'flex';
+                document.getElementById('chartCategorias').style.display = 'block';
             } else if (currentUser) {
                 currentUserRole = 'user';
                 const badge = document.getElementById('userRoleBadge');
                 if (badge) {
                     badge.innerHTML = `👤 ${currentUser.nombre || currentUser.email || 'Usuario'}`;
                 }
-                const pendingCard = document.getElementById('pendingCard');
-                if (pendingCard) pendingCard.style.display = 'none';
+                document.getElementById('pendingCard').style.display = 'none';
             } else {
-                const badge = document.getElementById('userRoleBadge');
-                if (badge) badge.innerHTML = '👤 Invitado';
+                document.getElementById('userRoleBadge').innerHTML = '👤 Invitado';
             }
             return true;
         } catch (e) {
@@ -611,20 +543,18 @@
         }
     }
 
-    // ========== OBTENER AVISOS (adaptado para backend) ==========
+    // ========== OBTENER AVISOS ==========
     async function getAllNoticesFromAPI() {
         try {
             const apiKey = localStorage.getItem('api_key');
             let respuesta;
-
+            
             if (currentUserRole === 'admin') {
-                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 500 }, apiKey);
+                respuesta = await API.peticion('LISTAR_AVISOS_PUBLICOS', { limite: 1000 }, apiKey);
             } else {
-                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 500 }, apiKey);
+                respuesta = await API.peticion('LISTAR_MIS_AVISOS', { limite: 1000 }, apiKey);
             }
-
-            console.log('Dashboard - Respuesta API:', respuesta);
-
+            
             if (respuesta && respuesta.success) {
                 let datos = [];
                 if (respuesta.data && respuesta.data.datos && Array.isArray(respuesta.data.datos)) {
@@ -635,7 +565,6 @@
                     datos = respuesta.data;
                 }
                 
-                // Adaptar cada aviso para mapear 'intereses' a 'votos_positivos'
                 const datosAdaptados = datos.map(adaptarAviso);
                 return { datos: datosAdaptados, total: datosAdaptados.length };
             }
@@ -649,29 +578,20 @@
     // ========== CALCULAR ESTADÍSTICAS ==========
     function calculateStats(notices) {
         const total = notices.length;
-        
         const activos = notices.filter(a => {
             const status = (a.status || '').toLowerCase();
-            return status !== 'pendiente' && status !== 'rechazado' && status !== 'eliminado' && status !== 'inactivo';
+            return status === 'activo';
         }).length;
-        
         const pendientes = notices.filter(a => (a.status || '').toLowerCase() === 'pendiente').length;
-        
         const categoriasSet = new Set(notices.map(a => a.categoria).filter(c => c && c !== ''));
         const totalCategorias = categoriasSet.size;
-        
         const totalVisitas = notices.reduce((sum, a) => sum + (parseInt(a.vistas) || 0), 0);
-        
-        // Usar votos_positivos (adaptado de intereses)
         const totalInteracciones = notices.reduce((sum, a) => {
             const likes = parseInt(a.votos_positivos) || 0;
             const comentarios = parseInt(a.comentarios_count) || 0;
             return sum + likes + comentarios;
         }, 0);
-
-        console.log('📊 Estadísticas calculadas:', { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones });
-        console.log('📊 Muestra de datos adaptados:', notices.slice(0, 2).map(a => ({ titulo: a.titulo, votos_positivos: a.votos_positivos, intereses_original: a.intereses })));
-
+        
         return { total, activos, pendientes, totalCategorias, totalVisitas, totalInteracciones };
     }
 
@@ -685,20 +605,14 @@
     }
 
     function updateCards(stats) {
-        const elements = {
-            totalAvisos: document.getElementById('totalAvisos'),
-            avisosActivos: document.getElementById('avisosActivos'),
-            avisosPendientes: document.getElementById('avisosPendientes'),
-            totalCategorias: document.getElementById('totalCategorias'),
-            totalVisitas: document.getElementById('totalVisitas'),
-            totalInteracciones: document.getElementById('totalInteracciones')
-        };
-        if (elements.totalAvisos) elements.totalAvisos.innerText = stats.total;
-        if (elements.avisosActivos) elements.avisosActivos.innerText = stats.activos;
-        if (currentUserRole === 'admin' && elements.avisosPendientes) elements.avisosPendientes.innerText = stats.pendientes;
-        if (elements.totalCategorias) elements.totalCategorias.innerText = stats.totalCategorias;
-        if (elements.totalVisitas) elements.totalVisitas.innerText = stats.totalVisitas.toLocaleString();
-        if (elements.totalInteracciones) elements.totalInteracciones.innerText = stats.totalInteracciones.toLocaleString();
+        document.getElementById('totalAvisos').innerText = stats.total;
+        document.getElementById('avisosActivos').innerText = stats.activos;
+        if (currentUserRole === 'admin') {
+            document.getElementById('avisosPendientes').innerText = stats.pendientes;
+        }
+        document.getElementById('totalCategorias').innerText = stats.totalCategorias;
+        document.getElementById('totalVisitas').innerText = stats.totalVisitas.toLocaleString();
+        document.getElementById('totalInteracciones').innerText = stats.totalInteracciones.toLocaleString();
     }
 
     function renderChart(notices) {
@@ -713,7 +627,7 @@
             'gobierno': '🏛️ Gobierno',
             'varios': '📢 Varios'
         };
-
+        
         let barsHtml = '';
         for (const [key, value] of Object.entries(stats)) {
             const percentage = (value / maxValue) * 100;
@@ -729,17 +643,13 @@
                 </div>
             `;
         }
-        const chartBars = document.getElementById('chartBars');
-        if (chartBars) chartBars.innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
-
+        document.getElementById('chartBars').innerHTML = barsHtml || '<p style="color:#888;">No hay datos suficientes</p>';
+        
         const topCategory = Object.entries(stats).sort((a, b) => b[1] - a[1])[0];
-        const chartStatsMini = document.getElementById('chartStatsMini');
-        if (chartStatsMini) {
-            if (topCategory && topCategory[1] > 0) {
-                chartStatsMini.innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
-            } else {
-                chartStatsMini.innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
-            }
+        if (topCategory && topCategory[1] > 0) {
+            document.getElementById('chartStatsMini').innerHTML = `📌 Categoría con más avisos: ${categoryNames[topCategory[0]]} (${topCategory[1]} avisos)`;
+        } else {
+            document.getElementById('chartStatsMini').innerHTML = '📌 Publica tu primer aviso para ver estadísticas';
         }
     }
 
@@ -752,17 +662,15 @@
 
     async function refreshDashboardData() {
         try {
-            const usuarioActual = API.getUsuarioActual();
-            const badge = document.getElementById('userRoleBadge');
-            if (badge && usuarioActual) {
-                badge.innerHTML = usuarioActual.rol === 'admin' ? `👑 ${usuarioActual.nombre || usuarioActual.email}` : `👤 ${usuarioActual.nombre || usuarioActual.email}`;
-            }
             const { datos } = await getAllNoticesFromAPI();
             allNotices = datos;
             const stats = calculateStats(datos);
             updateCards(stats);
+            
             if (currentUserRole === 'admin') {
                 renderChart(datos);
+                renderAvisosChart(datos);
+                await loadAdvancedStats();
             }
             updateFecha();
             console.log('📊 Dashboard actualizado con', allNotices.length, 'avisos');
@@ -785,13 +693,7 @@
     async function initDashboard() {
         await detectUserRole();
         await refreshDashboardData();
-        if (currentUserRole === 'admin') {
-            await loadAdvancedStats();
-        }
         setInterval(refreshDashboardData, 30000);
-        if (currentUserRole === 'admin') {
-            setInterval(() => loadAdvancedStats(), 60000);
-        }
     }
 
     if (document.readyState === 'loading') {
