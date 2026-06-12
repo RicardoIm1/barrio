@@ -653,41 +653,126 @@
 
         // Función para enriquecer avisos con nombres de usuario
         async function enriquecerAvisosConUsuarios(avisos) {
-            // Obtener emails únicos de los avisos
-            const emailsUnicos = [...new Set(avisos.map(a => a.usuario_email || a.email).filter(Boolean))];
+            if (!avisos || avisos.length === 0) return avisos;
 
-            if (emailsUnicos.length === 0) return avisos;
+            // 👇 PRIMERO: Intentar obtener los datos directamente si ya vienen en el aviso
+            let avisosConNombre = [];
+            let avisosSinEmail = [];
+
+            for (const aviso of avisos) {
+                // Si ya tiene nombre de usuario, úsalo
+                if (aviso.usuario_nombre && aviso.usuario_nombre !== '') {
+                    aviso.usuario_nombre = aviso.usuario_nombre;
+                    avisosConNombre.push(aviso);
+                }
+                // Si tiene autor (puede venir como 'autor')
+                else if (aviso.autor && aviso.autor !== '') {
+                    aviso.usuario_nombre = aviso.autor;
+                    avisosConNombre.push(aviso);
+                }
+                // Si tiene usuario_id pero no nombre, buscar
+                else {
+                    avisosSinEmail.push(aviso);
+                }
+            }
+
+            if (avisosSinEmail.length === 0) {
+                return avisos;
+            }
+
+            // Extraer emails o IDs de usuario
+            const emailsUnicos = [];
+            const idsUnicos = [];
+
+            for (const aviso of avisosSinEmail) {
+                const email = aviso.usuario_email || aviso.email;
+                const userId = aviso.usuario_id;
+
+                if (email && !emailsUnicos.includes(email)) {
+                    emailsUnicos.push(email);
+                }
+                if (userId && !idsUnicos.includes(userId)) {
+                    idsUnicos.push(userId);
+                }
+            }
 
             try {
                 const apiKey = localStorage.getItem('api_key');
-                // Llamar al backend para obtener usuarios por emails
-                const resultado = await API.peticion('OBTENER_USUARIOS_POR_EMAILS', {
-                    emails: emailsUnicos
-                }, apiKey);
+                let mapaNombres = {};
 
-                if (resultado && resultado.success && resultado.data) {
-                    const mapaUsuarios = {};
-                    resultado.data.forEach(usuario => {
-                        mapaUsuarios[usuario.email] = usuario.nombre;
-                    });
+                // Intentar obtener por emails
+                if (emailsUnicos.length > 0) {
+                    try {
+                        const resultado = await API.peticion('OBTENER_USUARIOS_POR_EMAIL', {
+                            emails: emailsUnicos
+                        }, apiKey);
 
-                    // Asignar nombre a cada aviso
-                    avisos.forEach(aviso => {
-                        const email = aviso.usuario_email || aviso.email;
-                        aviso.usuario_nombre = mapaUsuarios[email] || 'Vecino';
-                    });
+                        if (resultado && resultado.success && resultado.data) {
+                            if (Array.isArray(resultado.data)) {
+                                resultado.data.forEach(usuario => {
+                                    if (usuario.email && usuario.nombre) {
+                                        mapaNombres[usuario.email] = usuario.nombre;
+                                    }
+                                });
+                            } else if (typeof resultado.data === 'object') {
+                                for (const [key, value] of Object.entries(resultado.data)) {
+                                    if (value && value.nombre) {
+                                        mapaNombres[key] = value.nombre;
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Error obteniendo por email:', e);
+                    }
                 }
-            } catch (e) {
-                console.warn('Error obteniendo nombres de usuarios:', e);
-                // Asignar nombre genérico si falla
-                avisos.forEach(aviso => {
+
+                // Si no funcionó por email, intentar obtener por IDs
+                if (Object.keys(mapaNombres).length === 0 && idsUnicos.length > 0) {
+                    try {
+                        const resultado = await API.peticion('OBTENER_USUARIOS_POR_IDS', {
+                            ids: idsUnicos
+                        }, apiKey);
+
+                        if (resultado && resultado.success && resultado.data) {
+                            if (Array.isArray(resultado.data)) {
+                                resultado.data.forEach(usuario => {
+                                    if (usuario.id && usuario.nombre) {
+                                        mapaNombres[usuario.id] = usuario.nombre;
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Error obteniendo por ID:', e);
+                    }
+                }
+
+                // Asignar nombres a los avisos
+                for (const aviso of avisosSinEmail) {
+                    const email = aviso.usuario_email || aviso.email;
+                    const userId = aviso.usuario_id;
+
+                    if (email && mapaNombres[email]) {
+                        aviso.usuario_nombre = mapaNombres[email];
+                    } else if (userId && mapaNombres[userId]) {
+                        aviso.usuario_nombre = mapaNombres[userId];
+                    } else {
+                        // Si no se encuentra, usar un valor por defecto
+                        aviso.usuario_nombre = email ? email.split('@')[0] : 'Vecino';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error en enriquecerAvisosConUsuarios:', error);
+                for (const aviso of avisosSinEmail) {
                     aviso.usuario_nombre = 'Vecino';
-                });
+                }
             }
 
-            return avisos;
+            return [...avisosConNombre, ...avisosSinEmail];
         }
-
+        
         async function cargarAvisos() {
             if (avisosCargados || isLoadingAvisos) return;
             isLoadingAvisos = true;
@@ -716,7 +801,7 @@
                 isLoadingAvisos = false;
             }
         }
-        
+
         // ========== ACTUALIZAR VISTAS EN TIEMPO REAL EN EL INDEX ==========
         async function actualizarVistasEnTiempoReal() {
             try {
