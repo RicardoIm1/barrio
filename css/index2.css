@@ -99,7 +99,7 @@
 
     .nombre,
     .whatsapp-btn {
-        position: relative;
+        position: absolute;
         bottom: 12px;
         right: 12px;
         background-color: #25D366;
