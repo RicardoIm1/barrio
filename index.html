@@ -637,21 +637,29 @@
                 </div>
             </div>
             ${aviso.contacto ? `
-                <div style="display: flex; justify-content: space-end; align-items: center; font-size: .7rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 0px;">
-                    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
-                    <button 
-                        type="button"
-                        class="whatsapp-btn"
-                        onclick='abrirWhatsApp(
-                            "${whatsappNumber}",
-                            ${JSON.stringify(mensaje)},
-                            "${aviso.id}",
-                            event
-                        )'>
-                    </button>
-                </div>` : ''}
-            </div>
-        </div>`;
+                <div style="
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    font-size: .7rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0;
+">
+    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
+
+    <button 
+        type="button"
+        class="whatsapp-btn"
+        onclick='abrirWhatsApp(
+            "${whatsappNumber}",
+            ${JSON.stringify(mensaje)},
+            "${aviso.id}",
+            event
+        )'>
+    </button>
+</div>`;
             }).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
