@@ -87,10 +87,10 @@
         color:#413f3f;
         bottom: 12px;
         /*right: 12px;
+        justify-content: right;
         width: 70%;
         height: 34px;
         align-items: center;
-        justify-content: right;
         text-decoration: none;
         transition: all 0.25s ease;
         z-index: 4;
