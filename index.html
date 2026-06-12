@@ -637,9 +637,8 @@
                 </div>
             </div>
             ${aviso.contacto ? `
-                <div class="color:red; text-align:right; padding:0rem; justify-content:center; align-items:center; text-transform: uppercase;">
-    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
-
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: .7rem; text-transform: uppercase; color: #94a3b8;">
+    <span>👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
     <button 
         type="button"
         class="whatsapp-btn"
