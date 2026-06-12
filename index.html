@@ -626,14 +626,14 @@
                         👎 <span class="stat-value">${dislikes}</span>
                     </span>
                     ${localStorage.getItem('api_key') ? `
-<span class="stat-item comments-stat" onclick="abrirComentarios('${aviso.id}', event)">
-    💬 <span class="stat-value">${comentarios}</span>
-</span>
-` : `
-<span class="stat-item comments-stat" onclick="showToast('🔐 Inicia sesión para comentar', 1500)">
-    💬 <span class="stat-value">${comentarios}</span>
-</span>
-`}
+                    <span class="stat-item comments-stat" onclick="abrirComentarios('${aviso.id}', event)">
+                        💬 <span class="stat-value">${comentarios}</span>
+                    </span>
+                    ` : `
+                    <span class="stat-item comments-stat" onclick="showToast('🔐 Inicia sesión para comentar', 1500)">
+                        💬 <span class="stat-value">${comentarios}</span>
+                    </span>
+                    `}
                 </div>
             </div>
             ${aviso.contacto ? `
