@@ -638,8 +638,8 @@
             </div>
             ${aviso.contacto ? `
                 <div class="nombre">
+                    ${escapeHtml(aviso.nombre_autor || 'Vecino')}
                     <button 
-                    <>${escapeHtml(aviso.nombre_autor || 'Vecino')}</>
                         type="button"
                         class="whatsapp-btn"
                         onclick='abrirWhatsApp(
@@ -1419,7 +1419,7 @@
             // El scroll se guarda periódicamente de todas formas
         });
     </script>
-
+    
     <script>
         // ========== CONECTAR BUSCADOR DEL HEADER ==========
         function conectarBuscadorHeader() {
