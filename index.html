@@ -606,6 +606,7 @@
             ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
+                    <div class="card-usuario-moderna">👤 ${escapeHtml(aviso.usuario_nombre || aviso.autor_nombre || 'Usuario')}</div>
                     <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
@@ -650,6 +651,43 @@
             container.insertAdjacentHTML('beforeend', html);
         }
 
+        // Función para enriquecer avisos con nombres de usuario
+        async function enriquecerAvisosConUsuarios(avisos) {
+            // Obtener emails únicos de los avisos
+            const emailsUnicos = [...new Set(avisos.map(a => a.usuario_email || a.email).filter(Boolean))];
+
+            if (emailsUnicos.length === 0) return avisos;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                // Llamar al backend para obtener usuarios por emails
+                const resultado = await API.peticion('OBTENER_USUARIOS_POR_EMAILS', {
+                    emails: emailsUnicos
+                }, apiKey);
+
+                if (resultado && resultado.success && resultado.data) {
+                    const mapaUsuarios = {};
+                    resultado.data.forEach(usuario => {
+                        mapaUsuarios[usuario.email] = usuario.nombre;
+                    });
+
+                    // Asignar nombre a cada aviso
+                    avisos.forEach(aviso => {
+                        const email = aviso.usuario_email || aviso.email;
+                        aviso.usuario_nombre = mapaUsuarios[email] || 'Vecino';
+                    });
+                }
+            } catch (e) {
+                console.warn('Error obteniendo nombres de usuarios:', e);
+                // Asignar nombre genérico si falla
+                avisos.forEach(aviso => {
+                    aviso.usuario_nombre = 'Vecino';
+                });
+            }
+
+            return avisos;
+        }
+
         async function cargarAvisos() {
             if (avisosCargados || isLoadingAvisos) return;
             isLoadingAvisos = true;
@@ -662,9 +700,10 @@
                     allAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
                     allAvisos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-                    // UNA SOLA llamada para cargar todos los votos
-                    await cargarTodosLosVotos();
+                    // 👇 ENRIQUECER CON NOMBRES DE USUARIOS
+                    allAvisos = await enriquecerAvisosConUsuarios(allAvisos);
 
+                    await cargarTodosLosVotos();
                     avisosCargados = true;
                     applyFiltersAndSearch();
                 } else {
@@ -677,7 +716,7 @@
                 isLoadingAvisos = false;
             }
         }
-
+        
         // ========== ACTUALIZAR VISTAS EN TIEMPO REAL EN EL INDEX ==========
         async function actualizarVistasEnTiempoReal() {
             try {
