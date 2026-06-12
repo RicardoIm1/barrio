@@ -1264,41 +1264,7 @@
 
     </main>
     <div id="footer-container"></div>
-
-    <!-- Inclusión de tus archivos JavaScript -->
-    <script src="/barrio/js/auth.js"></script>
-    <script src="/barrio/js/api.js"></script>
-    <script src="/barrio/js/ui.js"></script>
-    <script src="/barrio/js/admin.js"></script>
-
-
-    <script>
-        // ==================== CONTROL DE ACCESO ====================
-        (function verificarAcceso() {
-            const usuario = API.getUsuarioActual();
-            const apiKey = localStorage.getItem('api_key');
-
-            // Si no hay sesión, redirigir al login
-            if (!usuario || !apiKey) {
-                console.warn('🔒 Acceso denegado: No hay sesión activa');
-                window.location.href = '/barrio/login.html?redirect=admin.html';
-                return;
-            }
-
-            // ✅ Permitir acceso a ambos roles (admin y usuario normal)
-            console.log(`✅ Acceso concedido como: ${usuario.rol} - ${usuario.email}`);
-
-            // Solo mostrar la pestaña de usuarios si es admin
-            if (usuario.rol === 'admin') {
-                const tabUsuarios = document.getElementById('tab-usuarios-btn');
-                if (tabUsuarios) tabUsuarios.style.display = 'block';
-                console.log('👥 Pestaña de usuarios visible para admin');
-            } else {
-                console.log('👤 Usuario normal: solo verá sus propios avisos');
-            }
-        })();
-    </script>
-
+    
     <!-- MODAL EDITAR - PONER ESTO ANTES DE CUALQUIER SCRIPT QUE LO USE -->
     <div id="modal-editar"
         style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 16px; max-height: 80vh; margin: 6rem 0 4rem 0;">
@@ -1403,6 +1369,40 @@
             }
         }
     </style>
+
+    <!-- Inclusión de tus archivos JavaScript -->
+    <script src="/barrio/js/auth.js"></script>
+    <script src="/barrio/js/api.js"></script>
+    <script src="/barrio/js/ui.js"></script>
+    <script src="/barrio/js/admin.js"></script>
+
+
+    <script>
+        // ==================== CONTROL DE ACCESO ====================
+        (function verificarAcceso() {
+            const usuario = API.getUsuarioActual();
+            const apiKey = localStorage.getItem('api_key');
+
+            // Si no hay sesión, redirigir al login
+            if (!usuario || !apiKey) {
+                console.warn('🔒 Acceso denegado: No hay sesión activa');
+                window.location.href = '/barrio/login.html?redirect=admin.html';
+                return;
+            }
+
+            // ✅ Permitir acceso a ambos roles (admin y usuario normal)
+            console.log(`✅ Acceso concedido como: ${usuario.rol} - ${usuario.email}`);
+
+            // Solo mostrar la pestaña de usuarios si es admin
+            if (usuario.rol === 'admin') {
+                const tabUsuarios = document.getElementById('tab-usuarios-btn');
+                if (tabUsuarios) tabUsuarios.style.display = 'block';
+                console.log('👥 Pestaña de usuarios visible para admin');
+            } else {
+                console.log('👤 Usuario normal: solo verá sus propios avisos');
+            }
+        })();
+    </script>
 
     <script>
         // INICIALIZAR MODAL - Ejecutar cuando el DOM esté listo
