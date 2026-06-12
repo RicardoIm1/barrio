@@ -84,12 +84,13 @@
         position: absolute;
         display: flex;
         font-size: 0.7rem;
-        color:#413f3f;
-        bottom: 22px;
+        /* color:#413f3f; */
+        color:#3498db;
+        bottom: 12px;
         width: 70%;
-        align-items: right;
-        /*right: 12px;
         justify-content: right;
+        /*right: 12px;
+        align-items: right;
         height: 34px;
         text-decoration: none;
         transition: all 0.25s ease;
