@@ -608,7 +608,7 @@
                 <div class="card-header-moderno">
                     <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
-                    <div class="card-usuario-moderna">👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</div>
+                    <div class="card-usuario-moderna" style="font-size: 0.7rem; color: #94a3b8; display: flex; align-items: center; gap: 4px; margin-bottom: 2px; font-weight: 400;">👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</div>
                 </div>
                 <div class="card-preview-moderno">
                     ${escapeHtml((aviso.contenido || '').substring(0, 120))}${(aviso.contenido || '').length > 120 ? '...' : ''}
