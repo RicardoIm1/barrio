@@ -636,7 +636,8 @@
                     <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
                 </div>
             </div>
-            ${aviso.contacto ? `<button 
+            ${aviso.contacto ? `<div class="card-usuario-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 4px; margin-bottom: 6px;">👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</div>
+            <button 
     type="button"
     class="whatsapp-btn"
     onclick='abrirWhatsApp(
