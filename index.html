@@ -610,6 +610,7 @@
                     </div>
                     <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 0.7rem">
                         <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
+                        <span>👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
                     </div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
@@ -637,8 +638,8 @@
                 </div>
             </div>
             ${aviso.contacto ? `
-                <div class="nombre">
-                    <span class="stat-item whatsapp-stat">${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
+                <div class="">
+                    
                     <button 
                         type="button"
                         class="whatsapp-btn"
