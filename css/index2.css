@@ -89,8 +89,10 @@
         height: 34px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: right;
         text-decoration: none;
+        font-size: 1rem;
+        color:#128C7E;
         transition: all 0.25s ease;
         z-index: 4;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
