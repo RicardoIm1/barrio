@@ -606,12 +606,9 @@
             ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8;">📅 ${formatearFecha(aviso.created_at)}</div>
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8;">📍 ${aviso.ubicacion || 'Jardines PVR'}</div>
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 0.7rem">👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</div>
-                        <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</span>
-                        <span>👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
-                    
+                    <span>📅 ${formatearFecha(aviso.created_at)}</div>
+                    <span>📍 ${aviso.ubicacion || 'Jardines PVR'}</div>
+                    <span style="border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem">👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
                 <div class="card-preview-moderno">
