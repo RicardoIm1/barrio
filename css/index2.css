@@ -81,7 +81,7 @@
 
     /* Botón WhatsApp flotante */
     .nombre {
-        position: absolute;
+        position: relative;
         bottom: 0px;
         right: 0px;
         width: 100%;
