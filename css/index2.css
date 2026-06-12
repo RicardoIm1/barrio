@@ -80,6 +80,27 @@
     }
 
     /* Botón WhatsApp flotante */
+    .nombre{
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background-color: #25D366;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        z-index: 4;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        background-size: 55%;
+        background-position: center;
+        background-repeat: no-repeat;
+        border: none;
+        cursor: pointer;
+    }
+
     .whatsapp-btn {
         position: absolute;
         bottom: 12px;
