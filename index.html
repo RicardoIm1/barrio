@@ -637,20 +637,19 @@
                 </div>
             </div>
             ${aviso.contacto ? `
-                <div style="
-                nombre">
-    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
-    <button 
-        type="button"
-        class="whatsapp-btn"
-        onclick='abrirWhatsApp(
-            "${whatsappNumber}",
-            ${JSON.stringify(mensaje)},
-            "${aviso.id}",
-            event
-        )'>
-    </button>
-</div>` : ''}
+                <div class="nombre">
+                    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
+                    <button 
+                        type="button"
+                        class="whatsapp-btn"
+                        onclick='abrirWhatsApp(
+                            "${whatsappNumber}",
+                            ${JSON.stringify(mensaje)},
+                            "${aviso.id}",
+                            event
+                        )'>
+                    </button>
+                </div>` : ''}
             </div>
         </div>`;
             }).join('');
