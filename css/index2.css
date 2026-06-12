@@ -94,9 +94,9 @@
         transition: all 0.25s ease;
         z-index: 4;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        background-size: 55%;
+        /* background-size: 55%;
         background-position: center;
-        background-repeat: no-repeat;
+        background-repeat: no-repeat; */
         border: none;
         cursor: pointer;
     }
