@@ -92,7 +92,7 @@
         text-decoration: none;
         font-size: 0.7rem;
         text-transform: uppercase;
-        color:var(--color-verde);
+        color:linear-gradient(135deg, #1e4620, #2b7a2b);
         transition: all 0.25s ease;
         z-index: 14;
         border: none;
