@@ -636,19 +636,10 @@
                 </div>
                 </div>
             ${aviso.contacto ? `
-            <div class="card-usuario-moderna" style="font-size: .7rem; text-align: right; text-transform: uppercase; color: #94a3b8;">${escapeHtml(aviso.nombre_autor || 'Vecino')}
-            <button 
-    type="button"
-    class="whatsapp-btn"
-    onclick='abrirWhatsApp(
-        "${whatsappNumber}",
-        ${JSON.stringify(mensaje)},
-        "${aviso.id}",
-        event
-    )'>
-</button>` : ''}
-        </div>
-        </div>`;
+            <div class='card-usuario-moderna' style='display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; border-bottom: 1px solid rgba(0,0,0,0.08); padding-bottom: 4px; margin-bottom: 6px;'>
+    <span>👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
+    ${aviso.contacto ? `<button type='button' class='whatsapp-btn-small' onclick='abrirWhatsApp('${whatsappNumber}', ${JSON.stringify(mensaje)}, '${aviso.id}', event)' style='background: none; border: none; cursor: pointer; font-size: 1rem;'>📱</button>` : ''}
+</div>`;
             }).join('');
             container.insertAdjacentHTML('beforeend', html);
         }
