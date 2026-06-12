@@ -91,7 +91,8 @@
         justify-content: right;
         text-decoration: none;
         font-size: 0.7rem;
-        color:#128C7E;
+        text-transform: uppercase;
+        color:var(--color-comercios);
         transition: all 0.25s ease;
         z-index: 4;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
