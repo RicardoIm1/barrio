@@ -639,7 +639,7 @@
             ${aviso.contacto ? `
                 <div class="nombre">
                     <button 
-                    <span>${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
+                    <>${escapeHtml(aviso.nombre_autor || 'Vecino')}</>
                         type="button"
                         class="whatsapp-btn"
                         onclick='abrirWhatsApp(
