@@ -87,14 +87,14 @@
         width: 100%;
         height: 34px;
         display: flex;
-        align-items: right;
-        justify-content: center;
+        align-items: center;
+        justify-content: right;
         text-decoration: none;
         font-size: 0.7rem;
         /* text-transform: uppercase; */
         color:#1E4620;
         transition: all 0.25s ease;
-        z-index: 14;
+        z-index: 4;
         border: none;
         /* cursor: pointer; */
     }
