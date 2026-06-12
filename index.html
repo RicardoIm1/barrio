@@ -606,7 +606,7 @@
             ${multimediaHTML}
             <div class="card-contenido-moderno">
                 <div class="card-header-moderno">
-                    <div class="card-usuario-moderna">👤 ${escapeHtml(aviso.usuario_nombre || aviso.autor_nombre || 'Usuario')}</div>
+                    <div class="card-usuario-moderna">👤 ${escapeHtml(aviso.usuario_nombre || aviso.autor_nombre || aviso.autor || 'Usuario')}</div>
                     <div class="card-fecha-moderna">📅 ${formatearFecha(aviso.created_at)}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
@@ -671,7 +671,7 @@
 
             return avisos;
         }
-        
+
         async function cargarAvisos() {
             if (avisosCargados || isLoadingAvisos) return;
             isLoadingAvisos = true;
