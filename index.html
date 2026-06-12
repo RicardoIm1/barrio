@@ -637,7 +637,17 @@
                 </div>
             </div>
             ${aviso.contacto ? `
-                <div style="display: grid; grid-template-columns: 1fr auto; align-items: center; font-size: .7rem; text-transform: uppercase; color: #94a3b8;">
+                <div style="position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background-color: #25D366;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;">
     <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
     <button 
         type="button"
