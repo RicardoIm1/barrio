@@ -92,7 +92,7 @@
         text-decoration: none;
         font-size: 0.7rem;
         text-transform: uppercase;
-        color:var(--color-comercios);
+        color:var(--color-borde);
         transition: all 0.25s ease;
         z-index: 4;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
