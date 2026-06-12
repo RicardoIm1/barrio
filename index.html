@@ -636,12 +636,11 @@
                 </div>
                 </div>
             ${aviso.contacto ? `
-            <div class="card-usuario-moderna" style="font-size: .7rem; text-align: right; text-transform: uppercase; color: #94a3b8; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: .7rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px;">
     <span>👤 ${escapeHtml(aviso.nombre_autor || 'Vecino')}</span>
     <button 
         type="button"
         class="whatsapp-btn"
-        style="margin-left: auto;"
         onclick='abrirWhatsApp(
             "${whatsappNumber}",
             ${JSON.stringify(mensaje)},
