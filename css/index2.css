@@ -100,7 +100,7 @@
     }
 
     .whatsapp-btn {
-        position: absolute;
+        position: relative;
         bottom: 12px;
         right: 12px;
         background-color: #25D366;
