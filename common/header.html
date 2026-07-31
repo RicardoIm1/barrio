@@ -1,7 +1,7 @@
 <header class="header">
     <div class="contenedor header-contenido">
-        <a href="/barrio/index.html" class="header-logo">
-            <img src="/barrio/icons/logo-elbarrio.png" alt="Logo de El Barrio" class="logo-icon">
+        <a href="/index.html" class="header-logo">
+            <img src="/icons/logo-elbarrio.png" alt="Logo de El Barrio" class="logo-icon">
             <div class="logo-texto">
                 <h1>El Barrio</h1>
                 <h2 class="header-slogan">¡El barrio te respalda!</h2>
@@ -42,7 +42,7 @@
                 </div>
             </div> -->
 
-            <a href="/barrio/login.html" id="login-link" class="btn-login">🔑 <span class="btn-text">Iniciar
+            <a href="/login.html" id="login-link" class="btn-login">🔑 <span class="btn-text">Iniciar
                     sesión</span></a>
 
             <div class="user-area" id="user-area" style="display: none;">
@@ -223,7 +223,7 @@
 </style>
 <script>
     // Mostrar buscador solo en index.html
-    if (window.location.pathname === '/barrio/index.html' || window.location.pathname === '/barrio/') {
+    if (window.location.pathname === '/index.html' || window.location.pathname === '/') {
         const buscador = document.querySelector('.header-buscador');
         if (buscador) buscador.style.display = 'block';
     }
@@ -247,7 +247,7 @@
         function cerrarSesion() {
             localStorage.removeItem('usuario');
             localStorage.removeItem('api_key');
-            window.location.href = '/barrio/index.html';
+            window.location.href = '/index.html';
         }
 
         function actualizarBotones() {
@@ -274,7 +274,7 @@
                 if (perfilLink) {
                     perfilLink.onclick = function (e) {
                         e.preventDefault();
-                        window.location.href = '/barrio/perfil.html';
+                        window.location.href = '/perfil.html';
                     };
                 }
 
@@ -385,7 +385,7 @@
         const apiKey = localStorage.getItem('api_key');
         try {
             await fetch(`https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec?accion=MARCAR_NOTIFICACION_LEIDA&id=${id}&api_key=${apiKey}`);
-            if (avisoId) window.location.href = `/barrio/aviso.html?id=${avisoId}`;
+            if (avisoId) window.location.href = `/aviso.html?id=${avisoId}`;
             cargarNotificaciones();
         } catch (e) { console.error(e); }
     }
