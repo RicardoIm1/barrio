@@ -8,11 +8,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
     <title>Aviso - EL BARRIO</title>
-    <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/barrio/css/estilo.css">
-    <link rel="stylesheet" href="/barrio/css/index2.css">
-    <link rel="manifest" href="/barrio/manifest.json">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/estilo.css">
+    <link rel="stylesheet" href="/css/index2.css">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2c3e50">
     <style>
         .aviso-paper {
@@ -578,9 +578,9 @@
         </div>
     </div>
 
-    <script src="/barrio/js/api.js"></script>
-    <script src="/barrio/js/ui.js"></script>
-    <script src="/barrio/js/auth.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/auth.js"></script>
 
     <script>
         // ========== FUNCIONES UTILITARIAS ==========
@@ -1075,12 +1075,12 @@
 
             // 7. Botón volver
             if (puedeEditar) {
-                html += `<a href="/barrio/admin.html" class="stat-item action-btn back-link">
+                html += `<a href="/admin.html" class="stat-item action-btn back-link">
                             <span class="stat-icon">←</span>
                             <span class="stat-value">Panel</span>
                         </a>`;
             } else {
-                html += `<a href="/barrio/index.html" class="stat-item action-btn back-link">
+                html += `<a href="/index.html" class="stat-item action-btn back-link">
                             <span class="stat-icon">←</span>
                             <span class="stat-value">Inicio</span>
                         </a>`;
@@ -1168,14 +1168,14 @@
             } catch (e) { console.warn('Error actualizando vistas:', e); }
         }
 
-        window.irAEditar = (id) => window.location.href = `/barrio/admin.html?editar=${id}`;
+        window.irAEditar = (id) => window.location.href = `/admin.html?editar=${id}`;
 
         window.eliminarAviso = async (id) => {
             if (!confirm('¿Eliminar este aviso permanentemente?')) return;
             try {
                 const apiKey = localStorage.getItem('api_key');
                 const resultado = await API.peticion('ELIMINAR', { coleccion: 'AVISOS', id: id }, apiKey);
-                if (resultado?.success) { alert('✅ Aviso eliminado'); window.location.href = '/barrio/index.html'; }
+                if (resultado?.success) { alert('✅ Aviso eliminado'); window.location.href = '/index.html'; }
                 else alert('❌ Error: ' + (resultado?.error || 'Error desconocido'));
             } catch (e) { alert('❌ Error al eliminar'); }
         };
@@ -1232,7 +1232,7 @@
                     if (userNameSpan) {
                         userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
                         userNameSpan.style.cursor = 'pointer';
-                        userNameSpan.onclick = () => window.location.href = '/barrio/admin.html';
+                        userNameSpan.onclick = () => window.location.href = '/admin.html';
                     }
                     if (cerrarBtn) {
                         const nuevoCerrar = cerrarBtn.cloneNode(true);
@@ -1241,7 +1241,7 @@
                             e.preventDefault();
                             localStorage.removeItem('usuario');
                             localStorage.removeItem('api_key');
-                            window.location.href = '/barrio/index.html';
+                            window.location.href = '/index.html';
                         });
                     }
                 } catch (e) { console.error(e); }
@@ -1252,7 +1252,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            fetch('/barrio/common/header.html')
+            fetch('/common/header.html')
                 .then(res => res.ok ? res.text() : Promise.reject())
                 .then(html => {
                     document.getElementById('header-container').innerHTML = html;

@@ -7,7 +7,7 @@ const UI = {
     if (!container) return;
 
     try {
-      const res = await fetch('/barrio/common/header.html?v=' + Date.now());
+      const res = await fetch('/common/header.html?v=' + Date.now());
       if (!res.ok) throw new Error('Header no encontrado');
 
       const html = await res.text();
@@ -184,7 +184,7 @@ function actualizarHeaderPorSesion() {
         userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
         userNameSpan.style.cursor = 'pointer';
         userNameSpan.onclick = () => {
-          window.location.href = '/barrio/admin.html';
+          window.location.href = '/admin.html';
         };
       }
 
@@ -195,7 +195,7 @@ function actualizarHeaderPorSesion() {
           e.preventDefault();
           localStorage.removeItem('usuario');
           localStorage.removeItem('api_key');
-          window.location.href = '/barrio/index.html';
+          window.location.href = '/index.html';
         });
       }
       console.log('Header actualizado - Usuario logueado');

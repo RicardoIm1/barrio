@@ -19,7 +19,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: '/barrio/icon.png',
+    icon: '/icon.png',
     vibrate: [200, 100, 200]
   };
 
@@ -28,7 +28,7 @@ messaging.onBackgroundMessage((payload) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const urlToOpen = event.notification.data?.url || '/barrio/index.html';
+  const urlToOpen = event.notification.data?.url || '/index.html';
   
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })

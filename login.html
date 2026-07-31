@@ -6,11 +6,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
   <title>Iniciar sesión | BARRIO</title>
-  <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/barrio/css/estilo.css">
-  <link rel="stylesheet" href="/barrio/css/index2.css">
-  <link rel="manifest" href="/barrio/manifest.json">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/index2.css">
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
     /* Estilos específicos para esta página */
@@ -265,7 +265,7 @@
           </button>
 
           <div class="registro-link">
-            ¿No tienes cuenta? <a href="/barrio/registro.html">Regístrate aquí</a>
+            ¿No tienes cuenta? <a href="/registro.html">Regístrate aquí</a>
           </div>
         </form>
       </div>
@@ -274,9 +274,9 @@
 
   <div id="footer-container"></div>
 
-  <script src="/barrio/js/api.js"></script>
-  <script src="/barrio/js/ui.js"></script>
-  <script src="/barrio/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/auth.js"></script>
 
   <script>
     // Función para mostrar mensajes
@@ -301,7 +301,7 @@
         await UI.cargarHeader();
       } else {
         try {
-          const res = await fetch('/barrio/common/header.html');
+          const res = await fetch('/common/header.html');
           if (res.ok) {
             const html = await res.text();
             document.getElementById('header-container').innerHTML = html;
@@ -317,7 +317,7 @@
       }
 
       // Footer
-      fetch('/barrio/common/footer.html')
+      fetch('/common/footer.html')
         .then(response => {
           if (!response.ok) throw new Error('Footer no encontrado');
           return response.text();
@@ -402,7 +402,7 @@
             window.actualizarHeaderSesion();
           }
 
-          window.location.href = '/barrio/admin.html';
+          window.location.href = '/admin.html';
           /* pero como crees */
 
         } catch (error) {
@@ -429,7 +429,7 @@
           // Si la función no existe, recargar el header manualmente
           const headerContainer = document.getElementById('header-container');
           if (headerContainer) {
-            fetch('/barrio/common/header.html?v=' + Date.now())
+            fetch('/common/header.html?v=' + Date.now())
               .then(res => res.text())
               .then(html => {
                 headerContainer.innerHTML = html;

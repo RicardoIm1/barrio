@@ -625,7 +625,7 @@ async function rechazarAviso(id) {
 
 // ========== VER AVISO ==========
 function verAviso(id) {
-  window.location.href = `/barrio/aviso.html?id=${id}`;
+  window.location.href = `/aviso.html?id=${id}`;
 }
 
 // ========== CARGAR PERFIL ==========

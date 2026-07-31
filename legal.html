@@ -8,11 +8,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
   <title>Aviso Legal | BARRIO</title>
-  <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
-  <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="/barrio/css/estilo.css">
-  <link rel="stylesheet" href="/barrio/css/index2.css">
-  <link rel="manifest" href="/barrio/manifest.json">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/index2.css">
+  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
     .legal-container {
@@ -206,7 +206,7 @@
             disposición de los residentes, usuarios y comercios locales.</p>
           <p>El acceso y uso de esta plataforma atribuye la condición de usuario e implica la aceptación plena y sin
             reservas de todas las disposiciones incluidas en este Aviso Legal, así como de la <a
-              href="/barrio/confianza.html">Política de Privacidad</a> y la <a href="/barrio/cookies.html">Política de
+              href="/confianza.html">Política de Privacidad</a> y la <a href="/cookies.html">Política de
               Cookies</a>.</p>
         </div>
 
@@ -302,7 +302,7 @@
           <h2>8. Protección de Datos Personales</h2>
           <p>El tratamiento de los datos personales recopilados a través de la plataforma (datos de registro, correos
             electrónicos, etc.) se realiza conforme a lo establecido en nuestra <a
-              href="/barrio/confianza.html">Política de Privacidad</a>, que forma parte integrante del presente Aviso
+              href="/confianza.html">Política de Privacidad</a>, que forma parte integrante del presente Aviso
             Legal.</p>
           <p>En cumplimiento de la normativa aplicable en materia de protección de datos, se informa a los usuarios que:
           </p>
@@ -353,14 +353,14 @@
 
   <div id="footer-container"></div>
 
-  <script src="/barrio/js/api.js"></script>
-  <script src="/barrio/js/auth.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
 
   <script>
     // Cargar header y footer
     document.addEventListener('DOMContentLoaded', function () {
       // Header
-      fetch('/barrio/common/header.html')
+      fetch('/common/header.html')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
           return res.text();
@@ -376,7 +376,7 @@
         .catch(err => console.error('Error cargando header:', err));
 
       // Footer
-      fetch('/barrio/common/footer.html')
+      fetch('/common/footer.html')
         .then(response => response.ok ? response.text() : Promise.reject())
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
@@ -409,7 +409,7 @@
       correo: "jeronimoricardo1@gmail.com",
       telefono: "+52 322 235 4331",
       coloniaNombre: "Jardines",
-      sitioWeb: "https://ricardoim1.github.io/barrio/",
+      sitioWeb: "https://ricardoim1.github.io/",
       jurisdiccion: "Puerto Vallarta, Jalisco",
       fechaPersonalizada: null
     };

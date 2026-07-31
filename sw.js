@@ -11,11 +11,11 @@ self.addEventListener('push', function(event) {
     
     const options = {
         body: data.body || 'Tienes una nueva notificación en BARRIO',
-        icon: '/barrio/icon.png',
-        badge: '/barrio/badge.png',
+        icon: '/icon.png',
+        badge: '/badge.png',
         vibrate: [200, 100, 200],
         data: {
-            url: data.url || '/barrio/index.html'
+            url: data.url || '/index.html'
         }
     };
     
@@ -26,7 +26,7 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
     event.notification.close();
-    const urlToOpen = event.notification.data?.url || '/barrio/index.html';
+    const urlToOpen = event.notification.data?.url || '/index.html';
     
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true })

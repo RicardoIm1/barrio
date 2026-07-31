@@ -42,7 +42,7 @@ const Auth = {
   },
 
   // 🛡️ Protección básica
-  requireAuth(redirect = '/barrio/login.html') {
+  requireAuth(redirect = '/login.html') {
     const usuario = this.getUsuario();
 
     if (!usuario) {
@@ -54,7 +54,7 @@ const Auth = {
   },
 
   // 👑 Protección por rol
-  requireRole(rol, redirect = '/barrio/index.html') {
+  requireRole(rol, redirect = '/index.html') {
     const usuario = this.requireAuth();
 
     if (!usuario) return null;

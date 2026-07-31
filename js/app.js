@@ -388,7 +388,7 @@ function renderizarPaginacion(paginaActual, totalPaginas) {
 // ==================== FUNCIONES GLOBALES ====================
 
 window.verAviso = function(id) {
-  window.location.href = `/barrio/aviso.html?id=${id}`;
+  window.location.href = `/aviso.html?id=${id}`;
 };
 
 window.registrarClickWhatsApp = registrarClickWhatsApp;
