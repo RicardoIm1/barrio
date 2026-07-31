@@ -8,18 +8,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
     <title>El Barrio loco | Inicio</title>
-    <link rel="shortcut icon" href="/barrio/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/barrio/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/barrio/css/estilo.css">
-    <link rel="stylesheet" href="/barrio/css/index2.css">
-    <link rel="manifest" href="/barrio/manifest.json">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/estilo.css">
+    <link rel="stylesheet" href="/css/index2.css">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2c3e50">
 </head>
 
 <body class="pagina-index">
     <div id="splash-screen"
         style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1e4620, #2b7a2b); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease;">
-        <img src="/barrio/icons/logo-elbarrio.png" alt="El Barrio"
+        <img src="/icons/logo-elbarrio.png" alt="El Barrio"
             style="width: 100px; height: auto; animation: pulse 1.5s infinite;">
         <div style="margin-top: 20px; color: white; font-size: 0.9rem; font-weight: 500;">Cargando El Barrio...</div>
         <div
@@ -32,11 +32,11 @@
     <!-- ========== BANNER HERO + BOTÓN FLOTANTE ========== -->
     <div style="position: relative;">
         <picture>
-            <source srcset="/barrio/img/EL-BARRIO-WEBP.webp" type="image/webp">
-            <img class="hero-banner" src="/barrio/img/banner-elbarrio2.png" decoding="async"
+            <source srcset="/img/EL-BARRIO-WEBP.webp" type="image/webp">
+            <img class="hero-banner" src="/img/banner-elbarrio2.png" decoding="async"
                 alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager"
                 fetchpriority="high"
-                onerror="this.onerror=null; this.src='/barrio/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
+                onerror="this.onerror=null; this.src='/img/fallback-banner.png'; console.warn('⚠️ Banner principal no encontrado');">
         </picture>
 
         <!-- ✅ BOTÓN FLOTANTE CENTRADO SOBRE EL HERO -->
@@ -65,9 +65,9 @@
     <div id="footer-container"></div>
     <div id="toast" class="toast-notification"></div>
 
-    <script src="/barrio/js/api.js"></script>
-    <script src="/barrio/js/auth.js"></script>
-    <script src="/barrio/js/app.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/app.js"></script>
 
     <script>
         // Registrar visita al cargar la página
@@ -234,7 +234,7 @@
         window.verAviso = function (id) {
             console.log('Abriendo aviso con ID:', id);
             // ✅ No registrar vista aquí - solo al cargar aviso.html
-            window.location.href = `/barrio/aviso.html?id=${id}`;
+            window.location.href = `/aviso.html?id=${id}`;
         };
 
         window.abrirWhatsApp = function (numero, texto, id, event) {
@@ -877,7 +877,7 @@
             setupInfiniteScroll();
             cargarAvisos();
 
-            fetch('/barrio/common/header.html')
+            fetch('/common/header.html')
                 .then(res => res.ok ? res.text() : Promise.reject())
                 .then(html => {
                     document.getElementById('header-container').innerHTML = html;
@@ -885,7 +885,7 @@
                 })
                 .catch(err => console.error('Error cargando header:', err));
 
-            fetch('/barrio/common/footer.html')
+            fetch('/common/footer.html')
                 .then(response => response.ok ? response.text() : Promise.reject())
                 .then(data => {
                     const footerContainer = document.getElementById('footer-container');
@@ -920,7 +920,7 @@
         <div>
             <button id="aceptarCookies"
                 style="background: #fbbf24; border: none; padding: 0.4rem 1.2rem; border-radius: 2rem; cursor: pointer;">Aceptar</button>
-            <a href="/barrio/cookies.html"
+            <a href="/cookies.html"
                 style="background: transparent; border: 1px solid white; color: white; padding: 0.4rem 1.2rem; border-radius: 2rem; text-decoration: none; margin-left: 0.5rem;">Configurar</a>
         </div>
     </div>
@@ -984,7 +984,7 @@
                     if (userNameSpan) {
                         userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
                         userNameSpan.style.cursor = 'pointer';
-                        userNameSpan.onclick = () => window.location.href = '/barrio/admin.html';
+                        userNameSpan.onclick = () => window.location.href = '/admin.html';
                     }
                     if (cerrarBtn) {
                         const nuevoCerrar = cerrarBtn.cloneNode(true);
@@ -993,7 +993,7 @@
                             e.preventDefault();
                             localStorage.removeItem('usuario');
                             localStorage.removeItem('api_key');
-                            window.location.href = '/barrio/index.html';
+                            window.location.href = '/index.html';
                         });
                     }
                 } catch (e) { console.error(e); }
@@ -1013,7 +1013,7 @@
             if (btnRegistro) {
                 btnRegistro.removeEventListener('click', btnRegistro.clickHandler);
                 btnRegistro.clickHandler = () => {
-                    window.location.href = '/barrio/registro.html';
+                    window.location.href = '/registro.html';
                 };
                 btnRegistro.addEventListener('click', btnRegistro.clickHandler);
             }
@@ -1051,8 +1051,8 @@
                     return;
                 }
 
-                // Registrar Service Worker manualmente en /barrio/
-                const registration = await navigator.serviceWorker.register('/barrio/sw.js');
+                // Registrar Service Worker manualmente en /
+                const registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('Service Worker registrado:', registration);
 
                 // Suscripción push nativa
