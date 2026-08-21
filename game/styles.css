@@ -1,0 +1,348 @@
+/* Reset y configuración base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    overflow: hidden;
+    background: #1a1a1a;
+    height: 100vh;
+    width: 100vw;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    touch-action: none;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000000;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    touch-action: none;
+    cursor: none;
+}
+
+/* UI Overlay - Estilo elegante */
+#uiOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+    padding: 20px;
+}
+
+#scoreDisplay {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    text-align: right;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+#scoreLabel {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 2px;
+}
+
+#scoreValue {
+    display: block;
+    font-size: 42px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff, #c0c0c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+}
+
+#livesDisplay {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#livesLabel {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 5px;
+}
+
+#heartsContainer {
+    display: flex;
+    gap: 8px;
+    font-size: 24px;
+    filter: drop-shadow(0 0 10px rgba(255, 50, 50, 0.3));
+}
+
+.heart {
+    display: inline-block;
+    transition: all 0.3s ease;
+    opacity: 1;
+}
+
+.heart.lost {
+    opacity: 0.2;
+    transform: scale(0.8);
+    filter: grayscale(1);
+}
+
+#levelDisplay {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#levelLabel {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.5;
+}
+
+#levelValue {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #e0e0e0, #ffffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Menús - Estilo elegante */
+.menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: all;
+}
+
+.menu-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.menu-content {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 50px 60px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.menu-content h1 {
+    font-size: 56px;
+    font-weight: 300;
+    color: #ffffff;
+    letter-spacing: 8px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #ffffff, #a0a0a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.menu-content h2 {
+    font-size: 40px;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+}
+
+.controls-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 35px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.final-score, .final-level {
+    display: flex;
+    justify-content: space-between;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 10px 0;
+    font-size: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.final-score span:last-child,
+.final-level span:last-child {
+    font-weight: 700;
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.final-level {
+    border-bottom: none;
+    margin-bottom: 30px;
+}
+
+.menu-button {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 16px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    pointer-events: all;
+}
+
+.menu-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+}
+
+.menu-button:active {
+    transform: scale(0.97);
+}
+
+.credits {
+    margin-top: 25px;
+    color: rgba(255, 255, 255, 0.2);
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* Responsive - Móviles pequeños */
+@media (max-width: 480px) {
+    .menu-content {
+        padding: 35px 25px;
+    }
+
+    .menu-content h1 {
+        font-size: 40px;
+        letter-spacing: 4px;
+    }
+
+    .menu-content h2 {
+        font-size: 30px;
+    }
+
+    #scoreValue {
+        font-size: 32px;
+    }
+
+    #heartsContainer {
+        font-size: 18px;
+        gap: 5px;
+    }
+
+    .menu-button {
+        padding: 14px 30px;
+        font-size: 14px;
+        max-width: 100%;
+    }
+
+    .final-score span:last-child,
+    .final-level span:last-child {
+        font-size: 20px;
+    }
+
+    #uiOverlay {
+        padding: 12px;
+    }
+
+    #scoreDisplay {
+        top: 12px;
+        right: 15px;
+    }
+
+    #livesDisplay {
+        top: 12px;
+        left: 15px;
+    }
+}
+
+/* Tablets y pantallas medianas */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .menu-content {
+        padding: 45px 50px;
+    }
+}
+
+/* Para pantallas muy grandes */
+@media (min-width: 1200px) {
+    .menu-content {
+        padding: 60px 80px;
+        max-width: 600px;
+    }
+
+    .menu-content h1 {
+        font-size: 72px;
+    }
+
+    #scoreValue {
+        font-size: 54px;
+    }
+}
+
+/* Modo oscuro y preferencias de reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

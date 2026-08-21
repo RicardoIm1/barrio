@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eclipse - Juego de Estrellas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- UI Overlay -->
+        <div id="uiOverlay">
+            <div id="scoreDisplay">
+                <span id="scoreLabel">PUNTOS</span>
+                <span id="scoreValue">0</span>
+            </div>
+            <div id="livesDisplay">
+                <span id="livesLabel">VIDAS</span>
+                <div id="heartsContainer">
+                    <span class="heart">❤️</span>
+                    <span class="heart">❤️</span>
+                    <span class="heart">❤️</span>
+                </div>
+            </div>
+            <div id="levelDisplay">
+                <span id="levelLabel">NIVEL</span>
+                <span id="levelValue">1</span>
+            </div>
+        </div>
+
+        <!-- Menú de Inicio -->
+        <div id="startMenu" class="menu-overlay">
+            <div class="menu-content">
+                <h1>🌙 ECLIPSE</h1>
+                <p class="subtitle">Caza estrellas, esquiva asteroides</p>
+                <div class="controls-info">
+                    <span>🖱️ Mouse / 👆 Táctil</span>
+                    <span>⬆️ Mueve la nave</span>
+                </div>
+                <button id="startButton" class="menu-button">COMENZAR JUEGO</button>
+                <div class="credits">✨ Diseño elegante · Reflejos rápidos</div>
+            </div>
+        </div>
+
+        <!-- Menú de Game Over -->
+        <div id="gameOverMenu" class="menu-overlay" style="display: none;">
+            <div class="menu-content">
+                <h2>💫 GAME OVER</h2>
+                <div class="final-score">
+                    <span>Puntuación</span>
+                    <span id="finalScore">0</span>
+                </div>
+                <div class="final-level">
+                    <span>Nivel alcanzado</span>
+                    <span id="finalLevel">1</span>
+                </div>
+                <button id="restartButton" class="menu-button">REINICIAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
