@@ -164,21 +164,11 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
 // ==============================================================
 // CREAR AVISO DESDE #form-aviso
-//
-// IMPORTANTE: el formulario de "Nuevo aviso" usa IDs normales:
-// categoria, titulo, contenido, ubicacion, contacto, fecha_evento,
-// imagen_url y video_url. Los IDs edit-* pertenecen exclusivamente
-// al modal de edición.
 // ==============================================================
 (function inicializarCreacionAviso() {
     function valor(id) {
         const elemento = document.getElementById(id);
         return elemento ? String(elemento.value || '').trim() : '';
-    }
-
-    function booleano(id) {
-        const elemento = document.getElementById(id);
-        return !!elemento?.checked;
     }
 
     async function crearAviso(event) {
@@ -245,7 +235,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             console.log('✅ CREAR AVISO: registro creado:', resultado.data);
             alert('✅ Aviso publicado correctamente');
 
-            // Limpiar el formulario antes de recargar para evitar doble envío.
             const form = document.getElementById('form-aviso');
             if (form) form.reset();
 
@@ -263,7 +252,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             return false;
         }
 
-        // Fase de captura para ganar al onsubmit existente si hubiera uno.
         form.addEventListener('submit', crearAviso, true);
         console.log('✅ CREAR AVISO: handler Supabase instalado en #form-aviso.');
         return true;
@@ -271,8 +259,89 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
     function intentarInstalar() {
         if (instalar()) return;
-        // El HTML actual contiene el formulario antes de los scripts, pero
-        // dejamos un intento adicional por si el navegador lo construye tarde.
+        setTimeout(instalar, 500);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', intentarInstalar, { once: true });
+    } else {
+        intentarInstalar();
+    }
+})();
+
+// ==============================================================
+// EDICIÓN DE AVISOS: compatible con el esquema real de Supabase
+// ==============================================================
+(function inicializarEdicionAviso() {
+    function instalar() {
+        const form = document.getElementById('form-editar');
+        if (!form) return false;
+
+        // Capturamos el submit antes del handler antiguo embebido en admin.html.
+        // Esto evita enviar columnas que no existen en Supabase, como "urgente".
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+
+            const obtener = id => document.getElementById(id);
+            const valor = id => {
+                const el = obtener(id);
+                return el ? String(el.value || '').trim() : '';
+            };
+
+            const id = valor('edit-id');
+            if (!id) {
+                alert('❌ No se encontró el ID del aviso.');
+                return;
+            }
+
+            const datos = {
+                titulo: valor('edit-titulo'),
+                contenido: valor('edit-contenido'),
+                ubicacion: valor('edit-ubicacion'),
+                contacto: valor('edit-contacto'),
+                imagen_url: valor('edit-imagen_url'),
+                video_url: valor('edit-video_url')
+            };
+
+            const fecha = valor('edit-fecha_evento');
+            if (fecha) datos.fecha_evento = fecha.split('T')[0];
+
+            const chkDestacado = obtener('edit-destacado');
+            if (chkDestacado) datos.destacado = !!chkDestacado.checked;
+
+            try {
+                const apiKey = localStorage.getItem('api_key');
+                console.log('✏️ ACTUALIZAR AVISO: enviando:', { id, datos });
+
+                const resultado = await API.peticion('ACTUALIZAR', {
+                    coleccion: 'AVISOS',
+                    id,
+                    datos
+                }, apiKey);
+
+                if (!resultado?.success) {
+                    throw new Error(resultado?.error || 'No se pudo actualizar el aviso.');
+                }
+
+                console.log('✅ ACTUALIZAR AVISO: registro actualizado:', resultado.data);
+                alert('✅ Aviso actualizado correctamente');
+
+                const modal = document.getElementById('modal-editar');
+                if (modal) modal.style.display = 'none';
+                location.reload();
+            } catch (error) {
+                console.error('❌ ACTUALIZAR AVISO:', error);
+                alert('❌ Error al actualizar: ' + (error?.message || error));
+            }
+        }, true);
+
+        console.log('✅ EDICIÓN AVISO: handler Supabase instalado en #form-editar.');
+        return true;
+    }
+
+    function intentarInstalar() {
+        if (instalar()) return;
         setTimeout(instalar, 500);
     }
 
