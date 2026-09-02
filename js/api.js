@@ -259,6 +259,63 @@ async function supabasePeticion(accion, datos = {}) {
         datos: { status: 'rechazado' }
       });
 
+    case 'ESTADISTICAS_AVANZADAS': {
+      if (usuario?.rol !== 'admin') throw new Error('Solo administradores pueden consultar estadísticas avanzadas.');
+
+      const [usuariosResult, avisosResult] = await Promise.all([
+        client.from('usuarios').select('id, created_at, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999),
+        client.from('avisos').select('id, created_at, status').order('created_at', { ascending: true }).range(0, 999)
+      ]);
+
+      if (usuariosResult.error) throw usuariosResult.error;
+      if (avisosResult.error) throw avisosResult.error;
+
+      const usuarios = usuariosResult.data || [];
+      const avisos = avisosResult.data || [];
+      const ahora = new Date();
+      const desde = new Date(ahora);
+      desde.setDate(desde.getDate() - 29);
+      desde.setHours(0, 0, 0, 0);
+
+      const claveDia = fecha => {
+        const d = new Date(fecha);
+        if (Number.isNaN(d.getTime())) return null;
+        return d.toISOString().slice(0, 10);
+      };
+
+      const labels = [];
+      const usuariosPorDia = [];
+      const avisosPorDia = [];
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(desde);
+        d.setDate(desde.getDate() + i);
+        const key = d.toISOString().slice(0, 10);
+        labels.push(d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' }));
+        usuariosPorDia.push(usuarios.filter(u => claveDia(u.fecha_registro || u.created_at) === key).length);
+        avisosPorDia.push(avisos.filter(a => claveDia(a.created_at) === key).length);
+      }
+
+      const activos = avisos.filter(a => String(a.status || '').toLowerCase() === 'activo').length;
+      const pendientes = avisos.filter(a => String(a.status || '').toLowerCase() === 'pendiente').length;
+      const promedioUsuarios = usuariosPorDia.length ? (usuariosPorDia.reduce((a, b) => a + b, 0) / usuariosPorDia.length).toFixed(1) : 0;
+      const promedioAvisos = avisosPorDia.length ? (avisosPorDia.reduce((a, b) => a + b, 0) / avisosPorDia.length).toFixed(1) : 0;
+
+      return respuestaOK({
+        resumen: {
+          promedioDiarioUsuarios: Number(promedioUsuarios),
+          promedioDiarioAvisos: Number(promedioAvisos),
+          totalUsuarios: usuarios.length,
+          totalAvisos: avisos.length,
+          activos,
+          pendientes
+        },
+        usuarios: { labels, datos: usuariosPorDia },
+        avisos: { labels, datos: avisosPorDia },
+        conexiones: { labels, datos: [] },
+        enLinea: { total: 0, usuarios: [] }
+      });
+    }
+
     default:
       return null;
   }
@@ -273,7 +330,8 @@ class API {
     const accionSupabase = [
       'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
       'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS',
-      'ELIMINAR_USUARIO', 'APROBAR_AVISO', 'RECHAZAR_AVISO'
+      'ELIMINAR_USUARIO', 'APROBAR_AVISO', 'RECHAZAR_AVISO',
+      'ESTADISTICAS_AVANZADAS'
     ].includes(accion);
 
     if (accionSupabase) {
