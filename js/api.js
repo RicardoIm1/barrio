@@ -79,17 +79,15 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   if (paginacion) {
     const pagina = Math.max(1, Number(paginacion.pagina) || 1);
-    const limite = Math.min(1000, Math.max(1, Number(paginacion.limite) || 10));
+    const limite = Math.max(1, Number(paginacion.limite) || 50);
     const desde = (pagina - 1) * limite;
     query = query.range(desde, desde + limite - 1);
-  } else {
-    query = query.range(0, 999);
   }
 
   const { data, error, count } = await query;
   if (error) throw error;
 
-  return respuestaOK({ datos: data || [], total: count || 0 });
+  return respuestaOK({ datos: data || [], total: count ?? (data || []).length });
 }
 
 async function supabasePeticion(accion, datos = {}) {
@@ -97,206 +95,124 @@ async function supabasePeticion(accion, datos = {}) {
   const usuario = getUsuarioLocal();
 
   switch (accion) {
-    case 'LISTAR_TODOS_AVISOS':
-      return await supabaseAvisosList({ soloMios: false, filtros: datos });
+    case 'LISTAR_TODOS_AVISOS': {
+      const r = await supabaseAvisosList({ filtros: datos, paginacion: datos });
+      return r;
+    }
 
-    case 'LISTAR_MIS_AVISOS':
-      return await supabaseAvisosList({
-        soloMios: true,
-        filtros: datos,
-        paginacion: datos.pagina || datos.limite ? { pagina: datos.pagina || 1, limite: datos.limite || 1000 } : null
-      });
+    case 'LISTAR_MIS_AVISOS': {
+      const r = await supabaseAvisosList({ soloMios: true, filtros: datos, paginacion: datos });
+      return r;
+    }
 
     case 'LISTAR': {
       const coleccion = String(datos.coleccion || '').toUpperCase();
-
       if (coleccion === 'AVISOS') {
-        const filtros = { ...datos };
-        delete filtros.coleccion;
-        delete filtros.pagina;
-        delete filtros.limite;
-
-        const esAdmin = usuario?.rol === 'admin';
-        return await supabaseAvisosList({
-          soloMios: !esAdmin,
-          filtros,
-          paginacion: {
-            pagina: datos.pagina || 1,
-            limite: datos.limite || 10
-          }
-        });
+        const r = await supabaseAvisosList({ filtros: datos, paginacion: datos });
+        return r;
       }
-
       if (coleccion === 'USUARIOS') {
-        const { data, error, count } = await client
-          .from('usuarios')
-          .select('*', { count: 'exact' })
-          .order('fecha_registro', { ascending: false })
-          .range(0, Math.min(999, (Number(datos.limite) || 100) - 1));
+        let query = client.from('usuarios').select('*', { count: 'exact' });
+        if (datos?.id) query = query.eq('id', datos.id);
+        const { data, error, count } = await query;
         if (error) throw error;
-        return respuestaOK({ datos: data || [], total: count || 0 });
+        return respuestaOK({ datos: data || [], total: count ?? (data || []).length });
       }
-
-      throw new Error(`Colección no soportada en Supabase: ${coleccion}`);
+      return null;
     }
 
     case 'CREAR': {
       const coleccion = String(datos.coleccion || '').toUpperCase();
-      const payload = datos.datos || {};
-
       if (coleccion === 'AVISOS') {
         if (!usuario?.id) throw new Error('Sesión de usuario no disponible');
-
-        const aviso = {
-          ...payload,
-          created_by: usuario.id,
-          destacado: payload.destacado === true || payload.destacado === 'TRUE' || payload.destacado === 'true' || payload.destacado === 1,
-          fecha_evento: payload.fecha_evento || null,
-          created_at: payload.created_at || new Date().toISOString()
-        };
-
-        const { data, error } = await client
-          .from('avisos')
-          .insert(aviso)
-          .select()
-          .single();
-
+        const payload = { ...(datos.datos || {}), created_by: usuario.id };
+        const { data, error } = await client.from('avisos').insert(payload).select().single();
         if (error) throw error;
         return respuestaOK(data);
       }
-
-      throw new Error(`CREAR no soportado para ${coleccion}`);
+      return null;
     }
 
     case 'ACTUALIZAR': {
       const coleccion = String(datos.coleccion || '').toUpperCase();
-      const id = datos.id;
-      if (!id) throw new Error('ID requerido');
-
-      if (coleccion === 'AVISOS') {
-        const cambios = { ...(datos.datos || {}), updated_at: new Date().toISOString() };
-        if ('destacado' in cambios) {
-          cambios.destacado = cambios.destacado === true || cambios.destacado === 'TRUE' || cambios.destacado === 'true' || cambios.destacado === 1;
-        }
-        if (cambios.fecha_evento === '') cambios.fecha_evento = null;
-
-        const { data, error } = await client
-          .from('avisos')
-          .update(cambios)
-          .eq('id', id)
-          .select()
-          .maybeSingle();
-
-        if (error) throw error;
-        if (!data) throw new Error('No se pudo actualizar el aviso. Revisa permisos RLS.');
-        return respuestaOK(data);
-      }
-
-      if (coleccion === 'USUARIOS') {
-        const { data, error } = await client
-          .from('usuarios')
-          .update(datos.datos || {})
-          .eq('id', id)
-          .select()
-          .maybeSingle();
-        if (error) throw error;
-        return respuestaOK(data);
-      }
-
-      throw new Error(`ACTUALIZAR no soportado para ${coleccion}`);
+      const tabla = coleccion === 'AVISOS' ? 'avisos' : coleccion === 'USUARIOS' ? 'usuarios' : null;
+      if (!tabla) return null;
+      const { data, error } = await client.from(tabla).update(datos.datos || {}).eq('id', datos.id).select().single();
+      if (error) throw error;
+      return respuestaOK(data);
     }
 
     case 'ELIMINAR': {
       const coleccion = String(datos.coleccion || '').toUpperCase();
-      if (coleccion !== 'AVISOS') throw new Error(`ELIMINAR no soportado para ${coleccion}`);
-
-      const { data, error } = await client
-        .from('avisos')
-        .update({ status: 'eliminado', updated_at: new Date().toISOString() })
-        .eq('id', datos.id)
-        .select()
-        .maybeSingle();
-
+      const tabla = coleccion === 'AVISOS' ? 'avisos' : coleccion === 'USUARIOS' ? 'usuarios' : null;
+      if (!tabla) return null;
+      const { error } = await client.from(tabla).delete().eq('id', datos.id);
       if (error) throw error;
-      if (!data) throw new Error('No se pudo eliminar el aviso. Revisa permisos RLS.');
-      return respuestaOK(data);
+      return respuestaOK(true);
     }
 
     case 'LISTAR_USUARIOS':
     case 'OBTENER_USUARIOS': {
-      const { data, error } = await client
+      const { data, error, count } = await client
         .from('usuarios')
-        .select('*')
-        .order('fecha_registro', { ascending: false })
-        .range(0, 999);
+        .select('*', { count: 'exact' })
+        .order('fecha_registro', { ascending: false });
       if (error) throw error;
-      return respuestaOK({ datos: data || [], total: data?.length || 0 });
+      return respuestaOK({ datos: data || [], total: count ?? (data || []).length });
     }
 
     case 'ELIMINAR_USUARIO': {
-      const { data, error } = await client
-        .from('usuarios')
-        .update({ activo: false })
-        .eq('id', datos.id)
-        .select()
-        .maybeSingle();
+      const { error } = await client.from('usuarios').delete().eq('id', datos.id);
       if (error) throw error;
-      if (!data) throw new Error('No se pudo desactivar el usuario.');
+      return respuestaOK(true);
+    }
+
+    case 'APROBAR_AVISO': {
+      const { data, error } = await client.from('avisos').update({ status: 'activo' }).eq('id', datos.id).select().single();
+      if (error) throw error;
       return respuestaOK(data);
     }
 
-    case 'APROBAR_AVISO':
-      return await supabasePeticion('ACTUALIZAR', {
-        coleccion: 'AVISOS',
-        id: datos.id,
-        datos: { status: 'activo' }
-      });
-
-    case 'RECHAZAR_AVISO':
-      return await supabasePeticion('ACTUALIZAR', {
-        coleccion: 'AVISOS',
-        id: datos.id,
-        datos: { status: 'rechazado' }
-      });
+    case 'RECHAZAR_AVISO': {
+      const { data, error } = await client.from('avisos').update({ status: 'rechazado' }).eq('id', datos.id).select().single();
+      if (error) throw error;
+      return respuestaOK(data);
+    }
 
     case 'ESTADISTICAS_AVANZADAS': {
-      if (usuario?.rol !== 'admin') throw new Error('Solo administradores pueden consultar estadísticas avanzadas.');
+      const { data: usuarios, error: errorUsuarios } = await client
+        .from('usuarios')
+        .select('id, fecha_registro, ultimo_acceso')
+        .order('fecha_registro', { ascending: true })
+        .range(0, 999);
+      if (errorUsuarios) throw errorUsuarios;
 
-      const [usuariosResult, avisosResult] = await Promise.all([
-        client.from('usuarios').select('id, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999),
-        client.from('avisos').select('id, created_at, status').order('created_at', { ascending: true }).range(0, 999)
-      ]);
+      const { data: avisos, error: errorAvisos } = await client
+        .from('avisos')
+        .select('id, created_at, status')
+        .order('created_at', { ascending: true })
+        .range(0, 999);
+      if (errorAvisos) throw errorAvisos;
 
-      if (usuariosResult.error) throw usuariosResult.error;
-      if (avisosResult.error) throw avisosResult.error;
-
-      const usuarios = usuariosResult.data || [];
-      const avisos = avisosResult.data || [];
-      const ahora = new Date();
-      const desde = new Date(ahora);
-      desde.setDate(desde.getDate() - 29);
-      desde.setHours(0, 0, 0, 0);
-
-      const claveDia = fecha => {
-        const d = new Date(fecha);
-        if (Number.isNaN(d.getTime())) return null;
-        return d.toISOString().slice(0, 10);
+      const hoy = new Date();
+      const claveDia = valor => {
+        const d = new Date(valor);
+        return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
       };
-
       const labels = [];
       const usuariosPorDia = [];
       const avisosPorDia = [];
-      for (let i = 0; i < 30; i++) {
-        const d = new Date(desde);
-        d.setDate(desde.getDate() + i);
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(hoy);
+        d.setDate(d.getDate() - i);
         const key = d.toISOString().slice(0, 10);
-        labels.push(d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' }));
-        usuariosPorDia.push(usuarios.filter(u => claveDia(u.fecha_registro) === key).length);
-        avisosPorDia.push(avisos.filter(a => claveDia(a.created_at) === key).length);
+        labels.push(key);
+        usuariosPorDia.push((usuarios || []).filter(u => claveDia(u.fecha_registro) === key).length);
+        avisosPorDia.push((avisos || []).filter(a => claveDia(a.created_at) === key).length);
       }
 
-      const activos = avisos.filter(a => String(a.status || '').toLowerCase() === 'activo').length;
-      const pendientes = avisos.filter(a => String(a.status || '').toLowerCase() === 'pendiente').length;
+      const activos = (avisos || []).filter(a => a.status === 'activo').length;
+      const pendientes = (avisos || []).filter(a => a.status === 'pendiente').length;
       const promedioUsuarios = usuariosPorDia.length ? (usuariosPorDia.reduce((a, b) => a + b, 0) / usuariosPorDia.length).toFixed(1) : 0;
       const promedioAvisos = avisosPorDia.length ? (avisosPorDia.reduce((a, b) => a + b, 0) / avisosPorDia.length).toFixed(1) : 0;
 
@@ -304,8 +220,8 @@ async function supabasePeticion(accion, datos = {}) {
         resumen: {
           promedioDiarioUsuarios: Number(promedioUsuarios),
           promedioDiarioAvisos: Number(promedioAvisos),
-          totalUsuarios: usuarios.length,
-          totalAvisos: avisos.length,
+          totalUsuarios: (usuarios || []).length,
+          totalAvisos: (avisos || []).length,
           activos,
           pendientes
         },
@@ -344,7 +260,6 @@ class API {
       }
     }
 
-    // Compatibilidad temporal con GAS para funciones aún no migradas.
     return new Promise((resolve, reject) => {
       const params = new URLSearchParams();
       params.append('accion', accion);
@@ -385,9 +300,6 @@ class API {
   }
 
   static async request(accion, datos = {}, apiKey = null) {
-    if (['LISTAR_USUARIOS', 'OBTENER_USUARIOS'].includes(accion)) {
-      return await API.peticion(accion, datos, apiKey);
-    }
     return await API.peticion(accion, datos, apiKey);
   }
 
@@ -431,6 +343,36 @@ class API {
     return resultado || { datos: [], total: 0 };
   }
 
+  // Compatibilidad con index.html: carga únicamente los avisos públicos.
+  static async listarPublicos(filtros = {}, paginacion = {}) {
+    const client = await getSupabaseClient();
+    let query = client
+      .from('avisos')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false });
+
+    if (filtros?.categoria && filtros.categoria !== 'todos') {
+      query = query.eq('categoria', filtros.categoria);
+    }
+
+    if (filtros?.status && filtros.status !== 'todos') {
+      query = query.eq('status', filtros.status);
+    }
+
+    const pagina = Math.max(1, Number(paginacion?.pagina) || 1);
+    const limite = Math.max(1, Number(paginacion?.limite) || 200);
+    const desde = (pagina - 1) * limite;
+    query = query.range(desde, desde + limite - 1);
+
+    const { data, error, count } = await query;
+    if (error) {
+      console.error('❌ Supabase listarPublicos:', error);
+      throw error;
+    }
+
+    return { datos: data || [], total: count ?? (data || []).length };
+  }
+
   static async crearAviso(datos, apiKey = null) {
     return await API.peticion('CREAR', { coleccion: 'AVISOS', datos }, apiKey);
   }
@@ -459,7 +401,6 @@ class API {
     return await API.peticion('ACTUALIZAR', { coleccion: 'USUARIOS', id, datos }, apiKey);
   }
 
-  // Funciones aún no migradas. Se conservan para no romper páginas antiguas.
   static async registrarVista(id) { return await API.peticion('REGISTRAR_VISTA', { id }); }
   static async registrarClickWhatsApp(id) { return await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id }); }
   static async registrarInteres(id) { return await API.peticion('REGISTRAR_INTERES', { id }); }
