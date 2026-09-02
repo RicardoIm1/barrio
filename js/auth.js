@@ -1,3 +1,5 @@
+console.log('🔵 auth.js cargando...');
+
 ```javascript
 // ==================== AUTH ====================
 
