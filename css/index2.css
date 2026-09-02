@@ -346,7 +346,7 @@
 
     /* Base del borde rojo */
     .aviso-card.aviso-destacado {
-        border-left: 6px solid #dc3545 !important;
+        border-left: 6px solid #d36D24 !important;
         border-radius: 20px !important;
         position: relative;
         overflow: hidden;
