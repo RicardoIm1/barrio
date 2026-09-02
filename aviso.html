@@ -548,6 +548,80 @@
         .stat-item.whatsapp-stat .stat-icon {
             color: white;
         }
+
+        /* ======================================================
+        AVISO DESTACADO · IDENTIDAD PREMIUM
+        ====================================================== */
+
+        .destacado-premium {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 0 0 20px 0;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #fff8ed, #fff3df);
+            border: 1px solid rgba(211, 109, 36, 0.25);
+            border-left: 4px solid #D36D24;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(211, 109, 36, 0.08);
+        }
+
+        .destacado-premium-icon {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #D36D24;
+            color: white;
+            border-radius: 50%;
+            font-size: 17px;
+            box-shadow: 0 3px 8px rgba(211, 109, 36, 0.25);
+        }
+
+        .destacado-premium-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .destacado-premium-text strong {
+            color: #8a481f;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        .destacado-premium-text span {
+            color: #765f4d;
+            font-size: 0.72rem;
+            line-height: 1.3;
+        }
+
+        @media (max-width: 600px) {
+            .destacado-premium {
+                padding: 10px 12px;
+                gap: 10px;
+                margin-bottom: 16px;
+            }
+
+            .destacado-premium-icon {
+                width: 30px;
+                height: 30px;
+                font-size: 15px;
+            }
+
+            .destacado-premium-text strong {
+                font-size: 0.72rem;
+            }
+
+            .destacado-premium-text span {
+                font-size: 0.68rem;
+            }
+        }
+    
     </style>
 </head>
 
@@ -1000,6 +1074,16 @@
                     <span>🏷️ ${escapeHTML(categoriaLegible)}</span>
                 </div>
             </div>
+
+            ${esDestacado ? `
+            <div class="destacado-premium">
+                <div class="destacado-premium-icon">⭐</div>
+                <div class="destacado-premium-text">
+                    <strong>DESTACADO EN EL BARRIO</strong>
+                    <span>Este aviso tiene presencia preferente en la comunidad.</span>
+                </div>
+            </div>
+            ` : ''}
             `;
 
             // Video destacado o imagen principal
