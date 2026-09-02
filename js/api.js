@@ -95,6 +95,20 @@ async function supabasePeticion(accion, datos = {}) {
   const usuario = getUsuarioLocal();
 
   switch (accion) {
+    case 'OBTENER_AVISO_POR_ID': {
+      const id = String(datos?.id || '').trim();
+      if (!id) throw new Error('ID de aviso no proporcionado');
+
+      const { data, error } = await client
+        .from('avisos')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return respuestaOK(data || null);
+    }
+
     case 'LISTAR_TODOS_AVISOS': {
       const r = await supabaseAvisosList({ filtros: datos, paginacion: datos });
       return r;
@@ -244,7 +258,7 @@ class API {
 
   static async peticion(accion, datos = {}, apiKey = null, intentos = 2) {
     const accionSupabase = [
-      'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
+      'OBTENER_AVISO_POR_ID', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
       'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS',
       'ELIMINAR_USUARIO', 'APROBAR_AVISO', 'RECHAZAR_AVISO',
       'ESTADISTICAS_AVANZADAS'
