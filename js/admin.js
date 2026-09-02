@@ -5,8 +5,9 @@
 // de admin.html. Durante la migración a Supabase evitamos cargar
 // un segundo controlador que duplique eventos y peticiones.
 //
-// Este archivo se encarga de la navegación de pestañas y de cargar
-// el perfil del usuario autenticado desde Supabase.
+// Este archivo se encarga de la navegación de pestañas, de cargar
+// el perfil del usuario autenticado desde Supabase y de interceptar
+// el envío de un nuevo aviso para usar la API Supabase actual.
 // ==============================================================
 
 console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
@@ -204,6 +205,111 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         if (inicial) activarPestana(inicial.dataset.tab);
 
         console.log('✅ Navegación de pestañas admin instalada.');
+        return true;
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', instalar, { once: true });
+    } else {
+        instalar();
+    }
+})();
+
+// ==============================================================
+// CREAR AVISO
+//
+// admin.html conserva un handler onsubmit para EDITAR avisos, pero
+// no tenía ningún flujo para CREAR uno nuevo. Este listener usa fase
+// de captura para interceptar únicamente el alta cuando edit-id está
+// vacío y deja intacto el flujo de edición cuando edit-id tiene valor.
+// ==============================================================
+(function inicializarCreacionAviso() {
+    function obtenerFormulario() {
+        const editId = document.getElementById('edit-id');
+        return editId ? editId.closest('form') : null;
+    }
+
+    function valor(id) {
+        const elemento = document.getElementById(id);
+        return elemento ? elemento.value.trim() : '';
+    }
+
+    function booleano(id) {
+        const elemento = document.getElementById(id);
+        return !!elemento?.checked;
+    }
+
+    function agregarSiTieneValor(objeto, clave, valorCampo) {
+        if (valorCampo !== '') objeto[clave] = valorCampo;
+    }
+
+    async function crearAviso(event) {
+        const editId = document.getElementById('edit-id');
+
+        // Si hay ID, es una edición. El handler original de admin.html
+        // debe continuar funcionando sin interferencia.
+        if (editId?.value.trim()) return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const titulo = valor('edit-titulo');
+        if (!titulo) {
+            alert('❌ El título del aviso es obligatorio.');
+            return;
+        }
+
+        const datos = {
+            titulo,
+            contenido: valor('edit-contenido'),
+            ubicacion: valor('edit-ubicacion'),
+            contacto: valor('edit-contacto'),
+            imagen_url: valor('edit-imagen_url'),
+            video_url: valor('edit-video_url'),
+            destacado: booleano('edit-destacado'),
+            status: 'activo'
+        };
+
+        const fechaEvento = valor('edit-fecha_evento');
+        if (fechaEvento) datos.fecha_evento = fechaEvento;
+
+        const categoria = valor('edit-categoria');
+        if (categoria) datos.categoria = categoria;
+
+        try {
+            const apiKey = localStorage.getItem('api_key');
+            console.log('📝 Creando aviso en Supabase...', datos);
+
+            const resultado = await API.peticion('CREAR', {
+                coleccion: 'AVISOS',
+                datos
+            }, apiKey);
+
+            if (resultado?.success) {
+                console.log('✅ Aviso creado correctamente:', resultado.data);
+                alert('✅ Aviso publicado correctamente');
+                location.reload();
+            } else {
+                console.error('❌ API rechazó la creación:', resultado);
+                alert('❌ Error: ' + (resultado?.error || 'No se pudo crear el aviso'));
+            }
+        } catch (error) {
+            console.error('❌ Error creando aviso:', error);
+            alert('❌ Error: ' + (error?.message || error));
+        }
+    }
+
+    function instalar() {
+        const form = obtenerFormulario();
+        if (!form) {
+            console.warn('⚠️ No se encontró el formulario de avisos para habilitar CREAR.');
+            return false;
+        }
+
+        // Capture=true permite ganar al onsubmit existente de admin.html
+        // solamente cuando se trata de un aviso nuevo.
+        form.addEventListener('submit', crearAviso, true);
+        console.log('✅ Creación de avisos Supabase habilitada.');
         return true;
     }
 
