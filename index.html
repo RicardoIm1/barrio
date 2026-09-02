@@ -702,6 +702,12 @@
         const html = avisos
           .map((aviso) => {
             const userVote = userVotes[aviso.id];
+            const esDestacado =
+              aviso.destacado === true ||
+              aviso.destacado === "TRUE" ||
+              aviso.destacado === "true" ||
+              aviso.destacado === 1 ||
+              aviso.destacado === "1";
             const isLiked = userVote === "like";
             const isDisliked = userVote === "dislike";
             const whatsappNumber = aviso.contacto
@@ -748,7 +754,7 @@
             }
 
             return `
-<div class="aviso-card tarjeta-moderna ${aviso.destacado ? "aviso-destacado" : ""}" 
+<div class="aviso-card tarjeta-moderna ${esDestacado ? "aviso-destacado" : ""}" 
      data-id="${aviso.id}" 
      onclick="verAviso(this.getAttribute('data-id'))">
      <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">

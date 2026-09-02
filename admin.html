@@ -1328,10 +1328,22 @@
                 <input type="hidden" id="edit-imagen_url">
                 <input type="hidden" id="edit-video_url">
 
-                <div
-                    style="display: flex; align-items: center; gap: 10px; margin: 15px 0; background: #fff0e6; padding: 10px 14px; border-radius: 40px;">
-                    <input type="checkbox" id="edit-urgente" style="width: 18px; height: 18px;">
-                    <label style="font-weight: 600; color: #c26d6d;">⚠️ Urgente</label>
+                <div style="display:flex; flex-direction:column; gap:10px; margin:15px 0;">
+
+                    <label style="display:flex; align-items:center; gap:10px; background:#fff0e6; padding:10px 14px; border-radius:40px;">
+                        <input type="checkbox" id="edit-urgente" style="width:18px; height:18px;">
+                        <span style="font-weight:600; color:#c26d6d;">
+                            ⚠️ Urgente
+                        </span>
+                    </label>
+
+                    <label style="display:flex; align-items:center; gap:10px; background:#fff7ed; padding:10px 14px; border-radius:40px;">
+                        <input type="checkbox" id="edit-destacado" style="width:18px; height:18px;">
+                        <span style="font-weight:600; color:#d97706;">
+                            ⭐ Destacado
+                        </span>
+                    </label>
+
                 </div>
 
                 <div style="display: flex; gap: 12px;">
@@ -1444,7 +1456,8 @@
                         fecha_evento: document.getElementById('edit-fecha_evento').value,
                         imagen_url: document.getElementById('edit-imagen_url').value,
                         video_url: document.getElementById('edit-video_url').value,
-                        urgente: document.getElementById('edit-urgente').checked
+                        urgente: document.getElementById('edit-urgente').checked,
+                        destacado: document.getElementById('edit-destacado').checked
                     };
 
                     try {
@@ -1729,8 +1742,27 @@
             </td>
             <td data-label="Acciones">
                 <div class="acciones-botones">
-                    <button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
-                    ${esAdmin ? `<button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>` : ''}
+
+                    <button class="accion-btn accion-editar"
+                        onclick="editarAviso('${aviso.id}')">
+                        ✏️ Editar
+                    </button>
+
+                    ${esAdmin ? `
+                        <button
+                            class="accion-btn"
+                            style="background:${aviso.destacado ? '#d97706' : '#64748b'};color:white;"
+                            onclick="cambiarDestacado('${aviso.id}', ${!aviso.destacado})">
+                            ${aviso.destacado ? '⭐ Quitar destacado' : '⭐ Destacar'}
+                        </button>
+
+                        <button
+                            class="accion-btn accion-eliminar"
+                            onclick="eliminarAviso('${aviso.id}')">
+                            🗑️ Eliminar
+                        </button>
+                    ` : ''}
+
                 </div>
             </td>
         </tr>`;
@@ -1772,6 +1804,78 @@
                 }
             } catch (error) {
                 console.error('Error detallado:', error);
+                alert('❌ Error: ' + error.message);
+            }
+        };
+
+        // ======================================================
+        // DESTACAR / QUITAR DESTACADO
+        // ======================================================
+
+        window.cambiarDestacado = async function (id, nuevoValor) {
+
+            try {
+
+                const apiKey = localStorage.getItem('api_key');
+                const usuario = API.getUsuarioActual();
+
+                if (!apiKey || usuario?.rol !== 'admin') {
+                    alert('Solo administradores pueden destacar avisos');
+                    return;
+                }
+
+                const accion = nuevoValor ? 'destacar' : 'quitar el destacado';
+
+                if (!confirm(`¿Quieres ${accion} este aviso?`)) {
+                    return;
+                }
+
+                console.log(`⭐ Cambiando destacado del aviso ${id} a:`, nuevoValor);
+
+                const resultado = await API.peticion('ACTUALIZAR', {
+                    coleccion: 'AVISOS',
+                    id: id,
+                    datos: {
+                        destacado: nuevoValor
+                    }
+                }, apiKey);
+
+                console.log('Respuesta ACTUALIZAR destacado:', resultado);
+
+                if (resultado && resultado.success) {
+
+                    const index = todosLosAvisos.findIndex(a => a.id == id);
+
+                    if (index !== -1) {
+                        todosLosAvisos[index].destacado = nuevoValor;
+                    }
+
+                    // Mantener también la copia original actualizada
+                    const indexOriginal = avisosOriginales.findIndex(a => a.id == id);
+
+                    if (indexOriginal !== -1) {
+                        avisosOriginales[indexOriginal].destacado = nuevoValor;
+                    }
+
+                    renderizarTablaAvisos();
+
+                    alert(
+                        nuevoValor
+                            ? '⭐ Aviso destacado correctamente'
+                            : 'Aviso retirado de destacados'
+                    );
+
+                } else {
+
+                    throw new Error(
+                        resultado?.error || 'No se pudo actualizar el destacado'
+                    );
+                }
+
+            } catch (error) {
+
+                console.error('Error cambiando destacado:', error);
+
                 alert('❌ Error: ' + error.message);
             }
         };
@@ -1836,11 +1940,18 @@
                 }
             }
 
-            // Marcar checkbox urgente (destacado)
-            const chkUrgente = document.getElementById('edit-urgente');
-            if (chkUrgente) {
-                const esDestacado = aviso.destacado === true || aviso.destacado === 'TRUE' || aviso.destacado === 1 || aviso.destacado === 'true';
-                chkUrgente.checked = esDestacado;
+            const chkDestacado = document.getElementById('edit-destacado');
+
+            if (chkDestacado) {
+
+                const esDestacado =
+                    aviso.destacado === true ||
+                    aviso.destacado === 'TRUE' ||
+                    aviso.destacado === 'true' ||
+                    aviso.destacado === 1 ||
+                    aviso.destacado === '1';
+
+                chkDestacado.checked = esDestacado;
                 console.log(`✅ Checkbox urgente: ${esDestacado}`);
             } else {
                 console.warn('⚠️ Campo edit-urgente no encontrado');
