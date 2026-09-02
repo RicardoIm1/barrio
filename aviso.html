@@ -908,10 +908,30 @@
                 catch (e) { fechaTexto = String(avisoActual.created_at); }
             }
 
-            const esUrgente = avisoActual.destacado === 'TRUE' || avisoActual.categoria === 'urgente';
+            // ======================================================
+            // ESTADO DEL AVISO
+            // URGENTE y DESTACADO son conceptos independientes
+            // ======================================================
+
+            const esDestacado =
+                avisoActual.destacado === true ||
+                avisoActual.destacado === 'TRUE' ||
+                avisoActual.destacado === 'true' ||
+                avisoActual.destacado === 1 ||
+                avisoActual.destacado === '1';
+
+            const esUrgente =
+                String(avisoActual.categoria || '').toLowerCase() === 'urgente';
+
             const esPendiente = avisoActual.status === 'pendiente';
-            const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
-            const esPropietario = usuarioActual && String(usuarioActual.id) === String(avisoActual.created_by);
+
+            const esAdmin =
+                usuarioActual && usuarioActual.rol === 'admin';
+
+            const esPropietario =
+                usuarioActual &&
+                String(usuarioActual.id) === String(avisoActual.created_by);
+
             const puedeEditar = esAdmin || esPropietario;
 
             const categoriaLegible = {
@@ -919,9 +939,26 @@
                 'comercios': 'COMERCIOS', 'eventos': 'EVENTOS', 'gobierno': 'GOBIERNO', 'varios': 'VARIOS'
             }[avisoActual.categoria] || avisoActual.categoria || 'GENERAL';
 
-            let categoriaClase = '', categoriaTexto = categoriaLegible;
-            if (esUrgente) { categoriaClase = 'urgente'; categoriaTexto = '⚠️ URGENTE'; }
-            else if (esPendiente) { categoriaClase = 'pendiente'; categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN'; }
+            let categoriaClase = '';
+            let categoriaTexto = categoriaLegible;
+
+            // DESTACADO tiene identidad propia
+            if (esDestacado) {
+                categoriaClase = 'destacado';
+                categoriaTexto = '⭐ DESTACADO';
+            }
+
+            // URGENTE sigue siendo una categoría independiente
+            else if (esUrgente) {
+                categoriaClase = 'urgente';
+                categoriaTexto = '⚠️ URGENTE';
+            }
+
+            // Pendiente conserva su comportamiento actual
+            else if (esPendiente) {
+                categoriaClase = 'pendiente';
+                categoriaTexto = '⏳ PENDIENTE DE APROBACIÓN';
+            }
 
             // Multimedia
             let videoUrl = null;
