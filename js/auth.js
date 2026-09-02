@@ -1,13 +1,45 @@
 console.log('🔵 auth.js cargando...');
 
+async function obtenerSupabaseClient() {
+  if (typeof supabaseClient !== 'undefined') return supabaseClient;
+
+  if (window.__elBarrioSupabaseClient) {
+    return window.__elBarrioSupabaseClient;
+  }
+
+  if (!window.supabase) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('No se pudo cargar Supabase JS'));
+      document.head.appendChild(script);
+    });
+  }
+
+  const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduamF1bXBqZXJiYndsa2NneHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjQ5ODksImV4cCI6MjEwMzUwMDk4OX0.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU';
+
+  window.__elBarrioSupabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  console.log('✅ Cliente Supabase creado desde auth.js');
+
+  return window.__elBarrioSupabaseClient;
+}
+
 const Auth = {
 
   async login(email, password) {
 
     console.log('🔵 Auth.login ejecutándose');
 
+    const client = await obtenerSupabaseClient();
+
     const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
+      await client.auth.signInWithPassword({
         email,
         password
       });
@@ -18,12 +50,6 @@ const Auth = {
       throw error;
     }
 
-    // ==========================================================
-    // COMPATIBILIDAD TEMPORAL CON EL PANEL ADMINISTRATIVO
-    // La fuente de verdad sigue siendo Supabase Auth.
-    // Estos datos permiten que el código antiguo del panel
-    // reconozca la sesión mientras migramos API.js.
-    // ==========================================================
     const user = data.user;
     const session = data.session;
 
@@ -51,7 +77,8 @@ const Auth = {
   },
 
   async requireAuth() {
-    const { data, error } = await supabaseClient.auth.getSession();
+    const client = await obtenerSupabaseClient();
+    const { data, error } = await client.auth.getSession();
 
     if (error) {
       console.error('❌ Error comprobando sesión:', error);
@@ -74,7 +101,6 @@ const Auth = {
       rol: user.user_metadata?.rol || user.app_metadata?.rol || 'usuario'
     };
 
-    // Mantener sincronizada la representación temporal del panel.
     localStorage.setItem('usuario', JSON.stringify(usuario));
     localStorage.setItem('api_key', session.access_token);
 
@@ -82,7 +108,8 @@ const Auth = {
   },
 
   async logout() {
-    const { error } = await supabaseClient.auth.signOut();
+    const client = await obtenerSupabaseClient();
+    const { error } = await client.auth.signOut();
 
     if (error) {
       console.error('❌ Error cerrando sesión:', error);
