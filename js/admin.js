@@ -6,8 +6,8 @@
 // un segundo controlador que duplique eventos y peticiones.
 //
 // Este archivo se encarga de la navegación de pestañas, de cargar
-// el perfil del usuario autenticado desde Supabase y de interceptar
-// el envío de un nuevo aviso para usar la API Supabase actual.
+// el perfil del usuario autenticado desde Supabase y de conectar
+// el formulario Nuevo aviso con la API Supabase actual.
 // ==============================================================
 
 console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
@@ -44,54 +44,18 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
         contenedor.innerHTML = `
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
-                <div class="campo">
-                    <label>Nombre</label>
-                    <div>${escapar(nombre)}</div>
-                </div>
-                <div class="campo">
-                    <label>Correo electrónico</label>
-                    <div>${escapar(email)}</div>
-                </div>
-                <div class="campo">
-                    <label>Rol</label>
-                    <div>${escapar(rol)}</div>
-                </div>
-                <div class="campo">
-                    <label>Teléfono</label>
-                    <div>${escapar(telefono)}</div>
-                </div>
-                <div class="campo">
-                    <label>Categorías</label>
-                    <div>${escapar(categorias)}</div>
-                </div>
-                <div class="campo">
-                    <label>Estado</label>
-                    <div>${p.activo === false ? 'Inactivo' : 'Activo'}</div>
-                </div>
-                <div class="campo">
-                    <label>Fecha de registro</label>
-                    <div>${escapar(formatearFecha(p.fecha_registro))}</div>
-                </div>
-                <div class="campo">
-                    <label>Último acceso</label>
-                    <div>${escapar(formatearFecha(p.ultimo_acceso))}</div>
-                </div>
-                <div class="campo">
-                    <label>Puntos de confianza</label>
-                    <div>${escapar(p.puntos_confianza ?? 0)}</div>
-                </div>
-                <div class="campo">
-                    <label>Nivel</label>
-                    <div>${escapar(p.nivel || 'Sin nivel')}</div>
-                </div>
-                <div class="campo">
-                    <label>Avisos publicados</label>
-                    <div>${escapar(p.avisos_publicados ?? 0)}</div>
-                </div>
-                <div class="campo">
-                    <label>Reportes recibidos</label>
-                    <div>${escapar(p.reportes_recibidos ?? 0)}</div>
-                </div>
+                <div class="campo"><label>Nombre</label><div>${escapar(nombre)}</div></div>
+                <div class="campo"><label>Correo electrónico</label><div>${escapar(email)}</div></div>
+                <div class="campo"><label>Rol</label><div>${escapar(rol)}</div></div>
+                <div class="campo"><label>Teléfono</label><div>${escapar(telefono)}</div></div>
+                <div class="campo"><label>Categorías</label><div>${escapar(categorias)}</div></div>
+                <div class="campo"><label>Estado</label><div>${p.activo === false ? 'Inactivo' : 'Activo'}</div></div>
+                <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div>
+                <div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
+                <div class="campo"><label>Puntos de confianza</label><div>${escapar(p.puntos_confianza ?? 0)}</div></div>
+                <div class="campo"><label>Nivel</label><div>${escapar(p.nivel || 'Sin nivel')}</div></div>
+                <div class="campo"><label>Avisos publicados</label><div>${escapar(p.avisos_publicados ?? 0)}</div></div>
+                <div class="campo"><label>Reportes recibidos</label><div>${escapar(p.reportes_recibidos ?? 0)}</div></div>
             </div>
         `;
     }
@@ -100,7 +64,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         const contenedor = document.getElementById('perfil-info');
         if (!contenedor) return;
 
-        // Mostrar de inmediato los datos compatibles ya guardados por auth.js.
         try {
             const local = JSON.parse(localStorage.getItem('usuario') || 'null');
             if (local) mostrarPerfil(local);
@@ -125,24 +88,11 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             const { data, error } = await window.supabaseClient
                 .from('usuarios')
                 .select(`
-                    id,
-                    email,
-                    nombre,
-                    rol,
-                    categorias,
-                    activo,
-                    telefono,
-                    fecha_registro,
-                    ultimo_acceso,
-                    puntos_confianza,
-                    nivel,
-                    avisos_publicados,
-                    reportes_recibidos,
-                    reportes_realizados,
-                    votos_positivos_recibidos,
-                    votos_negativos_recibidos,
-                    fecha_verificacion,
-                    sancion_hasta
+                    id, email, nombre, rol, categorias, activo, telefono,
+                    fecha_registro, ultimo_acceso, puntos_confianza, nivel,
+                    avisos_publicados, reportes_recibidos, reportes_realizados,
+                    votos_positivos_recibidos, votos_negativos_recibidos,
+                    fecha_verificacion, sancion_hasta
                 `)
                 .eq('id', authData.user.id)
                 .maybeSingle();
@@ -163,7 +113,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         }
     }
 
-    // Exponerlo para que la navegación pueda cargarlo al entrar en la pestaña.
     window.cargarPerfilAdmin = cargarPerfil;
 })();
 
@@ -171,7 +120,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     function activarPestana(tabName) {
         const botones = document.querySelectorAll('#admin-tabs .filtro[data-tab]');
         const paneles = document.querySelectorAll('.tab');
-
         if (!tabName) return;
 
         botones.forEach(btn => {
@@ -196,7 +144,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         contenedor.addEventListener('click', function (event) {
             const boton = event.target.closest('.filtro[data-tab]');
             if (!boton || !contenedor.contains(boton)) return;
-
             event.preventDefault();
             activarPestana(boton.dataset.tab);
         });
@@ -216,22 +163,17 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 })();
 
 // ==============================================================
-// CREAR AVISO
+// CREAR AVISO DESDE #form-aviso
 //
-// admin.html conserva un handler onsubmit para EDITAR avisos, pero
-// no tenía ningún flujo para CREAR uno nuevo. Este listener usa fase
-// de captura para interceptar únicamente el alta cuando edit-id está
-// vacío y deja intacto el flujo de edición cuando edit-id tiene valor.
+// IMPORTANTE: el formulario de "Nuevo aviso" usa IDs normales:
+// categoria, titulo, contenido, ubicacion, contacto, fecha_evento,
+// imagen_url y video_url. Los IDs edit-* pertenecen exclusivamente
+// al modal de edición.
 // ==============================================================
 (function inicializarCreacionAviso() {
-    function obtenerFormulario() {
-        const editId = document.getElementById('edit-id');
-        return editId ? editId.closest('form') : null;
-    }
-
     function valor(id) {
         const elemento = document.getElementById(id);
-        return elemento ? elemento.value.trim() : '';
+        return elemento ? String(elemento.value || '').trim() : '';
     }
 
     function booleano(id) {
@@ -239,83 +181,104 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         return !!elemento?.checked;
     }
 
-    function agregarSiTieneValor(objeto, clave, valorCampo) {
-        if (valorCampo !== '') objeto[clave] = valorCampo;
-    }
-
     async function crearAviso(event) {
-        const editId = document.getElementById('edit-id');
-
-        // Si hay ID, es una edición. El handler original de admin.html
-        // debe continuar funcionando sin interferencia.
-        if (editId?.value.trim()) return;
-
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        const titulo = valor('edit-titulo');
+        const titulo = valor('titulo');
+        const contenido = valor('contenido');
+        const categoria = valor('categoria') || 'varios';
+
         if (!titulo) {
             alert('❌ El título del aviso es obligatorio.');
             return;
         }
 
+        if (!contenido) {
+            alert('❌ La descripción del aviso es obligatoria.');
+            return;
+        }
+
         const datos = {
             titulo,
-            contenido: valor('edit-contenido'),
-            ubicacion: valor('edit-ubicacion'),
-            contacto: valor('edit-contacto'),
-            imagen_url: valor('edit-imagen_url'),
-            video_url: valor('edit-video_url'),
-            destacado: booleano('edit-destacado'),
+            contenido,
+            categoria,
+            ubicacion: valor('ubicacion'),
+            contacto: valor('contacto'),
+            destacado: false,
             status: 'activo'
         };
 
-        const fechaEvento = valor('edit-fecha_evento');
+        const fechaEvento = valor('fecha_evento');
         if (fechaEvento) datos.fecha_evento = fechaEvento;
 
-        const categoria = valor('edit-categoria');
-        if (categoria) datos.categoria = categoria;
+        const imagenUrl = valor('imagen_url');
+        if (imagenUrl) datos.imagen_url = imagenUrl;
+
+        const videoUrl = valor('video_url');
+        if (videoUrl) datos.video_url = videoUrl;
 
         try {
             const apiKey = localStorage.getItem('api_key');
-            console.log('📝 Creando aviso en Supabase...', datos);
+            const usuario = API.getUsuarioActual();
+
+            console.log('📝 CREAR AVISO: iniciando...', {
+                usuario: usuario?.email,
+                datos
+            });
+
+            if (!apiKey || !usuario?.id) {
+                throw new Error('Sesión de usuario no disponible. Vuelve a iniciar sesión.');
+            }
 
             const resultado = await API.peticion('CREAR', {
                 coleccion: 'AVISOS',
                 datos
             }, apiKey);
 
-            if (resultado?.success) {
-                console.log('✅ Aviso creado correctamente:', resultado.data);
-                alert('✅ Aviso publicado correctamente');
-                location.reload();
-            } else {
-                console.error('❌ API rechazó la creación:', resultado);
-                alert('❌ Error: ' + (resultado?.error || 'No se pudo crear el aviso'));
+            console.log('📡 CREAR AVISO: respuesta API:', resultado);
+
+            if (!resultado?.success) {
+                throw new Error(resultado?.error || 'Supabase rechazó la creación del aviso.');
             }
+
+            console.log('✅ CREAR AVISO: registro creado:', resultado.data);
+            alert('✅ Aviso publicado correctamente');
+
+            // Limpiar el formulario antes de recargar para evitar doble envío.
+            const form = document.getElementById('form-aviso');
+            if (form) form.reset();
+
+            window.location.reload();
         } catch (error) {
-            console.error('❌ Error creando aviso:', error);
-            alert('❌ Error: ' + (error?.message || error));
+            console.error('❌ CREAR AVISO: error:', error);
+            alert('❌ No se pudo publicar el aviso: ' + (error?.message || error));
         }
     }
 
     function instalar() {
-        const form = obtenerFormulario();
+        const form = document.getElementById('form-aviso');
         if (!form) {
-            console.warn('⚠️ No se encontró el formulario de avisos para habilitar CREAR.');
+            console.warn('⚠️ CREAR AVISO: #form-aviso todavía no existe.');
             return false;
         }
 
-        // Capture=true permite ganar al onsubmit existente de admin.html
-        // solamente cuando se trata de un aviso nuevo.
+        // Fase de captura para ganar al onsubmit existente si hubiera uno.
         form.addEventListener('submit', crearAviso, true);
-        console.log('✅ Creación de avisos Supabase habilitada.');
+        console.log('✅ CREAR AVISO: handler Supabase instalado en #form-aviso.');
         return true;
     }
 
+    function intentarInstalar() {
+        if (instalar()) return;
+        // El HTML actual contiene el formulario antes de los scripts, pero
+        // dejamos un intento adicional por si el navegador lo construye tarde.
+        setTimeout(instalar, 500);
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', instalar, { once: true });
+        document.addEventListener('DOMContentLoaded', intentarInstalar, { once: true });
     } else {
-        instalar();
+        intentarInstalar();
     }
 })();
