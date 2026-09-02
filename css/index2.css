@@ -1162,7 +1162,7 @@
     }
 
     /* Tarjetas destacadas con video más grande */
-    .aviso-card.destacada .aviso-video {
+    .aviso-card.destacado .aviso-video {
         height: 240px;
     }
 
@@ -1171,7 +1171,7 @@
             height: 160px;
         }
 
-        .aviso-card.destacada .aviso-video {
+        .aviso-card.destacado .aviso-video {
             height: 200px;
         }
     }
