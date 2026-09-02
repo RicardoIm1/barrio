@@ -57,6 +57,20 @@ function respuestaError(error) {
   return { success: false, error: message, details: error?.details || null, code: error?.code || null };
 }
 
+// Resuelve avisos.created_by -> usuarios.id -> usuarios.nombre.
+// created_by permanece intacto como UUID y nombre_autor se usa para mostrarlo.
+function normalizarAviso(aviso) {
+  if (!aviso) return aviso;
+  return {
+    ...aviso,
+    nombre_autor: aviso.usuarios?.nombre || aviso.nombre_autor || 'Vecino'
+  };
+}
+
+function normalizarAvisos(avisos) {
+  return (avisos || []).map(normalizarAviso);
+}
+
 async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion = null } = {}) {
   const client = await getSupabaseClient();
   const usuario = getUsuarioLocal();
@@ -64,7 +78,12 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   let query = client
     .from('avisos')
-    .select('*', { count: 'exact' })
+    .select(`
+      *,
+      usuarios!avisos_created_by_fkey (
+        nombre
+      )
+    `, { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (soloMios) query = query.eq('created_by', usuario.id);
@@ -87,7 +106,8 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
   const { data, error, count } = await query;
   if (error) throw error;
 
-  return respuestaOK({ datos: data || [], total: count ?? (data || []).length });
+  const avisos = normalizarAvisos(data);
+  return respuestaOK({ datos: avisos, total: count ?? avisos.length });
 }
 
 async function supabasePeticion(accion, datos = {}) {
@@ -101,12 +121,17 @@ async function supabasePeticion(accion, datos = {}) {
 
       const { data, error } = await client
         .from('avisos')
-        .select('*')
+        .select(`
+          *,
+          usuarios!avisos_created_by_fkey (
+            nombre
+          )
+        `)
         .eq('id', id)
         .maybeSingle();
 
       if (error) throw error;
-      return respuestaOK(data || null);
+      return respuestaOK(normalizarAviso(data));
     }
 
     case 'LISTAR_TODOS_AVISOS': {
@@ -362,7 +387,12 @@ class API {
     const client = await getSupabaseClient();
     let query = client
       .from('avisos')
-      .select('*', { count: 'exact' })
+      .select(`
+        *,
+        usuarios!avisos_created_by_fkey (
+          nombre
+        )
+      `, { count: 'exact' })
       .order('created_at', { ascending: false });
 
     if (filtros?.categoria && filtros.categoria !== 'todos') {
@@ -384,7 +414,8 @@ class API {
       throw error;
     }
 
-    return { datos: data || [], total: count ?? (data || []).length };
+    const avisos = normalizarAvisos(data);
+    return { datos: avisos, total: count ?? avisos.length };
   }
 
   static async crearAviso(datos, apiKey = null) {
