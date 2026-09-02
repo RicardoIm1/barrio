@@ -1,105 +1,316 @@
-// ==================== LIMPIAR SESIÓN CORRUPTA ====================
+// ==================== API CLIENT ====================
+// Supabase es la fuente de datos para el panel de administración.
+// Las acciones no migradas conservan compatibilidad temporal con GAS.
+
 (function limpiarSesionCorrupta() {
   const usuarioStr = localStorage.getItem('usuario');
-  if (usuarioStr && !usuarioStr.startsWith('{') && !usuarioStr.startsWith('[')) {
-    console.warn('⚠️ Limpiando sesión corrupta:', usuarioStr);
+  if (usuarioStr && !usuarioStr.trim().startsWith('{') && !usuarioStr.trim().startsWith('[')) {
     localStorage.removeItem('usuario');
     localStorage.removeItem('api_key');
   }
 })();
-// ================================================================
-
-// ==================== API CLIENT - Jardines PVR ====================
 
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec';
+const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
-// Al inicio del archivo, después de const API_BASE_URL
-if (window.location.hostname !== 'localhost') {
-  console.log = function () { }; // Desactiva logs en producción
+function getUsuarioLocal() {
+  try {
+    const raw = localStorage.getItem('usuario');
+    if (!raw) return null;
+    const usuario = JSON.parse(raw);
+    return usuario && typeof usuario === 'object' ? usuario : null;
+  } catch (_) {
+    localStorage.removeItem('usuario');
+    return null;
+  }
 }
 
-// ==================== CLASE PRINCIPAL ====================
+async function getSupabaseClient() {
+  if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
+  if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
+
+  if (!window.supabase) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('No se pudo cargar Supabase JS'));
+      document.head.appendChild(script);
+    });
+  }
+
+  window.__elBarrioSupabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  return window.__elBarrioSupabaseClient;
+}
+
+function respuestaOK(data = null, extra = {}) {
+  return { success: true, data, ...extra };
+}
+
+function respuestaError(error) {
+  const message = error?.message || String(error) || 'Error desconocido';
+  return { success: false, error: message, details: error?.details || null, code: error?.code || null };
+}
+
+async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion = null } = {}) {
+  const client = await getSupabaseClient();
+  const usuario = getUsuarioLocal();
+  if (!usuario?.id) throw new Error('Sesión de usuario no disponible');
+
+  let query = client
+    .from('avisos')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false });
+
+  if (soloMios) query = query.eq('created_by', usuario.id);
+
+  if (filtros?.categoria && filtros.categoria !== 'todos') {
+    query = query.eq('categoria', filtros.categoria);
+  }
+
+  if (filtros?.status && filtros.status !== 'todos') {
+    query = query.eq('status', filtros.status);
+  }
+
+  if (paginacion) {
+    const pagina = Math.max(1, Number(paginacion.pagina) || 1);
+    const limite = Math.min(1000, Math.max(1, Number(paginacion.limite) || 10));
+    const desde = (pagina - 1) * limite;
+    query = query.range(desde, desde + limite - 1);
+  } else {
+    query = query.range(0, 999);
+  }
+
+  const { data, error, count } = await query;
+  if (error) throw error;
+
+  return respuestaOK({ datos: data || [], total: count || 0 });
+}
+
+async function supabasePeticion(accion, datos = {}) {
+  const client = await getSupabaseClient();
+  const usuario = getUsuarioLocal();
+
+  switch (accion) {
+    case 'LISTAR_TODOS_AVISOS':
+      return await supabaseAvisosList({ soloMios: false, filtros: datos });
+
+    case 'LISTAR_MIS_AVISOS':
+      return await supabaseAvisosList({
+        soloMios: true,
+        filtros: datos,
+        paginacion: datos.pagina || datos.limite ? { pagina: datos.pagina || 1, limite: datos.limite || 1000 } : null
+      });
+
+    case 'LISTAR': {
+      const coleccion = String(datos.coleccion || '').toUpperCase();
+
+      if (coleccion === 'AVISOS') {
+        const filtros = { ...datos };
+        delete filtros.coleccion;
+        delete filtros.pagina;
+        delete filtros.limite;
+
+        const esAdmin = usuario?.rol === 'admin';
+        return await supabaseAvisosList({
+          soloMios: !esAdmin,
+          filtros,
+          paginacion: {
+            pagina: datos.pagina || 1,
+            limite: datos.limite || 10
+          }
+        });
+      }
+
+      if (coleccion === 'USUARIOS') {
+        const { data, error, count } = await client
+          .from('usuarios')
+          .select('*', { count: 'exact' })
+          .order('fecha_registro', { ascending: false })
+          .range(0, Math.min(999, (Number(datos.limite) || 100) - 1));
+        if (error) throw error;
+        return respuestaOK({ datos: data || [], total: count || 0 });
+      }
+
+      throw new Error(`Colección no soportada en Supabase: ${coleccion}`);
+    }
+
+    case 'CREAR': {
+      const coleccion = String(datos.coleccion || '').toUpperCase();
+      const payload = datos.datos || {};
+
+      if (coleccion === 'AVISOS') {
+        if (!usuario?.id) throw new Error('Sesión de usuario no disponible');
+
+        const aviso = {
+          ...payload,
+          created_by: usuario.id,
+          destacado: payload.destacado === true || payload.destacado === 'TRUE' || payload.destacado === 'true' || payload.destacado === 1,
+          fecha_evento: payload.fecha_evento || null,
+          created_at: payload.created_at || new Date().toISOString()
+        };
+
+        const { data, error } = await client
+          .from('avisos')
+          .insert(aviso)
+          .select()
+          .single();
+
+        if (error) throw error;
+        return respuestaOK(data);
+      }
+
+      throw new Error(`CREAR no soportado para ${coleccion}`);
+    }
+
+    case 'ACTUALIZAR': {
+      const coleccion = String(datos.coleccion || '').toUpperCase();
+      const id = datos.id;
+      if (!id) throw new Error('ID requerido');
+
+      if (coleccion === 'AVISOS') {
+        const cambios = { ...(datos.datos || {}), updated_at: new Date().toISOString() };
+        if ('destacado' in cambios) {
+          cambios.destacado = cambios.destacado === true || cambios.destacado === 'TRUE' || cambios.destacado === 'true' || cambios.destacado === 1;
+        }
+        if (cambios.fecha_evento === '') cambios.fecha_evento = null;
+
+        const { data, error } = await client
+          .from('avisos')
+          .update(cambios)
+          .eq('id', id)
+          .select()
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) throw new Error('No se pudo actualizar el aviso. Revisa permisos RLS.');
+        return respuestaOK(data);
+      }
+
+      if (coleccion === 'USUARIOS') {
+        const { data, error } = await client
+          .from('usuarios')
+          .update(datos.datos || {})
+          .eq('id', id)
+          .select()
+          .maybeSingle();
+        if (error) throw error;
+        return respuestaOK(data);
+      }
+
+      throw new Error(`ACTUALIZAR no soportado para ${coleccion}`);
+    }
+
+    case 'ELIMINAR': {
+      const coleccion = String(datos.coleccion || '').toUpperCase();
+      if (coleccion !== 'AVISOS') throw new Error(`ELIMINAR no soportado para ${coleccion}`);
+
+      const { data, error } = await client
+        .from('avisos')
+        .update({ status: 'eliminado', updated_at: new Date().toISOString() })
+        .eq('id', datos.id)
+        .select()
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) throw new Error('No se pudo eliminar el aviso. Revisa permisos RLS.');
+      return respuestaOK(data);
+    }
+
+    case 'LISTAR_USUARIOS':
+    case 'OBTENER_USUARIOS': {
+      const { data, error } = await client
+        .from('usuarios')
+        .select('*')
+        .order('fecha_registro', { ascending: false })
+        .range(0, 999);
+      if (error) throw error;
+      return respuestaOK({ datos: data || [], total: data?.length || 0 });
+    }
+
+    case 'ELIMINAR_USUARIO': {
+      const { data, error } = await client
+        .from('usuarios')
+        .update({ activo: false })
+        .eq('id', datos.id)
+        .select()
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) throw new Error('No se pudo desactivar el usuario.');
+      return respuestaOK(data);
+    }
+
+    case 'APROBAR_AVISO':
+      return await supabasePeticion('ACTUALIZAR', {
+        coleccion: 'AVISOS',
+        id: datos.id,
+        datos: { status: 'activo' }
+      });
+
+    case 'RECHAZAR_AVISO':
+      return await supabasePeticion('ACTUALIZAR', {
+        coleccion: 'AVISOS',
+        id: datos.id,
+        datos: { status: 'rechazado' }
+      });
+
+    default:
+      return null;
+  }
+}
 
 class API {
   constructor() {
     this.baseUrl = API_BASE_URL;
   }
 
-  // ==================== NUEVO MÉTODO REQUEST (UNIVERSAL) ====================
-  static async request(accion, datos = {}, apiKey = null) {
-    apiKey = apiKey || localStorage.getItem('api_key');
-
-    const body = {
-      accion: accion,
-      ...datos
-    };
-
-    if (apiKey) {
-      body.api_key = apiKey;
-    }
-
-    console.log(`📤 ${accion} - Enviando:`, body);
-
-    try {
-      const response = await fetch(API_BASE_URL, {
-        method: 'POST',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const resultado = await response.json();
-      console.log(`📥 ${accion} - Respuesta:`, resultado);
-      return resultado;
-
-    } catch (error) {
-      console.error(`❌ ${accion} - Error:`, error);
-      throw error;
-    }
-  }
-
-  // ==================== MÉTODOS ESTÁTICOS PRINCIPALES ====================
-
-  // Método principal para hacer peticiones JSONP
   static async peticion(accion, datos = {}, apiKey = null, intentos = 2) {
+    const accionSupabase = [
+      'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
+      'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS',
+      'ELIMINAR_USUARIO', 'APROBAR_AVISO', 'RECHAZAR_AVISO'
+    ].includes(accion);
+
+    if (accionSupabase) {
+      try {
+        const resultado = await supabasePeticion(accion, datos);
+        if (resultado) return resultado;
+      } catch (error) {
+        console.error(`❌ Supabase ${accion}:`, error);
+        throw error;
+      }
+    }
+
+    // Compatibilidad temporal con GAS para funciones aún no migradas.
     return new Promise((resolve, reject) => {
       const params = new URLSearchParams();
       params.append('accion', accion);
       if (apiKey) params.append('api_key', apiKey);
-
-      for (const [key, value] of Object.entries(datos)) {
+      Object.entries(datos).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
         }
-      }
+      });
 
-      const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+      const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
       const url = `${API_BASE_URL}?callback=${callbackName}&${params.toString()}`;
-
-      console.log('📡 Petición JSONP URL:', url);
-
       const timeout = setTimeout(() => {
-        if (window[callbackName]) {
-          delete window[callbackName];
-          if (intentos > 0) {
-            console.warn(`⚠️ Timeout, reintentando... (quedan ${intentos} intentos)`);
-            this.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
-          } else {
-            reject(new Error('Timeout de conexión'));
-          }
+        delete window[callbackName];
+        if (intentos > 0) {
+          API.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
+        } else {
+          reject(new Error('Timeout de conexión'));
         }
       }, 30000);
 
-      window[callbackName] = (response) => {
+      window[callbackName] = response => {
         clearTimeout(timeout);
         delete window[callbackName];
-        console.log('📡 Respuesta JSONP:', response);
         resolve(response);
       };
 
@@ -108,403 +319,128 @@ class API {
       script.onerror = () => {
         clearTimeout(timeout);
         delete window[callbackName];
-        if (intentos > 0) {
-          console.warn(`⚠️ Error de script, reintentando... (quedan ${intentos} intentos)`);
-          this.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
-        } else {
-          reject(new Error('Error de conexión con el servidor'));
-        }
+        if (intentos > 0) API.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
+        else reject(new Error('Error de conexión con el servidor'));
       };
       document.body.appendChild(script);
     });
   }
 
-  static async post(accion, datos = {}, apiKey = null) {
-
-    apiKey = apiKey || localStorage.getItem('api_key');
-
-    try {
-
-      const body = {
-        accion,
-        ...datos
-      };
-
-      if (apiKey) {
-        body.api_key = apiKey;
-      }
-
-      const response = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-            /* 'Content-Type': 'application/json' */
-        },
-        body: JSON.stringify(body)
-      });
-
-      return await response.json();
-
-    } catch (error) {
-
-      console.error('Error POST:', error);
-      throw error;
+  static async request(accion, datos = {}, apiKey = null) {
+    if (['LISTAR_USUARIOS', 'OBTENER_USUARIOS'].includes(accion)) {
+      return await API.peticion(accion, datos, apiKey);
     }
+    return await API.peticion(accion, datos, apiKey);
   }
 
-  // ==================== MÉTODOS DE AUTENTICACIÓN ====================
+  static async post(accion, datos = {}, apiKey = null) {
+    return await API.peticion(accion, datos, apiKey);
+  }
 
   static async login(email, password) {
-    try {
-      // ✅ Declarar explícitamente todo antes de usarlo
-      const accion = 'LOGIN';
-      const datos = { email: email, password: password };
-
-      console.log('🔐 Login - accion:', accion);
-      console.log('🔐 Login - datos:', datos);
-
-      // Usar API.post directamente con parámetros claros
-      const resultado = await API.post(accion, datos);
-
-      console.log('🔐 Login - resultado:', resultado);
-
-      if (resultado && resultado.success && resultado.data && resultado.data.api_key) {
-        localStorage.setItem('api_key', resultado.data.api_key);
-        localStorage.setItem('usuario', JSON.stringify(resultado.data.usuario));
-        window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: resultado.data.usuario } }));
-        window.dispatchEvent(new Event('storage'));
-        return resultado.data;
-      } else {
-        throw new Error(resultado?.error || 'Credenciales inválidas');
-      }
-    } catch (error) {
-      console.error('Error en login API:', error);
-      throw error;
-    }
+    if (window.Auth?.login) return await Auth.login(email, password);
+    throw new Error('Auth no disponible');
   }
 
-  // Registro
   static async registro(datos) {
-    try {
-      const resultado = await API.peticion('REGISTRO', { datos: datos });
-
-      if (resultado && resultado.success && resultado.data && resultado.data.api_key) {
-        return resultado.data;  // ← Debe contener api_key y usuario
-      } else {
-        throw new Error(resultado?.error || 'Error en registro');
-      }
-    } catch (error) {
-      console.error('Error en registro API:', error);
-      throw error;
-    }
+    throw new Error('El registro debe realizarse mediante Supabase Auth.');
   }
 
-  // Cerrar sesión
-  static logout() {
-    const apiKey = localStorage.getItem('api_key');
-    if (apiKey) {
-      API.peticion('LOGOUT', {}, apiKey).catch(() => { });
+  static async logout() {
+    if (window.Auth?.logout) {
+      await Auth.logout();
+      return;
     }
-    localStorage.removeItem('api_key');
     localStorage.removeItem('usuario');
-    window.dispatchEvent(new CustomEvent('auth-change', { detail: { usuario: null } }));
-    window.dispatchEvent(new Event('storage'));
-    console.log('🔓 Sesión cerrada');
+    localStorage.removeItem('api_key');
   }
 
-  // Obtener usuario actual
   static getUsuarioActual() {
-    try {
-      const usuarioStr = localStorage.getItem('usuario');
-      if (!usuarioStr) return null;
-
-      // ✅ Protección contra datos corruptos
-      const trimmed = usuarioStr.trim();
-      if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
-        console.warn('⚠️ Usuario corrupto detectado, limpiando...', usuarioStr);
-        localStorage.removeItem('usuario');
-        return null;
-      }
-
-      const usuario = JSON.parse(usuarioStr);
-      if (!usuario || typeof usuario !== 'object') {
-        localStorage.removeItem('usuario');
-        return null;
-      }
-
-      if (!usuario.email) return null;
-      return usuario;
-    } catch (e) {
-      console.error('Error parsing usuario:', e);
-      localStorage.removeItem('usuario');
-      return null;
-    }
+    return getUsuarioLocal();
   }
 
-  // Verificar si hay sesión
   static isLoggedIn() {
-    return !!API.getUsuarioActual();
+    return !!getUsuarioLocal();
   }
 
-  // ==================== MÉTODOS DE AVISOS ====================
-
-  // Listar avisos
   static async listar(coleccion, filtros = {}, paginacion = {}) {
-    const apiKey = localStorage.getItem('api_key');
-    const usuario = API.getUsuarioActual();
-    const esAdmin = usuario && usuario.rol === 'admin';
-
-    // Construir parámetros base
-    const params = {
-      coleccion: coleccion,
+    const resultado = await API.peticion('LISTAR', {
+      coleccion,
+      ...filtros,
       ...paginacion
-    };
-
-    // Si NO es admin Y hay usuario logueado, filtrar por sus propios avisos
-    if (coleccion === 'AVISOS' && !esAdmin && usuario) {
-      params.created_by = usuario.id;
-    }
-
-    // Agregar filtros adicionales (Aquí es crucial que admin.js envíe { estado: 'pendiente' } u otros)
-    Object.assign(params, filtros);
-
-    // Mantenemos JSONP para listar ya que GET suele ser seguro para lecturas paginadas
-    const resultado = await API.peticion('LISTAR', params, apiKey);
-
-    if (resultado && resultado.success) {
-      return resultado.data || { datos: [], total: 0 };
-    }
-
-    if (resultado && resultado.datos) {
-      return resultado;
-    }
-
-    return { datos: [], total: 0 };
-  }
-
-  // Crear aviso (Asegura que "datos" incluya la propiedad imagen_url correctamente)
-  static async crearAviso(datos, apiKey) {
-    return await API.post('CREAR', {
-      coleccion: 'AVISOS',
-      datos: datos
-    }, apiKey);
-  }
-
-  // Actualizar aviso (Migrado a estructura limpia para el backend)
-  static async actualizarAviso(id, datos, apiKey) {
-    return await API.post('ACTUALIZAR', {
-      coleccion: 'AVISOS',
-      id: id,
-      datos: datos
-    }, apiKey);
-  }
-
-  // Eliminar (Migrado a POST para evitar fallos de permisos por URL)
-  static async eliminar(coleccion, id, apiKey) {
-    return await API.post('ELIMINAR', {
-      coleccion: coleccion,
-      id: id
-    }, apiKey);
-  }
-
-  // Aprobar aviso (¡Corregido a POST real para evitar truncado de datos!)
-  static async aprobarAviso(id, apiKey) {
-    return await API.post('APROBAR_AVISO', {
-      id: id
-    }, apiKey);
-  }
-
-  // Rechazar aviso (¡Corregido a POST real!)
-  static async rechazarAviso(id, apiKey) {
-    return await API.post('RECHAZAR_AVISO', {
-      id: id
-    }, apiKey);
-  }
-
-
-  // ==================== MÉTODOS DE ESTADÍSTICAS ====================
-
-  static async registrarVista(id) {
-    return await API.peticion('REGISTRAR_VISTA', { id: id });
-  }
-
-  static async registrarClickWhatsApp(id) {
-    return await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id: id });
-  }
-
-  static async registrarInteres(id) {
-    return await API.peticion('REGISTRAR_INTERES', { id: id });
-  }
-
-  // ==================== MÉTODOS DE COMENTARIOS ====================
-
-  static async listarComentarios(avisoId) {
-    // ✅ Usar JSONP con el parámetro correcto
-    const resultado = await API.peticion('LISTAR_COMENTARIOS', { avisoId: avisoId });
-    console.log('listarComentarios resultado:', resultado);
-    if (resultado && resultado.success) {
-      return resultado.data || [];
-    }
-    return [];
-  }
-
-  static async agregarComentario(avisoId, texto, autor) {
-    return await API.peticion('AGREGAR_COMENTARIO', {
-      avisoId: avisoId,
-      texto: texto,
-      autor: autor
     });
+    if (resultado?.success) return resultado.data || { datos: [], total: 0 };
+    return resultado || { datos: [], total: 0 };
   }
 
-  // ==================== MÉTODOS DE REPUTACIÓN ====================
-
-  static async miReputacion(apiKey) {
-    return await API.peticion('MI_REPUTACION', {}, apiKey);
+  static async crearAviso(datos, apiKey = null) {
+    return await API.peticion('CREAR', { coleccion: 'AVISOS', datos }, apiKey);
   }
 
-  static async solicitarVerificacionTelefono(telefono, apiKey) {
-    return await API.peticion('VERIFICAR_TELEFONO_SOLICITAR', { telefono: telefono }, apiKey);
+  static async actualizarAviso(id, datos, apiKey = null) {
+    return await API.peticion('ACTUALIZAR', { coleccion: 'AVISOS', id, datos }, apiKey);
   }
 
-  static async confirmarVerificacionTelefono(codigo, apiKey) {
-    return await API.peticion('VERIFICAR_TELEFONO_CONFIRMAR', { codigo: codigo }, apiKey);
+  static async eliminar(coleccion, id, apiKey = null) {
+    return await API.peticion('ELIMINAR', { coleccion, id }, apiKey);
   }
 
-  static async votarAviso(avisoId, tipo, apiKey) {
-    return await API.peticion('VOTAR_AVISO', {
-      aviso_id: avisoId,
-      tipo: tipo
-    }, apiKey);
+  static async aprobarAviso(id, apiKey = null) {
+    return await API.peticion('APROBAR_AVISO', { id }, apiKey);
   }
 
-  static async reportarAviso(avisoId, motivo, apiKey) {
-    return await API.peticion('REPORTAR_AVISO', { aviso_id: avisoId, motivo: motivo }, apiKey);
+  static async rechazarAviso(id, apiKey = null) {
+    return await API.peticion('RECHAZAR_AVISO', { id }, apiKey);
   }
 
-  // ==================== MÉTODOS DE USUARIOS (ADMIN) ====================
+  static async listarUsuarios(apiKey = null) {
+    return await API.peticion('LISTAR_USUARIOS', {}, apiKey);
+  }
 
-  static async listarUsuarios(apiKey) {
-    const resultado = await API.request('LISTAR_USUARIOS', {}, apiKey);
-    if (resultado && resultado.success) {
-      return resultado.data || { datos: [] };
+  static async actualizarUsuario(id, datos, apiKey = null) {
+    return await API.peticion('ACTUALIZAR', { coleccion: 'USUARIOS', id, datos }, apiKey);
+  }
+
+  // Funciones aún no migradas. Se conservan para no romper páginas antiguas.
+  static async registrarVista(id) { return await API.peticion('REGISTRAR_VISTA', { id }); }
+  static async registrarClickWhatsApp(id) { return await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id }); }
+  static async registrarInteres(id) { return await API.peticion('REGISTRAR_INTERES', { id }); }
+  static async listarComentarios(avisoId) { const r = await API.peticion('LISTAR_COMENTARIOS', { avisoId }); return r?.data || []; }
+  static async agregarComentario(avisoId, texto, autor) { return await API.peticion('AGREGAR_COMENTARIO', { avisoId, texto, autor }); }
+  static async miReputacion(apiKey) { return await API.peticion('MI_REPUTACION', {}, apiKey); }
+  static async solicitarVerificacionTelefono(telefono, apiKey) { return await API.peticion('VERIFICAR_TELEFONO_SOLICITAR', { telefono }, apiKey); }
+  static async confirmarVerificacionTelefono(codigo, apiKey) { return await API.peticion('VERIFICAR_TELEFONO_CONFIRMAR', { codigo }, apiKey); }
+  static async votarAviso(avisoId, tipo, apiKey) { return await API.peticion('VOTAR_AVISO', { aviso_id: avisoId, tipo }, apiKey); }
+  static async reportarAviso(avisoId, motivo, apiKey) { return await API.peticion('REPORTAR_AVISO', { aviso_id: avisoId, motivo }, apiKey); }
+
+  static mostrarExito(mensaje) {
+    const container = document.getElementById('mensaje-container');
+    if (container) {
+      container.innerHTML = `<div class="mensaje mensaje-exito" style="background:#d4edda;color:#155724;padding:12px;border-radius:8px;margin-bottom:16px;">${escapeHtmlGlobal(mensaje)}</div>`;
+      setTimeout(() => { if (container) container.innerHTML = ''; }, 4000);
+    } else {
+      alert(mensaje);
     }
-    return { datos: [] };
   }
 
-  static async actualizarUsuario(id, datos, apiKey) {
-    return await API.peticion('ACTUALIZAR', {
-      coleccion: 'USUARIOS',
-      id: id,
-      datos: datos
-    }, apiKey);
+  static mostrarError(mensaje) {
+    const container = document.getElementById('mensaje-container');
+    if (container) {
+      container.innerHTML = `<div class="mensaje mensaje-error" style="background:#f8d7da;color:#721c24;padding:12px;border-radius:8px;margin-bottom:16px;">${escapeHtmlGlobal(mensaje)}</div>`;
+    } else {
+      alert(mensaje);
+    }
   }
 }
 
-// ==================== FUNCIÓN DE RESPALDO ====================
-
-window.llamarAPI = async function (accion, datos = {}, apiKey = null) {
-  return await API.peticion(accion, datos, apiKey);
-};
-
-// ==================== INICIALIZACIÓN ====================
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('api-ready'));
-      console.log('✅ API Client inicializado correctamente');
-    }, 100);
-  });
-} else {
-  setTimeout(() => {
-    window.dispatchEvent(new CustomEvent('api-ready'));
-    console.log('✅ API Client inicializado correctamente');
-  }, 100);
+function escapeHtmlGlobal(text) {
+  const div = document.createElement('div');
+  div.textContent = text == null ? '' : String(text);
+  return div.innerHTML;
 }
 
 window.API = API;
+window.llamarAPI = (accion, datos = {}, apiKey = null) => API.peticion(accion, datos, apiKey);
 
-window.addEventListener('storage', (e) => {
-  if (e.key === 'api_key' || e.key === 'usuario') {
-    console.log('🔄 Cambio de sesión detectado en otra pestaña');
-    window.dispatchEvent(new CustomEvent('auth-change', {
-      detail: { usuario: API.getUsuarioActual() }
-    }));
-  }
-});
-
-console.log('📡 API Client cargado. API_BASE_URL:', API_BASE_URL);
-
-// ==================== FUNCIONES DE UI ====================
-API.mostrarExito = function (mensaje) {
-  console.log('✅ Éxito:', mensaje);
-  const container = document.getElementById('mensaje-container');
-  if (container) {
-    container.innerHTML = `<div class="mensaje mensaje-exito" style="background: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 16px;">✅ ${mensaje}</div>`;
-    setTimeout(() => {
-      if (container.innerHTML.includes(mensaje)) {
-        container.innerHTML = '';
-      }
-    }, 4000);
-  } else {
-    alert(mensaje);
-  }
-};
-
-API.mostrarError = function (mensaje) {
-  console.error('❌ Error:', mensaje);
-  const container = document.getElementById('mensaje-container');
-  if (container) {
-    container.innerHTML = `<div class="mensaje mensaje-error" style="background: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 16px;">❌ ${mensaje}</div>`;
-    setTimeout(() => {
-      if (container.innerHTML.includes(mensaje)) {
-        container.innerHTML = '';
-      }
-    }, 4000);
-  } else {
-    alert('Error: ' + mensaje);
-  }
-};
-
-// ========== LISTAR MIS AVISOS (para panel de administración) ==========
-API.listarMisAvisos = async function (filtros = {}, paginacion = {}) {
-  const apiKey = localStorage.getItem('api_key');
-  if (!apiKey) {
-    console.warn('No hay API key, no se pueden cargar avisos');
-    return { datos: [], total: 0 };
-  }
-
-  const params = {
-    accion: 'LISTAR_MIS_AVISOS',
-    ...filtros,
-    ...paginacion
-  };
-
-  const resultado = await API.peticion('LISTAR_MIS_AVISOS', params, apiKey);
-
-  if (resultado && resultado.success) {
-    return resultado.data || { datos: [], total: 0 };
-  }
-
-  console.error('Error en listarMisAvisos:', resultado);
-  return { datos: [], total: 0 };
-};
-
-// ========== LISTAR AVISOS PÚBLICOS (para index.html) ==========
-API.listarPublicos = async function (filtros = {}, paginacion = {}) {
-  const params = {
-    accion: 'LISTAR_AVISOS_PUBLICOS',
-    ...filtros,
-    ...paginacion
-  };
-
-  // Usar peticion (JSONP) en lugar de post
-  const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', params);
-
-  if (resultado && resultado.success) {
-    return resultado.data || { datos: [], total: 0 };
-  }
-
-  console.error('Error en listarPublicos:', resultado);
-  return { datos: [], total: 0 };
-};
+window.dispatchEvent(new CustomEvent('api-ready'));
+console.log('📡 API Client cargado. Supabase activo para administración.');
