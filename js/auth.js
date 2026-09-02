@@ -1,5 +1,8 @@
 console.log('🔵 auth.js cargando...');
 
+const EL_BARRIO_SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
+const EL_BARRIO_SUPABASE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
+
 async function obtenerSupabaseClient() {
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
 
@@ -17,60 +20,60 @@ async function obtenerSupabaseClient() {
     });
   }
 
-  const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJndmphdW1wamVyYmJid2xrY2d4cWEiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc4NzkyNDk4OSwiZXhwIjoyMTAzNTAwOTg5fQ.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU';
-
   window.__elBarrioSupabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
+    EL_BARRIO_SUPABASE_URL,
+    EL_BARRIO_SUPABASE_KEY
   );
 
   console.log('✅ Cliente Supabase creado desde auth.js');
-
   return window.__elBarrioSupabaseClient;
 }
 
+async function construirUsuario(client, user) {
+  let perfil = null;
+
+  try {
+    const { data, error } = await client
+      .from('usuarios')
+      .select('id,email,nombre,rol,activo')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!error) perfil = data;
+    else console.warn('⚠️ No se pudo consultar perfil usuarios:', error.message);
+  } catch (e) {
+    console.warn('⚠️ Error consultando perfil usuarios:', e.message);
+  }
+
+  return {
+    id: user.id,
+    email: perfil?.email || user.email,
+    nombre: perfil?.nombre || user.user_metadata?.nombre || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario',
+    rol: perfil?.rol || user.user_metadata?.rol || user.app_metadata?.rol || 'usuario',
+    activo: perfil?.activo !== false
+  };
+}
+
+function guardarCompatibilidad(usuario, session) {
+  localStorage.setItem('usuario', JSON.stringify(usuario));
+  if (session?.access_token) localStorage.setItem('api_key', session.access_token);
+}
+
 const Auth = {
-
   async login(email, password) {
-
-    console.log('🔵 Auth.login ejecutándose');
-
     const client = await obtenerSupabaseClient();
 
-    const { data, error } =
-      await client.auth.signInWithPassword({
-        email,
-        password
-      });
+    const { data, error } = await client.auth.signInWithPassword({
+      email,
+      password
+    });
 
-    console.log('🔵 Resultado Supabase:', { data, error });
+    if (error) throw error;
 
-    if (error) {
-      throw error;
-    }
-
-    const user = data.user;
-    const session = data.session;
-
-    if (user) {
-      const usuarioCompatibilidad = {
-        id: user.id,
-        email: user.email,
-        nombre: user.user_metadata?.nombre || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario',
-        rol: user.user_metadata?.rol || user.app_metadata?.rol || 'usuario'
-      };
-
-      localStorage.setItem(
-        'usuario',
-        JSON.stringify(usuarioCompatibilidad)
-      );
-
-      if (session?.access_token) {
-        localStorage.setItem('api_key', session.access_token);
-      }
-
-      console.log('🟢 Sesión Supabase reconocida por el panel:', usuarioCompatibilidad);
+    if (data.user) {
+      const usuario = await construirUsuario(client, data.user);
+      guardarCompatibilidad(usuario, data.session);
+      console.log('🟢 Sesión Supabase reconocida:', usuario);
     }
 
     return data;
@@ -86,24 +89,13 @@ const Auth = {
     }
 
     const session = data?.session;
-
     if (!session?.user) {
       console.warn('🔒 No existe sesión Supabase activa');
       return null;
     }
 
-    const user = session.user;
-
-    const usuario = {
-      id: user.id,
-      email: user.email,
-      nombre: user.user_metadata?.nombre || user.user_metadata?.name || user.email?.split('@')[0] || 'Usuario',
-      rol: user.user_metadata?.rol || user.app_metadata?.rol || 'usuario'
-    };
-
-    localStorage.setItem('usuario', JSON.stringify(usuario));
-    localStorage.setItem('api_key', session.access_token);
-
+    const usuario = await construirUsuario(client, session.user);
+    guardarCompatibilidad(usuario, session);
     return usuario;
   },
 
@@ -118,8 +110,9 @@ const Auth = {
 
     localStorage.removeItem('usuario');
     localStorage.removeItem('api_key');
-
     console.log('🔓 Sesión Supabase cerrada');
   }
-
 };
+
+window.Auth = Auth;
+window.obtenerSupabaseClient = obtenerSupabaseClient;
