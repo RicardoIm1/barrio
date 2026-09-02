@@ -263,7 +263,7 @@ async function supabasePeticion(accion, datos = {}) {
       if (usuario?.rol !== 'admin') throw new Error('Solo administradores pueden consultar estadísticas avanzadas.');
 
       const [usuariosResult, avisosResult] = await Promise.all([
-        client.from('usuarios').select('id, created_at, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999),
+        client.from('usuarios').select('id, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999),
         client.from('avisos').select('id, created_at, status').order('created_at', { ascending: true }).range(0, 999)
       ]);
 
@@ -291,7 +291,7 @@ async function supabasePeticion(accion, datos = {}) {
         d.setDate(desde.getDate() + i);
         const key = d.toISOString().slice(0, 10);
         labels.push(d.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit' }));
-        usuariosPorDia.push(usuarios.filter(u => claveDia(u.fecha_registro || u.created_at) === key).length);
+        usuariosPorDia.push(usuarios.filter(u => claveDia(u.fecha_registro) === key).length);
         avisosPorDia.push(avisos.filter(a => claveDia(a.created_at) === key).length);
       }
 
