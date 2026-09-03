@@ -7,6 +7,9 @@ let presenciaTimer = null;
 let presenciaVisibilityHandler = null;
 let presenciaActivityHandler = null;
 let presenciaEnCurso = false;
+let moderacionChannel = null;
+let moderacionIniciada = false;
+let votarAvisoOriginal = null;
 
 async function obtenerSupabaseClient() {
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
@@ -23,6 +26,154 @@ async function obtenerSupabaseClient() {
   window.__elBarrioSupabaseClient = window.supabase.createClient(EL_BARRIO_SUPABASE_URL, EL_BARRIO_SUPABASE_KEY);
   console.log('✅ Cliente Supabase creado desde auth.js');
   return window.__elBarrioSupabaseClient;
+}
+
+function instalarEstilosApagadoTV() {
+  if (document.getElementById('el-barrio-apagado-tv-styles')) return;
+  const style = document.createElement('style');
+  style.id = 'el-barrio-apagado-tv-styles';
+  style.textContent = `
+    .aviso-apagando-tv {
+      pointer-events: none !important;
+      transform-origin: center center !important;
+      animation: elBarrioApagadoTV .78s cubic-bezier(.55,.05,.68,.19) forwards !important;
+    }
+
+    @keyframes elBarrioApagadoTV {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+        filter: brightness(1);
+      }
+      32% {
+        opacity: 1;
+        transform: scaleY(.075) scaleX(1.015);
+        filter: brightness(1.45);
+      }
+      52% {
+        opacity: 1;
+        transform: scaleY(.018) scaleX(.82);
+        filter: brightness(2.4);
+      }
+      68% {
+        opacity: .78;
+        transform: scaleY(.009) scaleX(.38);
+        filter: brightness(3.2);
+      }
+      100% {
+        opacity: 0;
+        transform: scaleY(0) scaleX(0);
+        filter: brightness(0);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function obtenerCardIndicePorId(id) {
+  const cards = document.querySelectorAll('.aviso-card');
+  const objetivo = String(id);
+  for (const card of cards) {
+    const dataId = card.getAttribute('data-id');
+    if (dataId && String(dataId) === objetivo) return card;
+    const onclick = card.getAttribute('onclick') || '';
+    if (onclick.includes(objetivo)) return card;
+  }
+  return null;
+}
+
+function eliminarAvisoDelIndice(id) {
+  if (typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos)) {
+    todosLosAvisos = todosLosAvisos.filter(a => String(a.id) !== String(id));
+  }
+
+  if (typeof paginaActual !== 'undefined' && typeof totalPaginas !== 'undefined') {
+    const cantidad = typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos)
+      ? todosLosAvisos.length
+      : 0;
+    const paginas = Math.max(1, Math.ceil(cantidad / (typeof AVISOS_POR_PAGINA !== 'undefined' ? AVISOS_POR_PAGINA : 6)));
+    if (paginaActual > paginas) paginaActual = paginas;
+  }
+}
+
+function ejecutarRechazoVisual(id) {
+  if (!id) return;
+  instalarEstilosApagadoTV();
+
+  const avisoId = String(id);
+  const avisoIdActual = typeof AVISO_ID !== 'undefined' ? String(AVISO_ID || '') : '';
+
+  if (avisoIdActual && avisoIdActual === avisoId) {
+    const paper = document.querySelector('.aviso-paper');
+    if (paper && !paper.classList.contains('aviso-apagando-tv')) {
+      paper.classList.add('aviso-apagando-tv');
+      setTimeout(() => {
+        window.location.replace('/index.html');
+      }, 800);
+    }
+    return;
+  }
+
+  const card = obtenerCardIndicePorId(avisoId);
+  if (card && !card.classList.contains('aviso-apagando-tv')) {
+    card.classList.add('aviso-apagando-tv');
+    eliminarAvisoDelIndice(avisoId);
+    setTimeout(() => {
+      if (card.isConnected) card.remove();
+      if (typeof filtrarYAplicarPaginacion === 'function') {
+        filtrarYAplicarPaginacion().catch(error => console.warn('Actualización tras rechazo:', error));
+      }
+    }, 800);
+  }
+}
+
+function instalarInterceptadorVotos() {
+  if (typeof API === 'undefined' || typeof API.votarAviso !== 'function') return false;
+  if (API.votarAviso.__elBarrioAutoRechazo) return true;
+
+  votarAvisoOriginal = API.votarAviso.bind(API);
+  const votar = async function (id, tipo) {
+    const resultado = await votarAvisoOriginal(id, tipo);
+    const rechazado = resultado?.rechazado === true || resultado?.status === 'rechazado';
+    if (rechazado) ejecutarRechazoVisual(id);
+    return resultado;
+  };
+  votar.__elBarrioAutoRechazo = true;
+  API.votarAviso = votar;
+  return true;
+}
+
+async function iniciarEscuchaModeracion() {
+  if (moderacionIniciada) return;
+  moderacionIniciada = true;
+  instalarEstilosApagadoTV();
+
+  try {
+    const client = await obtenerSupabaseClient();
+
+    instalarInterceptadorVotos();
+
+    if (!client?.channel) return;
+
+    moderacionChannel = client.channel('el-barrio-moderacion', {
+      config: { private: false }
+    });
+
+    moderacionChannel
+      .on('broadcast', { event: 'aviso_rechazado' }, payload => {
+        const id = payload?.payload?.aviso_id || payload?.payload?.id;
+        if (id) ejecutarRechazoVisual(id);
+      })
+      .subscribe((status, error) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('🟢 Escucha de moderación en tiempo real activa');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.warn('⚠️ Canal de moderación:', status, error || '');
+        }
+      });
+  } catch (error) {
+    console.warn('⚠️ No se pudo iniciar escucha de moderación:', error?.message || error);
+  }
 }
 
 async function registrarPresencia() {
@@ -122,6 +273,7 @@ const Auth = {
       const usuario = await construirUsuario(client, data.user);
       guardarCompatibilidad(usuario, data.session);
       iniciarPresencia();
+      iniciarEscuchaModeracion();
       console.log('🟢 Sesión Supabase reconocida:', usuario);
     }
     return data;
@@ -132,10 +284,11 @@ const Auth = {
     const { data, error } = await client.auth.getSession();
     if (error) { console.error('❌ Error comprobando sesión:', error); return null; }
     const session = data?.session;
-    if (!session?.user) { detenerPresencia(); console.warn('🔒 No existe sesión Supabase activa'); return null; }
+    if (!session?.user) { detenerPresencia(); return null; }
     const usuario = await construirUsuario(client, session.user);
     guardarCompatibilidad(usuario, session);
     iniciarPresencia();
+    iniciarEscuchaModeracion();
     return usuario;
   },
 
@@ -168,3 +321,8 @@ if (typeof API !== 'undefined') {
   };
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
+
+// La moderación se escucha desde todas las páginas que cargan auth.js,
+// incluyendo visitantes sin sesión, para que un aviso rechazado desaparezca
+// también del navegador de quienes lo tenían abierto.
+iniciarEscuchaModeracion();
