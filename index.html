@@ -111,6 +111,21 @@
         }
         window.showToast = toast;
 
+        function conectarFiltrosHeader() {
+          const botones = document.querySelectorAll('#header-container .filtro');
+          botones.forEach(btn => {
+            if (btn.dataset.elBarrioFiltro === '1') return;
+            btn.dataset.elBarrioFiltro = '1';
+            btn.addEventListener('click', function () {
+              document.querySelectorAll('#header-container .filtro').forEach(b => b.classList.remove('activo'));
+              this.classList.add('activo');
+              if (typeof categoriaActual !== 'undefined') categoriaActual = this.dataset.categoria || 'todos';
+              if (typeof paginaActual !== 'undefined') paginaActual = 1;
+              if (typeof cargarAvisos === 'function') cargarAvisos();
+            });
+          });
+        }
+
         async function cargarHeaderYFooter() {
           const header = document.getElementById('header-container');
           const footer = document.getElementById('footer-container');
@@ -152,6 +167,7 @@
                 });
               });
             }
+            conectarFiltrosHeader();
           }
 
           try {
@@ -160,6 +176,13 @@
               footer.innerHTML = await r.text();
               const year = footer.querySelector('#copyright-year');
               if (year) year.innerHTML = '&copy; ' + new Date().getFullYear() + ' - El Barrio. Todos los derechos reservados.';
+              footer.querySelectorAll('script').forEach(oldScript => {
+                const script = document.createElement('script');
+                if (oldScript.src) script.src = oldScript.src;
+                else script.textContent = oldScript.textContent;
+                document.body.appendChild(script);
+                oldScript.remove();
+              });
             }
           } catch (e) { console.warn('Footer:', e); }
         }
