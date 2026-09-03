@@ -109,9 +109,39 @@ async function supabasePeticion(accion, datos = {}) {
     case 'OBTENER_AVISO_POR_ID': {
       const id = String(datos?.id || '').trim();
       if (!id) throw new Error('ID de aviso no proporcionado');
-      const { data, error } = await client.from('avisos').select(`*, usuarios!avisos_created_by_fkey (nombre)`).eq('id', id).maybeSingle();
+
+      const { data, error } = await client
+        .from('avisos')
+        .select(`*, usuarios!avisos_created_by_fkey (nombre)`)
+        .eq('id', id)
+        .maybeSingle();
+
       if (error) throw error;
-      return respuestaOK(normalizarAviso(data));
+      if (!data) return respuestaOK(null);
+
+      // Los acumulados públicos se obtienen mediante RPC.
+      // Así no exponemos las filas individuales de la tabla votos.
+      let positivos = 0;
+      let negativos = 0;
+      try {
+        const { data: votosData, error: votosError } = await client.rpc('obtener_votos_aviso', {
+          p_aviso_id: id
+        });
+        if (votosError) throw votosError;
+        const votos = typeof votosData === 'string' ? JSON.parse(votosData) : (votosData || {});
+        positivos = Number(votos.positivos || 0);
+        negativos = Number(votos.negativos || 0);
+      } catch (votosError) {
+        console.warn('No se pudieron cargar los acumulados de votos:', votosError);
+      }
+
+      return respuestaOK({
+        ...normalizarAviso(data),
+        likes: positivos,
+        dislikes: negativos,
+        votos_positivos: positivos,
+        votos_negativos: negativos
+      });
     }
 
     case 'LISTAR_AVISOS_PUBLICOS': {
