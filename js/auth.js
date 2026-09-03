@@ -117,10 +117,10 @@ const Auth = {
 window.Auth = Auth;
 window.obtenerSupabaseClient = obtenerSupabaseClient;
 
-// Compatibilidad con el index.html actual.
-// La implementación nueva de API expone LISTAR_AVISOS_PUBLICOS
-// mediante API.peticion(), mientras que index.html conserva la
-// llamada histórica API.listarPublicos(filtros, paginacion).
+// ==================== COMPATIBILIDAD API ====================
+// api.js conserva API.peticion() como núcleo. Estos puentes mantienen
+// compatibilidad con index.html y app.js sin duplicar lógica.
+
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
     return await API.peticion(
@@ -128,4 +128,20 @@ if (typeof API !== 'undefined') {
       { ...(filtros || {}), ...(paginacion || {}) }
     );
   };
+
+  API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
+    const nombre = String(coleccion || '').toUpperCase();
+
+    if (nombre === 'AVISOS') {
+      return await API.listarPublicos(filtros, paginacion);
+    }
+
+    return await API.peticion('LISTAR', {
+      coleccion: nombre,
+      ...(filtros || {}),
+      ...(paginacion || {})
+    });
+  };
+
+  console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
