@@ -12,265 +12,59 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
-    /* Estilos específicos para esta página */
-    .login-container {
-      max-width: 500px;
-      /* margin: 0 auto; */
-      margin: 0;
-    }
-
-    /* Header con gradiente verde igual que las otras páginas */
-    .login-header {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem 1rem;
-      background: linear-gradient(135deg, #1e4620, #2b7a2b);
-      border-radius: 1rem;
-      color: white;
-    }
-
-    .login-header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .login-header p {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    /* Tarjeta de contenido */
-    .login-content {
-      background: white;
-      border-radius: 1rem;
-      padding: 2rem;
-      border: 1px solid var(--color-borde);
-      margin-bottom: 2rem;
-    }
-
-    .login-content h2 {
-      margin-bottom: 1.5rem;
-      font-weight: 600;
-      color: var(--color-primario);
-      text-align: center;
-    }
-
-    .campo {
-      margin-bottom: 1.2rem;
-    }
-
-    .campo label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.85rem;
-      margin-bottom: 0.4rem;
-      color: var(--color-primario);
-    }
-
-    /* Contenedor para input con botón de ver contraseña */
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .campo input {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1px solid var(--color-borde);
-      border-radius: 0.75rem;
-      font-size: 0.95rem;
-      font-family: inherit;
-      background: white;
-    }
-
-    /* Ajuste para el input de contraseña con botón */
-    .password-wrapper input {
-      flex: 1;
-      padding-right: 3rem;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #666;
-      transition: color 0.2s ease;
-    }
-
-    .toggle-password:hover {
-      color: var(--color-acento, #3498db);
-    }
-
-    .campo input:focus {
-      outline: none;
-      border-color: var(--color-acento);
-      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-
-    .btn-login-form {
-      width: 100%;
-
-      padding: 0.95rem 1rem;
-
-      border: none;
-      border-radius: 0.85rem;
-
-      background: linear-gradient(135deg,
-          var(--color-verde),
-          #1e4620);
-
-      color: white;
-
-      font-size: 1rem;
-      font-weight: 700;
-
-      cursor: pointer;
-
-      transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        opacity 0.2s ease;
-
-      box-shadow:
-        0 10px 25px rgba(43, 122, 43, 0.18);
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      gap: 0.5rem;
-    }
-
-    .btn-login-form:hover {
-      transform: translateY(-2px);
-
-      box-shadow:
-        0 14px 30px rgba(43, 122, 43, 0.28);
-    }
-
-    .btn-login-form:active {
-      transform: translateY(0);
-    }
-
-    .btn-login-form:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .registro-link {
-      text-align: center;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--color-borde);
-      font-size: 0.85rem;
-    }
-
-    .registro-link a {
-      color: var(--color-acento);
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .registro-link a:hover {
-      text-decoration: underline;
-    }
-
-    .mensaje-error {
-      background: #fee2e2;
-      color: #b91c1c;
-      padding: 0.8rem;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      border: 1px solid #fecaca;
-    }
-
-    .mensaje-exito {
-      background: #d1fae5;
-      color: #065f46;
-      padding: 0.8rem;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-      border: 1px solid #a7f3d0;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid white;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      margin-right: 0.5rem;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .login-content {
-        padding: 1.5rem;
-      }
-
-      .login-header h1 {
-        font-size: 1.5rem;
-      }
-    }
+    .login-container { max-width: 500px; margin: 0; }
+    .login-header { text-align:center; margin-bottom:2rem; padding:2rem 1rem; background:linear-gradient(135deg,#1e4620,#2b7a2b); border-radius:1rem; color:white; }
+    .login-header h1 { font-size:1.8rem; margin-bottom:.5rem; }
+    .login-header p { font-size:.9rem; opacity:.9; }
+    .login-content { background:white; border-radius:1rem; padding:2rem; border:1px solid var(--color-borde); margin-bottom:2rem; }
+    .login-content h2 { margin-bottom:1.5rem; font-weight:600; color:var(--color-primario); text-align:center; }
+    .campo { margin-bottom:1.2rem; }
+    .campo label { display:block; font-weight:600; font-size:.85rem; margin-bottom:.4rem; color:var(--color-primario); }
+    .password-wrapper { position:relative; display:flex; align-items:center; }
+    .campo input { width:100%; padding:.8rem 1rem; border:1px solid var(--color-borde); border-radius:.75rem; font-size:.95rem; font-family:inherit; background:white; }
+    .password-wrapper input { flex:1; padding-right:3rem; }
+    .toggle-password { position:absolute; right:12px; background:none; border:none; cursor:pointer; font-size:1.2rem; padding:0; display:flex; align-items:center; justify-content:center; color:#666; transition:color .2s ease; }
+    .toggle-password:hover { color:var(--color-acento,#3498db); }
+    .campo input:focus { outline:none; border-color:var(--color-acento); box-shadow:0 0 0 3px rgba(52,152,219,.1); }
+    .btn-login-form { width:100%; padding:.95rem 1rem; border:none; border-radius:.85rem; background:linear-gradient(135deg,var(--color-verde),#1e4620); color:white; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease; box-shadow:0 10px 25px rgba(43,122,43,.18); display:inline-flex; align-items:center; justify-content:center; gap:.5rem; }
+    .btn-login-form:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(43,122,43,.28); }
+    .btn-login-form:active { transform:translateY(0); }
+    .btn-login-form:disabled { opacity:.7; cursor:not-allowed; transform:none; }
+    .registro-link { text-align:center; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--color-borde); font-size:.85rem; }
+    .registro-link a { color:var(--color-acento); text-decoration:none; font-weight:600; }
+    .registro-link a:hover { text-decoration:underline; }
+    .mensaje-error { background:#fee2e2; color:#b91c1c; padding:.8rem; border-radius:.75rem; margin-bottom:1rem; font-size:.85rem; border:1px solid #fecaca; }
+    .mensaje-exito { background:#d1fae5; color:#065f46; padding:.8rem; border-radius:.75rem; margin-bottom:1rem; font-size:.85rem; border:1px solid #a7f3d0; }
+    .spinner { display:inline-block; width:16px; height:16px; border:2px solid white; border-top-color:transparent; border-radius:50%; animation:spin .6s linear infinite; margin-right:.5rem; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @media (max-width:600px) { .login-content { padding:1.5rem; } .login-header h1 { font-size:1.5rem; } }
   </style>
 </head>
 
 <body>
   <div id="header-container"></div>
-
   <main class="contenedor-chico">
     <div class="login-container">
-
-      <!-- Formulario -->
       <div class="login-content">
         <div id="mensaje-container"></div>
-
         <form id="form-login">
           <div class="campo">
             <label for="email">Correo electrónico</label>
             <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com">
           </div>
-
           <div class="campo">
             <label for="password">Contraseña</label>
             <div class="password-wrapper">
               <input type="password" id="password" name="password" required placeholder="Tu contraseña">
-              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
-                🙉
-              </button>
+              <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">🙉</button>
             </div>
           </div>
-
-          <button type="submit" class="btn-login-form" id="btnLogin">
-            Entrar
-          </button>
-
-          <div class="registro-link">
-            ¿No tienes cuenta? <a href="/registro.html">Regístrate aquí</a>
-          </div>
+          <button type="submit" class="btn-login-form" id="btnLogin">Entrar</button>
+          <div class="registro-link">¿No tienes cuenta? <a href="/registro.html">Regístrate aquí</a></div>
         </form>
       </div>
     </div>
   </main>
-
   <div id="footer-container"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -280,24 +74,15 @@
   <script src="/js/auth.js"></script>
 
   <script>
-    // Función para mostrar mensajes
     function mostrarMensaje(mensaje, esError = true) {
       const container = document.getElementById('mensaje-container');
       if (container) {
         container.innerHTML = `<div class="${esError ? 'mensaje-error' : 'mensaje-exito'}">${mensaje}</div>`;
-        setTimeout(() => {
-          if (container.innerHTML.includes(mensaje)) {
-            container.innerHTML = '';
-          }
-        }, 5000);
-      } else {
-        alert(mensaje);
-      }
+        setTimeout(() => { if (container.innerHTML.includes(mensaje)) container.innerHTML = ''; }, 5000);
+      } else alert(mensaje);
     }
 
-    // Cargar header y footer
     document.addEventListener('DOMContentLoaded', async function () {
-      // Cargar header
       if (typeof UI !== 'undefined' && UI.cargarHeader) {
         await UI.cargarHeader();
       } else {
@@ -306,33 +91,20 @@
           if (res.ok) {
             const html = await res.text();
             document.getElementById('header-container').innerHTML = html;
-            setTimeout(() => {
-              if (typeof window.inicializarHeaderAuth === 'function') {
-                window.inicializarHeaderAuth();
-              }
-            }, 100);
+            setTimeout(() => { if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth(); }, 100);
           }
-        } catch (err) {
-          console.error('Error cargando header:', err);
-        }
+        } catch (err) { console.error('Error cargando header:', err); }
       }
 
-      // Footer
       fetch('/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
+        .then(response => { if (!response.ok) throw new Error('Footer no encontrado'); return response.text(); })
         .then(data => {
           const footerContainer = document.getElementById('footer-container');
           if (footerContainer) {
             footerContainer.innerHTML = data;
             const yearSpan = footerContainer.querySelector('#copyright-year');
-            if (yearSpan) {
-              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
-            }
-            const scripts = footerContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
+            if (yearSpan) yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
+            footerContainer.querySelectorAll('script').forEach(oldScript => {
               const newScript = document.createElement('script');
               newScript.textContent = oldScript.textContent;
               document.body.appendChild(newScript);
@@ -343,49 +115,31 @@
         .catch(error => console.error('Error cargando el footer:', error));
     });
 
-    // Funcionalidad para mostrar/ocultar contraseña
     function initPasswordToggle() {
       const toggleBtn = document.getElementById('togglePassword');
       const passwordInput = document.getElementById('password');
-
       if (toggleBtn && passwordInput) {
         toggleBtn.addEventListener('click', function () {
-          // Cambiar el tipo de input entre password y text
           const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
           passwordInput.setAttribute('type', type);
-
-          // Cambiar el ícono (opcional)
           this.textContent = type === 'password' ? '🙉' : '🙈';
           this.setAttribute('aria-label', type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
         });
       }
     }
 
-    // Lógica de login
     document.addEventListener('DOMContentLoaded', function () {
-      // Inicializar el toggle de contraseña
       initPasswordToggle();
-
       const form = document.getElementById('form-login');
       const btn = document.getElementById('btnLogin');
-
-      if (!form) {
-        console.error('Formulario login no encontrado');
-        return;
-      }
+      if (!form) { console.error('Formulario login no encontrado'); return; }
 
       form.addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const email = document.getElementById('email')?.value.trim();
         const password = document.getElementById('password')?.value;
+        if (!email || !password) { mostrarMensaje('Completa todos los campos'); return; }
 
-        if (!email || !password) {
-          mostrarMensaje('Completa todos los campos');
-          return;
-        }
-
-        // Deshabilitar botón mientras se procesa
         btn.disabled = true;
         const btnOriginalText = btn.innerHTML;
         btn.innerHTML = '<span class="spinner"></span> Iniciando sesión...';
@@ -394,21 +148,19 @@
           const res = await Auth.login(email, password);
           console.log('Login correcto:', res);
 
-          // Obtener usuario actual para saber su rol
-          const usuario = API.getUsuarioActual();
+          // Auth.login ya guarda el usuario y el token en localStorage.
+          // No dependemos de API aquí para completar el inicio de sesión.
+          const usuario = (() => {
+            try { return JSON.parse(localStorage.getItem('usuario') || 'null'); }
+            catch (_) { return null; }
+          })();
           console.log('Usuario logueado:', usuario);
 
-          // Forzar actualización del header
-          if (typeof window.actualizarHeaderSesion === 'function') {
-            window.actualizarHeaderSesion();
-          }
-
+          if (typeof window.actualizarHeaderSesion === 'function') window.actualizarHeaderSesion();
           window.location.href = '/admin.html';
-          /* pero como crees */
-
         } catch (error) {
           console.error('Error login:', error);
-          mostrarMensaje('Credenciales incorrectas. Por favor verifica tu correo y contraseña.');
+          mostrarMensaje(error?.message || 'Credenciales incorrectas. Por favor verifica tu correo y contraseña.');
         } finally {
           btn.disabled = false;
           btn.innerHTML = btnOriginalText;
@@ -418,28 +170,20 @@
   </script>
 
   <script>
-    // Forzar actualización del header en login/registro
     (function () {
-      // Esperar a que cargue el header
       setTimeout(function () {
         if (typeof actualizarHeaderPorSesion === 'function') {
           actualizarHeaderPorSesion();
         } else if (window.actualizarHeaderPorSesion) {
           window.actualizarHeaderPorSesion();
         } else {
-          // Si la función no existe, recargar el header manualmente
           const headerContainer = document.getElementById('header-container');
           if (headerContainer) {
             fetch('/common/header.html?v=' + Date.now())
               .then(res => res.text())
               .then(html => {
                 headerContainer.innerHTML = html;
-                // Reintentar después de cargar
-                setTimeout(() => {
-                  if (window.actualizarHeaderPorSesion) {
-                    window.actualizarHeaderPorSesion();
-                  }
-                }, 100);
+                setTimeout(() => { if (window.actualizarHeaderPorSesion) window.actualizarHeaderPorSesion(); }, 100);
               });
           }
         }
@@ -447,5 +191,4 @@
     })();
   </script>
 </body>
-
 </html>
