@@ -272,8 +272,8 @@ window.obtenerSupabaseClient = obtenerSupabaseClient;
 
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
-    const limiteSolicitado = Number(paginacion?.limite) || 20;
-    const limiteSeguro = Math.min(20, Math.max(1, limiteSolicitado));
+    const limiteSolicitado = Number(paginacion?.limite) || 1000;
+    const limiteSeguro = Math.min(1000, Math.max(1, limiteSolicitado));
     const parametros = { ...(filtros || {}), ...(paginacion || {}), limite: limiteSeguro };
     const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', parametros);
     if (resultado?.success && resultado?.data) return { ...resultado, datos: resultado.data.datos || [], total: resultado.data.total ?? (resultado.data.datos || []).length };
