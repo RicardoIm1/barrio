@@ -1,0 +1,57 @@
+name: Stabilize admin metrics refresh
+
+on:
+  push:
+    paths:
+      - '.github/workflows/stabilize-admin-metrics.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prevent overlapping metric loads
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('js/admin.js')
+          text = path.read_text(encoding='utf-8')
+
+          old = "    let ultimoDatos=null;\n\n    function actualizar(id,v){"
+          new = "    let ultimoDatos=null;\n    let cargando=false;\n\n    function actualizar(id,v){"
+          if old not in text:
+              raise SystemExit('No se encontró el punto de inserción de cargando.')
+          text = text.replace(old, new, 1)
+
+          old = "    async function cargar(){\n        const footer=document.querySelector('.dashboard-footer');"
+          new = "    async function cargar(){\n        if(cargando)return;\n        cargando=true;\n        const footer=document.querySelector('.dashboard-footer');"
+          if old not in text:
+              raise SystemExit('No se encontró el inicio de cargar().')
+          text = text.replace(old, new, 1)
+
+          old = "        }catch(error){\n            console.error('❌ No se pudieron cargar las métricas del panel admin:',error);\n            const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';\n        }\n    }"
+          new = "        }catch(error){\n            console.error('❌ No se pudieron cargar las métricas del panel admin:',error);\n            const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';\n        }finally{\n            cargando=false;\n        }\n    }"
+          if old not in text:
+              raise SystemExit('No se encontró el cierre de cargar().')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit patch and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/admin.js
+          git rm .github/workflows/stabilize-admin-metrics.yml
+          git commit -m "prevent overlapping admin metric loads"
+          git push
