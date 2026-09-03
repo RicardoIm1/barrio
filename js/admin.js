@@ -140,8 +140,19 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     function observar(){
         const contenedor=document.getElementById('footer-container');
         if(!contenedor)return;
-        const iniciar=()=>{if(document.querySelector('.dashboard-footer')){cargar();if(!timer)timer=setInterval(cargar,15000);}};
-        const obs=new MutationObserver(iniciar);obs.observe(contenedor,{childList:true,subtree:true});iniciar();
+        const iniciar=()=>{
+            if(!document.querySelector('.dashboard-footer'))return;
+            if(!timer)timer=setInterval(cargar,15000);
+            cargar();
+        };
+        const obs=new MutationObserver(()=>{
+            if(document.querySelector('.dashboard-footer')){
+                obs.disconnect();
+                iniciar();
+            }
+        });
+        obs.observe(contenedor,{childList:true,subtree:true});
+        iniciar();
         window.addEventListener('resize',()=>{if(ultimoDatos){graficarDiarios(ultimoDatos.usuarios,ultimoDatos.avisos);graficarCategorias(ultimoDatos.avisos);graficarEstados(ultimoDatos.avisos);graficarVotos(ultimoDatos.pos,ultimoDatos.neg);graficarAlcance(ultimoDatos.avisos);}});
     }
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observar,{once:true});else observar();
