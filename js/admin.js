@@ -307,3 +307,202 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         instalar();
     }
 })();
+
+// ==============================================================
+// MÉTRICAS COMERCIALES DEL FOOTER
+// Usa únicamente datos reales de Supabase. No se estiman
+// interacciones a partir del número de avisos.
+// ==============================================================
+(function inicializarMetricasComercialesAdmin() {
+    let ultimaFirma = '';
+    let timer = null;
+
+    function numero(valor) {
+        const n = Number(valor);
+        return Number.isFinite(n) ? n : 0;
+    }
+
+    function formatear(valor) {
+        return numero(valor).toLocaleString('es-MX');
+    }
+
+    function actualizarElemento(id, valor) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = formatear(valor);
+    }
+
+    function crearTopAlcance(avisos) {
+        const footer = document.querySelector('.dashboard-footer .contenedor');
+        if (!footer) return;
+
+        let panel = document.getElementById('admin-top-alcance');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'admin-top-alcance';
+            panel.className = 'dashboard-chart';
+            panel.innerHTML = `
+                <div class="chart-header">
+                    <h4>Mayor alcance de avisos</h4>
+                    <span style="color:#888;font-size:.75rem;">Vistas acumuladas</span>
+                </div>
+                <div id="admin-top-alcance-bars" style="display:flex;flex-direction:column;gap:12px;"></div>
+                <div id="admin-top-alcance-note" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-size:.7rem;color:#888;text-align:center;"></div>
+            `;
+
+            const resumen = document.getElementById('statsSummary');
+            if (resumen) footer.insertBefore(panel, resumen);
+            else footer.appendChild(panel);
+        }
+
+        const lista = (avisos || [])
+            .map(a => ({
+                titulo: String(a.titulo || 'Aviso sin título'),
+                vistas: numero(a.vistas ?? a.visitas ?? a.visualizaciones),
+                status: a.status
+            }))
+            .filter(a => a.status !== 'eliminado' && a.vistas > 0)
+            .sort((a, b) => b.vistas - a.vistas)
+            .slice(0, 5);
+
+        const bars = document.getElementById('admin-top-alcance-bars');
+        const note = document.getElementById('admin-top-alcance-note');
+        if (!bars) return;
+
+        if (!lista.length) {
+            bars.innerHTML = '<div style="color:#888;font-size:.8rem;text-align:center;padding:12px;">Aún no hay vistas registradas.</div>';
+            if (note) note.textContent = '';
+            return;
+        }
+
+        const max = lista[0].vistas || 1;
+        bars.innerHTML = lista.map((item, indice) => {
+            const porcentaje = Math.max(4, Math.round((item.vistas / max) * 100));
+            const titulo = item.titulo.length > 48 ? item.titulo.slice(0, 48) + '…' : item.titulo;
+            return `
+                <div style="display:grid;grid-template-columns:minmax(110px,1fr) 3fr auto;gap:10px;align-items:center;">
+                    <span style="color:#ccc;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${titulo.replace(/"/g, '&quot;')}">${indice + 1}. ${titulo}</span>
+                    <div style="height:24px;background:rgba(255,255,255,.08);border-radius:12px;overflow:hidden;">
+                        <div style="width:${porcentaje}%;height:100%;background:linear-gradient(90deg,#f5b042,#ff8c42);border-radius:12px;"></div>
+                    </div>
+                    <strong style="color:#f5b042;font-size:.8rem;min-width:55px;text-align:right;">${formatear(item.vistas)}</strong>
+                </div>
+            `;
+        }).join('');
+
+        if (note) note.textContent = 'El alcance corresponde a las vistas registradas por cada aviso.';
+    }
+
+    async function cargar() {
+        const footer = document.querySelector('.dashboard-footer');
+        if (!footer || typeof getSupabaseClient !== 'function') return;
+
+        try {
+            const client = await getSupabaseClient();
+
+            const [usuariosResult, avisosResult] = await Promise.all([
+                client
+                    .from('usuarios')
+                    .select('id, fecha_registro, ultimo_acceso, votos_positivos_recibidos, votos_negativos_recibidos')
+                    .range(0, 9999),
+                client
+                    .from('avisos')
+                    .select('id, titulo, created_at, status, vistas')
+                    .range(0, 9999)
+            ]);
+
+            if (usuariosResult.error) throw usuariosResult.error;
+            if (avisosResult.error) throw avisosResult.error;
+
+            const usuarios = usuariosResult.data || [];
+            const avisos = avisosResult.data || [];
+            const visibles = avisos.filter(a => a.status !== 'eliminado');
+
+            const totalUsuarios = usuarios.length;
+            const totalAvisos = visibles.length;
+            const activos = visibles.filter(a => a.status === 'activo').length;
+            const totalVistas = visibles.reduce((s, a) => s + numero(a.vistas), 0);
+            const votosPositivos = usuarios.reduce((s, u) => s + numero(u.votos_positivos_recibidos), 0);
+            const votosNegativos = usuarios.reduce((s, u) => s + numero(u.votos_negativos_recibidos), 0);
+            const totalVotos = votosPositivos + votosNegativos;
+            const promedioVistas = totalAvisos ? totalVistas / totalAvisos : 0;
+            const promedioVotos = totalAvisos ? totalVotos / totalAvisos : 0;
+
+            const firma = [totalUsuarios, totalAvisos, activos, totalVistas, votosPositivos, votosNegativos].join('|');
+            if (firma === ultimaFirma) return;
+            ultimaFirma = firma;
+
+            actualizarElemento('totalAvisos', totalAvisos);
+            actualizarElemento('avisosActivos', activos);
+            actualizarElemento('totalVisitas', totalVistas);
+            actualizarElemento('totalInteracciones', totalVotos);
+            actualizarElemento('totalUsuarios', totalUsuarios);
+
+            const cards = document.querySelectorAll('.dashboard-footer .stat-card');
+            cards.forEach(card => {
+                const titulo = card.querySelector('h4');
+                const etiqueta = card.querySelector('.stat-label');
+                if (!titulo) return;
+                if (titulo.textContent.trim().toLowerCase() === 'interacciones') {
+                    titulo.textContent = 'Votos registrados';
+                    if (etiqueta) etiqueta.textContent = 'positivos + negativos';
+                }
+                if (titulo.textContent.trim().toLowerCase() === 'total visitas') {
+                    if (etiqueta) etiqueta.textContent = 'vistas acumuladas';
+                }
+            });
+
+            const resumen = document.getElementById('statsSummary');
+            if (resumen) {
+                let extra = document.getElementById('admin-commercial-summary');
+                if (!extra) {
+                    extra = document.createElement('div');
+                    extra.id = 'admin-commercial-summary';
+                    extra.style.cssText = 'display:flex;justify-content:center;gap:30px;flex-wrap:wrap;margin-top:12px;padding:12px 20px;background:rgba(255,255,255,.03);border-radius:16px;font-size:.72rem;color:#888;';
+                    resumen.insertAdjacentElement('afterend', extra);
+                }
+                extra.innerHTML = `
+                    <span>Alcance promedio por aviso: <strong style="color:#f5b042;">${promedioVistas.toFixed(1)}</strong></span>
+                    <span>Votos promedio por aviso: <strong style="color:#f5b042;">${promedioVotos.toFixed(1)}</strong></span>
+                    <span>👍 ${formatear(votosPositivos)} · 👎 ${formatear(votosNegativos)}</span>
+                `;
+            }
+
+            crearTopAlcance(visibles);
+            console.log('📊 Métricas comerciales reales actualizadas:', {
+                totalUsuarios,
+                totalAvisos,
+                activos,
+                totalVistas,
+                votosPositivos,
+                votosNegativos,
+                totalVotos
+            });
+        } catch (error) {
+            console.error('❌ No se pudieron cargar las métricas comerciales:', error);
+        }
+    }
+
+    function observarFooter() {
+        const contenedor = document.getElementById('footer-container');
+        if (!contenedor) return;
+
+        const observer = new MutationObserver(() => {
+            if (document.querySelector('.dashboard-footer')) {
+                cargar();
+                if (!timer) timer = setInterval(cargar, 60000);
+            }
+        });
+        observer.observe(contenedor, { childList: true, subtree: true });
+
+        if (document.querySelector('.dashboard-footer')) {
+            cargar();
+            timer = setInterval(cargar, 60000);
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', observarFooter, { once: true });
+    } else {
+        observarFooter();
+    }
+})();
