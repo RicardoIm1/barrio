@@ -91,7 +91,7 @@ async function cargarVotosAcumulados(avisos) {
         aviso.likes = Number(aviso.likes || 0);
         aviso.dislikes = Number(aviso.dislikes || aviso.votos_negativos || 0);
       }
-    });
+    }));
   } catch (error) {
     console.warn('No se pudo inicializar Supabase para cargar votos:', error);
   }
@@ -325,10 +325,10 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
             <span class="stat-item" title="Contactos por WhatsApp" onclick="event.stopPropagation()">
               💬 ${clicksWhatsApp}
             </span>
-            <span class="stat-item like-btn" onclick="event.stopPropagation(); registrarInteres('${aviso.id}', this)" title="Me interesa">
+            <span class="stat-item like-btn" onclick="event.stopPropagation(); votarDesdeIndice('${aviso.id}', 'positivo', this)" title="Me gusta">
               👍 ${likes}
             </span>
-            <span class="stat-item dislike-btn" title="No me gusta" onclick="event.stopPropagation()">
+            <span class="stat-item dislike-btn" onclick="event.stopPropagation(); votarDesdeIndice('${aviso.id}', 'negativo', this)" title="No me gusta">
               👎 ${dislikes}
             </span>
             <span class="stat-item" onclick="event.stopPropagation(); mostrarPanelComentarios('${aviso.id}', '${escapeHTML(aviso.titulo)}')" title="Comentarios">
@@ -355,11 +355,68 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
 
 // ==================== INTERACCIONES ====================
 
+async function votarDesdeIndice(id, tipo, btnElement) {
+  const usuario = API.getUsuarioActual();
+  if (!usuario) {
+    alert('Debes iniciar sesión para votar');
+    return;
+  }
+
+  if (!id || !tipo) return;
+
+  const card = btnElement ? btnElement.closest('.aviso-card') : null;
+  const botones = card ? card.querySelectorAll('.like-btn, .dislike-btn') : [];
+  botones.forEach(btn => {
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.6';
+  });
+
+  try {
+    const resultado = await API.votarAviso(id, tipo);
+
+    if (!resultado || !resultado.success) {
+      throw new Error(resultado?.error || 'No se pudo registrar el voto');
+    }
+
+    const likes = Number(resultado.positivos || 0);
+    const dislikes = Number(resultado.negativos || 0);
+
+    const aviso = todosLosAvisos.find(a => String(a.id) === String(id));
+    if (aviso) {
+      aviso.likes = likes;
+      aviso.dislikes = dislikes;
+      aviso.votos_positivos = likes;
+      aviso.votos_negativos = dislikes;
+    }
+
+    if (card) {
+      const likeBtn = card.querySelector('.like-btn');
+      const dislikeBtn = card.querySelector('.dislike-btn');
+      if (likeBtn) likeBtn.innerHTML = `👍 ${likes}`;
+      if (dislikeBtn) dislikeBtn.innerHTML = `👎 ${dislikes}`;
+
+      // Reflejamos visualmente el estado de la acción realizada.
+      if (likeBtn) likeBtn.classList.toggle('activo', tipo === 'positivo' && likes > 0);
+      if (dislikeBtn) dislikeBtn.classList.toggle('activo', tipo === 'negativo' && dislikes > 0);
+    }
+  } catch (error) {
+    console.error('Error votando desde el índice:', error);
+    alert(error.message || 'No se pudo registrar tu voto');
+  } finally {
+    botones.forEach(btn => {
+      btn.style.pointerEvents = '';
+      btn.style.opacity = '';
+    });
+  }
+}
+
 async function registrarClickWhatsApp(id) {
   await registrarEstadistica('REGISTRAR_CLICK_WHATSAPP', id);
   setTimeout(() => cargarAvisos(), 500);
 }
 
+// Se conserva por compatibilidad con código anterior, pero los botones de voto
+// del índice ya no utilizan esta función.
 async function registrarInteres(id, btnElement) {
   const resultado = await registrarEstadistica('REGISTRAR_INTERES', id);
   if (resultado && resultado.success) {
@@ -434,6 +491,7 @@ window.verAviso = function(id) {
 
 window.registrarClickWhatsApp = registrarClickWhatsApp;
 window.registrarInteres = registrarInteres;
+window.votarDesdeIndice = votarDesdeIndice;
 window.mostrarPanelComentarios = mostrarPanelComentarios;
 window.cerrarPanelComentarios = cerrarPanelComentarios;
 window.enviarComentario = enviarComentario;
