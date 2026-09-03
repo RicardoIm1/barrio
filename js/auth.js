@@ -40,31 +40,11 @@ function instalarEstilosApagadoTV() {
     }
 
     @keyframes elBarrioApagadoTV {
-      0% {
-        opacity: 1;
-        transform: scale(1);
-        filter: brightness(1);
-      }
-      32% {
-        opacity: 1;
-        transform: scaleY(.075) scaleX(1.015);
-        filter: brightness(1.45);
-      }
-      52% {
-        opacity: 1;
-        transform: scaleY(.018) scaleX(.82);
-        filter: brightness(2.4);
-      }
-      68% {
-        opacity: .78;
-        transform: scaleY(.009) scaleX(.38);
-        filter: brightness(3.2);
-      }
-      100% {
-        opacity: 0;
-        transform: scaleY(0) scaleX(0);
-        filter: brightness(0);
-      }
+      0% { opacity: 1; transform: scale(1); filter: brightness(1); }
+      32% { opacity: 1; transform: scaleY(.075) scaleX(1.015); filter: brightness(1.45); }
+      52% { opacity: 1; transform: scaleY(.018) scaleX(.82); filter: brightness(2.4); }
+      68% { opacity: .78; transform: scaleY(.009) scaleX(.38); filter: brightness(3.2); }
+      100% { opacity: 0; transform: scaleY(0) scaleX(0); filter: brightness(0); }
     }
   `;
   document.head.appendChild(style);
@@ -86,11 +66,8 @@ function eliminarAvisoDelIndice(id) {
   if (typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos)) {
     todosLosAvisos = todosLosAvisos.filter(a => String(a.id) !== String(id));
   }
-
   if (typeof paginaActual !== 'undefined' && typeof totalPaginas !== 'undefined') {
-    const cantidad = typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos)
-      ? todosLosAvisos.length
-      : 0;
+    const cantidad = typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos) ? todosLosAvisos.length : 0;
     const paginas = Math.max(1, Math.ceil(cantidad / (typeof AVISOS_POR_PAGINA !== 'undefined' ? AVISOS_POR_PAGINA : 6)));
     if (paginaActual > paginas) paginaActual = paginas;
   }
@@ -99,21 +76,16 @@ function eliminarAvisoDelIndice(id) {
 function ejecutarRechazoVisual(id) {
   if (!id) return;
   instalarEstilosApagadoTV();
-
   const avisoId = String(id);
   const avisoIdActual = typeof AVISO_ID !== 'undefined' ? String(AVISO_ID || '') : '';
-
   if (avisoIdActual && avisoIdActual === avisoId) {
     const paper = document.querySelector('.aviso-paper');
     if (paper && !paper.classList.contains('aviso-apagando-tv')) {
       paper.classList.add('aviso-apagando-tv');
-      setTimeout(() => {
-        window.location.replace('/index.html');
-      }, 800);
+      setTimeout(() => { window.location.replace('/index.html'); }, 800);
     }
     return;
   }
-
   const card = obtenerCardIndicePorId(avisoId);
   if (card && !card.classList.contains('aviso-apagando-tv')) {
     card.classList.add('aviso-apagando-tv');
@@ -130,7 +102,6 @@ function ejecutarRechazoVisual(id) {
 function instalarInterceptadorVotos() {
   if (typeof API === 'undefined' || typeof API.votarAviso !== 'function') return false;
   if (API.votarAviso.__elBarrioAutoRechazo) return true;
-
   votarAvisoOriginal = API.votarAviso.bind(API);
   const votar = async function (id, tipo) {
     const resultado = await votarAvisoOriginal(id, tipo);
@@ -147,29 +118,19 @@ async function iniciarEscuchaModeracion() {
   if (moderacionIniciada) return;
   moderacionIniciada = true;
   instalarEstilosApagadoTV();
-
   try {
     const client = await obtenerSupabaseClient();
-
     instalarInterceptadorVotos();
-
     if (!client?.channel) return;
-
-    moderacionChannel = client.channel('el-barrio-moderacion', {
-      config: { private: false }
-    });
-
+    moderacionChannel = client.channel('el-barrio-moderacion', { config: { private: false } });
     moderacionChannel
       .on('broadcast', { event: 'aviso_rechazado' }, payload => {
         const id = payload?.payload?.aviso_id || payload?.payload?.id;
         if (id) ejecutarRechazoVisual(id);
       })
       .subscribe((status, error) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('🟢 Escucha de moderación en tiempo real activa');
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.warn('⚠️ Canal de moderación:', status, error || '');
-        }
+        if (status === 'SUBSCRIBED') console.log('🟢 Escucha de moderación en tiempo real activa');
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') console.warn('⚠️ Canal de moderación:', status, error || '');
       });
   } catch (error) {
     console.warn('⚠️ No se pudo iniciar escucha de moderación:', error?.message || error);
@@ -195,18 +156,13 @@ async function registrarPresencia() {
 }
 
 function detenerPresencia() {
-  if (presenciaTimer) {
-    clearTimeout(presenciaTimer);
-    presenciaTimer = null;
-  }
+  if (presenciaTimer) { clearTimeout(presenciaTimer); presenciaTimer = null; }
   if (presenciaVisibilityHandler) {
     document.removeEventListener('visibilitychange', presenciaVisibilityHandler);
     presenciaVisibilityHandler = null;
   }
   if (presenciaActivityHandler) {
-    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => {
-      document.removeEventListener(evento, presenciaActivityHandler, true);
-    });
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => document.removeEventListener(evento, presenciaActivityHandler, true));
     presenciaActivityHandler = null;
   }
 }
@@ -223,7 +179,6 @@ function iniciarPresencia() {
   detenerPresencia();
   registrarPresencia();
   programarSiguientePresencia();
-
   presenciaVisibilityHandler = () => {
     if (document.visibilityState === 'visible') {
       registrarPresencia();
@@ -234,13 +189,10 @@ function iniciarPresencia() {
     }
   };
   document.addEventListener('visibilitychange', presenciaVisibilityHandler);
-
   presenciaActivityHandler = () => {
     if (document.visibilityState === 'visible') registrarPresencia();
   };
-  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => {
-    document.addEventListener(evento, presenciaActivityHandler, true);
-  });
+  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => document.addEventListener(evento, presenciaActivityHandler, true));
 }
 
 async function construirUsuario(client, user) {
@@ -278,7 +230,6 @@ const Auth = {
     }
     return data;
   },
-
   async requireAuth() {
     const client = await obtenerSupabaseClient();
     const { data, error } = await client.auth.getSession();
@@ -291,7 +242,6 @@ const Auth = {
     iniciarEscuchaModeracion();
     return usuario;
   },
-
   async logout() {
     detenerPresencia();
     const client = await obtenerSupabaseClient();
@@ -322,7 +272,40 @@ if (typeof API !== 'undefined') {
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
 
-// La moderación se escucha desde todas las páginas que cargan auth.js,
-// incluyendo visitantes sin sesión, para que un aviso rechazado desaparezca
-// también del navegador de quienes lo tenían abierto.
+// Escucha de moderación desde todas las páginas.
 iniciarEscuchaModeracion();
+
+// ============================================================
+// PRESENCIA GLOBAL
+// Inicia automáticamente si ya existe una sesión Supabase.
+// Antes solo arrancaba al pasar por Auth.login() o Auth.requireAuth(),
+// por lo que una sesión ya existente podía no activar el heartbeat.
+// ============================================================
+let presenciaAuthListenerInstalado = false;
+
+async function iniciarPresenciaSiExisteSesion() {
+  try {
+    const client = await obtenerSupabaseClient();
+    const { data, error } = await client.auth.getSession();
+    if (error) {
+      console.warn('⚠️ No se pudo comprobar sesión para presencia:', error.message);
+      return;
+    }
+    if (data?.session?.user) {
+      iniciarPresencia();
+      console.log('🟢 Presencia global iniciada para sesión existente');
+    }
+
+    if (!presenciaAuthListenerInstalado && client.auth?.onAuthStateChange) {
+      presenciaAuthListenerInstalado = true;
+      client.auth.onAuthStateChange((_event, session) => {
+        if (session?.user) iniciarPresencia();
+        else detenerPresencia();
+      });
+    }
+  } catch (error) {
+    console.warn('⚠️ No se pudo iniciar presencia global:', error?.message || error);
+  }
+}
+
+iniciarPresenciaSiExisteSesion();
