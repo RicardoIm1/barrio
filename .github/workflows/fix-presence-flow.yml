@@ -3,7 +3,6 @@ name: Fix reliable login logout presence
 on:
   push:
     branches: [main]
-    paths: ['js/auth.js']
 
 permissions:
   contents: write
@@ -24,16 +23,14 @@ jobs:
           s=s.replace("      iniciarPresencia();\n      iniciarEscuchaModeracion();", "      await iniciarPresencia();\n      iniciarEscuchaModeracion();", 1)
           s=s.replace("    iniciarPresencia();\n    iniciarEscuchaModeracion();\n    return usuario;", "    await iniciarPresencia();\n    iniciarEscuchaModeracion();\n    return usuario;", 1)
           s=s.replace("      if (session?.user) {\n          iniciarPresencia();\n        } else {", "      if (session?.user) {\n          iniciarPresencia().catch(error => console.warn('⚠️ Presencia tras cambio de sesión:', error?.message || error));\n        } else {")
-          s=s.replace("  if (!localStorage.getItem('api_key')) return;", "  if (!localStorage.getItem('api_key')) return;\n\n  // El flujo de login/requireAuth ya registra presencia; aquí solo recuperamos\n  // sesiones existentes al abrir una página sin repetir innecesariamente el login.\n  if (window.__elBarrioPresenciaSesionRecuperada) return;\n  window.__elBarrioPresenciaSesionRecuperada = true;")
           p.write_text(s)
           PY
-      - name: Verify
+      - name: Verify and commit
         run: |
           grep -n "async function iniciarPresencia\|await iniciarPresencia\|Presencia tras cambio" js/auth.js
-      - name: Commit and remove workflow
-        run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add js/auth.js .github/workflows/fix-presence-flow.yml
+          git rm .github/workflows/fix-presence-flow.yml
+          git add js/auth.js
           git commit -m 'make login logout presence reliable'
           git push
