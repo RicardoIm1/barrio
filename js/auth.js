@@ -3,13 +3,12 @@ console.log('🔵 auth.js cargando...');
 const EL_BARRIO_SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
 const EL_BARRIO_SUPABASE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
+let presenciaTimer = null;
+let presenciaVisibilityHandler = null;
+
 async function obtenerSupabaseClient() {
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
-
-  if (window.__elBarrioSupabaseClient) {
-    return window.__elBarrioSupabaseClient;
-  }
-
+  if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
   if (!window.supabase) {
     await new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -19,32 +18,42 @@ async function obtenerSupabaseClient() {
       document.head.appendChild(script);
     });
   }
-
-  window.__elBarrioSupabaseClient = window.supabase.createClient(
-    EL_BARRIO_SUPABASE_URL,
-    EL_BARRIO_SUPABASE_KEY
-  );
-
+  window.__elBarrioSupabaseClient = window.supabase.createClient(EL_BARRIO_SUPABASE_URL, EL_BARRIO_SUPABASE_KEY);
   console.log('✅ Cliente Supabase creado desde auth.js');
   return window.__elBarrioSupabaseClient;
 }
 
+async function registrarPresencia() {
+  try {
+    if (document.visibilityState === 'hidden') return;
+    const client = await obtenerSupabaseClient();
+    const { error } = await client.rpc('registrar_presencia');
+    if (error) console.warn('⚠️ No se pudo registrar presencia:', error.message);
+  } catch (error) {
+    console.warn('⚠️ Error registrando presencia:', error?.message || error);
+  }
+}
+
+function detenerPresencia() {
+  if (presenciaTimer) { clearInterval(presenciaTimer); presenciaTimer = null; }
+  if (presenciaVisibilityHandler) { document.removeEventListener('visibilitychange', presenciaVisibilityHandler); presenciaVisibilityHandler = null; }
+}
+
+function iniciarPresencia() {
+  detenerPresencia();
+  registrarPresencia();
+  presenciaTimer = setInterval(registrarPresencia, 30000);
+  presenciaVisibilityHandler = () => { if (document.visibilityState === 'visible') registrarPresencia(); };
+  document.addEventListener('visibilitychange', presenciaVisibilityHandler);
+}
+
 async function construirUsuario(client, user) {
   let perfil = null;
-
   try {
-    const { data, error } = await client
-      .from('usuarios')
-      .select('id,email,nombre,rol,activo')
-      .eq('id', user.id)
-      .maybeSingle();
-
+    const { data, error } = await client.from('usuarios').select('id,email,nombre,rol,activo').eq('id', user.id).maybeSingle();
     if (!error) perfil = data;
     else console.warn('⚠️ No se pudo consultar perfil usuarios:', error.message);
-  } catch (e) {
-    console.warn('⚠️ Error consultando perfil usuarios:', e.message);
-  }
-
+  } catch (e) { console.warn('⚠️ Error consultando perfil usuarios:', e.message); }
   return {
     id: user.id,
     email: perfil?.email || user.email,
@@ -62,52 +71,34 @@ function guardarCompatibilidad(usuario, session) {
 const Auth = {
   async login(email, password) {
     const client = await obtenerSupabaseClient();
-
-    const { data, error } = await client.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { data, error } = await client.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
     if (data.user) {
       const usuario = await construirUsuario(client, data.user);
       guardarCompatibilidad(usuario, data.session);
+      iniciarPresencia();
       console.log('🟢 Sesión Supabase reconocida:', usuario);
     }
-
     return data;
   },
 
   async requireAuth() {
     const client = await obtenerSupabaseClient();
     const { data, error } = await client.auth.getSession();
-
-    if (error) {
-      console.error('❌ Error comprobando sesión:', error);
-      return null;
-    }
-
+    if (error) { console.error('❌ Error comprobando sesión:', error); return null; }
     const session = data?.session;
-    if (!session?.user) {
-      console.warn('🔒 No existe sesión Supabase activa');
-      return null;
-    }
-
+    if (!session?.user) { detenerPresencia(); console.warn('🔒 No existe sesión Supabase activa'); return null; }
     const usuario = await construirUsuario(client, session.user);
     guardarCompatibilidad(usuario, session);
+    iniciarPresencia();
     return usuario;
   },
 
   async logout() {
+    detenerPresencia();
     const client = await obtenerSupabaseClient();
     const { error } = await client.auth.signOut();
-
-    if (error) {
-      console.error('❌ Error cerrando sesión:', error);
-      throw error;
-    }
-
+    if (error) { console.error('❌ Error cerrando sesión:', error); throw error; }
     localStorage.removeItem('usuario');
     localStorage.removeItem('api_key');
     console.log('🔓 Sesión Supabase cerrada');
@@ -117,53 +108,18 @@ const Auth = {
 window.Auth = Auth;
 window.obtenerSupabaseClient = obtenerSupabaseClient;
 
-// ==================== COMPATIBILIDAD API ====================
-// api.js conserva API.peticion() como núcleo. Estos puentes mantienen
-// compatibilidad con index.html y app.js sin duplicar lógica.
-
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
-    const resultado = await API.peticion(
-      'LISTAR_AVISOS_PUBLICOS',
-      { ...(filtros || {}), ...(paginacion || {}) }
-    );
-
-    // api.js devuelve los datos dentro de resultado.data.
-    // Los consumidores antiguos esperan resultado.datos.
-    if (resultado?.success && resultado?.data) {
-      return {
-        ...resultado,
-        datos: resultado.data.datos || [],
-        total: resultado.data.total ?? (resultado.data.datos || []).length
-      };
-    }
-
+    const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', { ...(filtros || {}), ...(paginacion || {}) });
+    if (resultado?.success && resultado?.data) return { ...resultado, datos: resultado.data.datos || [], total: resultado.data.total ?? (resultado.data.datos || []).length };
     return resultado;
   };
-
   API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
     const nombre = String(coleccion || '').toUpperCase();
-
-    if (nombre === 'AVISOS') {
-      return await API.listarPublicos(filtros, paginacion);
-    }
-
-    const resultado = await API.peticion('LISTAR', {
-      coleccion: nombre,
-      ...(filtros || {}),
-      ...(paginacion || {})
-    });
-
-    if (resultado?.success && resultado?.data) {
-      return {
-        ...resultado,
-        datos: resultado.data.datos || [],
-        total: resultado.data.total ?? (resultado.data.datos || []).length
-      };
-    }
-
+    if (nombre === 'AVISOS') return await API.listarPublicos(filtros, paginacion);
+    const resultado = await API.peticion('LISTAR', { coleccion: nombre, ...(filtros || {}), ...(paginacion || {}) });
+    if (resultado?.success && resultado?.data) return { ...resultado, datos: resultado.data.datos || [], total: resultado.data.total ?? (resultado.data.datos || []).length };
     return resultado;
   };
-
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
