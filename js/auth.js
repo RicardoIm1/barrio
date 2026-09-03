@@ -123,10 +123,22 @@ window.obtenerSupabaseClient = obtenerSupabaseClient;
 
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
-    return await API.peticion(
+    const resultado = await API.peticion(
       'LISTAR_AVISOS_PUBLICOS',
       { ...(filtros || {}), ...(paginacion || {}) }
     );
+
+    // api.js devuelve los datos dentro de resultado.data.
+    // Los consumidores antiguos esperan resultado.datos.
+    if (resultado?.success && resultado?.data) {
+      return {
+        ...resultado,
+        datos: resultado.data.datos || [],
+        total: resultado.data.total ?? (resultado.data.datos || []).length
+      };
+    }
+
+    return resultado;
   };
 
   API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
@@ -136,11 +148,21 @@ if (typeof API !== 'undefined') {
       return await API.listarPublicos(filtros, paginacion);
     }
 
-    return await API.peticion('LISTAR', {
+    const resultado = await API.peticion('LISTAR', {
       coleccion: nombre,
       ...(filtros || {}),
       ...(paginacion || {})
     });
+
+    if (resultado?.success && resultado?.data) {
+      return {
+        ...resultado,
+        datos: resultado.data.datos || [],
+        total: resultado.data.total ?? (resultado.data.datos || []).length
+      };
+    }
+
+    return resultado;
   };
 
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
