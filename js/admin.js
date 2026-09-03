@@ -8,7 +8,7 @@
 // Este archivo se encarga de la navegación de pestañas, de cargar
 // el perfil del usuario autenticado desde Supabase y de conectar
 // los formularios con la API Supabase actual.
-// ==============================================================
+// ============================================================== 
 
 console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
@@ -164,9 +164,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
 // ==============================================================
 // EDICIÓN DE AVISOS
-// Se reemplaza el formulario legacy después de que admin.html haya
-// instalado sus listeners. Así eliminamos también el listener que
-// intenta escribir en #edit-categoria, elemento que no existe.
 // ==============================================================
 (function inicializarEdicionAviso() {
     function instalar() {
@@ -181,16 +178,13 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
             event.stopImmediatePropagation();
-
             const obtener = id => document.getElementById(id);
             const valor = id => {
                 const el = obtener(id);
                 return el ? String(el.value || '').trim() : '';
             };
-
             const id = valor('edit-id');
             if (!id) return alert('❌ No se encontró el ID del aviso.');
-
             const datos = {
                 titulo: valor('edit-titulo'),
                 contenido: valor('edit-contenido'),
@@ -199,13 +193,10 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
                 imagen_url: valor('edit-imagen_url'),
                 video_url: valor('edit-video_url')
             };
-
             const fecha = valor('edit-fecha_evento');
             if (fecha) datos.fecha_evento = fecha.split('T')[0];
-
             const chkDestacado = obtener('edit-destacado');
             if (chkDestacado) datos.destacado = !!chkDestacado.checked;
-
             try {
                 const apiKey = localStorage.getItem('api_key');
                 console.log('✏️ ACTUALIZAR AVISO: enviando:', { id, datos });
@@ -221,16 +212,13 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
                 alert('❌ Error al actualizar: ' + (error?.message || error));
             }
         }, true);
-
         console.log('✅ EDICIÓN AVISO: formulario legacy aislado y handler Supabase instalado.');
         return true;
     }
-
     function intentarInstalar() {
         if (instalar()) return;
         setTimeout(instalar, 1000);
     }
-
     setTimeout(intentarInstalar, 0);
 })();
 
@@ -241,10 +229,8 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     let instalado = false;
     let intentos = 0;
     const maxIntentos = 100;
-
     function instalarFiltro() {
         if (instalado) return true;
-
         if (typeof window.renderizarTablaAvisos !== 'function') {
             intentos++;
             if (intentos >= maxIntentos) {
@@ -253,41 +239,28 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             }
             return false;
         }
-
         const renderOriginal = window.renderizarTablaAvisos;
-
         window.renderizarTablaAvisos = function () {
             if (Array.isArray(todosLosAvisos)) {
                 const antes = todosLosAvisos.length;
                 todosLosAvisos = todosLosAvisos.filter(aviso => aviso?.status !== 'eliminado');
                 const eliminados = antes - todosLosAvisos.length;
-
-                if (eliminados > 0) {
-                    console.log(`🗑️ ${eliminados} aviso(s) eliminado(s) ocultado(s) del panel administrativo.`);
-                }
+                if (eliminados > 0) console.log(`🗑️ ${eliminados} aviso(s) eliminado(s) ocultado(s) del panel administrativo.`);
             }
-
             return renderOriginal.apply(this, arguments);
         };
-
         instalado = true;
         console.log('✅ Filtro admin instalado: los avisos con status="eliminado" no se muestran.');
         return true;
     }
-
     const timer = setInterval(() => {
         if (instalarFiltro()) clearInterval(timer);
     }, 100);
-
     setTimeout(() => clearInterval(timer), 10000);
 })();
 
 // ==============================================================
 // AISLAR LOS ESTILOS DEL PANEL ADMIN
-// `index2.css` es una hoja global pensada para la portada/listado
-// público y redefine :root, *, body y otros selectores generales.
-// En admin.html esto pisa parte del diseño administrativo propio.
-// No modificamos index2.css porque otras páginas sí lo necesitan.
 // ==============================================================
 (function aislarEstilosAdmin() {
     function instalar() {
@@ -300,35 +273,35 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             }
         });
     }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', instalar, { once: true });
-    } else {
-        instalar();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', instalar, { once: true });
+    else instalar();
 })();
 
 // ==============================================================
 // MÉTRICAS COMERCIALES DEL FOOTER
-// Usa únicamente datos reales de Supabase. No se estiman
-// interacciones a partir del número de avisos.
+// Datos reales de Supabase. Las vistas representan alcance y los
+// votos representan participación. No se estiman interacciones.
 // ==============================================================
 (function inicializarMetricasComercialesAdmin() {
     let ultimaFirma = '';
     let timer = null;
 
-    function numero(valor) {
+    const numero = valor => {
         const n = Number(valor);
         return Number.isFinite(n) ? n : 0;
-    }
+    };
 
-    function formatear(valor) {
-        return numero(valor).toLocaleString('es-MX');
-    }
+    const formatear = valor => numero(valor).toLocaleString('es-MX');
 
     function actualizarElemento(id, valor) {
         const el = document.getElementById(id);
         if (el) el.textContent = formatear(valor);
+    }
+
+    function escaparHtml(valor) {
+        const div = document.createElement('div');
+        div.textContent = valor == null ? '' : String(valor);
+        return div.innerHTML;
     }
 
     function crearTopAlcance(avisos) {
@@ -348,7 +321,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
                 <div id="admin-top-alcance-bars" style="display:flex;flex-direction:column;gap:12px;"></div>
                 <div id="admin-top-alcance-note" style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.1);font-size:.7rem;color:#888;text-align:center;"></div>
             `;
-
             const resumen = document.getElementById('statsSummary');
             if (resumen) footer.insertBefore(panel, resumen);
             else footer.appendChild(panel);
@@ -380,7 +352,7 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             const titulo = item.titulo.length > 48 ? item.titulo.slice(0, 48) + '…' : item.titulo;
             return `
                 <div style="display:grid;grid-template-columns:minmax(110px,1fr) 3fr auto;gap:10px;align-items:center;">
-                    <span style="color:#ccc;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${titulo.replace(/"/g, '&quot;')}">${indice + 1}. ${titulo}</span>
+                    <span style="color:#ccc;font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${escaparHtml(item.titulo)}">${indice + 1}. ${escaparHtml(titulo)}</span>
                     <div style="height:24px;background:rgba(255,255,255,.08);border-radius:12px;overflow:hidden;">
                         <div style="width:${porcentaje}%;height:100%;background:linear-gradient(90deg,#f5b042,#ff8c42);border-radius:12px;"></div>
                     </div>
@@ -398,16 +370,9 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 
         try {
             const client = await getSupabaseClient();
-
             const [usuariosResult, avisosResult] = await Promise.all([
-                client
-                    .from('usuarios')
-                    .select('id, fecha_registro, ultimo_acceso, votos_positivos_recibidos, votos_negativos_recibidos')
-                    .range(0, 9999),
-                client
-                    .from('avisos')
-                    .select('id, titulo, created_at, status, vistas')
-                    .range(0, 9999)
+                client.from('usuarios').select('id, fecha_registro, ultimo_acceso, votos_positivos_recibidos, votos_negativos_recibidos').range(0, 9999),
+                client.from('avisos').select('id, titulo, created_at, status, vistas').range(0, 9999)
             ]);
 
             if (usuariosResult.error) throw usuariosResult.error;
@@ -416,7 +381,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             const usuarios = usuariosResult.data || [];
             const avisos = avisosResult.data || [];
             const visibles = avisos.filter(a => a.status !== 'eliminado');
-
             const totalUsuarios = usuarios.length;
             const totalAvisos = visibles.length;
             const activos = visibles.filter(a => a.status === 'activo').length;
@@ -426,6 +390,7 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             const totalVotos = votosPositivos + votosNegativos;
             const promedioVistas = totalAvisos ? totalVistas / totalAvisos : 0;
             const promedioVotos = totalAvisos ? totalVotos / totalAvisos : 0;
+            const tasaVoto = totalVistas ? (totalVotos / totalVistas) * 100 : 0;
 
             const firma = [totalUsuarios, totalAvisos, activos, totalVistas, votosPositivos, votosNegativos].join('|');
             if (firma === ultimaFirma) return;
@@ -442,13 +407,12 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
                 const titulo = card.querySelector('h4');
                 const etiqueta = card.querySelector('.stat-label');
                 if (!titulo) return;
-                if (titulo.textContent.trim().toLowerCase() === 'interacciones') {
+                const texto = titulo.textContent.trim().toLowerCase();
+                if (texto === 'interacciones') {
                     titulo.textContent = 'Votos registrados';
                     if (etiqueta) etiqueta.textContent = 'positivos + negativos';
                 }
-                if (titulo.textContent.trim().toLowerCase() === 'total visitas') {
-                    if (etiqueta) etiqueta.textContent = 'vistas acumuladas';
-                }
+                if (texto === 'total visitas' && etiqueta) etiqueta.textContent = 'vistas acumuladas';
             });
 
             const resumen = document.getElementById('statsSummary');
@@ -463,20 +427,13 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
                 extra.innerHTML = `
                     <span>Alcance promedio por aviso: <strong style="color:#f5b042;">${promedioVistas.toFixed(1)}</strong></span>
                     <span>Votos promedio por aviso: <strong style="color:#f5b042;">${promedioVotos.toFixed(1)}</strong></span>
+                    <span>Tasa de participación: <strong style="color:#f5b042;">${tasaVoto.toFixed(2)}%</strong></span>
                     <span>👍 ${formatear(votosPositivos)} · 👎 ${formatear(votosNegativos)}</span>
                 `;
             }
 
             crearTopAlcance(visibles);
-            console.log('📊 Métricas comerciales reales actualizadas:', {
-                totalUsuarios,
-                totalAvisos,
-                activos,
-                totalVistas,
-                votosPositivos,
-                votosNegativos,
-                totalVotos
-            });
+            console.log('📊 Métricas comerciales reales actualizadas:', { totalUsuarios, totalAvisos, activos, totalVistas, votosPositivos, votosNegativos, totalVotos, promedioVistas, promedioVotos, tasaVoto });
         } catch (error) {
             console.error('❌ No se pudieron cargar las métricas comerciales:', error);
         }
@@ -485,7 +442,6 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     function observarFooter() {
         const contenedor = document.getElementById('footer-container');
         if (!contenedor) return;
-
         const observer = new MutationObserver(() => {
             if (document.querySelector('.dashboard-footer')) {
                 cargar();
@@ -493,16 +449,12 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             }
         });
         observer.observe(contenedor, { childList: true, subtree: true });
-
         if (document.querySelector('.dashboard-footer')) {
             cargar();
             timer = setInterval(cargar, 60000);
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', observarFooter, { once: true });
-    } else {
-        observarFooter();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observarFooter, { once: true });
+    else observarFooter();
 })();
