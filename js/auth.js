@@ -3,10 +3,8 @@ console.log('🔵 auth.js cargando...');
 const EL_BARRIO_SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
 const EL_BARRIO_SUPABASE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
-let presenciaTimer = null;
 let presenciaVisibilityHandler = null;
 let presenciaActivityHandler = null;
-let presenciaEnCurso = false;
 let moderacionChannel = null;
 let moderacionIniciada = false;
 let votarAvisoOriginal = null;
@@ -137,26 +135,46 @@ async function iniciarEscuchaModeracion() {
   }
 }
 
+// ============================================================
+// PRESENCIA
+// La presencia representa el estado de sesión, no la actividad.
+// LOGIN  -> fila presente en presencia_usuarios.
+// LOGOUT -> fila eliminada de presencia_usuarios.
+// No existe vencimiento por tiempo.
+// ============================================================
 async function registrarPresencia() {
-  if (presenciaEnCurso || document.visibilityState === 'hidden') return;
-  presenciaEnCurso = true;
   try {
     const client = await obtenerSupabaseClient();
     const { data, error } = await client.rpc('registrar_presencia');
     if (error) {
       console.warn('⚠️ No se pudo registrar presencia:', error.message);
-      return;
+      return false;
     }
-    console.debug('🟢 Presencia actualizada:', data?.ultima_actividad || new Date().toISOString());
+    console.debug('🟢 Login registrado en presencia:', data?.usuario_id || 'usuario autenticado');
+    return true;
   } catch (error) {
     console.warn('⚠️ Error registrando presencia:', error?.message || error);
-  } finally {
-    presenciaEnCurso = false;
+    return false;
+  }
+}
+
+async function cerrarPresencia() {
+  try {
+    const client = await obtenerSupabaseClient();
+    const { data, error } = await client.rpc('cerrar_presencia');
+    if (error) {
+      console.warn('⚠️ No se pudo registrar Logout en presencia:', error.message);
+      return false;
+    }
+    console.debug('⚪ Logout registrado en presencia:', data?.usuario_id || 'usuario autenticado');
+    return true;
+  } catch (error) {
+    console.warn('⚠️ Error cerrando presencia:', error?.message || error);
+    return false;
   }
 }
 
 function detenerPresencia() {
-  if (presenciaTimer) { clearTimeout(presenciaTimer); presenciaTimer = null; }
   if (presenciaVisibilityHandler) {
     document.removeEventListener('visibilitychange', presenciaVisibilityHandler);
     presenciaVisibilityHandler = null;
@@ -167,32 +185,9 @@ function detenerPresencia() {
   }
 }
 
-function programarSiguientePresencia() {
-  if (presenciaTimer) clearTimeout(presenciaTimer);
-  presenciaTimer = setTimeout(async () => {
-    await registrarPresencia();
-    programarSiguientePresencia();
-  }, 25000);
-}
-
 function iniciarPresencia() {
   detenerPresencia();
   registrarPresencia();
-  programarSiguientePresencia();
-  presenciaVisibilityHandler = () => {
-    if (document.visibilityState === 'visible') {
-      registrarPresencia();
-      programarSiguientePresencia();
-    } else if (presenciaTimer) {
-      clearTimeout(presenciaTimer);
-      presenciaTimer = null;
-    }
-  };
-  document.addEventListener('visibilitychange', presenciaVisibilityHandler);
-  presenciaActivityHandler = () => {
-    if (document.visibilityState === 'visible') registrarPresencia();
-  };
-  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => document.addEventListener(evento, presenciaActivityHandler, true));
 }
 
 async function construirUsuario(client, user) {
@@ -243,8 +238,9 @@ const Auth = {
     return usuario;
   },
   async logout() {
-    detenerPresencia();
     const client = await obtenerSupabaseClient();
+    await cerrarPresencia();
+    detenerPresencia();
     const { error } = await client.auth.signOut();
     if (error) { console.error('❌ Error cerrando sesión:', error); throw error; }
     localStorage.removeItem('usuario');
@@ -278,8 +274,6 @@ iniciarEscuchaModeracion();
 // ============================================================
 // PRESENCIA GLOBAL
 // Inicia automáticamente si ya existe una sesión Supabase.
-// Antes solo arrancaba al pasar por Auth.login() o Auth.requireAuth(),
-// por lo que una sesión ya existente podía no activar el heartbeat.
 // ============================================================
 let presenciaAuthListenerInstalado = false;
 
@@ -299,8 +293,12 @@ async function iniciarPresenciaSiExisteSesion() {
     if (!presenciaAuthListenerInstalado && client.auth?.onAuthStateChange) {
       presenciaAuthListenerInstalado = true;
       client.auth.onAuthStateChange((_event, session) => {
-        if (session?.user) iniciarPresencia();
-        else detenerPresencia();
+        if (session?.user) {
+          iniciarPresencia();
+        } else {
+          detenerPresencia();
+          setTimeout(() => cerrarPresencia(), 0);
+        }
       });
     }
   } catch (error) {
