@@ -5,6 +5,8 @@ const EL_BARRIO_SUPABASE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
 let presenciaTimer = null;
 let presenciaVisibilityHandler = null;
+let presenciaActivityHandler = null;
+let presenciaEnCurso = false;
 
 async function obtenerSupabaseClient() {
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
@@ -24,27 +26,70 @@ async function obtenerSupabaseClient() {
 }
 
 async function registrarPresencia() {
+  if (presenciaEnCurso || document.visibilityState === 'hidden') return;
+  presenciaEnCurso = true;
   try {
-    if (document.visibilityState === 'hidden') return;
     const client = await obtenerSupabaseClient();
-    const { error } = await client.rpc('registrar_presencia');
-    if (error) console.warn('⚠️ No se pudo registrar presencia:', error.message);
+    const { data, error } = await client.rpc('registrar_presencia');
+    if (error) {
+      console.warn('⚠️ No se pudo registrar presencia:', error.message);
+      return;
+    }
+    console.debug('🟢 Presencia actualizada:', data?.ultima_actividad || new Date().toISOString());
   } catch (error) {
     console.warn('⚠️ Error registrando presencia:', error?.message || error);
+  } finally {
+    presenciaEnCurso = false;
   }
 }
 
 function detenerPresencia() {
-  if (presenciaTimer) { clearInterval(presenciaTimer); presenciaTimer = null; }
-  if (presenciaVisibilityHandler) { document.removeEventListener('visibilitychange', presenciaVisibilityHandler); presenciaVisibilityHandler = null; }
+  if (presenciaTimer) {
+    clearTimeout(presenciaTimer);
+    presenciaTimer = null;
+  }
+  if (presenciaVisibilityHandler) {
+    document.removeEventListener('visibilitychange', presenciaVisibilityHandler);
+    presenciaVisibilityHandler = null;
+  }
+  if (presenciaActivityHandler) {
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => {
+      document.removeEventListener(evento, presenciaActivityHandler, true);
+    });
+    presenciaActivityHandler = null;
+  }
+}
+
+function programarSiguientePresencia() {
+  if (presenciaTimer) clearTimeout(presenciaTimer);
+  presenciaTimer = setTimeout(async () => {
+    await registrarPresencia();
+    programarSiguientePresencia();
+  }, 25000);
 }
 
 function iniciarPresencia() {
   detenerPresencia();
   registrarPresencia();
-  presenciaTimer = setInterval(registrarPresencia, 30000);
-  presenciaVisibilityHandler = () => { if (document.visibilityState === 'visible') registrarPresencia(); };
+  programarSiguientePresencia();
+
+  presenciaVisibilityHandler = () => {
+    if (document.visibilityState === 'visible') {
+      registrarPresencia();
+      programarSiguientePresencia();
+    } else if (presenciaTimer) {
+      clearTimeout(presenciaTimer);
+      presenciaTimer = null;
+    }
+  };
   document.addEventListener('visibilitychange', presenciaVisibilityHandler);
+
+  presenciaActivityHandler = () => {
+    if (document.visibilityState === 'visible') registrarPresencia();
+  };
+  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => {
+    document.addEventListener(evento, presenciaActivityHandler, true);
+  });
 }
 
 async function construirUsuario(client, user) {
