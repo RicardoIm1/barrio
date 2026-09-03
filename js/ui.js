@@ -60,10 +60,11 @@ const UI = {
     this.mostrarMensaje(mensaje, 'info');
   },
 
+  // MOVER AQUÍ: NUEVA FUNCIÓN DENTRO DEL OBJETO UI
   renderizarTablaAdmin(avisos) {
     const tablaCuerpo = document.getElementById('tabla-avisos-cuerpo');
     if (!tablaCuerpo) {
-      console.error('No se encontró el contenedor id="tabla-avisos-cuerpo" en el HTML');
+      console.error('❌ No se encontró el contenedor id="tabla-avisos-cuerpo" en el HTML');
       return;
     }
 
@@ -89,8 +90,8 @@ const UI = {
       if (esAdmin) {
         if (aviso.status === 'pendiente') {
           accionesBotones = `
-            <button class="btn-tabla btn-aprobar" onclick="UI.procesarAprobacion('${aviso.id}', 'aprobar')">Aprobar</button>
-            <button class="btn-tabla btn-rechazar" onclick="UI.procesarAprobacion('${aviso.id}', 'rechazar')">Rechazar</button>
+            <button class="btn-tabla btn-aprobar" onclick="UI.procesarAprobacion('${aviso.id}', 'aprobar')">✅ Aprobar</button>
+            <button class="btn-tabla btn-rechazar" onclick="UI.procesarAprobacion('${aviso.id}', 'rechazar')">❌ Rechazar</button>
           `;
         } else {
           accionesBotones = `<span class="texto-bloqueado">Sin acciones</span>`;
@@ -116,6 +117,7 @@ const UI = {
     }).join('');
   },
 
+  // MOVER TAMBIÉN ESTA FUNCIÓN DENTRO DEL OBJETO UI
   async procesarAprobacion(id, accion) {
     const apiKey = localStorage.getItem('api_key');
     if (!apiKey) {
@@ -124,7 +126,7 @@ const UI = {
     }
 
     try {
-      this.mostrarInfo('Procesando solicitud...');
+      this.mostrarInfo(`Procesando solicitud en Google Sheets...`);
       let resultado;
 
       if (accion === 'aprobar') {
@@ -134,7 +136,8 @@ const UI = {
       }
 
       if (resultado && resultado.success) {
-        this.mostrarExito(`Aviso ${accion === 'aprobar' ? 'aprobado' : 'rechazado'} correctamente.`);
+        this.mostrarExito(`✅ Aviso ${accion === 'aprobar' ? 'aprobado' : 'rechazado'} correctamente.`);
+        
         if (typeof window.cargarMisAvisos === 'function') {
           window.cargarMisAvisos();
         } else if (typeof cargarMisAvisos === 'function') {
@@ -144,17 +147,19 @@ const UI = {
         this.mostrarError(`Error en servidor: ${resultado?.error || 'No se pudo cambiar el estado.'}`);
       }
     } catch (error) {
-      console.error(`Fallo crítico al procesar ${accion}:`, error);
-      this.mostrarError('Error de red al intentar procesar la solicitud.');
+      console.error(`❌ Fallo crítico al procesar ${accion}:`, error);
+      this.mostrarError(`Error de red al intentar conectar con la hoja de cálculo.`);
     }
   }
 
-};
+}; // ← CIERRE DEL OBJETO UI
 
+// Exponer funciones globales para compatibilidad
 window.UI = UI;
 window.mostrarError = (msg) => UI.mostrarError(msg);
 window.mostrarExito = (msg) => UI.mostrarExito(msg);
 
+// ========== ACTUALIZAR HEADER SEGÚN SESIÓN ==========
 function actualizarHeaderPorSesion() {
   const usuarioStr = localStorage.getItem('usuario');
   const apiKey = localStorage.getItem('api_key');
@@ -165,6 +170,7 @@ function actualizarHeaderPorSesion() {
   const cerrarBtn = document.getElementById('cerrar-sesion');
 
   if (!loginLink) {
+    console.log('Header no cargado aún, reintentando...');
     setTimeout(actualizarHeaderPorSesion, 200);
     return;
   }
@@ -185,125 +191,23 @@ function actualizarHeaderPorSesion() {
       if (cerrarBtn) {
         const nuevoCerrar = cerrarBtn.cloneNode(true);
         cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-        nuevoCerrar.addEventListener('click', async function (e) {
+        nuevoCerrar.addEventListener('click', function (e) {
           e.preventDefault();
-          try {
-            if (window.Auth && typeof window.Auth.logout === 'function') {
-              await window.Auth.logout();
-            } else {
-              localStorage.removeItem('usuario');
-              localStorage.removeItem('api_key');
-            }
-          } catch (error) {
-            console.error('Error cerrando sesión:', error);
-          } finally {
-            window.location.href = '/index.html';
-          }
+          localStorage.removeItem('usuario');
+          localStorage.removeItem('api_key');
+          window.location.href = '/index.html';
         });
       }
+      console.log('Header actualizado - Usuario logueado');
     } catch (e) {
       console.error('Error al actualizar header:', e);
     }
   } else {
     if (loginLink) loginLink.style.display = 'inline-flex';
     if (userArea) userArea.style.display = 'none';
+    console.log('Header actualizado - Sin sesión');
   }
 }
 
+// Exportar para usar en otras páginas si es necesario
 window.actualizarHeaderPorSesion = actualizarHeaderPorSesion;
-
-(function cargarGraficasAdminSiCorresponde() {
-  function cargar() {
-    if (!document.getElementById('chartUsuariosDiarios') && !document.getElementById('chartAvisosDiarios')) return;
-    if (document.getElementById('admin-graficas-reales')) return;
-    const script = document.createElement('script');
-    script.id = 'admin-graficas-reales';
-    script.src = '/js/admin-graficas.js?v=20260903';
-    script.async = true;
-    document.head.appendChild(script);
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', cargar, { once: true });
-  } else {
-    cargar();
-  }
-  setTimeout(cargar, 500);
-  setTimeout(cargar, 1500);
-})();
-
-(function normalizarEstadoPresenciaAdmin() {
-  function actualizar() {
-    document.querySelectorAll('.online-user-time').forEach(el => {
-      el.textContent = '● Conectado';
-    });
-  }
-  function instalar() {
-    actualizar();
-    const lista = document.getElementById('onlineUsersList');
-    if (!lista || lista.dataset.presenciaEstadoObserver === '1') return;
-    lista.dataset.presenciaEstadoObserver = '1';
-    const observer = new MutationObserver(actualizar);
-    observer.observe(lista, { childList: true, subtree: true, characterData: true });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', instalar, { once: true });
-  } else {
-    instalar();
-  }
-  setTimeout(instalar, 500);
-  setTimeout(instalar, 1500);
-})();
-
-// ========== ADMIN UI FAILSAFE ==========
-// Mantiene la navegación funcional aunque otro módulo de administración
-// tarde en inicializarse o no llegue a instalar sus listeners.
-(function instalarNavegacionAdminFailsafe() {
-  function instalar() {
-    const tabs = document.getElementById('admin-tabs');
-    if (!tabs || tabs.dataset.adminFailsafe === '1') return !!tabs;
-
-    tabs.dataset.adminFailsafe = '1';
-
-    tabs.addEventListener('click', function (event) {
-      const boton = event.target.closest('button.filtro[data-tab]');
-      if (!boton || !tabs.contains(boton)) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-
-      const nombre = boton.dataset.tab;
-      if (!nombre) return;
-
-      tabs.querySelectorAll('.filtro[data-tab]').forEach(b => {
-        b.classList.toggle('activo', b === boton);
-      });
-
-      document.querySelectorAll('.tab').forEach(panel => {
-        panel.classList.toggle('activo', panel.id === 'tab-' + nombre);
-      });
-
-      if (nombre === 'perfil' && typeof window.cargarPerfilAdmin === 'function') {
-        window.cargarPerfilAdmin();
-      }
-
-      if (nombre === 'lista' && typeof window.cargarAvisosParaAdmin === 'function') {
-        window.cargarAvisosParaAdmin();
-      }
-
-      if (nombre === 'usuarios' && typeof window.cargarUsuarios === 'function') {
-        window.cargarUsuarios();
-      }
-    });
-
-    return true;
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', instalar, { once: true });
-  } else {
-    instalar();
-  }
-  setTimeout(instalar, 100);
-  setTimeout(instalar, 500);
-  setTimeout(instalar, 1500);
-})();
