@@ -211,3 +211,23 @@ function actualizarHeaderPorSesion() {
 
 // Exportar para usar en otras páginas si es necesario
 window.actualizarHeaderPorSesion = actualizarHeaderPorSesion;
+
+// ========== GRÁFICAS ADMIN REALES ==========
+(function cargarGraficasAdminSiCorresponde() {
+  function cargar() {
+    if (!document.getElementById('chartUsuariosDiarios') && !document.getElementById('chartAvisosDiarios')) return;
+    if (document.getElementById('admin-graficas-reales')) return;
+    const script = document.createElement('script');
+    script.id = 'admin-graficas-reales';
+    script.src = '/js/admin-graficas.js?v=20260903';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cargar, { once: true });
+  } else {
+    cargar();
+  }
+  setTimeout(cargar, 500);
+  setTimeout(cargar, 1500);
+})();
