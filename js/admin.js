@@ -63,7 +63,18 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     let timer=null;
     let ultimoDatos=null;
     let cargando=false;
+    let sesionAdminLista=false;
     const DIAS=30;
+
+    async function asegurarSesionAdmin(){
+        if(sesionAdminLista)return true;
+        if(!window.Auth||typeof window.Auth.requireAuth!=='function')throw new Error('Sistema de autenticación no disponible.');
+        const usuario=await window.Auth.requireAuth();
+        if(!usuario?.id)throw new Error('Sesión de administrador no disponible.');
+        sesionAdminLista=true;
+        console.log('🔐 Sesión admin confirmada antes de cargar métricas:',usuario.id);
+        return true;
+    }
     const numero=v=>{const n=Number(v);return Number.isFinite(n)?n:0;};
     const formatear=v=>numero(v).toLocaleString('es-MX');
     const escapar=v=>{const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;};
@@ -121,6 +132,7 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         const footer=document.querySelector('.dashboard-footer');
         if(!footer||typeof getSupabaseClient!=='function')return;
         if(cargando)return;
+        try{await asegurarSesionAdmin();}catch(error){console.error('❌ Admin: sesión no lista para métricas:',error);const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';return;}
         cargando=true;
         try{
             const client=await getSupabaseClient();
