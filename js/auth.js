@@ -12,15 +12,33 @@ let votarAvisoOriginal = null;
 async function obtenerSupabaseClient() {
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
-  if (!window.supabase) {
-    await new Promise((resolve, reject) => {
+
+  // Un único cargador compartido evita carreras entre api.js y auth.js.
+  if (!window.__elBarrioSupabaseLoadPromise && !window.supabase) {
+    window.__elBarrioSupabaseLoadPromise = new Promise((resolve, reject) => {
+      const existente = document.querySelector('script[data-el-barrio-supabase-sdk="1"]');
+      if (existente) {
+        existente.addEventListener('load', resolve, { once: true });
+        existente.addEventListener('error', () => reject(new Error('No se pudo cargar Supabase JS')), { once: true });
+        return;
+      }
+
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      script.async = true;
+      script.dataset.elBarrioSupabaseSdk = '1';
       script.onload = resolve;
       script.onerror = () => reject(new Error('No se pudo cargar Supabase JS'));
       document.head.appendChild(script);
     });
   }
+
+  if (!window.supabase) {
+    await window.__elBarrioSupabaseLoadPromise;
+  }
+
+  if (!window.supabase) throw new Error('Supabase JS no disponible');
+
   window.__elBarrioSupabaseClient = window.supabase.createClient(EL_BARRIO_SUPABASE_URL, EL_BARRIO_SUPABASE_KEY);
   console.log('✅ Cliente Supabase creado desde auth.js');
   return window.__elBarrioSupabaseClient;
@@ -268,8 +286,11 @@ if (typeof API !== 'undefined') {
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
 
-// Escucha de moderación desde todas las páginas.
-iniciarEscuchaModeracion();
+// Las funciones de moderación y presencia no deben competir con la carga inicial
+// de la página pública en dispositivos móviles.
+setTimeout(() => {
+  iniciarEscuchaModeracion();
+}, 1800);
 
 // ============================================================
 // PRESENCIA GLOBAL
@@ -278,6 +299,10 @@ iniciarEscuchaModeracion();
 let presenciaAuthListenerInstalado = false;
 
 async function iniciarPresenciaSiExisteSesion() {
+  // En una página pública anónima no necesitamos inicializar Supabase Auth.
+  // El login ya registra presencia explícitamente.
+  if (!localStorage.getItem('api_key')) return;
+
   try {
     const client = await obtenerSupabaseClient();
     const { data, error } = await client.auth.getSession();
@@ -306,4 +331,6 @@ async function iniciarPresenciaSiExisteSesion() {
   }
 }
 
-iniciarPresenciaSiExisteSesion();
+setTimeout(() => {
+  iniciarPresenciaSiExisteSesion();
+}, 1200);
