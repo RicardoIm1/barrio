@@ -1,0 +1,235 @@
+name: Stabilize admin dashboard statistics
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stabilize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace duplicate metrics subsystem
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('js/admin.js')
+          text = path.read_text(encoding='utf-8')
+          marker = '// MÉTRICAS COMERCIALES + GRÁFICAS REALES + PRESENCIA'
+          if marker not in text:
+              raise SystemExit('Marker not found; refusing to modify admin.js')
+
+          prefix = text.split(marker, 1)[0]
+          replacement = r'''// MÉTRICAS DEL DASHBOARD ADMIN
+// Un único sistema: utiliza exclusivamente los elementos ya definidos en footer-admin.html.
+(function inicializarMetricasAdmin(){
+    let timer=null;
+    let ultimoDatos=null;
+    let cargando=false;
+    const DIAS=30;
+    const numero=v=>{const n=Number(v);return Number.isFinite(n)?n:0;};
+    const formatear=v=>numero(v).toLocaleString('es-MX');
+    const escapar=v=>{const d=document.createElement('div');d.textContent=v==null?'':String(v);return d.innerHTML;};
+
+    function actualizar(id,v){const e=document.getElementById(id);if(e)e.textContent=formatear(v);}
+    function fechas30(){const r=[],hoy=new Date();hoy.setHours(0,0,0,0);for(let i=DIAS-1;i>=0;i--){const d=new Date(hoy);d.setDate(hoy.getDate()-i);r.push(d);}return r;}
+    function clave(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+    function etiqueta(d){return d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit'});}
+
+    function canvasSize(canvas){
+        if(!canvas)return null;
+        const rect=canvas.getBoundingClientRect();
+        const ratio=window.devicePixelRatio||1;
+        const w=Math.max(320,Math.floor(rect.width||700));
+        const h=200;
+        canvas.width=w*ratio;
+        canvas.height=h*ratio;
+        const ctx=canvas.getContext('2d');
+        ctx.setTransform(ratio,0,0,ratio,0,0);
+        return {ctx,w,h};
+    }
+
+    function lineChart(canvas,labels,values){
+        const size=canvasSize(canvas); if(!size)return;
+        const {ctx,w,h}=size;
+        ctx.clearRect(0,0,w,h);
+        const pad={l:42,r:18,t:20,b:38},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+        const max=Math.max(1,...values);
+        const steps=4;
+        ctx.font='11px system-ui';
+        ctx.textAlign='right';
+        ctx.textBaseline='middle';
+        for(let i=0;i<=steps;i++){
+            const y=pad.t+ch-(ch*i/steps),v=max*i/steps;
+            ctx.strokeStyle='rgba(255,255,255,.10)';
+            ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+            ctx.fillStyle='#888';ctx.fillText(Math.round(v).toLocaleString('es-MX'),pad.l-7,y);
+        }
+        const pts=values.map((v,i)=>{
+            const x=pad.l+(labels.length===1?cw/2:cw*i/(labels.length-1));
+            const y=pad.t+ch-(v/max)*ch;
+            return {x,y};
+        });
+        ctx.strokeStyle='#f5b042';ctx.lineWidth=3;ctx.beginPath();
+        pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();
+        pts.forEach(p=>{ctx.fillStyle='#f5b042';ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fill();});
+        ctx.fillStyle='#888';ctx.textAlign='center';ctx.textBaseline='top';
+        labels.forEach((l,i)=>{if(i%5===0||i===labels.length-1){const x=pad.l+(labels.length===1?cw/2:cw*i/(labels.length-1));ctx.fillText(l,x,h-pad.b+9);}});
+    }
+
+    function renderCategorias(avisos){
+        const panel=document.getElementById('chartCategorias');
+        const cont=document.getElementById('chartBars');
+        const mini=document.getElementById('chartStatsMini');
+        if(!panel||!cont)return;
+        const mapa=new Map();
+        avisos.forEach(a=>{const c=String(a.categoria||'varios').trim()||'varios';mapa.set(c,(mapa.get(c)||0)+1);});
+        const arr=[...mapa.entries()].sort((a,b)=>b[1]-a[1]);
+        const max=Math.max(1,...arr.map(x=>x[1]));
+        cont.innerHTML=arr.map(([categoria,cantidad])=>`<div class="bar-item"><span class="bar-label">${escapar(categoria)}</span><div class="bar-container"><div class="bar-fill" style="width:${(cantidad/max)*100}%">${cantidad}</div></div><span class="bar-count">${cantidad}</span></div>`).join('');
+        panel.style.display='block';
+        if(mini)mini.textContent=`${mapa.size} categorías con avisos · ${formatear(avisos.length)} avisos activos/no eliminados`;
+        actualizar('totalCategorias',mapa.size);
+    }
+
+    function renderDiarios(usuarios,avisos){
+        const fechas=fechas30(),labels=fechas.map(etiqueta);
+        const mapU=new Map(),mapA=new Map();
+        usuarios.forEach(x=>{if(x.fecha_registro){const k=clave(new Date(x.fecha_registro));mapU.set(k,(mapU.get(k)||0)+1);}});
+        avisos.forEach(x=>{if(x.created_at){const k=clave(new Date(x.created_at));mapA.set(k,(mapA.get(k)||0)+1);}});
+        const u=fechas.map(d=>mapU.get(clave(d))||0),a=fechas.map(d=>mapA.get(clave(d))||0);
+        const panelU=document.getElementById('chartUsuariosDiarios'),panelA=document.getElementById('chartAvisosDiarios');
+        if(panelU){panelU.style.display='block';lineChart(document.getElementById('chartUsuariosCanvas'),labels,u);const s=document.getElementById('usuariosStats');if(s)s.textContent=`Total en periodo: ${formatear(u.reduce((s,v)=>s+v,0))}`;}
+        if(panelA){panelA.style.display='block';lineChart(document.getElementById('chartAvisosCanvas'),labels,a);const s=document.getElementById('avisosStats');if(s)s.textContent=`Total en periodo: ${formatear(a.reduce((s,v)=>s+v,0))}`;}
+        const conexiones=document.getElementById('chartConexionesDiarias');if(conexiones)conexiones.style.display='none';
+    }
+
+    function renderOnlineUsers(usuariosOnline){
+        const panel=document.getElementById('chartOnline'),lista=document.getElementById('onlineUsersList'),badge=document.getElementById('onlineCount');
+        if(!panel||!lista||!badge)return;
+        panel.style.display='block';
+        badge.textContent=`${usuariosOnline.length} ${usuariosOnline.length===1?'conectado':'conectados'}`;
+        if(!usuariosOnline.length){lista.innerHTML='<p style="color:#888;margin:0;padding:12px 0;">No hay usuarios conectados en este momento.</p>';return;}
+        lista.innerHTML=usuariosOnline.map(u=>{
+            const nombre=escapar(u.nombre||'Usuario'),email=escapar(u.email||'');
+            const fecha=u.ultima_actividad?new Date(u.ultima_actividad):null;
+            const tiempo=fecha&&!Number.isNaN(fecha.getTime())?fecha.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}):'ahora';
+            return `<div class="online-user-item"><div><strong style="color:#eee;">${nombre}</strong>${email?`<div class="online-user-email">${email}</div>`:''}</div><span class="online-user-time">● ${tiempo}</span></div>`;
+        }).join('');
+    }
+
+    function actualizarResumen(totalUsuarios,totalAvisos,totalVistas,votos){
+        const resumen=document.getElementById('statsSummary');
+        if(!resumen)return;
+        resumen.style.display='flex';
+        const promU=document.getElementById('promUsuarios'),promA=document.getElementById('promAvisos'),totalU=document.getElementById('totalUsuarios');
+        if(promU)promU.textContent=(totalUsuarios/DIAS).toFixed(1);
+        if(promA)promA.textContent=(totalAvisos/DIAS).toFixed(1);
+        if(totalU)totalU.textContent=formatear(totalUsuarios);
+    }
+
+    async function cargar(){
+        const footer=document.querySelector('.dashboard-footer');
+        if(!footer||typeof getSupabaseClient!=='function')return;
+        if(cargando)return;
+        cargando=true;
+        try{
+            const client=await getSupabaseClient();
+            const [ur,ar,vr,or]=await Promise.all([
+                client.from('usuarios').select('id,fecha_registro,ultimo_acceso').range(0,9999),
+                client.from('avisos').select('id,titulo,categoria,created_at,status,vistas').range(0,9999),
+                client.rpc('obtener_resumen_votos_admin'),
+                client.rpc('obtener_usuarios_en_linea_admin')
+            ]);
+            if(ur.error)throw ur.error;
+            if(ar.error)throw ar.error;
+            if(vr.error)throw vr.error;
+            if(or.error)throw or.error;
+
+            const usuarios=ur.data||[];
+            const avisos=(ar.data||[]).filter(a=>a.status!=='eliminado');
+            const votosRaw=typeof vr.data==='string'?JSON.parse(vr.data):(vr.data||{});
+            const onlineRaw=typeof or.data==='string'?JSON.parse(or.data):(or.data||{});
+            const pos=numero(votosRaw.positivos),neg=numero(votosRaw.negativos),votos=numero(votosRaw.total??(pos+neg));
+            const usuariosOnline=Array.isArray(onlineRaw)?onlineRaw:(Array.isArray(onlineRaw.usuarios)?onlineRaw.usuarios:[]);
+            const totalUsuarios=usuarios.length,totalAvisos=avisos.length;
+            const activos=avisos.filter(a=>a.status==='activo').length;
+            const pendientes=avisos.filter(a=>a.status==='pendiente').length;
+            const totalVistas=avisos.reduce((s,a)=>s+numero(a.vistas),0);
+
+            actualizar('totalAvisos',totalAvisos);
+            actualizar('avisosActivos',activos);
+            actualizar('avisosPendientes',pendientes);
+            actualizar('totalVisitas',totalVistas);
+            actualizar('totalInteracciones',votos);
+            actualizar('totalUsuarios',totalUsuarios);
+            const pendingCard=document.getElementById('pendingCard');if(pendingCard)pendingCard.style.display=pendientes>0?'flex':'none';
+
+            const cards=document.querySelectorAll('.dashboard-footer .stat-card');
+            cards.forEach(card=>{
+                const t=card.querySelector('h4'),l=card.querySelector('.stat-label');if(!t)return;
+                const txt=t.textContent.trim().toLowerCase();
+                if(txt==='interacciones'||txt==='votos registrados'){t.textContent='Votos registrados';if(l)l.textContent='positivos + negativos';}
+                if(txt==='total visitas'||txt==='alcance'){t.textContent='Alcance';if(l)l.textContent='vistas acumuladas';}
+            });
+
+            renderCategorias(avisos);
+            renderDiarios(usuarios,avisos);
+            renderOnlineUsers(usuariosOnline);
+            actualizarResumen(totalUsuarios,totalAvisos,totalVistas,votos);
+            ultimoDatos={usuarios,avisos,usuariosOnline,pos,neg};
+            console.log('📊 Dashboard admin actualizado:',{totalUsuarios,totalAvisos,activos,pendientes,totalVistas,pos,neg,votos,usuariosOnline:usuariosOnline.length});
+        }catch(error){
+            console.error('❌ No se pudieron cargar las métricas del panel admin:',error);
+            const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';
+        }finally{
+            cargando=false;
+        }
+    }
+
+    function observar(){
+        const contenedor=document.getElementById('footer-container');
+        if(!contenedor)return;
+        const iniciar=()=>{
+            if(!document.querySelector('.dashboard-footer'))return;
+            if(!timer)timer=setInterval(cargar,15000);
+            cargar();
+        };
+        const obs=new MutationObserver(()=>{
+            if(document.querySelector('.dashboard-footer')){obs.disconnect();iniciar();}
+        });
+        obs.observe(contenedor,{childList:true,subtree:true});
+        iniciar();
+        window.addEventListener('resize',()=>{
+            if(!ultimoDatos)return;
+            renderDiarios(ultimoDatos.usuarios,ultimoDatos.avisos);
+            renderCategorias(ultimoDatos.avisos);
+            renderOnlineUsers(ultimoDatos.usuariosOnline||[]);
+        });
+    }
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observar,{once:true});else observar();
+})();
+'''
+          path.write_text(prefix + replacement, encoding='utf-8')
+          print('admin.js stabilized')
+
+      - name: Commit stabilized admin.js and remove temporary workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/admin.js
+          git rm .github/workflows/stabilize-admin-dashboard.yml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "remove duplicate admin statistics subsystem"
+          git push
