@@ -272,7 +272,10 @@ window.obtenerSupabaseClient = obtenerSupabaseClient;
 
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
-    const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', { ...(filtros || {}), ...(paginacion || {}) });
+    const limiteSolicitado = Number(paginacion?.limite) || 20;
+    const limiteSeguro = Math.min(20, Math.max(1, limiteSolicitado));
+    const parametros = { ...(filtros || {}), ...(paginacion || {}), limite: limiteSeguro };
+    const resultado = await API.peticion('LISTAR_AVISOS_PUBLICOS', parametros);
     if (resultado?.success && resultado?.data) return { ...resultado, datos: resultado.data.datos || [], total: resultado.data.total ?? (resultado.data.datos || []).length };
     return resultado;
   };
@@ -334,3 +337,27 @@ async function iniciarPresenciaSiExisteSesion() {
 setTimeout(() => {
   iniciarPresenciaSiExisteSesion();
 }, 1200);
+
+// ============================================================
+// SPLASH NO BLOQUEANTE
+// No esperamos a que terminen imágenes, realtime u otras tareas secundarias.
+// La aplicación debe quedar visible aunque una dependencia externa tarde.
+// ============================================================
+function quitarSplashSinEsperarCargaTotal() {
+  const splash = document.getElementById('splash-screen');
+  if (!splash || splash.dataset.elBarrioOculto === '1') return;
+  splash.dataset.elBarrioOculto = '1';
+  splash.style.opacity = '0';
+  setTimeout(() => {
+    if (splash.isConnected) splash.style.display = 'none';
+  }, 300);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', quitarSplashSinEsperarCargaTotal, { once: true });
+} else {
+  quitarSplashSinEsperarCargaTotal();
+}
+
+// Seguro adicional para móviles: nunca dejar la pantalla de carga bloqueando la app.
+setTimeout(quitarSplashSinEsperarCargaTotal, 2500);
