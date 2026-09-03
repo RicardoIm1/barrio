@@ -191,11 +191,20 @@ function actualizarHeaderPorSesion() {
       if (cerrarBtn) {
         const nuevoCerrar = cerrarBtn.cloneNode(true);
         cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-        nuevoCerrar.addEventListener('click', function (e) {
+        nuevoCerrar.addEventListener('click', async function (e) {
           e.preventDefault();
-          localStorage.removeItem('usuario');
-          localStorage.removeItem('api_key');
-          window.location.href = '/index.html';
+          try {
+            if (window.Auth && typeof window.Auth.logout === 'function') {
+              await window.Auth.logout();
+            } else {
+              localStorage.removeItem('usuario');
+              localStorage.removeItem('api_key');
+            }
+          } catch (error) {
+            console.error('❌ Error cerrando sesión:', error);
+          } finally {
+            window.location.href = '/index.html';
+          }
         });
       }
       console.log('Header actualizado - Usuario logueado');
@@ -230,4 +239,28 @@ window.actualizarHeaderPorSesion = actualizarHeaderPorSesion;
   }
   setTimeout(cargar, 500);
   setTimeout(cargar, 1500);
+})();
+
+// ========== PRESENCIA ADMIN: ESTADO, NO CRONÓMETRO ==========
+(function normalizarEstadoPresenciaAdmin() {
+  function actualizar() {
+    document.querySelectorAll('.online-user-time').forEach(el => {
+      el.textContent = '● Conectado';
+    });
+  }
+  function instalar() {
+    actualizar();
+    const lista = document.getElementById('onlineUsersList');
+    if (!lista || lista.dataset.presenciaEstadoObserver === '1') return;
+    lista.dataset.presenciaEstadoObserver = '1';
+    const observer = new MutationObserver(actualizar);
+    observer.observe(lista, { childList: true, subtree: true, characterData: true });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', instalar, { once: true });
+  } else {
+    instalar();
+  }
+  setTimeout(instalar, 500);
+  setTimeout(instalar, 1500);
 })();
