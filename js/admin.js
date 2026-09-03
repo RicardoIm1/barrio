@@ -236,3 +236,56 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     // pueda guardar la edición.
     setTimeout(intentarInstalar, 0);
 })();
+
+// ==============================================================
+// OCULTAR AVISOS ELIMINADOS DEL LISTADO ADMINISTRATIVO
+//
+// El borrado de avisos es lógico: el registro permanece en Supabase
+// con status = 'eliminado'. El listado público ya los excluye por RLS.
+// Aquí filtramos esos registros del listado normal de admin.html sin
+// tocar la base de datos ni cambiar las políticas RLS.
+// ==============================================================
+(function ocultarAvisosEliminadosAdmin() {
+    let instalado = false;
+    let intentos = 0;
+    const maxIntentos = 100;
+
+    function instalarFiltro() {
+        if (instalado) return true;
+
+        if (typeof window.renderizarTablaAvisos !== 'function') {
+            intentos++;
+            if (intentos >= maxIntentos) {
+                console.warn('⚠️ No se pudo instalar el filtro de avisos eliminados.');
+                return true;
+            }
+            return false;
+        }
+
+        const renderOriginal = window.renderizarTablaAvisos;
+
+        window.renderizarTablaAvisos = function () {
+            if (Array.isArray(todosLosAvisos)) {
+                const antes = todosLosAvisos.length;
+                todosLosAvisos = todosLosAvisos.filter(aviso => aviso?.status !== 'eliminado');
+                const eliminados = antes - todosLosAvisos.length;
+
+                if (eliminados > 0) {
+                    console.log(`🗑️ ${eliminados} aviso(s) eliminado(s) ocultado(s) del panel administrativo.`);
+                }
+            }
+
+            return renderOriginal.apply(this, arguments);
+        };
+
+        instalado = true;
+        console.log('✅ Filtro admin instalado: los avisos con status="eliminado" no se muestran.');
+        return true;
+    }
+
+    const timer = setInterval(() => {
+        if (instalarFiltro()) clearInterval(timer);
+    }, 100);
+
+    setTimeout(() => clearInterval(timer), 10000);
+})();
