@@ -121,6 +121,11 @@
         if (el) el.textContent = texto;
     }
 
+    function eliminarPanelDuplicado(id) {
+        const panel = document.getElementById(id);
+        if (panel) panel.remove();
+    }
+
     async function cargarGraficas() {
         const canvasUsuarios = document.getElementById('chartUsuariosCanvas');
         const canvasAvisos = document.getElementById('chartAvisosCanvas');
@@ -141,10 +146,12 @@
             ]);
             if (usuariosResp.error) throw usuariosResp.error;
             if (avisosResp.error) throw avisosResp.error;
+
             const fechas = prepararFechas();
             const labels = fechas.map(etiqueta);
             const mapaUsuarios = new Map();
             const mapaAvisos = new Map();
+
             (usuariosResp.data || []).forEach(usuario => {
                 const clave = claveFecha(usuario.fecha_registro);
                 if (clave) mapaUsuarios.set(clave, (mapaUsuarios.get(clave) || 0) + 1);
@@ -153,10 +160,15 @@
                 const clave = claveFecha(aviso.created_at);
                 if (clave) mapaAvisos.set(clave, (mapaAvisos.get(clave) || 0) + 1);
             });
+
             const usuarios = fechas.map(d => mapaUsuarios.get(claveFecha(d)) || 0);
             const avisos = fechas.map(d => mapaAvisos.get(claveFecha(d)) || 0);
+
             const panelUsuarios = mostrarPanel('chartUsuariosDiarios');
             const panelAvisos = mostrarPanel('chartAvisosDiarios');
+            eliminarPanelDuplicado('admin-chart-usuarios');
+            eliminarPanelDuplicado('admin-chart-avisos');
+
             dibujarLinea(canvasUsuarios, labels, usuarios);
             dibujarLinea(canvasAvisos, labels, avisos);
             actualizarResumen('usuariosStats', `Últimos ${DIAS} días: ${usuarios.reduce((s, v) => s + v, 0).toLocaleString('es-MX')} registros · Máximo diario: ${Math.max(...usuarios).toLocaleString('es-MX')}`);
@@ -174,8 +186,14 @@
         }
     }
 
+    function limpiarDuplicados() {
+        eliminarPanelDuplicado('admin-chart-usuarios');
+        eliminarPanelDuplicado('admin-chart-avisos');
+    }
+
     function iniciar() {
         if (!document.getElementById('chartUsuariosCanvas') && !document.getElementById('chartAvisosCanvas')) return;
+        limpiarDuplicados();
         cargarGraficas();
         if (!timer) timer = setInterval(cargarGraficas, 15000);
     }
@@ -184,7 +202,10 @@
         const footer = document.getElementById('footer-container');
         if (!footer) return;
         iniciar();
-        observador = new MutationObserver(iniciar);
+        observador = new MutationObserver(() => {
+            limpiarDuplicados();
+            iniciar();
+        });
         observador.observe(footer, { childList: true, subtree: true });
     }
 
