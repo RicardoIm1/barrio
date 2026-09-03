@@ -119,8 +119,6 @@ async function supabasePeticion(accion, datos = {}) {
       if (error) throw error;
       if (!data) return respuestaOK(null);
 
-      // Los acumulados públicos se obtienen mediante RPC.
-      // Así no exponemos las filas individuales de la tabla votos.
       let positivos = 0;
       let negativos = 0;
       try {
@@ -142,6 +140,20 @@ async function supabasePeticion(accion, datos = {}) {
         votos_positivos: positivos,
         votos_negativos: negativos
       });
+    }
+
+    case 'REGISTRAR_VISTA': {
+      const id = String(datos?.id || '').trim();
+      if (!id) throw new Error('ID de aviso no proporcionado');
+
+      const { data, error } = await client.rpc('registrar_vista_aviso', {
+        p_aviso_id: id
+      });
+      if (error) throw error;
+
+      const resultado = typeof data === 'string' ? JSON.parse(data) : (data || {});
+      if (!resultado.success) throw new Error(resultado.error || 'No se pudo registrar la vista');
+      return respuestaOK(resultado, { vistas: Number(resultado.vistas || 0) });
     }
 
     case 'LISTAR_AVISOS_PUBLICOS': {
@@ -342,55 +354,42 @@ class API {
 
   static async peticion(accion, datos = {}, apiKey = null, intentos = 2) {
     const accionSupabase = [
-      'OBTENER_AVISO_POR_ID', 'LISTAR_AVISOS_PUBLICOS', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
-      'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS', 'ELIMINAR_USUARIO',
+      'OBTENER_AVISO_POR_ID', 'REGISTRAR_VISTA', 'LISTAR_AVISOS_PUBLICOS', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR',
+      'CREAR', 'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS', 'ELIMINAR_USUARIO',
       'APROBAR_AVISO', 'RECHAZAR_AVISO', 'VOTAR_AVISO', 'ESTADISTICAS_AVANZADAS'
-    ].includes(accion);
+    ];
 
-    if (accionSupabase) {
+    if (accionSupabase.includes(accion)) {
       try {
         const resultado = await supabasePeticion(accion, datos);
-        if (resultado) return resultado;
+        if (resultado !== null) return resultado;
       } catch (error) {
-        console.error(`❌ Supabase ${accion}:`, error);
-        throw error;
+        console.error(`Error Supabase en ${accion}:`, error);
+        return respuestaError(error);
       }
     }
 
-    return new Promise((resolve, reject) => {
-      const params = new URLSearchParams();
-      params.append('accion', accion);
-      if (apiKey) params.append('api_key', apiKey);
-      Object.entries(datos).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) params.append(key, typeof value === 'object' ? JSON.stringify(value) : value);
-      });
-
-      const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10);
-      const url = `${API_BASE_URL}?callback=${callbackName}&${params.toString()}`;
-      const timeout = setTimeout(() => {
-        delete window[callbackName];
-        if (intentos > 0) API.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
-        else reject(new Error('Timeout de conexión'));
-      }, 30000);
-
-      window[callbackName] = response => {
-        clearTimeout(timeout);
-        delete window[callbackName];
-        resolve(response);
-      };
-
-      const script = document.createElement('script');
-      script.src = url;
-      script.onerror = () => {
-        clearTimeout(timeout);
-        delete window[callbackName];
-        if (intentos > 0) API.peticion(accion, datos, apiKey, intentos - 1).then(resolve).catch(reject);
-        else reject(new Error('Error de conexión con el servidor'));
-      };
-      document.body.appendChild(script);
+    const url = new URL(this.baseUrl);
+    url.searchParams.set('accion', accion);
+    if (apiKey) url.searchParams.set('api_key', apiKey);
+    Object.entries(datos || {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) url.searchParams.set(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
     });
+
+    try {
+      const response = await fetch(url.toString(), { method: 'GET', headers: { Accept: 'application/json' } });
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); } catch (_) { data = null; }
+      if (!response.ok) throw new Error(data?.error || `HTTP ${response.status}`);
+      return data || { success: true };
+    } catch (error) {
+      if (intentos > 0) return API.peticion(accion, datos, apiKey, intentos - 1);
+      return respuestaError(error);
+    }
   }
 
+  static getUsuarioActual() { return getUsuarioLocal(); }
   static async request(accion, datos = {}, apiKey = null) { return await API.peticion(accion, datos, apiKey); }
   static async registrarVista(id) { return await API.peticion('REGISTRAR_VISTA', { id }); }
   static async registrarClickWhatsApp(id) { return await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id }); }
