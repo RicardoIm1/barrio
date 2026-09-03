@@ -244,6 +244,31 @@ async function supabasePeticion(accion, datos = {}) {
       return respuestaOK(data);
     }
 
+    case 'VOTAR_AVISO': {
+      const avisoId = String(datos?.aviso_id || '').trim();
+      const tipoEntrada = String(datos?.tipo || '').trim().toLowerCase();
+      const tipo = tipoEntrada === 'like' ? 'positivo' : tipoEntrada === 'dislike' ? 'negativo' : tipoEntrada;
+      if (!avisoId) throw new Error('ID de aviso no proporcionado');
+      if (!['positivo', 'negativo'].includes(tipo)) throw new Error('Tipo de voto no válido');
+
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!sessionData?.session?.user?.id) throw new Error('Debes iniciar sesión para votar');
+
+      const { data, error } = await client.rpc('votar_aviso', {
+        p_aviso_id: avisoId,
+        p_tipo: tipo
+      });
+      if (error) throw error;
+
+      const resultado = typeof data === 'string' ? JSON.parse(data) : (data || {});
+      return respuestaOK(resultado, {
+        tipo: resultado.tipo ?? null,
+        likes: Number(resultado.positivos || 0),
+        dislikes: Number(resultado.negativos || 0)
+      });
+    }
+
     case 'ESTADISTICAS_AVANZADAS': {
       const { data: usuarios, error: errorUsuarios } = await client.from('usuarios').select('id, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999);
       if (errorUsuarios) throw errorUsuarios;
@@ -289,7 +314,7 @@ class API {
     const accionSupabase = [
       'OBTENER_AVISO_POR_ID', 'LISTAR_AVISOS_PUBLICOS', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
       'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS', 'ELIMINAR_USUARIO',
-      'APROBAR_AVISO', 'RECHAZAR_AVISO', 'ESTADISTICAS_AVANZADAS'
+      'APROBAR_AVISO', 'RECHAZAR_AVISO', 'VOTAR_AVISO', 'ESTADISTICAS_AVANZADAS'
     ].includes(accion);
 
     if (accionSupabase) {
@@ -337,80 +362,7 @@ class API {
   }
 
   static async request(accion, datos = {}, apiKey = null) { return await API.peticion(accion, datos, apiKey); }
-  static async post(accion, datos = {}, apiKey = null) { return await API.peticion(accion, datos, apiKey); }
-  static async login(email, password) {
-    if (window.Auth?.login) return await Auth.login(email, password);
-    throw new Error('Auth no disponible');
-  }
-  static async registro(datos) { throw new Error('El registro debe realizarse mediante Supabase Auth.'); }
-  static async logout() {
-    if (window.Auth?.logout) { await Auth.logout(); return; }
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('api_key');
-  }
-  static getUsuarioActual() { return getUsuarioLocal(); }
-  static isLoggedIn() { return !!getUsuarioLocal(); }
-
-  static async listar(coleccion, filtros = {}, paginacion = {}) {
-    const resultado = await API.peticion('LISTAR', { coleccion, ...filtros, ...paginacion });
-    if (resultado?.success) return resultado.data || { datos: [], total: 0 };
-    return resultado || { datos: [], total: 0 };
-  }
-
-  static async listarPublicos(filtros = {}, paginacion = {}) {
-    const client = await getSupabaseClient();
-    let query = client.from('avisos').select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' }).eq('status', 'activo').order('created_at', { ascending: false });
-    if (filtros?.categoria && filtros.categoria !== 'todos') query = query.eq('categoria', filtros.categoria);
-    const pagina = Math.max(1, Number(paginacion?.pagina) || 1);
-    const limite = Math.max(1, Number(paginacion?.limite) || 200);
-    const desde = (pagina - 1) * limite;
-    query = query.range(desde, desde + limite - 1);
-    const { data, error, count } = await query;
-    if (error) { console.error('❌ Supabase listarPublicos:', error); throw error; }
-    const avisos = normalizarAvisos(data);
-    return { datos: avisos, total: count ?? avisos.length };
-  }
-
-  static async crearAviso(datos, apiKey = null) { return await API.peticion('CREAR', { coleccion: 'AVISOS', datos }, apiKey); }
-  static async actualizarAviso(id, datos, apiKey = null) { return await API.peticion('ACTUALIZAR', { coleccion: 'AVISOS', id, datos }, apiKey); }
-  static async eliminar(coleccion, id, apiKey = null) { return await API.peticion('ELIMINAR', { coleccion, id }, apiKey); }
-  static async aprobarAviso(id, apiKey = null) { return await API.peticion('APROBAR_AVISO', { id }, apiKey); }
-  static async rechazarAviso(id, apiKey = null) { return await API.peticion('RECHAZAR_AVISO', { id }, apiKey); }
-  static async listarUsuarios(apiKey = null) { return await API.peticion('LISTAR_USUARIOS', {}, apiKey); }
-  static async actualizarUsuario(id, datos, apiKey = null) { return await API.peticion('ACTUALIZAR', { coleccion: 'USUARIOS', id, datos }, apiKey); }
   static async registrarVista(id) { return await API.peticion('REGISTRAR_VISTA', { id }); }
   static async registrarClickWhatsApp(id) { return await API.peticion('REGISTRAR_CLICK_WHATSAPP', { id }); }
-  static async registrarInteres(id) { return await API.peticion('REGISTRAR_INTERES', { id }); }
-  static async listarComentarios(avisoId) { const r = await API.peticion('LISTAR_COMENTARIOS', { avisoId }); return r?.data || []; }
-  static async agregarComentario(avisoId, texto, autor) { return await API.peticion('AGREGAR_COMENTARIO', { avisoId, texto, autor }); }
-  static async miReputacion(apiKey) { return await API.peticion('MI_REPUTACION', {}, apiKey); }
-  static async solicitarVerificacionTelefono(telefono, apiKey) { return await API.peticion('VERIFICAR_TELEFONO_SOLICITAR', { telefono }, apiKey); }
-  static async confirmarVerificacionTelefono(codigo, apiKey) { return await API.peticion('VERIFICAR_TELEFONO_CONFIRMAR', { codigo }, apiKey); }
-  static async votarAviso(avisoId, tipo, apiKey) { return await API.peticion('VOTAR_AVISO', { aviso_id: avisoId, tipo }, apiKey); }
-  static async reportarAviso(avisoId, motivo, apiKey) { return await API.peticion('REPORTAR_AVISO', { aviso_id: avisoId, motivo }, apiKey); }
-
-  static mostrarExito(mensaje) {
-    const container = document.getElementById('mensaje-container');
-    if (container) {
-      container.innerHTML = `<div class="mensaje mensaje-exito" style="background:#d4edda;color:#155724;padding:12px;border-radius:8px;margin-bottom:16px;">${escapeHtmlGlobal(mensaje)}</div>`;
-      setTimeout(() => { if (container) container.innerHTML = ''; }, 4000);
-    } else alert(mensaje);
-  }
-
-  static mostrarError(mensaje) {
-    const container = document.getElementById('mensaje-container');
-    if (container) container.innerHTML = `<div class="mensaje mensaje-error" style="background:#f8d7da;color:#721c24;padding:12px;border-radius:8px;margin-bottom:16px;">${escapeHtmlGlobal(mensaje)}</div>`;
-    else alert(mensaje);
-  }
+  static async votarAviso(avisoId, tipo, apiKey = null) { return await API.peticion('VOTAR_AVISO', { aviso_id: avisoId, tipo }, apiKey); }
 }
-
-function escapeHtmlGlobal(text) {
-  const div = document.createElement('div');
-  div.textContent = text == null ? '' : String(text);
-  return div.innerHTML;
-}
-
-window.API = API;
-window.llamarAPI = (accion, datos = {}, apiKey = null) => API.peticion(accion, datos, apiKey);
-window.dispatchEvent(new CustomEvent('api-ready'));
-console.log('📡 API Client cargado. Supabase activo para administración.');
