@@ -52,7 +52,7 @@ async function cargarAvisos() {
 
     if (resultado && resultado.datos) {
       todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);
-      filtrarYAplicarPaginacion();
+      await filtrarYAplicarPaginacion();
     } else {
       contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
     }
@@ -63,7 +63,41 @@ async function cargarAvisos() {
   }
 }
 
-function filtrarYAplicarPaginacion() {
+// Carga los acumulados reales desde el RPC público, sin exponer filas individuales de votos.
+// Se consulta solamente para los avisos que se van a mostrar en la página actual.
+async function cargarVotosAcumulados(avisos) {
+  const lista = Array.isArray(avisos) ? avisos : [];
+  if (!lista.length) return;
+
+  try {
+    const client = await getSupabaseClient();
+
+    await Promise.all(lista.map(async aviso => {
+      try {
+        const { data, error } = await client.rpc('obtener_votos_aviso', {
+          p_aviso_id: aviso.id
+        });
+
+        if (error) throw error;
+
+        const votos = typeof data === 'string' ? JSON.parse(data) : (data || {});
+        aviso.likes = Number(votos.positivos || 0);
+        aviso.dislikes = Number(votos.negativos || 0);
+        aviso.votos_positivos = aviso.likes;
+        aviso.votos_negativos = aviso.dislikes;
+      } catch (error) {
+        console.warn(`No se pudieron cargar votos del aviso ${aviso.id}:`, error);
+        // No sustituimos el valor por "intereses". Si falla el RPC, conservamos 0.
+        aviso.likes = Number(aviso.likes || 0);
+        aviso.dislikes = Number(aviso.dislikes || aviso.votos_negativos || 0);
+      }
+    });
+  } catch (error) {
+    console.warn('No se pudo inicializar Supabase para cargar votos:', error);
+  }
+}
+
+async function filtrarYAplicarPaginacion() {
   let avisosFiltrados = todosLosAvisos;
 
   if (categoriaActual !== 'todos') {
@@ -74,6 +108,9 @@ function filtrarYAplicarPaginacion() {
   const avisosPaginados = avisosFiltrados.slice(inicio, inicio + AVISOS_POR_PAGINA);
   totalPaginas = Math.ceil(avisosFiltrados.length / AVISOS_POR_PAGINA);
 
+  // Esperamos los acumulados antes de renderizar para evitar que el index muestre
+  // temporalmente una cifra distinta a la de aviso.html.
+  await cargarVotosAcumulados(avisosPaginados);
   renderizarAvisos(avisosPaginados, paginaActual, totalPaginas);
 }
 
@@ -226,7 +263,8 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
     
     const vistas = aviso.vistas || 0;
     const clicksWhatsApp = aviso.clicks_whatsapp || 0;
-    const intereses = aviso.intereses || 0;
+    const likes = Number(aviso.likes ?? aviso.votos_positivos ?? 0);
+    const dislikes = Number(aviso.dislikes ?? aviso.votos_negativos ?? 0);
     
     let numeroWhatsApp = '';
     let numeroTelefono = '';
@@ -288,7 +326,10 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
               💬 ${clicksWhatsApp}
             </span>
             <span class="stat-item like-btn" onclick="event.stopPropagation(); registrarInteres('${aviso.id}', this)" title="Me interesa">
-              👍 ${intereses}
+              👍 ${likes}
+            </span>
+            <span class="stat-item dislike-btn" title="No me gusta" onclick="event.stopPropagation()">
+              👎 ${dislikes}
             </span>
             <span class="stat-item" onclick="event.stopPropagation(); mostrarPanelComentarios('${aviso.id}', '${escapeHTML(aviso.titulo)}')" title="Comentarios">
               💬
