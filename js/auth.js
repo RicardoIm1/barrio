@@ -116,3 +116,16 @@ const Auth = {
 
 window.Auth = Auth;
 window.obtenerSupabaseClient = obtenerSupabaseClient;
+
+// Compatibilidad con el index.html actual.
+// La implementación nueva de API expone LISTAR_AVISOS_PUBLICOS
+// mediante API.peticion(), mientras que index.html conserva la
+// llamada histórica API.listarPublicos(filtros, paginacion).
+if (typeof API !== 'undefined') {
+  API.listarPublicos = async function (filtros = {}, paginacion = {}) {
+    return await API.peticion(
+      'LISTAR_AVISOS_PUBLICOS',
+      { ...(filtros || {}), ...(paginacion || {}) }
+    );
+  };
+}
