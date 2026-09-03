@@ -64,6 +64,7 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     const dias=30;
     const umbralOnlineMinutos=2;
     let ultimoDatos=null;
+    let cargando=false;
 
     function actualizar(id,v){const e=document.getElementById(id);if(e)e.textContent=formatear(v);}
     function fechas30(){const r=[],hoy=new Date();hoy.setHours(0,0,0,0);for(let i=dias-1;i>=0;i--){const d=new Date(hoy);d.setDate(hoy.getDate()-i);r.push(d);}return r;}
@@ -102,6 +103,8 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     }
 
     async function cargar(){
+        if(cargando)return;
+        cargando=true;
         const footer=document.querySelector('.dashboard-footer');
         if(!footer||typeof getSupabaseClient!=='function')return;
         try{
@@ -134,6 +137,8 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         }catch(error){
             console.error('❌ No se pudieron cargar las métricas del panel admin:',error);
             const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';
+        }finally{
+            cargando=false;
         }
     }
 
