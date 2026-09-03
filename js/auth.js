@@ -203,9 +203,9 @@ function detenerPresencia() {
   }
 }
 
-function iniciarPresencia() {
+async function iniciarPresencia() {
   detenerPresencia();
-  registrarPresencia();
+  return await registrarPresencia();
 }
 
 async function construirUsuario(client, user) {
@@ -237,7 +237,7 @@ const Auth = {
     if (data.user) {
       const usuario = await construirUsuario(client, data.user);
       guardarCompatibilidad(usuario, data.session);
-      iniciarPresencia();
+      await iniciarPresencia();
       iniciarEscuchaModeracion();
       console.log('🟢 Sesión Supabase reconocida:', usuario);
     }
@@ -251,7 +251,7 @@ const Auth = {
     if (!session?.user) { detenerPresencia(); return null; }
     const usuario = await construirUsuario(client, session.user);
     guardarCompatibilidad(usuario, session);
-    iniciarPresencia();
+    await iniciarPresencia();
     iniciarEscuchaModeracion();
     return usuario;
   },
@@ -322,7 +322,7 @@ async function iniciarPresenciaSiExisteSesion() {
       presenciaAuthListenerInstalado = true;
       client.auth.onAuthStateChange((_event, session) => {
         if (session?.user) {
-          iniciarPresencia();
+          iniciarPresencia().catch(error => console.warn('⚠️ Presencia tras cambio de sesión:', error?.message || error));
         } else {
           detenerPresencia();
           setTimeout(() => cerrarPresencia(), 0);
