@@ -1,0 +1,66 @@
+name: Fix admin stats race
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-admin-stats-race.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin metrics singleton and period average
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('js/admin.js')
+          s = p.read_text(encoding='utf-8')
+          old = "(function inicializarMetricasAdmin(){\n    let timer=null;"
+          new = "(function inicializarMetricasAdmin(){\n    if(window.__ELBARRIO_METRICAS_ADMIN_INICIADAS__)return;\n    window.__ELBARRIO_METRICAS_ADMIN_INICIADAS__=true;\n    let timer=null;"
+          if old not in s:
+              raise SystemExit('metrics initializer pattern not found')
+          s = s.replace(old, new, 1)
+          old = "function actualizarResumen(totalUsuarios,totalAvisos){"
+          new = "function actualizarResumen(totalUsuarios,avisosPeriodo){"
+          if old not in s:
+              raise SystemExit('summary function pattern not found')
+          s = s.replace(old, new, 1)
+          old = "if(promA)promA.textContent=(totalAvisos/DIAS).toFixed(1);"
+          new = "if(promA)promA.textContent=(avisosPeriodo/DIAS).toFixed(1);"
+          if old not in s:
+              raise SystemExit('summary average pattern not found')
+          s = s.replace(old, new, 1)
+          old = "const totalUsuarios=usuarios.length,totalAvisos=avisos.length,activos=avisos.filter(a=>a.status==='activo').length,pendientes=avisos.filter(a=>a.status==='pendiente').length,totalVistas=avisos.reduce((s,a)=>s+numero(a.vistas),0);"
+          new = "const totalUsuarios=usuarios.length,totalAvisos=avisos.length,activos=avisos.filter(a=>a.status==='activo').length,pendientes=avisos.filter(a=>a.status==='pendiente').length,totalVistas=avisos.reduce((s,a)=>s+numero(a.vistas),0),fechaCorte=Date.now()-DIAS*24*60*60*1000,avisosPeriodo=avisos.filter(a=>{const d=new Date(a.created_at);return !Number.isNaN(d.getTime())&&d.getTime()>=fechaCorte;}).length;"
+          if old not in s:
+              raise SystemExit('metrics totals pattern not found')
+          s = s.replace(old, new, 1)
+          old = "actualizarResumen(totalUsuarios,totalAvisos);"
+          new = "actualizarResumen(totalUsuarios,avisosPeriodo);"
+          if old not in s:
+              raise SystemExit('summary call pattern not found')
+          s = s.replace(old, new, 1)
+          old = "<h4>🟢 Usuarios en Línea (últimos 10 minutos)</h4>"
+          new = "<h4>🟢 Usuarios conectados</h4>"
+          # This text lives in footer-admin.html, not admin.js, so do not fail here.
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Update footer online label
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('common/footer-admin.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('Usuarios en Línea (últimos 10 minutos)','Usuarios conectados')
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit changes and remove one-time workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/admin.js common/footer-admin.html .github/workflows/fix-admin-stats-race.yml
+          git rm .github/workflows/fix-admin-stats-race.yml
+          git commit -m 'prevent duplicate admin metrics initialization' || exit 0
+          git push
