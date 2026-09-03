@@ -231,19 +231,11 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         setTimeout(instalar, 1000);
     }
 
-    // admin.html todavía instala listeners inline. Esperamos al siguiente
-    // ciclo para que el clon elimine esos listeners antes de que el usuario
-    // pueda guardar la edición.
     setTimeout(intentarInstalar, 0);
 })();
 
 // ==============================================================
 // OCULTAR AVISOS ELIMINADOS DEL LISTADO ADMINISTRATIVO
-//
-// El borrado de avisos es lógico: el registro permanece en Supabase
-// con status = 'eliminado'. El listado público ya los excluye por RLS.
-// Aquí filtramos esos registros del listado normal de admin.html sin
-// tocar la base de datos ni cambiar las políticas RLS.
 // ==============================================================
 (function ocultarAvisosEliminadosAdmin() {
     let instalado = false;
@@ -288,4 +280,30 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
     }, 100);
 
     setTimeout(() => clearInterval(timer), 10000);
+})();
+
+// ==============================================================
+// AISLAR LOS ESTILOS DEL PANEL ADMIN
+// `index2.css` es una hoja global pensada para la portada/listado
+// público y redefine :root, *, body y otros selectores generales.
+// En admin.html esto pisa parte del diseño administrativo propio.
+// No modificamos index2.css porque otras páginas sí lo necesitan.
+// ==============================================================
+(function aislarEstilosAdmin() {
+    function instalar() {
+        const hojas = document.querySelectorAll('link[rel="stylesheet"]');
+        hojas.forEach(hoja => {
+            const href = hoja.getAttribute('href') || '';
+            if (href === '/css/index2.css' || href.endsWith('/css/index2.css')) {
+                hoja.remove();
+                console.log('✅ admin.html: index2.css aislado para evitar conflicto de estilos.');
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', instalar, { once: true });
+    } else {
+        instalar();
+    }
 })();
