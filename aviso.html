@@ -25,11 +25,11 @@ html,body{margin:0;min-height:100%}body{background:var(--bg)!important;color:var
 <script src="/js/api.js"></script><script src="/js/ui.js"></script><script src="/js/auth.js"></script>
 <script>
 const AVISO_ID=new URLSearchParams(location.search).get('id');
-const SUPABASE_URL='https://gnjaumpjerbbwlkcgxqa.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY='sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
+const AVISO_SUPABASE_URL='https://gnjaumpjerbbwlkcgxqa.supabase.co';
+const AVISO_SUPABASE_PUBLISHABLE_KEY='sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 let avisoActual=null;let usuarioActual=null;let supabaseAvisoClient=null;
 
-function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&#039;')}
+function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\\"/g,'&quot;').replace(/'/g,'&#039;')}
 function fecha(v){if(!v)return '';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short'})}
 function url(v){const s=String(v??'').trim();if(!s)return '';if(/^https?:\/\//i.test(s)||s.startsWith('/')||s.startsWith('./'))return s;return ''}
 function yt(v){try{const u=new URL(v);let id='';if(u.hostname.includes('youtu.be'))id=u.pathname.slice(1);if(u.hostname.includes('youtube.com'))id=u.searchParams.get('v')||u.pathname.match(/\/embed\/([^/]+)/)?.[1]||u.pathname.match(/\/shorts\/([^/]+)/)?.[1]||'';return id?'https://www.youtube.com/embed/'+encodeURIComponent(id):''}catch(e){return ''}}
@@ -37,7 +37,7 @@ function media(a){const img=url(a.imagen_url||a.imagen||a.image_url||a.foto_url|
 
 async function cargarHeader(){try{const r=await fetch('/common/header.html',{cache:'no-store'});if(!r.ok)throw new Error('No se pudo cargar el encabezado');const html=await r.text();const doc=new DOMParser().parseFromString(html,'text/html');const target=document.getElementById('header-container');target.innerHTML='';doc.body.childNodes.forEach(n=>target.appendChild(document.importNode(n,true)));doc.head.querySelectorAll('style').forEach(s=>document.head.appendChild(document.importNode(s,true)));doc.querySelectorAll('script').forEach(old=>{const s=document.createElement('script');for(const a of old.attributes)s.setAttribute(a.name,a.value);s.textContent=old.textContent;document.body.appendChild(s)});}catch(e){console.warn('Header:',e)}}
 
-async function getSupabaseAvisoClient(){if(supabaseAvisoClient)return supabaseAvisoClient;if(!window.supabase){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=resolve;s.onerror=()=>reject(new Error('No se pudo cargar Supabase JS'));document.head.appendChild(s)})}supabaseAvisoClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);return supabaseAvisoClient}
+async function getSupabaseAvisoClient(){if(supabaseAvisoClient)return supabaseAvisoClient;if(!window.supabase){await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=resolve;s.onerror=()=>reject(new Error('No se pudo cargar Supabase JS'));document.head.appendChild(s)})}supabaseAvisoClient=window.supabase.createClient(AVISO_SUPABASE_URL,AVISO_SUPABASE_PUBLISHABLE_KEY);return supabaseAvisoClient}
 
 async function comentarios(id){const l=document.getElementById('comments-list');if(!l)return;try{const client=await getSupabaseAvisoClient();const {data,error}=await client.from('comentarios').select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at').eq('aviso_id',id).order('created_at',{ascending:true});if(error)throw error;l.innerHTML=data?.length?data.map(c=>'<div class="comment-item"><div class="comment-author">'+esc(c.nombre_autor||'Anónimo')+'</div><div class="comment-text">'+esc(c.contenido||'')+'</div><div class="comment-date">'+esc(fecha(c.created_at))+'</div></div>').join(''):'<div style="text-align:center;color:#888">No hay comentarios aún. ¡Sé el primero!</div>';const count=document.querySelector('.comments-count');if(count)count.textContent=String(data?.length||0)}catch(e){console.error('Comentarios:',e);l.innerHTML='<div style="text-align:center;color:#888">No fue posible cargar los comentarios.</div>'}}
 
