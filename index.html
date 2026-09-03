@@ -1,23 +1,11 @@
 <!doctype html>
 <html lang="es-MX">
   <head>
-    <meta
-      name="google-site-verification"
-      content="fmtZKP7ZEDNEcmHyx08vsSQn8wVmqfE2WlKtGyBo968"
-    />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="upgrade-insecure-requests"
-    />
-    <meta
-      http-equiv="Strict-Transport-Security"
-      content="max-age=31536000; includeSubDomains"
-    />
+    <meta name="google-site-verification" content="fmtZKP7ZEDNEcmHyx08vsSQn8wVmqfE2WlKtGyBo968" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+    <meta http-equiv="Strict-Transport-Security" content="max-age=31536000; includeSubDomains" />
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes" />
     <title>El Barrio | Inicio</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
@@ -28,89 +16,30 @@
   </head>
 
   <body class="pagina-index">
-    <div
-      id="splash-screen"
-      style="
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(135deg, #1e4620, #2b7a2b);
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        transition: opacity 0.5s ease;
-      "
-    >
-      <img
-        src="/icons/logo-elbarrio.png"
-        alt="El Barrio"
-        style="width: 100px; height: auto; animation: pulse 1.5s infinite"
-      />
-      <div
-        style="
-          margin-top: 20px;
-          color: white;
-          font-size: 0.9rem;
-          font-weight: 500;
-        "
-      >
-        Cargando El Barrio...
-      </div>
-      <div
-        style="
-          margin-top: 10px;
-          width: 50px;
-          height: 50px;
-          border: 3px solid rgba(255, 255, 255, 0.3);
-          border-top-color: #f5b042;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
-        "
-      ></div>
+    <div id="splash-screen" style="position:fixed;inset:0;background:linear-gradient(135deg,#1e4620,#2b7a2b);z-index:9999;display:flex;flex-direction:column;justify-content:center;align-items:center;transition:opacity .25s ease">
+      <img src="/icons/logo-elbarrio.webp" alt="El Barrio" width="100" height="100" decoding="async" />
+      <div style="margin-top:20px;color:white;font-size:.9rem;font-weight:500">Cargando El Barrio...</div>
+      <div style="margin-top:10px;width:42px;height:42px;border:3px solid rgba(255,255,255,.3);border-top-color:#f5b042;border-radius:50%;animation:spin .8s linear infinite"></div>
     </div>
 
     <div id="header-container"></div>
 
-    <!-- ========== BANNER HERO + BOTÓN FLOTANTE ========== -->
-    <div style="position: relative">
+    <div style="position:relative">
       <picture>
         <source srcset="/img/EL-BARRIO-WEBP.webp" type="image/webp" />
-        <img
-          class="hero-banner"
-          src="/img/banner-elbarrio2.png"
-          decoding="async"
-          alt="El Barrio - Comunidad vecinal en tu colonia"
-          width="1200"
-          height="400"
-          loading="eager"
-          fetchpriority="high"
-          onerror="
-            this.onerror = null;
-            this.src = '/img/fallback-banner.png';
-            console.warn('⚠️ Banner principal no encontrado');
-          "
-        />
+        <img class="hero-banner" src="/img/banner-elbarrio2.png" decoding="async" alt="El Barrio - Comunidad vecinal en tu colonia" width="1200" height="400" loading="eager" fetchpriority="high" />
       </picture>
-
-      <!-- ✅ BOTÓN FLOTANTE CENTRADO SOBRE EL HERO -->
       <div class="hero-button-wrapper">
-        <button id="btnProbarNotificacion" class="btn-login">
-          📝 Regístrate y publica tus avisos gratis
-        </button>
+        <button id="btnProbarNotificacion" class="btn-login">Regístrate y publica tus avisos gratis</button>
       </div>
     </div>
 
     <main class="contenedor">
       <div class="scrollable-container">
         <div id="avisos-container" class="grid-avisos">
-          <div class="cargando">📰 Cargando avisos...</div>
+          <div class="cargando">Cargando avisos...</div>
         </div>
       </div>
-
       <div id="loading-trigger" class="loading-trigger"></div>
       <div id="paginacion" class="paginacion"></div>
     </main>
@@ -118,1709 +47,167 @@
     <div id="footer-container"></div>
     <div id="toast" class="toast-notification"></div>
 
+    <div id="comments-panel" class="comments-panel">
+      <div class="comments-header">
+        <h3>Comentarios</h3>
+        <button class="close-comments" type="button" onclick="cerrarPanelComentarios()">×</button>
+      </div>
+      <div id="comments-list" class="comments-list">
+        <div class="cargando">Cargando comentarios...</div>
+      </div>
+      <div class="comment-input-area">
+        <input type="text" id="comment-input" placeholder="Escribe tu comentario..." maxlength="500" />
+        <button type="button" onclick="enviarComentario()">Enviar</button>
+      </div>
+    </div>
+
+    <div id="cookieBanner" style="position:fixed;bottom:0;left:0;right:0;background:#1e4620;color:white;padding:1rem;text-align:center;z-index:1000;display:flex;flex-wrap:wrap;justify-content:center;gap:1rem">
+      <span>Usamos cookies para que la plataforma funcione bien. No vendemos tus datos.</span>
+      <div>
+        <button id="aceptarCookies" style="background:#fbbf24;border:none;padding:.4rem 1.2rem;border-radius:2rem;cursor:pointer">Aceptar</button>
+        <a href="/cookies.html" style="background:transparent;border:1px solid white;color:white;padding:.4rem 1.2rem;border-radius:2rem;text-decoration:none;margin-left:.5rem">Configurar</a>
+      </div>
+    </div>
+
+    <div id="modalCategorias" class="modal-categorias" style="display:none">
+      <div class="modal-contenido">
+        <div class="modal-header">
+          <h3>Categorías de avisos</h3>
+          <button class="modal-cerrar" type="button" onclick="cerrarModalCategorias()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="categoria-info"><h4>URGENTE</h4><p>Solo para emergencias reales que requieren atención inmediata.</p></div>
+          <div class="categoria-info"><h4>ESCUELAS</h4><p>Actividades escolares y avisos de instituciones educativas.</p></div>
+          <div class="categoria-info"><h4>SERVICIOS</h4><p>Profesionistas y oficios que ofrecen sus servicios a la comunidad.</p></div>
+          <div class="categoria-info"><h4>COMERCIOS</h4><p>Negocios locales, promociones y productos.</p></div>
+          <div class="categoria-info"><h4>EVENTOS</h4><p>Reuniones vecinales, festividades y actividades comunitarias.</p></div>
+          <div class="categoria-info"><h4>GOBIERNO</h4><p>Avisos oficiales, servicios públicos y trámites.</p></div>
+          <div class="categoria-info"><h4>VARIOS</h4><p>Lo que no encaja en las categorías anteriores.</p></div>
+        </div>
+        <div class="modal-footer"><button type="button" onclick="cerrarModalCategorias()" class="boton">Entendido</button></div>
+      </div>
+    </div>
+
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/app.js"></script>
 
     <script>
-      // Registrar visita al cargar la página
-      function registrarVisita(pagina) {
-        const userAgent = navigator.userAgent;
-        const referer = document.referrer;
-        const url = `https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
-        fetch(url).catch((e) => console.warn("Error registrando visita:", e));
-      }
-
-      // Llama a la función cuando cargue el DOM
-      document.addEventListener("DOMContentLoaded", () => {
-        registrarVisita("index");
-      });
-    </script>
-
-    <script>
-      // ========== VARIABLES GLOBALES ==========
-      let currentAvisoIdForComments = null;
-      let isLoading = false;
-      let hasMore = true;
-      let currentSearchTerm = "";
-      let allAvisos = [];
-      let filteredAvisos = [];
-      let renderedCount = 0;
-      let isLoadingAvisos = false;
-      let avisosCargados = false;
-
-      // UNA SOLA llamada para obtener TODOS los votos del usuario
-      let userVotes = {}; // { avisoId: 'like' o 'dislike' }
-      let userVotesLoaded = false;
-
-      function showToast(message, duration = 2000) {
-        const toast = document.getElementById("toast");
-        toast.textContent = message;
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), duration);
-      }
-
-      async function registrarVista(id) {
-        try {
-          const apiKey = localStorage.getItem("api_key");
-          await API.peticion("REGISTRAR_VISTA", { id: id }, apiKey);
-        } catch (e) {
-          console.warn("Error registrando vista:", e);
-        }
-      }
-
-      async function registrarClickWhatsApp(id) {
-        try {
-          const apiKey = localStorage.getItem("api_key");
-          await API.peticion("REGISTRAR_CLICK_WHATSAPP", { id: id }, apiKey);
-          const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
-          if (card) {
-            const whatsappStat = card.querySelector(
-              ".whatsapp-stat .stat-value",
-            );
-            if (whatsappStat)
-              whatsappStat.textContent =
-                (parseInt(whatsappStat.textContent) || 0) + 1;
-          }
-        } catch (e) {
-          console.warn("Error registrando click WhatsApp:", e);
-        }
-      }
-
-      // ========== VOTACIÓN OPTIMIZADA (SIN llamadas por separado) ==========
-
-      async function cargarTodosLosVotos() {
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey || userVotesLoaded) {
-          userVotesLoaded = true;
-          return;
+      (function () {
+        function ocultarSplash() {
+          const splash = document.getElementById('splash-screen');
+          if (!splash) return;
+          splash.style.opacity = '0';
+          setTimeout(() => { if (splash.isConnected) splash.style.display = 'none'; }, 250);
         }
 
-        try {
-          // UNA SOLA llamada para obtener todos los votos del usuario
-          const resultado = await API.peticion("OBTENER_MIS_VOTOS", {}, apiKey);
-          if (resultado && resultado.success && resultado.data) {
-            for (const voto of resultado.data) {
-              userVotes[voto.aviso_id] = voto.tipo; // 'like' o 'dislike'
-            }
-          }
-        } catch (e) {
-          console.warn("Error cargando votos (usar endpoint alternativo):", e);
-          // Fallback: endpoint alternativo si existe
+        function toast(mensaje, duracion = 2200) {
+          const el = document.getElementById('toast');
+          if (!el) return;
+          el.textContent = mensaje;
+          el.classList.add('show');
+          clearTimeout(window.__elBarrioToastTimer);
+          window.__elBarrioToastTimer = setTimeout(() => el.classList.remove('show'), duracion);
+        }
+        window.showToast = toast;
+
+        async function cargarHeaderYFooter() {
+          const header = document.getElementById('header-container');
+          const footer = document.getElementById('footer-container');
+
           try {
-            const resultado2 = await API.peticion(
-              "VERIFICAR_VOTOS_MULTIPLES",
-              { ids: allAvisos.map((a) => a.id) },
-              apiKey,
-            );
-            if (resultado2 && resultado2.success && resultado2.data) {
-              for (const [id, tipo] of Object.entries(resultado2.data)) {
-                if (tipo) userVotes[id] = tipo;
-              }
-            }
-          } catch (e2) {
-            console.warn("Error en fallback:", e2);
-          }
-        }
-        userVotesLoaded = true;
-      }
+            const r = await fetch('/common/header.html', { cache: 'default' });
+            if (r.ok && header) header.innerHTML = await r.text();
+          } catch (e) { console.warn('Header:', e); }
 
-      async function darLike(avisoId) {
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para dar like", 2000);
-          return false;
-        }
-
-        try {
-          const resultado = await API.peticion(
-            "VOTAR_AVISO",
-            {
-              aviso_id: avisoId,
-              tipo: "positivo",
-            },
-            apiKey,
-          );
-
-          if (resultado && resultado.success) {
-            return resultado;
-          }
-          return false;
-        } catch (e) {
-          console.error("Error:", e);
-          return false;
-        }
-      }
-
-      async function darDislike(avisoId) {
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para dar dislike", 2000);
-          return false;
-        }
-
-        if (userVotes[avisoId] === "dislike") {
-          showToast("👎 Ya te disgusta este aviso", 1500);
-          return false;
-        }
-
-        try {
-          const resultado = await API.peticion(
-            "DAR_DISLIKE",
-            { id: avisoId },
-            apiKey,
-          );
-          if (resultado && resultado.success) {
-            userVotes[avisoId] = "dislike";
-            actualizarContadoresCard(
-              avisoId,
-              resultado.likes,
-              resultado.dislikes,
-            );
-            showToast("👎 Dislike registrado", 1500);
-
-            if (resultado.dislikes >= 3) {
-              const card = document.querySelector(
-                `.aviso-card[data-id="${avisoId}"]`,
-              );
-              if (card) card.style.display = "none";
-              showToast(
-                "⚠️ Este aviso ha sido eliminado por la comunidad",
-                3000,
-              );
-            }
-            return true;
-          }
-        } catch (e) {
-          console.error("Error dando dislike:", e);
-          showToast("❌ Error de conexión", 1500);
-        }
-        return false;
-      }
-
-      function actualizarContadoresCard(avisoId, nuevosLikes, nuevosDislikes) {
-        const card = document.querySelector(
-          `.aviso-card[data-id="${avisoId}"]`,
-        );
-        if (!card) return;
-
-        const likeSpan = card.querySelector(".like-btn .stat-value");
-        const dislikeSpan = card.querySelector(".dislike-btn .stat-value");
-        const likeBtn = card.querySelector(".like-btn");
-        const dislikeBtn = card.querySelector(".dislike-btn");
-
-        if (likeSpan && nuevosLikes !== undefined)
-          likeSpan.textContent = nuevosLikes;
-        if (dislikeSpan && nuevosDislikes !== undefined)
-          dislikeSpan.textContent = nuevosDislikes;
-
-        if (likeBtn) {
-          if (userVotes[avisoId] === "like") likeBtn.classList.add("liked");
-          else likeBtn.classList.remove("liked");
-        }
-        if (dislikeBtn) {
-          if (userVotes[avisoId] === "dislike")
-            dislikeBtn.classList.add("disliked");
-          else dislikeBtn.classList.remove("disliked");
-        }
-      }
-      // ========== FUNCIONES DE INTERACCIÓN ==========
-
-      window.verAviso = function (id) {
-        console.log("Abriendo aviso con ID:", id);
-        // ✅ No registrar vista aquí - solo al cargar aviso.html
-        window.location.href = `/aviso.html?id=${id}`;
-      };
-
-      window.abrirWhatsApp = function (numero, texto, id, event) {
-        if (event) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        // 🔐 VALIDACIÓN DE SESIÓN - OBLIGATORIA
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          // Usa tu función showToast si existe, o alert
-          if (typeof showToast === "function") {
-            showToast("🔐 Inicia sesión para contactar por WhatsApp", 2000);
-          } else {
-            alert("🔐 Debes iniciar sesión para contactar por WhatsApp");
-          }
-          return;
-        }
-
-        let numeroLimpio = String(numero).replace(/[^0-9]/g, "");
-
-        const url = `https://wa.me/52${numeroLimpio}?text=${encodeURIComponent(texto)}`;
-
-        window.open(url, "_blank");
-
-        if (id) {
-          registrarClickWhatsApp(id).catch((e) =>
-            console.warn("Error registrando click:", e),
-          );
-        }
-      };
-
-      window.darLikeWrapper = async function (id, event) {
-        if (event) event.stopPropagation();
-        console.log("🔵 Click en like para aviso:", id);
-
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para dar like", 2000);
-          return;
-        }
-
-        try {
-          const resultado = await API.peticion(
-            "VOTAR_AVISO",
-            {
-              aviso_id: id,
-              tipo: "positivo",
-            },
-            apiKey,
-          );
-
-          console.log("📥 Respuesta:", resultado);
-
-          if (resultado && resultado.success) {
-            // Actualizar el contador en la tarjeta
-            const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
-            if (card) {
-              const likesSpan = card.querySelector(".like-btn .stat-value");
-              const nuevosLikes = resultado.data?.likes || resultado.likes;
-              if (likesSpan) likesSpan.textContent = nuevosLikes;
-              showToast("👍 Like registrado", 1500);
-            }
-          } else {
-            showToast("❌ Error: " + (resultado?.error || "No se pudo"), 1500);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          showToast("❌ Error de conexión", 1500);
-        }
-      };
-
-      window.darDislikeWrapper = async function (id, event) {
-        if (event) event.stopPropagation();
-        console.log("🔴 Click en dislike para aviso:", id);
-
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para dar dislike", 2000);
-          return;
-        }
-
-        try {
-          const resultado = await API.peticion(
-            "VOTAR_AVISO",
-            {
-              aviso_id: id,
-              tipo: "negativo",
-            },
-            apiKey,
-          );
-
-          console.log("📥 Respuesta:", resultado);
-
-          if (resultado && resultado.success) {
-            const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
-            if (card) {
-              const dislikesSpan = card.querySelector(
-                ".dislike-btn .stat-value",
-              );
-              const nuevosDislikes =
-                resultado.data?.dislikes || resultado.dislikes;
-              if (dislikesSpan) dislikesSpan.textContent = nuevosDislikes;
-              showToast("👎 Dislike registrado", 1500);
-            }
-          } else {
-            showToast("❌ Error: " + (resultado?.error || "No se pudo"), 1500);
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          showToast("❌ Error de conexión", 1500);
-        }
-      };
-
-      window.abrirComentarios = function (id, event) {
-        if (event) event.stopPropagation();
-
-        // ✅ VERIFICAR QUE EL USUARIO ESTÉ LOGUEADO PARA VER COMENTARIOS
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para ver y comentar", 1500);
-          return;
-        }
-
-        currentAvisoIdForComments = id;
-        document.getElementById("comments-panel").classList.add("open");
-        cargarComentarios(id);
-      };
-
-      window.cerrarPanelComentarios = function () {
-        document.getElementById("comments-panel").classList.remove("open");
-        currentAvisoIdForComments = null;
-      };
-
-      // ==================== CARGAR COMENTARIOS ====================
-      async function cargarComentarios(avisoId) {
-        const contenedor = document.getElementById("comentarios-container");
-        if (!contenedor) return;
-
-        try {
-          const apiKey = localStorage.getItem("api_key");
-          contenedor.innerHTML = "<p>Cargando comentarios...</p>";
-
-          // ✅ VOLVER A LA VERSIÓN QUE FUNCIONABA
-          const respuesta = await API.peticion(
-            "LISTAR_COMENTARIOS",
-            { avisoId: avisoId },
-            apiKey,
-          );
-          console.log("Comentarios respuesta:", respuesta);
-
-          let comentarios = [];
-
-          if (respuesta && respuesta.success) {
-            if (
-              respuesta.data &&
-              respuesta.data.datos &&
-              Array.isArray(respuesta.data.datos)
-            ) {
-              comentarios = respuesta.data.datos;
-            } else if (respuesta.datos && Array.isArray(respuesta.datos)) {
-              comentarios = respuesta.datos;
-            } else if (Array.isArray(respuesta.data)) {
-              comentarios = respuesta.data;
-            }
-          }
-
-          if (!comentarios || comentarios.length === 0) {
-            contenedor.innerHTML =
-              '<p class="sin-comentarios">💬 No hay comentarios aún. Sé el primero en comentar.</p>';
-            return;
-          }
-
-          const escapeHTML = (str) => {
-            if (!str) return "";
-            return String(str).replace(/[&<>]/g, (m) => {
-              if (m === "&") return "&amp;";
-              if (m === "<") return "&lt;";
-              if (m === ">") return "&gt;";
-              return m;
-            });
-          };
-
-          contenedor.innerHTML = comentarios
-            .map(
-              (com) => `
-            <div class="comentario">
-                <div class="comentario-header">
-                    <strong>${escapeHTML(com.usuario_nombre || com.autor || com.usuario_email || "Anónimo")}</strong>
-                    <small>${new Date(com.fecha || com.created_at).toLocaleDateString("es-MX")}</small>
-                </div>
-                <div class="comentario-contenido">
-                    ${escapeHTML(com.comentario || com.texto || com.contenido)}
-                </div>
-            </div>
-        `,
-            )
-            .join("");
-        } catch (error) {
-          console.error("Error cargando comentarios:", error);
-          contenedor.innerHTML =
-            '<p class="error">❌ Error al cargar comentarios</p>';
-        }
-      }
-      window.enviarComentario = async function () {
-        const input = document.getElementById("comment-input");
-        const texto = input.value.trim();
-        if (!texto) {
-          showToast("✏️ Escribe un comentario primero", 1500);
-          return;
-        }
-        if (!currentAvisoIdForComments) {
-          showToast("❌ Error: No se identificó el aviso", 1500);
-          return;
-        }
-
-        // ✅ VERIFICAR USUARIO LOGUEADO ANTES DE CONTINUAR
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          showToast("🔐 Inicia sesión para comentar", 1500);
-          return;
-        }
-
-        // ✅ OBTENER EL USUARIO ACTUAL PARA ENVIAR COMO AUTOR
-        const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
-        if (!usuario.email) {
-          showToast("🔐 Tu sesión ha expirado, inicia sesión nuevamente", 1500);
-          return;
-        }
-
-        try {
-          const resultado = await API.peticion(
-            "AGREGAR_COMENTARIO",
-            {
-              avisoId: currentAvisoIdForComments,
-              texto: texto,
-              autor: usuario.nombre || usuario.email,
-            },
-            apiKey,
-          );
-
-          if (resultado && resultado.success) {
-            input.value = "";
-            showToast("💬 Comentario enviado", 1500);
-            cargarComentarios(currentAvisoIdForComments);
-
-            // Actualizar contador en la tarjeta
-            const card = document.querySelector(
-              `.aviso-card[data-id="${currentAvisoIdForComments}"]`,
-            );
-            if (card) {
-              const commentSpan = card.querySelector(
-                ".comments-stat .stat-value",
-              );
-              const currentCount = parseInt(commentSpan.textContent) || 0;
-              commentSpan.textContent = currentCount + 1;
-            }
-          } else {
-            showToast(
-              "❌ " + (resultado?.error || "Error al enviar comentario"),
-              1500,
-            );
-          }
-        } catch (e) {
-          console.error("Error:", e);
-          showToast("❌ Error de conexión", 1500);
-        }
-      };
-
-      // ========== FUNCIONES AUXILIARES ==========
-      function escapeHtml(str) {
-        if (!str) return "";
-        return str.replace(/[&<>]/g, function (m) {
-          return m === "&" ? "&amp;" : m === "<" ? "&lt;" : "&gt;";
-        });
-      }
-
-      /* function formatearFecha(fechaStr) {
-            if (!fechaStr) return 'Reciente';
-            try {
-                return new Date(fechaStr).toLocaleDateString('es-MX');
-            } catch (e) { return fechaStr; }
-        } */
-
-      function formatearFecha(fechaStr) {
-        if (!fechaStr) return "Fecha desconocida";
-        try {
-          let fecha = new Date(fechaStr);
-          if (isNaN(fecha.getTime())) return fechaStr;
-          return fecha.toLocaleDateString("es-MX", {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          });
-        } catch (e) {
-          return fechaStr;
-        }
-      }
-
-      function searchInAviso(aviso, searchTerm) {
-        if (!searchTerm) return true;
-        const term = searchTerm.toLowerCase();
-        return [
-          aviso.titulo,
-          aviso.contenido,
-          aviso.categoria,
-          aviso.ubicacion,
-          aviso.contacto,
-        ].some((f) => f && f.toString().toLowerCase().includes(term));
-      }
-
-      function applyFiltersAndSearch() {
-        let filtered = [...allAvisos];
-        if (currentSearchTerm) {
-          const term = currentSearchTerm.toLowerCase();
-          filtered = filtered.filter(
-            (aviso) =>
-              aviso.titulo?.toLowerCase().includes(term) ||
-              aviso.contenido?.toLowerCase().includes(term) ||
-              aviso.categoria?.toLowerCase().includes(term) ||
-              aviso.ubicacion?.toLowerCase().includes(term),
-          );
-        }
-        filteredAvisos = filtered;
-        renderedCount = 0;
-        hasMore = true;
-        const container = document.getElementById("avisos-container");
-        if (container) container.innerHTML = "";
-        loadMoreAvisos();
-      }
-
-      function loadMoreAvisos() {
-        if (isLoading || !hasMore) return;
-        isLoading = true;
-        const loadingTrigger = document.getElementById("loading-trigger");
-        if (loadingTrigger) loadingTrigger.style.display = "block";
-
-        setTimeout(() => {
-          const start = renderedCount;
-          const itemsPerLoad = 12;
-          const end = Math.min(start + itemsPerLoad, filteredAvisos.length);
-          const newAvisos = filteredAvisos.slice(start, end);
-
-          if (newAvisos.length > 0) {
-            appendAvisosToGrid(newAvisos);
-            renderedCount = end;
-          }
-
-          hasMore = end < filteredAvisos.length;
-          if (loadingTrigger)
-            loadingTrigger.style.display = hasMore ? "block" : "none";
-          isLoading = false;
-        }, 100);
-      }
-
-      function appendAvisosToGrid(avisos) {
-        const container = document.getElementById("avisos-container");
-        if (!container) return;
-
-        // Función para limpiar título
-        const limpiarTitulo = (titulo) => {
-          if (!titulo) return "";
-          return titulo
-            .replace(/[¡!¿?*+°]/g, "")
-            .replace(/\s+/g, " ")
-            .trim();
-        };
-
-        const html = avisos
-          .map((aviso) => {
-            const userVote = userVotes[aviso.id];
-            const esDestacado =
-              aviso.destacado === true ||
-              aviso.destacado === "TRUE" ||
-              aviso.destacado === "true" ||
-              aviso.destacado === 1 ||
-              aviso.destacado === "1";
-            const isLiked = userVote === "like";
-            const isDisliked = userVote === "dislike";
-            const whatsappNumber = aviso.contacto
-              ? String(aviso.contacto).replace(/[^0-9]/g, "")
-              : "";
-
-            // ✅ Título limpio para WhatsApp
-            const tituloLimpio = limpiarTitulo(aviso.titulo);
-            const mensaje = `Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`;
-
-            const likes =
-              parseInt(aviso.votos_positivos) || parseInt(aviso.intereses) || 0;
-            const dislikes = parseInt(aviso.votos_negativos) || 0;
-            const comentarios = parseInt(aviso.comentarios_count) || 0;
-            const vistas = parseInt(aviso.vistas) || 0;
-            const whatsappClicks = parseInt(aviso.clicks_whatsapp) || 0;
-
-            // ✅ PRIORIDAD: VIDEO SOBRE IMAGEN
-            let multimediaHTML = "";
-            if (aviso.video_url && aviso.video_url.trim() !== "") {
-              // Convertir URL de YouTube a formato embed si es necesario
-              let videoUrl = aviso.video_url;
-              if (videoUrl.includes("youtube.com/watch?v=")) {
-                const videoId = videoUrl.split("v=")[1].split("&")[0];
-                videoUrl = `https://www.youtube.com/embed/${videoId}`;
-              } else if (videoUrl.includes("youtu.be/")) {
-                const videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
-                videoUrl = `https://www.youtube.com/embed/${videoId}`;
-              } else if (videoUrl.includes("vimeo.com/")) {
-                const videoId = videoUrl.split("vimeo.com/")[1];
-                videoUrl = `https://player.vimeo.com/video/${videoId}`;
-              }
-
-              // Para móvil (fondo sin controles)
-              multimediaHTML = `
-    <div class="aviso-video" onclick="event.stopPropagation()">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
-            <source src="${videoUrl}" type="video/mp4">
-        </video>
-    </div>
-`;
-            } else if (aviso.imagen_url && aviso.imagen_url.trim() !== "") {
-              multimediaHTML = `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy" decoding="async">`;
+          if (header) {
+            const login = document.getElementById('login-link');
+            const userArea = document.getElementById('user-area');
+            const userName = document.getElementById('user-name');
+            const cerrar = document.getElementById('cerrar-sesion');
+            const raw = localStorage.getItem('usuario');
+            const key = localStorage.getItem('api_key');
+            if (raw && key) {
+              try {
+                const u = JSON.parse(raw);
+                if (login) login.style.display = 'none';
+                if (userArea) userArea.style.display = 'flex';
+                if (userName) userName.textContent = '👋 ' + (u.nombre || u.email || 'Usuario');
+                if (cerrar) cerrar.addEventListener('click', async function (e) {
+                  e.preventDefault();
+                  try { if (window.Auth) await Auth.logout(); }
+                  catch (_) { localStorage.removeItem('usuario'); localStorage.removeItem('api_key'); }
+                  window.location.replace('/index.html');
+                });
+              } catch (_) {}
             }
 
-            return `
-<div class="aviso-card tarjeta-moderna ${esDestacado ? "aviso-destacado" : ""}" 
-     data-id="${aviso.id}" 
-     onclick="verAviso(this.getAttribute('data-id'))">
-     <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
-        ${getIconoCategoria(aviso.categoria)} ${aviso.categoria?.toUpperCase() || "GENERAL"}
-    </div>
-            ${multimediaHTML}
-            <div class="card-contenido-moderno">
-                <div class="card-header-moderno">
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📅 ${formatearFecha(aviso.created_at)}</div>
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📍 ${aviso.ubicacion || "Jardines PVR"}</div>
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem; text-transform: uppercase;">👤 ${escapeHtml(aviso.nombre_autor || "Vecino")}</div>
-                    <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
-                </div>
-                <div class="card-preview-moderno">
-                    ${escapeHtml((aviso.contenido || "").substring(0, 120))}${(aviso.contenido || "").length > 120 ? "..." : ""}
-                </div>
-                <div class="card-stats-moderno">
-                    <span class="stat-item">👁️ <span class="stat-value">${vistas}</span></span>
-                    <span class="stat-item whatsapp-stat">📞 <span class="stat-value">${whatsappClicks}</span></span>
-                    <span class="stat-item like-btn ${isLiked ? "liked" : ""}" onclick="darLikeWrapper('${aviso.id}', event)">
-                        👍 <span class="stat-value">${likes}</span>
-                    </span>
-                    <span class="stat-item dislike-btn ${isDisliked ? "disliked" : ""}" onclick="darDislikeWrapper('${aviso.id}', event)">
-                        👎 <span class="stat-value">${dislikes}</span>
-                    </span>
-                    ${
-                      localStorage.getItem("api_key")
-                        ? `
-                    <span class="stat-item comments-stat" onclick="abrirComentarios('${aviso.id}', event)">
-                        💬 <span class="stat-value">${comentarios}</span>
-                    </span>
-                    `
-                        : `
-                    <span class="stat-item comments-stat" onclick="showToast('🔐 Inicia sesión para comentar', 1500)">
-                        💬 <span class="stat-value">${comentarios}</span>
-                    </span>
-                    `
-                    }
-                </div>
-            </div>
-            ${
-              aviso.contacto
-                ? `
-                <div class="">
-                    
-                    <button 
-                        type="button"
-                        class="whatsapp-btn"
-                        onclick='abrirWhatsApp(
-                            "${whatsappNumber}",
-                            ${JSON.stringify(mensaje)},
-                            "${aviso.id}",
-                            event
-                        )'>
-                    </button>
-                </div>`
-                : ""
-            }
-            </div>
-        </div>`;
-          })
-          .join("");
-        container.insertAdjacentHTML("beforeend", html);
-      }
-
-      // Función para enriquecer avisos con nombres de usuario
-      async function enriquecerAvisosConUsuarios(avisos) {
-        if (!avisos || avisos.length === 0) return avisos;
-
-        // 👇 PRIMERO: Intentar obtener los datos directamente si ya vienen en el aviso
-        let avisosConNombre = [];
-        let avisosSinEmail = [];
-
-        for (const aviso of avisos) {
-          // Si ya tiene nombre de usuario, úsalo
-          if (aviso.usuario_nombre && aviso.usuario_nombre !== "") {
-            aviso.usuario_nombre = aviso.usuario_nombre;
-            avisosConNombre.push(aviso);
-          }
-          // Si tiene autor (puede venir como 'autor')
-          else if (aviso.autor && aviso.autor !== "") {
-            aviso.usuario_nombre = aviso.autor;
-            avisosConNombre.push(aviso);
-          }
-          // Si tiene usuario_id pero no nombre, buscar
-          else {
-            avisosSinEmail.push(aviso);
-          }
-        }
-
-        if (avisosSinEmail.length === 0) {
-          return avisos;
-        }
-
-        // Extraer emails o IDs de usuario
-        const emailsUnicos = [];
-        const idsUnicos = [];
-
-        for (const aviso of avisosSinEmail) {
-          const email = aviso.usuario_email || aviso.email;
-          const userId = aviso.usuario_id;
-
-          if (email && !emailsUnicos.includes(email)) {
-            emailsUnicos.push(email);
-          }
-          if (userId && !idsUnicos.includes(userId)) {
-            idsUnicos.push(userId);
-          }
-        }
-
-        try {
-          const apiKey = localStorage.getItem("api_key");
-          let mapaNombres = {};
-
-          // Intentar obtener por emails
-          if (emailsUnicos.length > 0) {
-            try {
-              const resultado = await API.peticion(
-                "OBTENER_USUARIOS_POR_EMAIL",
-                {
-                  emails: emailsUnicos,
-                },
-                apiKey,
-              );
-
-              if (resultado && resultado.success && resultado.data) {
-                if (Array.isArray(resultado.data)) {
-                  resultado.data.forEach((usuario) => {
-                    if (usuario.email && usuario.nombre) {
-                      mapaNombres[usuario.email] = usuario.nombre;
-                    }
-                  });
-                } else if (typeof resultado.data === "object") {
-                  for (const [key, value] of Object.entries(resultado.data)) {
-                    if (value && value.nombre) {
-                      mapaNombres[key] = value.nombre;
-                    }
-                  }
-                }
-              }
-            } catch (e) {
-              console.warn("Error obteniendo por email:", e);
-            }
-          }
-
-          // Si no funcionó por email, intentar obtener por IDs
-          if (Object.keys(mapaNombres).length === 0 && idsUnicos.length > 0) {
-            try {
-              const resultado = await API.peticion(
-                "OBTENER_USUARIOS_POR_IDS",
-                {
-                  ids: idsUnicos,
-                },
-                apiKey,
-              );
-
-              if (resultado && resultado.success && resultado.data) {
-                if (Array.isArray(resultado.data)) {
-                  resultado.data.forEach((usuario) => {
-                    if (usuario.id && usuario.nombre) {
-                      mapaNombres[usuario.id] = usuario.nombre;
-                    }
-                  });
-                }
-              }
-            } catch (e) {
-              console.warn("Error obteniendo por ID:", e);
-            }
-          }
-
-          // Asignar nombres a los avisos
-          for (const aviso of avisosSinEmail) {
-            const email = aviso.usuario_email || aviso.email;
-            const userId = aviso.usuario_id;
-
-            if (email && mapaNombres[email]) {
-              aviso.usuario_nombre = mapaNombres[email];
-            } else if (userId && mapaNombres[userId]) {
-              aviso.usuario_nombre = mapaNombres[userId];
-            } else {
-              // Si no se encuentra, usar un valor por defecto
-              aviso.usuario_nombre = email ? email.split("@")[0] : "Vecino";
-            }
-          }
-        } catch (error) {
-          console.error("Error en enriquecerAvisosConUsuarios:", error);
-          for (const aviso of avisosSinEmail) {
-            aviso.usuario_nombre = "Vecino";
-          }
-        }
-
-        return [...avisosConNombre, ...avisosSinEmail];
-      }
-
-      async function cargarAvisos() {
-        if (avisosCargados || isLoadingAvisos) return;
-        isLoadingAvisos = true;
-        const container = document.getElementById("avisos-container");
-        if (container)
-          container.innerHTML =
-            '<div class="cargando">📰 Cargando avisos...</div>';
-
-        try {
-          const resultado = await API.listarPublicos(
-            {},
-            { pagina: 1, limite: 200 },
-          );
-          if (resultado && resultado.datos) {
-            allAvisos = resultado.datos.filter(
-              (a) => a.status === "activo" || a.status === undefined,
-            );
-            allAvisos.sort((a, b) => {
-              const destacadoA =
-                a.destacado === true ||
-                a.destacado === "TRUE" ||
-                a.destacado === "true" ||
-                a.destacado === 1 ||
-                a.destacado === "1";
-
-              const destacadoB =
-                b.destacado === true ||
-                b.destacado === "TRUE" ||
-                b.destacado === "true" ||
-                b.destacado === 1 ||
-                b.destacado === "1";
-
-              // ⭐ Destacados primero
-              if (destacadoA && !destacadoB) return -1;
-              if (!destacadoA && destacadoB) return 1;
-
-              // Dentro de cada grupo, más reciente primero
-              return new Date(b.created_at) - new Date(a.created_at);
-            });
-
-            // 👇 ENRIQUECER CON NOMBRES DE USUARIOS
-            allAvisos = await enriquecerAvisosConUsuarios(allAvisos);
-
-            await cargarTodosLosVotos();
-            avisosCargados = true;
-            applyFiltersAndSearch();
-          } else {
-            if (container)
-              container.innerHTML =
-                '<div class="mensaje mensaje-info">📭 No hay avisos disponibles</div>';
-          }
-        } catch (error) {
-          console.error("Error cargando avisos:", error);
-          if (container)
-            container.innerHTML =
-              '<div class="mensaje mensaje-error">❌ Error al cargar avisos</div>';
-        } finally {
-          isLoadingAvisos = false;
-        }
-      }
-
-      // ========== ACTUALIZAR VISTAS EN TIEMPO REAL EN EL INDEX ==========
-      async function actualizarVistasEnTiempoReal() {
-        try {
-          const apiKey = localStorage.getItem("api_key");
-          // Obtener estadísticas actualizadas de todos los avisos visibles
-          const cards = document.querySelectorAll(".aviso-card");
-          if (cards.length === 0) return;
-
-          // Obtener IDs de los avisos visibles
-          const ids = Array.from(cards).map((card) =>
-            card.getAttribute("data-id"),
-          );
-
-          // Consultar vistas actualizadas para estos avisos
-          for (const id of ids) {
-            try {
-              const resultado = await API.peticion(
-                "OBTENER_ESTADISTICAS",
-                { id: id },
-                apiKey,
-              );
-              if (resultado && resultado.success && resultado.data) {
-                const vistasSpan = document.querySelector(
-                  `.aviso-card[data-id="${id}"] .vistas-count`,
-                );
-                if (vistasSpan) {
-                  const nuevasVistas =
-                    resultado.data.vistas || resultado.data.visitas || 0;
-                  vistasSpan.textContent = nuevasVistas;
-                }
-              }
-            } catch (e) {
-              console.warn(`Error actualizando vistas del aviso ${id}:`, e);
-            }
-          }
-        } catch (error) {
-          console.warn("Error actualizando vistas:", error);
-        }
-      }
-
-      // Iniciar actualización periódica de vistas (cada 60 segundos)
-      setInterval(() => {
-        if (!document.hidden) {
-          actualizarVistasEnTiempoReal();
-        }
-      }, 60000);
-
-      function getIconoCategoria(cat) {
-        const iconos = {
-          urgente: "⚠️",
-          escuelas: "🏫",
-          servicios: "🛠️",
-          comercios: "🛒",
-          eventos: "📅",
-          gobierno: "🏛️",
-          varios: "📢",
-        };
-        return iconos[cat] || "📄";
-      }
-
-      function getColorCategoria(cat) {
-        const colores = {
-          urgente: "#dc3545",
-          escuelas: "#3498db",
-          servicios: "#f39c12",
-          comercios: "#27ae60",
-          eventos: "#9b59b6",
-          gobierno: "#1abc9c",
-          varios: "#7f8c8d",
-        };
-        return colores[cat] || "#95a5a6";
-      }
-
-      function setupInfiniteScroll() {
-        window.addEventListener("scroll", () => {
-          if (isLoading || !hasMore) return;
-          const trigger = document.getElementById("loading-trigger");
-          if (
-            trigger &&
-            trigger.getBoundingClientRect().top <= window.innerHeight + 100
-          ) {
-            loadMoreAvisos();
-          }
-        });
-      }
-
-      function setupSearch() {
-        const searchInput = document.getElementById("buscador-input");
-        if (searchInput) {
-          searchInput.addEventListener("input", (e) => {
-            currentSearchTerm = e.target.value;
-            applyFiltersAndSearch();
-          });
-        }
-      }
-
-      // ========== INICIALIZACIÓN ==========
-      document.addEventListener("DOMContentLoaded", function () {
-        setupSearch();
-        setupInfiniteScroll();
-        cargarAvisos();
-
-        fetch("/common/header.html")
-          .then((res) => (res.ok ? res.text() : Promise.reject()))
-          .then((html) => {
-            document.getElementById("header-container").innerHTML = html;
-            setTimeout(() => {
-              if (typeof actualizarHeaderPorSesion === "function")
-                actualizarHeaderPorSesion();
-            }, 100);
-          })
-          .catch((err) => console.error("Error cargando header:", err));
-
-        fetch("/common/footer.html")
-          .then((response) =>
-            response.ok ? response.text() : Promise.reject(),
-          )
-          .then((data) => {
-            const footerContainer = document.getElementById("footer-container");
-            if (footerContainer) footerContainer.innerHTML = data;
-            // ✅ Actualizar el año manualmente
-            const yearSpan = footerContainer.querySelector("#copyright-year");
-            if (yearSpan) {
-              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - El Barrio. Todos los derechos reservados.`;
-            }
-
-            // ✅ Forzar la ejecución de scripts después de inyectar
-            const scripts = footerContainer.querySelectorAll("script");
-            scripts.forEach((oldScript) => {
-              const newScript = document.createElement("script");
-              if (oldScript.src) {
-                newScript.src = oldScript.src;
-              } else {
-                newScript.textContent = oldScript.textContent;
-              }
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          })
-          .catch((error) => console.error("Error cargando el footer:", error));
-      });
-    </script>
-
-    <!-- Cookie Banner -->
-    <div
-      id="cookieBanner"
-      style="
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #1e4620;
-        color: white;
-        padding: 1rem;
-        text-align: center;
-        z-index: 1000;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 1rem;
-      "
-    >
-      <span
-        >🍪 Usamos cookies para que la plataforma funcione bien. No vendemos tus
-        datos.</span
-      >
-      <div>
-        <button
-          id="aceptarCookies"
-          style="
-            background: #fbbf24;
-            border: none;
-            padding: 0.4rem 1.2rem;
-            border-radius: 2rem;
-            cursor: pointer;
-          "
-        >
-          Aceptar
-        </button>
-        <a
-          href="/cookies.html"
-          style="
-            background: transparent;
-            border: 1px solid white;
-            color: white;
-            padding: 0.4rem 1.2rem;
-            border-radius: 2rem;
-            text-decoration: none;
-            margin-left: 0.5rem;
-          "
-          >Configurar</a
-        >
-      </div>
-    </div>
-
-    <script>
-      if (localStorage.getItem("cookie_consent") === "aceptadas") {
-        const banner = document.getElementById("cookieBanner");
-        if (banner) banner.style.display = "none";
-      }
-      const aceptarBtn = document.getElementById("aceptarCookies");
-      if (aceptarBtn) {
-        aceptarBtn.addEventListener("click", () => {
-          localStorage.setItem("cookie_consent", "aceptadas");
-          const banner = document.getElementById("cookieBanner");
-          if (banner) banner.style.display = "none";
-        });
-      }
-
-      // Función para enviar notificación de prueba - AHORA EN EL ÁMBITO GLOBAL
-      async function enviarNotificacionPrueba() {
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          alert("🔐 Inicia sesión primero para probar notificaciones");
-          return;
-        }
-
-        const url =
-          "https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec";
-
-        try {
-          const response = await fetch(
-            `${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`,
-          );
-          const result = await response.json();
-
-          if (result.success) {
-            alert(
-              "✅ Notificación de prueba enviada. Deberías verla en unos segundos.",
-            );
-          } else {
-            alert(
-              "❌ Error: " +
-                (result.error || "No se pudo enviar la notificación"),
-            );
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          alert("❌ Error de conexión. Revisa tu conexión a internet.");
-        }
-      }
-    </script>
-
-    <script>
-      function actualizarHeaderPorSesion() {
-        const usuarioStr = localStorage.getItem("usuario");
-        const apiKey = localStorage.getItem("api_key");
-        const loginLink = document.getElementById("login-link");
-        const userArea = document.getElementById("user-area");
-        const userNameSpan = document.getElementById("user-name");
-        const cerrarBtn = document.getElementById("cerrar-sesion");
-
-        if (!loginLink) {
-          setTimeout(actualizarHeaderPorSesion, 200);
-          return;
-        }
-
-        if (usuarioStr && apiKey) {
-          try {
-            const usuario = JSON.parse(usuarioStr);
-            if (loginLink) loginLink.style.display = "none";
-            if (userArea) userArea.style.display = "flex";
-            if (userNameSpan) {
-              userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || "Usuario"}`;
-              userNameSpan.style.cursor = "pointer";
-              userNameSpan.onclick = () =>
-                (window.location.href = "/admin.html");
-            }
-            if (cerrarBtn) {
-              const nuevoCerrar = cerrarBtn.cloneNode(true);
-              cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
-              nuevoCerrar.addEventListener("click", (e) => {
-                e.preventDefault();
-                localStorage.removeItem("usuario");
-                localStorage.removeItem("api_key");
-                window.location.href = "/index.html";
+            const buscador = document.getElementById('buscador-input-header');
+            if (buscador && !buscador.dataset.elBarrioSearch) {
+              buscador.dataset.elBarrioSearch = '1';
+              buscador.addEventListener('input', function () {
+                const termino = this.value.trim().toLowerCase();
+                document.querySelectorAll('.aviso-card').forEach(card => {
+                  card.style.display = !termino || card.textContent.toLowerCase().includes(termino) ? '' : 'none';
+                });
               });
             }
-          } catch (e) {
-            console.error(e);
           }
-        } else {
-          if (loginLink) loginLink.style.display = "inline-flex";
-          if (userArea) userArea.style.display = "none";
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(actualizarHeaderPorSesion, 200);
-        setTimeout(actualizarHeaderPorSesion, 500);
-        setTimeout(actualizarHeaderPorSesion, 1000);
-
-        // Botón para ir a registro
-        const btnRegistro = document.getElementById("btnProbarNotificacion");
-        if (btnRegistro) {
-          btnRegistro.removeEventListener("click", btnRegistro.clickHandler);
-          btnRegistro.clickHandler = () => {
-            window.location.href = "/registro.html";
-          };
-          btnRegistro.addEventListener("click", btnRegistro.clickHandler);
-        }
-      });
-    </script>
-
-    <!-- Panel de comentarios flotante -->
-    <div id="comments-panel" class="comments-panel">
-      <div class="comments-header">
-        <h3>💬 Comentarios</h3>
-        <button class="close-comments" onclick="cerrarPanelComentarios()">
-          ×
-        </button>
-      </div>
-      <div id="comentarios-container" class="comments-list">
-        <div class="cargando">Cargando comentarios...</div>
-      </div>
-      <div class="comment-input-area">
-        <input
-          type="text"
-          id="comment-input"
-          placeholder="Escribe tu comentario..."
-        />
-        <button onclick="enviarComentario()">Enviar</button>
-      </div>
-    </div>
-
-    <script type="module">
-      // Notificaciones push con Web Push API nativa (SIN Firebase)
-
-      async function registrarPushNotifications(apiKey) {
-        try {
-          if (!("Notification" in window)) {
-            console.log("Notificaciones no soportadas");
-            return;
-          }
-
-          const permission = await Notification.requestPermission();
-          if (permission !== "granted") {
-            console.log("Permiso denegado");
-            return;
-          }
-
-          // Registrar Service Worker manualmente en /
-          const registration = await navigator.serviceWorker.register("/sw.js");
-          console.log("Service Worker registrado:", registration);
-
-          // Suscripción push nativa
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUInt8Array(
-              "BIFRjw-VpDft10-O6ZJX_0ODl6tEuHM4gR4EvuHfvZz3u7Fo0ypcorNLb2E_rUae8ChaIfjQShrHAe_0r2papBE",
-            ),
-          });
-
-          console.log("Suscripción obtenida:", subscription);
-
-          // Guardar suscripción en el backend
-          await guardarSuscripcionEnBackend(subscription, apiKey);
-
-          showToast("Notificaciones activadas correctamente", "success");
-        } catch (error) {
-          console.error("Error:", error);
-          showToast("Error al activar notificaciones", "error");
-        }
-      }
-
-      function urlBase64ToUInt8Array(base64String) {
-        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding)
-          .replace(/\-/g, "+")
-          .replace(/_/g, "/");
-        const rawData = atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-      }
-
-      async function guardarSuscripcionEnBackend(subscription, apiKey) {
-        const url =
-          "https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec";
-        const response = await fetch(
-          `${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`,
-        );
-        return await response.json();
-      }
-
-      function showToast(mensaje, tipo) {
-        const toast = document.getElementById("toast");
-        toast.textContent = mensaje;
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-      }
-
-      // Integrar con login
-      const originalHandleLogin = window.handleLogin;
-      window.handleLogin = async function (email, password) {
-        const result = await originalHandleLogin(email, password);
-        if (result && result.success && result.data && result.data.api_key) {
-          await registrarPushNotifications(result.data.api_key);
-        }
-        return result;
-      };
-
-      window.registrarPushNotifications = registrarPushNotifications;
-    </script>
-
-    <!-- Estilos para notificaciones -->
-    <style>
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
-        color: white;
-        z-index: 10000;
-        animation: slideIn 0.3s ease;
-        max-width: 300px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      .notification-success {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-
-      .notification-error {
-        background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
-      }
-
-      .notification-info {
-        background: linear-gradient(135deg, #4299e1 0%, #2b6cb0 100%);
-      }
-
-      .notification-warning {
-        background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-      }
-
-      .notification button {
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        color: white;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        cursor: pointer;
-        margin-left: 10px;
-        font-weight: bold;
-      }
-
-      @keyframes slideIn {
-        from {
-          transform: translateX(100%);
-          opacity: 0;
-        }
-
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-    </style>
-
-    <!-- Modal de categorías -->
-    <div id="modalCategorias" class="modal-categorias" style="display: none">
-      <div class="modal-contenido">
-        <div class="modal-header">
-          <h3>📋 Categorías de avisos</h3>
-          <button class="modal-cerrar" onclick="cerrarModalCategorias()">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="categoria-info">
-            <h4>🚨 URGENTE</h4>
-            <p>
-              ⚠️ <strong>Solo para emergencias reales</strong> que requieren
-              atención inmediata de la comunidad.
-            </p>
-            <p>
-              Ejemplos: Bache peligroso, fuga de agua, perro perdido, vehículo
-              sospechoso.
-            </p>
-            <small
-              >❌ No uses esta categoría para promociones o aviso
-              normales.</small
-            >
-          </div>
-          <div class="categoria-info">
-            <h4>🏫 ESCUELAS</h4>
-            <p>
-              📚 Actividades escolares y avisos de instituciones educativas.
-            </p>
-            <p>
-              Ejemplos: Junta de padres, kermés escolar, inscripciones abiertas,
-              donación de útiles.
-            </p>
-          </div>
-          <div class="categoria-info">
-            <h4>🛠️ SERVICIOS</h4>
-            <p>
-              🔧 Profesionistas y oficios que ofrecen sus servicios a la
-              comunidad.
-            </p>
-            <p>
-              Ejemplos: Plomero, electricista, carpintero, estilista, clases
-              particulares.
-            </p>
-          </div>
-          <div class="categoria-info">
-            <h4>🛒 COMERCIOS</h4>
-            <p>🏪 Negocios locales, promociones y productos.</p>
-            <p>
-              Ejemplos: Tienda de abarrotes, ferretería, comida corrida, ofertas
-              especiales.
-            </p>
-          </div>
-          <div class="categoria-info">
-            <h4>📅 EVENTOS</h4>
-            <p>
-              🎉 Reuniones vecinales, festividades y actividades comunitarias.
-            </p>
-            <p>
-              Ejemplos: Posada navideña, día de limpieza, taller comunitario,
-              feria de salud.
-            </p>
-          </div>
-          <div class="categoria-info">
-            <h4>🏛️ GOBIERNO</h4>
-            <p>📢 Avisos oficiales, servicios públicos y trámites.</p>
-            <p>
-              Ejemplos: Calendario de recolección de basura, obras públicas,
-              jornada de vacunación.
-            </p>
-          </div>
-          <div class="categoria-info">
-            <h4>📢 VARIOS</h4>
-            <p>📌 Lo que no encaja en las categorías anteriores.</p>
-            <p>
-              Ejemplos: Felicitaciones, recomendaciones de vecinos, mudanzas,
-              préstamo de herramientas.
-            </p>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button onclick="cerrarModalCategorias()" class="boton">
-            Entendido
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      function abrirModalCategorias() {
-        const modal = document.getElementById("modalCategorias");
-        if (modal) {
-          modal.style.display = "flex";
-          document.body.style.overflow = "hidden";
-        }
-      }
-
-      function cerrarModalCategorias() {
-        const modal = document.getElementById("modalCategorias");
-        if (modal) {
-          modal.style.display = "none";
-          document.body.style.overflow = "";
-        }
-      }
-
-      // Cerrar modal al hacer click fuera del contenido
-      document.addEventListener("click", function (event) {
-        const modal = document.getElementById("modalCategorias");
-        if (modal && modal.style.display === "flex") {
-          if (event.target === modal) {
-            cerrarModalCategorias();
-          }
-        }
-      });
-    </script>
-
-    <script>
-      // ========== ACTUALIZAR VISTAS EN EL INDEX ==========
-      async function actualizarTodasLasVistas() {
-        const cards = document.querySelectorAll(".aviso-card");
-        if (cards.length === 0) return;
-
-        const apiKey = localStorage.getItem("api_key");
-
-        for (const card of cards) {
-          const id = card.getAttribute("data-id");
-          if (!id) continue;
 
           try {
-            const resultado = await API.peticion(
-              "OBTENER_ESTADISTICAS",
-              { id: id },
-              apiKey,
-            );
-            if (resultado && resultado.success && resultado.data) {
-              const vistasSpan = card.querySelector(".vistas-count");
-              if (vistasSpan) {
-                vistasSpan.textContent = resultado.data.vistas || 0;
-              }
+            const r = await fetch('/common/footer.html', { cache: 'default' });
+            if (r.ok && footer) {
+              footer.innerHTML = await r.text();
+              const year = footer.querySelector('#copyright-year');
+              if (year) year.innerHTML = '&copy; ' + new Date().getFullYear() + ' - El Barrio. Todos los derechos reservados.';
             }
-          } catch (e) {
-            console.warn(`Error actualizando vistas del aviso ${id}:`, e);
-          }
-        }
-      }
-
-      // Actualizar cada 30 segundos
-      setInterval(() => {
-        if (!document.hidden) {
-          actualizarTodasLasVistas();
-        }
-      }, 30000);
-    </script>
-
-    <script>
-      // ========== ACTUALIZAR CLICKS DE WHATSAPP EN TIEMPO REAL ==========
-      async function actualizarWhatsAppClicksEnTiempoReal() {
-        const cards = document.querySelectorAll(".aviso-card");
-        if (cards.length === 0) return;
-
-        const apiKey = localStorage.getItem("api_key");
-
-        for (const card of cards) {
-          const id = card.getAttribute("data-id");
-          if (!id) continue;
-
-          try {
-            const resultado = await API.peticion(
-              "OBTENER_ESTADISTICAS",
-              { id: id },
-              apiKey,
-            );
-            if (resultado && resultado.success && resultado.data) {
-              const clicksSpan = card.querySelector(
-                ".whatsapp-stat .stat-value",
-              );
-              if (clicksSpan) {
-                const nuevosClicks =
-                  resultado.data.clicks_whatsapp ||
-                  resultado.data.whatsapp_clicks ||
-                  0;
-                clicksSpan.textContent = nuevosClicks;
-              }
-            }
-          } catch (e) {
-            console.warn(
-              `Error actualizando WhatsApp clicks del aviso ${id}:`,
-              e,
-            );
-          }
-        }
-      }
-
-      // Agregar al intervalo de actualización
-      setInterval(() => {
-        if (!document.hidden) {
-          actualizarTodasLasVistas();
-          actualizarWhatsAppClicksEnTiempoReal(); // ← Agregar esta línea
-        }
-      }, 30000);
-    </script>
-
-    <script>
-      // ========== MEMORIA COMPLETA (posición + aviso visible) ==========
-      class ScrollMemory {
-        constructor() {
-          this.init();
+          } catch (e) { console.warn('Footer:', e); }
         }
 
-        init() {
-          // Guardar al hacer clic en aviso
-          document.addEventListener("click", (e) => {
-            const avisoCard = e.target.closest(
-              ".aviso-card, .aviso-item, [data-id]",
-            );
-            if (avisoCard) {
-              // Guardar posición actual
-              const avisoId =
-                avisoCard.getAttribute("data-id") ||
-                avisoCard
-                  .querySelector("a")
-                  ?.getAttribute("href")
-                  ?.split("id=")[1];
+        function inicializarUI() {
+          const registro = document.getElementById('btnProbarNotificacion');
+          if (registro) registro.addEventListener('click', () => { window.location.href = '/registro.html'; });
 
-              localStorage.setItem("ultimaPosicion", window.scrollY);
-              localStorage.setItem("ultimoAvisoId", avisoId || "");
-              localStorage.setItem("timestampSalida", Date.now());
-              localStorage.setItem("vuelveDeAviso", "true");
-            }
+          const aceptar = document.getElementById('aceptarCookies');
+          const banner = document.getElementById('cookieBanner');
+          if (localStorage.getItem('cookie_consent') === 'aceptadas' && banner) banner.style.display = 'none';
+          if (aceptar) aceptar.addEventListener('click', () => {
+            localStorage.setItem('cookie_consent', 'aceptadas');
+            if (banner) banner.style.display = 'none';
           });
-
-          // Restaurar al volver
-          this.restaurarPosicion();
         }
 
-        restaurarPosicion() {
-          const vuelveDeAviso = localStorage.getItem("vuelveDeAviso");
-          const posicion = localStorage.getItem("ultimaPosicion");
-          const timestamp = localStorage.getItem("timestampSalida");
+        window.abrirModalCategorias = function () {
+          const m = document.getElementById('modalCategorias');
+          if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        };
+        window.cerrarModalCategorias = function () {
+          const m = document.getElementById('modalCategorias');
+          if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+        };
 
-          if (vuelveDeAviso === "true" && posicion && timestamp) {
-            const tiempoTranscurrido = Date.now() - parseInt(timestamp);
+        window.registrarVisita = function (pagina) {
+          const url = new URL('https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec');
+          url.searchParams.set('accion', 'REGISTRAR_VISITA');
+          url.searchParams.set('pagina', pagina);
+          url.searchParams.set('user_agent', navigator.userAgent);
+          url.searchParams.set('referer', document.referrer);
+          fetch(url.toString()).catch(() => {});
+        };
 
-            // Solo restaurar si fue en los últimos 10 minutos
-            if (tiempoTranscurrido < 600000) {
-              // Esperar a que carguen los elementos
-              const esperarElementos = setInterval(() => {
-                const avisos = document.querySelectorAll(
-                  ".aviso-card, .aviso-item",
-                );
-                if (avisos.length > 0) {
-                  clearInterval(esperarElementos);
-                  setTimeout(() => {
-                    window.scrollTo({
-                      top: parseInt(posicion),
-                      behavior: "instant",
-                    });
-                    console.log("✅ Posición restaurada:", parseInt(posicion));
-                  }, 150);
-                }
-              }, 100);
-
-              // Timeout por si no hay elementos
-              setTimeout(() => clearInterval(esperarElementos), 3000);
-            }
-
-            // Limpiar para la próxima
-            localStorage.removeItem("vuelveDeAviso");
-          }
-        }
-      }
-
-      // Inicializar cuando el DOM esté listo
-      document.addEventListener("DOMContentLoaded", () => {
-        new ScrollMemory();
-      });
-
-      // También guardar posición periódicamente (backup)
-      let guardando;
-      window.addEventListener("scroll", () => {
-        if (guardando) clearTimeout(guardando);
-        guardando = setTimeout(() => {
-          // Solo guardar si no está yendo a aviso
-          if (!localStorage.getItem("vuelveDeAviso")) {
-            localStorage.setItem("ultimaPosicionBackup", window.scrollY);
-          }
-        }, 300);
-      });
-
-      // Restaurar backup si existe y no viene de aviso
-      window.addEventListener("load", () => {
-        if (!localStorage.getItem("vuelveDeAviso")) {
-          const backup = localStorage.getItem("ultimaPosicionBackup");
-          if (backup && parseInt(backup) > 0) {
-            setTimeout(() => window.scrollTo(0, parseInt(backup)), 50);
-          }
-        }
-      });
-
-      // Para móviles: guardar antes de que la página se descargue
-      window.addEventListener("beforeunload", () => {
-        if (!localStorage.getItem("vuelveDeAviso")) {
-          localStorage.setItem("ultimaPosicionBackup", window.scrollY);
-        }
-      });
-
-      // Para iOS que maneja el scroll diferente
-      document.addEventListener("touchstart", () => {
-        // El scroll se guarda periódicamente de todas formas
-      });
-    </script>
-
-    <script>
-      // ========== CONECTAR BUSCADOR DEL HEADER ==========
-      function conectarBuscadorHeader() {
-        const buscador = document.getElementById("buscador-input-header");
-        if (!buscador) {
-          console.log("⏳ Buscador no encontrado, reintentando...");
-          setTimeout(conectarBuscadorHeader, 500);
-          return;
-        }
-
-        console.log("✅ Buscador encontrado, conectando evento...");
-
-        buscador.addEventListener("input", function (e) {
-          currentSearchTerm = e.target.value;
-          console.log("🔍 Buscando:", currentSearchTerm);
-          applyFiltersAndSearch();
+        document.addEventListener('click', e => {
+          const modal = document.getElementById('modalCategorias');
+          if (modal && modal.style.display === 'flex' && e.target === modal) window.cerrarModalCategorias();
         });
-      }
 
-      // Ejecutar cuando el DOM esté listo
-      document.addEventListener("DOMContentLoaded", function () {
-        setTimeout(conectarBuscadorHeader, 1000);
-      });
-    </script>
-    <script>
-      // Ocultar splash screen cuando todo esté cargado
-      window.addEventListener("load", function () {
-        const splash = document.getElementById("splash-screen");
-        if (splash) {
-          splash.style.opacity = "0";
-          setTimeout(() => {
-            splash.style.display = "none";
-          }, 500);
-        }
-      });
+        document.addEventListener('DOMContentLoaded', function () {
+          inicializarUI();
+          window.registrarVisita('index');
+          cargarHeaderYFooter();
+          ocultarSplash();
+          setTimeout(ocultarSplash, 1800);
+        }, { once: true });
+      })();
     </script>
   </body>
 </html>
