@@ -161,8 +161,26 @@ async function supabasePeticion(accion, datos = {}) {
       if (!tabla) return null;
       if (!id) throw new Error('ID de registro no proporcionado');
 
-      // IMPORTANTE: select('id') después del DELETE permite distinguir entre:
-      // 1) eliminación real, y 2) DELETE bloqueado por RLS o sin coincidencias.
+      // Los avisos usan eliminación lógica: conservamos el registro y lo marcamos como eliminado.
+      // Esto coincide con las políticas RLS existentes de public.avisos.
+      if (tabla === 'avisos') {
+        const { data, error } = await client
+          .from('avisos')
+          .update({ status: 'eliminado' })
+          .eq('id', id)
+          .select('id,status')
+          .single();
+
+        if (error) throw error;
+
+        if (!data || data.status !== 'eliminado') {
+          throw new Error('El aviso no fue eliminado. Supabase no permitió la operación o el registro no existe.');
+        }
+
+        return respuestaOK(data);
+      }
+
+      // Para usuarios se conserva el borrado físico existente.
       const { data, error } = await client
         .from(tabla)
         .delete()
