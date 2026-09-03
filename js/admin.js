@@ -58,6 +58,8 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
 // Un único sistema de datos, sin paneles estadísticos duplicados.
 // ============================================================== 
 (function inicializarMetricasAdmin(){
+    if(window.__ELBARRIO_METRICAS_ADMIN_INICIADAS__)return;
+    window.__ELBARRIO_METRICAS_ADMIN_INICIADAS__=true;
     let timer=null;
     let ultimoDatos=null;
     let cargando=false;
@@ -106,12 +108,12 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
         lista.innerHTML=usuariosOnline.map(u=>{const nombre=escapar(u.nombre||'Usuario'),email=escapar(u.email||''),fecha=u.ultima_actividad?new Date(u.ultima_actividad):null,tiempo=fecha&&!Number.isNaN(fecha.getTime())?fecha.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'}):'ahora';return `<div class="online-user-item"><div><strong style="color:#eee;">${nombre}</strong>${email?`<div class="online-user-email">${email}</div>`:''}</div><span class="online-user-time">● ${tiempo}</span></div>`;}).join('');
     }
 
-    function actualizarResumen(totalUsuarios,totalAvisos){
+    function actualizarResumen(totalUsuarios,avisosPeriodo){
         const resumen=document.getElementById('statsSummary');if(!resumen)return;
         resumen.style.display='flex';
         const promU=document.getElementById('promUsuarios'),promA=document.getElementById('promAvisos'),totalU=document.getElementById('totalUsuarios');
         if(promU)promU.textContent=(totalUsuarios/DIAS).toFixed(1);
-        if(promA)promA.textContent=(totalAvisos/DIAS).toFixed(1);
+        if(promA)promA.textContent=(avisosPeriodo/DIAS).toFixed(1);
         if(totalU)totalU.textContent=formatear(totalUsuarios);
     }
 
@@ -133,11 +135,11 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             const votosRaw=typeof vr.data==='string'?JSON.parse(vr.data):(vr.data||{}),onlineRaw=typeof or.data==='string'?JSON.parse(or.data):(or.data||{});
             const pos=numero(votosRaw.positivos),neg=numero(votosRaw.negativos),votos=numero(votosRaw.total??(pos+neg));
             const usuariosOnline=Array.isArray(onlineRaw)?onlineRaw:(Array.isArray(onlineRaw.usuarios)?onlineRaw.usuarios:[]);
-            const totalUsuarios=usuarios.length,totalAvisos=avisos.length,activos=avisos.filter(a=>a.status==='activo').length,pendientes=avisos.filter(a=>a.status==='pendiente').length,totalVistas=avisos.reduce((s,a)=>s+numero(a.vistas),0);
+            const totalUsuarios=usuarios.length,totalAvisos=avisos.length,activos=avisos.filter(a=>a.status==='activo').length,pendientes=avisos.filter(a=>a.status==='pendiente').length,totalVistas=avisos.reduce((s,a)=>s+numero(a.vistas),0),fechaCorte=Date.now()-DIAS*24*60*60*1000,avisosPeriodo=avisos.filter(a=>{const d=new Date(a.created_at);return !Number.isNaN(d.getTime())&&d.getTime()>=fechaCorte;}).length;
             actualizar('totalAvisos',totalAvisos);actualizar('avisosActivos',activos);actualizar('avisosPendientes',pendientes);actualizar('totalVisitas',totalVistas);actualizar('totalInteracciones',votos);actualizar('totalUsuarios',totalUsuarios);
             const card=document.getElementById('pendingCard');if(card)card.style.display=pendientes>0?'flex':'none';
             const cards=document.querySelectorAll('.dashboard-footer .stat-card');cards.forEach(card=>{const t=card.querySelector('h4'),l=card.querySelector('.stat-label');if(!t)return;const txt=t.textContent.trim().toLowerCase();if(txt==='interacciones'||txt==='votos registrados'){t.textContent='Votos registrados';if(l)l.textContent='positivos + negativos';}if(txt==='total visitas'||txt==='alcance'){t.textContent='Alcance';if(l)l.textContent='vistas acumuladas';}});
-            renderCategorias(avisos);renderDiarios(usuarios,avisos);renderOnlineUsers(usuariosOnline);actualizarResumen(totalUsuarios,totalAvisos);ultimoDatos={usuarios,avisos,usuariosOnline};
+            renderCategorias(avisos);renderDiarios(usuarios,avisos);renderOnlineUsers(usuariosOnline);actualizarResumen(totalUsuarios,avisosPeriodo);ultimoDatos={usuarios,avisos,usuariosOnline};
             console.log('📊 Dashboard admin actualizado:',{totalUsuarios,totalAvisos,activos,pendientes,totalVistas,pos,neg,votos,usuariosOnline:usuariosOnline.length});
         }catch(error){console.error('❌ No se pudieron cargar las métricas del panel admin:',error);const badge=document.getElementById('onlineCount');if(badge)badge.textContent='No disponible';}
         finally{cargando=false;}
