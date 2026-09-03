@@ -114,6 +114,33 @@ async function supabasePeticion(accion, datos = {}) {
       return respuestaOK(normalizarAviso(data));
     }
 
+    case 'LISTAR_AVISOS_PUBLICOS': {
+      let query = client
+        .from('avisos')
+        .select(`
+          *,
+          usuarios!avisos_created_by_fkey (
+            nombre
+          )
+        `, { count: 'exact' })
+        .eq('status', 'activo')
+        .order('created_at', { ascending: false });
+
+      if (datos?.categoria && datos.categoria !== 'todos') {
+        query = query.eq('categoria', datos.categoria);
+      }
+
+      const pagina = Math.max(1, Number(datos?.pagina) || 1);
+      const limite = Math.max(1, Number(datos?.limite) || 200);
+      const desde = (pagina - 1) * limite;
+      query = query.range(desde, desde + limite - 1);
+
+      const { data, error, count } = await query;
+      if (error) throw error;
+      const avisos = normalizarAvisos(data);
+      return respuestaOK({ datos: avisos, total: count ?? avisos.length });
+    }
+
     case 'LISTAR_TODOS_AVISOS':
       return await supabaseAvisosList({ filtros: datos, paginacion: datos });
 
@@ -161,8 +188,6 @@ async function supabasePeticion(accion, datos = {}) {
       if (!tabla) return null;
       if (!id) throw new Error('ID de registro no proporcionado');
 
-      // Los avisos usan eliminación lógica: conservamos el registro y lo marcamos como eliminado.
-      // Esto coincide con las políticas RLS existentes de public.avisos.
       if (tabla === 'avisos') {
         const { data, error } = await client
           .from('avisos')
@@ -172,15 +197,12 @@ async function supabasePeticion(accion, datos = {}) {
           .single();
 
         if (error) throw error;
-
         if (!data || data.status !== 'eliminado') {
           throw new Error('El aviso no fue eliminado. Supabase no permitió la operación o el registro no existe.');
         }
-
         return respuestaOK(data);
       }
 
-      // Para usuarios se conserva el borrado físico existente.
       const { data, error } = await client
         .from(tabla)
         .delete()
@@ -188,11 +210,9 @@ async function supabasePeticion(accion, datos = {}) {
         .select('id');
 
       if (error) throw error;
-
       if (!data || data.length === 0) {
         throw new Error('El registro no fue eliminado. Supabase no permitió la operación o el registro no existe.');
       }
-
       return respuestaOK(data[0]);
     }
 
@@ -267,7 +287,7 @@ class API {
 
   static async peticion(accion, datos = {}, apiKey = null, intentos = 2) {
     const accionSupabase = [
-      'OBTENER_AVISO_POR_ID', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
+      'OBTENER_AVISO_POR_ID', 'LISTAR_AVISOS_PUBLICOS', 'LISTAR_TODOS_AVISOS', 'LISTAR_MIS_AVISOS', 'LISTAR', 'CREAR',
       'ACTUALIZAR', 'ELIMINAR', 'LISTAR_USUARIOS', 'OBTENER_USUARIOS', 'ELIMINAR_USUARIO',
       'APROBAR_AVISO', 'RECHAZAR_AVISO', 'ESTADISTICAS_AVANZADAS'
     ].includes(accion);
@@ -339,9 +359,8 @@ class API {
 
   static async listarPublicos(filtros = {}, paginacion = {}) {
     const client = await getSupabaseClient();
-    let query = client.from('avisos').select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' }).order('created_at', { ascending: false });
+    let query = client.from('avisos').select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' }).eq('status', 'activo').order('created_at', { ascending: false });
     if (filtros?.categoria && filtros.categoria !== 'todos') query = query.eq('categoria', filtros.categoria);
-    if (filtros?.status && filtros.status !== 'todos') query = query.eq('status', filtros.status);
     const pagina = Math.max(1, Number(paginacion?.pagina) || 1);
     const limite = Math.max(1, Number(paginacion?.limite) || 200);
     const desde = (pagina - 1) * limite;
