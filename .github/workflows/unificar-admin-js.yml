@@ -1,0 +1,78 @@
+name: Unificar JavaScript de admin
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  unificar:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mover scripts inline de admin.html a admin.js
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          html_path = Path('admin.html')
+          js_path = Path('js/admin.js')
+          html = html_path.read_text(encoding='utf-8')
+          js = js_path.read_text(encoding='utf-8')
+
+          pattern = re.compile(r'<script(?![^>]*\bsrc\s*=)[^>]*>(.*?)</script\s*>', re.I | re.S)
+          matches = list(pattern.finditer(html))
+
+          inline = []
+          for m in matches:
+              body = m.group(1).strip()
+              if body:
+                  inline.append(body)
+
+          if not inline:
+              print('No hay scripts inline que migrar.')
+              raise SystemExit(0)
+
+          # Evitar migrar dos veces el mismo bloque si el workflow se reintenta.
+          marker = '// ===== JAVASCRIPT MIGRADO DESDE admin.html ====='
+          if marker in js:
+              print('Los scripts ya fueron migrados.')
+              raise SystemExit(0)
+
+          migrated = '\n\n' + marker + '\n' + '\n\n'.join(inline) + '\n// ===== FIN JAVASCRIPT MIGRADO DESDE admin.html =====\n'
+          js_path.write_text(js.rstrip() + migrated, encoding='utf-8')
+
+          # Eliminar exclusivamente scripts inline. Los scripts externos permanecen.
+          html_new = pattern.sub('', html)
+          html_path.write_text(html_new, encoding='utf-8')
+
+          print(f'Scripts inline migrados: {len(inline)}')
+
+      - name: Actualizar version de admin.js
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('admin.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('/js/admin.js?v=20260903-1', '/js/admin.js?v=20260903-3')
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit y eliminar workflow temporal
+        shell: bash
+        run: |
+          rm -f .github/workflows/unificar-admin-js.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin.html js/admin.js .github/workflows/unificar-admin-js.yml
+          if git diff --cached --quiet; then
+            echo 'Sin cambios.'
+            exit 0
+          fi
+          git commit -m 'refactor: centralizar JavaScript de admin en admin.js'
+          git push
