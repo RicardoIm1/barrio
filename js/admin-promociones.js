@@ -145,14 +145,15 @@
             return;
         }
         for(const fila of document.querySelectorAll('.tabla-admin tbody tr')){
-            if(fila.dataset.promocionesReady==='1')continue;
+            // MUY IMPORTANTE: 'pending' también significa que otra ejecución ya está trabajando esta fila.
+            // Esto evita que el MutationObserver dispare consultas Supabase concurrentes en cascada.
+            if(fila.dataset.promocionesReady==='1'||fila.dataset.promocionesReady==='pending')continue;
             const id=extraerIdFila(fila);if(!id)continue;
             const acciones=fila.querySelector('td:last-child');if(!acciones)continue;
             fila.dataset.promocionesReady='pending';
             const aviso=await obtenerAviso(id);
             if(!aviso){fila.dataset.promocionesReady='';continue;}
 
-            // Reutilizamos el botón existente de Destacado, pero reemplazamos su comportamiento.
             let dest=[...acciones.querySelectorAll('button')].find(b=>/destacar/i.test(b.textContent||''));
             if(dest){
                 const clon=dest.cloneNode(true);dest.replaceWith(clon);dest=clon;
