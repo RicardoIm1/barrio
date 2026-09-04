@@ -61,7 +61,6 @@
     event.stopPropagation();
     if(event.stopImmediatePropagation) event.stopImmediatePropagation();
     toast('Para usar WhatsApp necesitas iniciar sesión en El Barrio.','error',3600);
-    setTimeout(()=>{ if(!usuarioConSesion()) window.location.href='/login.html'; },700);
   }
   document.addEventListener('click',protegerWhatsApp,true);
 
