@@ -29,34 +29,51 @@
         return valor === true || valor === 'TRUE' || valor === 'true' || valor === 1 || valor === '1';
     }
 
+    function sincronizarCheckboxes(id){
+        try{
+            const aviso = Array.isArray(window.todosLosAvisos)
+                ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
+                : null;
+
+            const chkUrgente = document.getElementById('edit-urgente');
+            const chkDestacado = document.getElementById('edit-destacado');
+
+            if(!aviso) return false;
+
+            if(chkUrgente) chkUrgente.checked = esVerdadero(aviso.urgente);
+            if(chkDestacado) chkDestacado.checked = esVerdadero(aviso.destacado);
+
+            console.log('✅ PROMOCIONES ADMIN: checkboxes sincronizados visualmente', {
+                id: String(id),
+                urgente: !!chkUrgente?.checked,
+                destacado: !!chkDestacado?.checked,
+                urgenteBD: aviso.urgente,
+                destacadoBD: aviso.destacado
+            });
+            return true;
+        }catch(error){
+            console.warn('⚠️ No se pudieron sincronizar promociones:', error);
+            return false;
+        }
+    }
+
     function instalar(){
         if(!window.API || typeof window.API.peticion !== 'function') return false;
         if(window.API.__promocionesAdminProtegidas__) return true;
 
-        // 1) Corregir la carga de ambos checkboxes al abrir un aviso.
+        // 1) Sincronizar ambos checkboxes DESPUÉS de que admin.js termine
+        // de llenar el formulario y abrir el modal.
         if(typeof window.editarAviso === 'function' && !window.__editarAvisoPromocionesPatched__){
             const editarOriginal = window.editarAviso;
             window.editarAviso = function(id){
                 const resultado = editarOriginal.apply(this, arguments);
-                try{
-                    const aviso = Array.isArray(window.todosLosAvisos)
-                        ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
-                        : null;
 
-                    const chkUrgente = document.getElementById('edit-urgente');
-                    const chkDestacado = document.getElementById('edit-destacado');
+                // admin.js asigna los campos y abre el modal dentro de la
+                // misma ejecución. Estos dos turnos garantizan que nuestra
+                // sincronización ocurra al final de esa operación.
+                setTimeout(() => sincronizarCheckboxes(id), 0);
+                setTimeout(() => sincronizarCheckboxes(id), 100);
 
-                    if(aviso){
-                        if(chkUrgente) chkUrgente.checked = esVerdadero(aviso.urgente);
-                        if(chkDestacado) chkDestacado.checked = esVerdadero(aviso.destacado);
-                        console.log('✅ PROMOCIONES ADMIN: checkboxes sincronizados', {
-                            urgente: !!chkUrgente?.checked,
-                            destacado: !!chkDestacado?.checked
-                        });
-                    }
-                }catch(error){
-                    console.warn('⚠️ No se pudieron sincronizar promociones:', error);
-                }
                 return resultado;
             };
             window.__editarAvisoPromocionesPatched__ = true;
