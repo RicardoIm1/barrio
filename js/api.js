@@ -26,8 +26,8 @@ function getUsuarioLocal() {
 }
 
 async function getSupabaseClient() {
-  if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
+  if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
 
   if (!window.supabase) {
     if (!window.__elBarrioSupabaseLoadPromise) {
@@ -247,6 +247,27 @@ async function supabasePeticion(accion, datos = {}) {
       const { data, error } = await client.from('avisos').update({ status: 'rechazado' }).eq('id', datos.id).select().single();
       if (error) throw error;
       return respuestaOK(data);
+    }
+
+    case 'OBTENER_MIS_VOTOS': {
+      if (!usuario?.id) return respuestaOK([]);
+
+      // Preferimos un RPC si ya existe en la base. Si no existe, consultamos
+      // la tabla de votos directamente para conservar compatibilidad con el índice.
+      try {
+        const { data, error } = await client.rpc('obtener_mis_votos');
+        if (!error) {
+          const votos = typeof data === 'string' ? JSON.parse(data) : (data || []);
+          return respuestaOK(Array.isArray(votos) ? votos : []);
+        }
+      } catch (_) {}
+
+      const { data, error } = await client
+        .from('votos')
+        .select('aviso_id,tipo')
+        .eq('usuario_id', usuario.id);
+      if (error) throw error;
+      return respuestaOK(data || []);
     }
 
     case 'VOTAR_AVISO': {
