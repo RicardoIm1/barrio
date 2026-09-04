@@ -35,11 +35,19 @@
                 ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
                 : null;
 
-            // admin.js actualmente no conserva 'urgente' al construir todosLosAvisos.
-            // Para el modal usamos Supabase como fuente de verdad y evitamos depender
-            // de una copia incompleta del objeto cargado en la tabla.
-            if(window.supabaseClient && id){
-                const {data,error} = await window.supabaseClient
+            // admin.js puede no conservar 'urgente' al construir todosLosAvisos.
+            // El cliente compartido se crea en auth.js como
+            // window.__elBarrioSupabaseClient, por lo que usamos ese cliente
+            // como fuente de verdad para ambos campos.
+            let client = window.__elBarrioSupabaseClient || window.supabaseClient || null;
+
+            // Si todavía no está disponible, usar el cargador compartido de auth.js.
+            if(!client && typeof window.obtenerSupabaseClient === 'function'){
+                client = await window.obtenerSupabaseClient();
+            }
+
+            if(client && id){
+                const {data,error} = await client
                     .from('avisos')
                     .select('id,urgente,destacado')
                     .eq('id',id)
