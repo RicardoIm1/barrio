@@ -1,0 +1,1 @@
+Temporary trigger for registration fix. This file is removed by the patch workflow.
