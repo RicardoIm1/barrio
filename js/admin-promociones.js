@@ -1,4 +1,4 @@
-// ==============================================================
+// ============================================================== 
 // RECUPERACIÓN DE ADMIN.JS
 // Si el navegador conserva la versión truncada anterior, cargar
 // explícitamente el admin.js completo con cache-busting.
@@ -29,11 +29,33 @@
         return valor === true || valor === 'TRUE' || valor === 'true' || valor === 1 || valor === '1';
     }
 
-    function sincronizarCheckboxes(id){
+    async function sincronizarCheckboxes(id){
         try{
-            const aviso = Array.isArray(window.todosLosAvisos)
+            let aviso = Array.isArray(window.todosLosAvisos)
                 ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
                 : null;
+
+            // admin.js actualmente no conserva 'urgente' al construir todosLosAvisos.
+            // Para el modal usamos Supabase como fuente de verdad y evitamos depender
+            // de una copia incompleta del objeto cargado en la tabla.
+            if(window.supabaseClient && id){
+                const {data,error} = await window.supabaseClient
+                    .from('avisos')
+                    .select('id,urgente,destacado')
+                    .eq('id',id)
+                    .maybeSingle();
+
+                if(!error && data){
+                    aviso = {...(aviso || {}), ...data};
+                    console.log('📌 PROMOCIONES ADMIN: valores reales desde Supabase', {
+                        id: String(id),
+                        urgente: data.urgente,
+                        destacado: data.destacado
+                    });
+                }else if(error){
+                    console.warn('⚠️ No se pudieron consultar promociones en Supabase:', error);
+                }
+            }
 
             const chkUrgente = document.getElementById('edit-urgente');
             const chkDestacado = document.getElementById('edit-destacado');
@@ -68,11 +90,9 @@
             window.editarAviso = function(id){
                 const resultado = editarOriginal.apply(this, arguments);
 
-                // admin.js asigna los campos y abre el modal dentro de la
-                // misma ejecución. Estos dos turnos garantizan que nuestra
-                // sincronización ocurra al final de esa operación.
+                // Supabase es la fuente de verdad para urgente/destacado.
                 setTimeout(() => sincronizarCheckboxes(id), 0);
-                setTimeout(() => sincronizarCheckboxes(id), 100);
+                setTimeout(() => sincronizarCheckboxes(id), 150);
 
                 return resultado;
             };
