@@ -68,10 +68,10 @@
   <div id="footer-container"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/js/supabase.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/ui.js"></script>
-  <script src="/js/auth.js"></script>
+  <script src="/js/supabase.js?v=20260904-1"></script>
+  <script src="/js/api.js?v=20260904-2"></script>
+  <script src="/js/ui.js?v=20260904-1"></script>
+  <script src="/js/auth.js?v=20260904-1"></script>
 
   <script>
     function mostrarMensaje(mensaje, esError = true) {
@@ -88,47 +88,14 @@
       } else {
         try {
           const res = await fetch('/common/header.html');
-          if (res.ok) {
-            const html = await res.text();
-            document.getElementById('header-container').innerHTML = html;
-            setTimeout(() => { if (typeof window.inicializarHeaderAuth === 'function') window.inicializarHeaderAuth(); }, 100);
-          }
-        } catch (err) { console.error('Error cargando header:', err); }
+          const html = await res.text();
+          const header = document.getElementById('header-container');
+          if (header) header.innerHTML = html;
+        } catch (error) {
+          console.error('Error cargando header:', error);
+        }
       }
 
-      fetch('/common/footer.html')
-        .then(response => { if (!response.ok) throw new Error('Footer no encontrado'); return response.text(); })
-        .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const yearSpan = footerContainer.querySelector('#copyright-year');
-            if (yearSpan) yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
-            footerContainer.querySelectorAll('script').forEach(oldScript => {
-              const newScript = document.createElement('script');
-              newScript.textContent = oldScript.textContent;
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          }
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
-    });
-
-    function initPasswordToggle() {
-      const toggleBtn = document.getElementById('togglePassword');
-      const passwordInput = document.getElementById('password');
-      if (toggleBtn && passwordInput) {
-        toggleBtn.addEventListener('click', function () {
-          const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-          passwordInput.setAttribute('type', type);
-          this.textContent = type === 'password' ? '🙉' : '🙈';
-          this.setAttribute('aria-label', type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
-        });
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
       initPasswordToggle();
       const form = document.getElementById('form-login');
       const btn = document.getElementById('btnLogin');
@@ -148,8 +115,6 @@
           const res = await Auth.login(email, password);
           console.log('Login correcto:', res);
 
-          // Auth.login ya guarda el usuario y el token en localStorage.
-          // No dependemos de API aquí para completar el inicio de sesión.
           const usuario = (() => {
             try { return JSON.parse(localStorage.getItem('usuario') || 'null'); }
             catch (_) { return null; }
@@ -167,28 +132,6 @@
         }
       });
     });
-  </script>
-
-  <script>
-    (function () {
-      setTimeout(function () {
-        if (typeof actualizarHeaderPorSesion === 'function') {
-          actualizarHeaderPorSesion();
-        } else if (window.actualizarHeaderPorSesion) {
-          window.actualizarHeaderPorSesion();
-        } else {
-          const headerContainer = document.getElementById('header-container');
-          if (headerContainer) {
-            fetch('/common/header.html?v=' + Date.now())
-              .then(res => res.text())
-              .then(html => {
-                headerContainer.innerHTML = html;
-                setTimeout(() => { if (window.actualizarHeaderPorSesion) window.actualizarHeaderPorSesion(); }, 100);
-              });
-          }
-        }
-      }, 200);
-    })();
   </script>
 </body>
 </html>
