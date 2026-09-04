@@ -1,4 +1,25 @@
 // ==============================================================
+// RECUPERACIÓN DE ADMIN.JS
+// Si el navegador conserva la versión truncada anterior, cargar
+// explícitamente el admin.js completo con cache-busting.
+// ============================================================== 
+(function recuperarAdminJsSiEsNecesario(){
+    const faltaAdmin = typeof window.cargarAvisosParaAdmin !== 'function' ||
+                       typeof window.cargarUsuariosAdmin !== 'function' ||
+                       typeof window.renderizarTablaAvisos !== 'function';
+
+    if(!faltaAdmin) return;
+    if(window.__ELBARRIO_ADMIN_RECUPERANDO__) return;
+
+    window.__ELBARRIO_ADMIN_RECUPERANDO__ = true;
+    const script = document.createElement('script');
+    script.src = '/js/admin.js?v=20260904-RECOVERY-' + Date.now();
+    script.onload = () => console.log('✅ ADMIN.JS RECOVERY: versión completa cargada sin caché.');
+    script.onerror = () => console.error('❌ ADMIN.JS RECOVERY: no se pudo cargar admin.js.');
+    document.head.appendChild(script);
+})();
+
+// ==============================================================
 // ADMIN-PROMOCIONES.JS
 // Control exclusivo de campos promocionales de avisos.
 // La seguridad real está reforzada en Supabase mediante trigger/RLS.
