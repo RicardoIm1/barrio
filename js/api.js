@@ -251,12 +251,10 @@ async function supabasePeticion(accion, datos = {}) {
 
     case 'OBTENER_MIS_VOTOS': {
       if (!usuario?.id) return respuestaOK([]);
-
       const { data, error } = await client
         .from('votos')
         .select('aviso_id,tipo')
         .eq('usuario_id', usuario.id);
-
       if (error) throw error;
       return respuestaOK(data || []);
     }
@@ -401,5 +399,23 @@ API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
   if (resultado?.success && resultado?.data) return { ...resultado, datos: resultado.data.datos || [], total: resultado.data.total ?? (resultado.data.datos || []).length };
   return resultado;
 };
+
+// Cargar estadísticas personales como módulo independiente.
+// Se activa solo si el usuario actual no es administrador.
+(function cargarModuloEstadisticasUsuario() {
+  function cargar() {
+    if (!document.querySelector('body')) return;
+    if (!document.getElementById('estadisticas-usuario') && !localStorage.getItem('usuario')) return;
+    if (document.querySelector('script[data-el-barrio-estadisticas-usuario="1"]')) return;
+    const script = document.createElement('script');
+    script.src = '/js/estadisticas-usuario.js?v=20260904-1';
+    script.async = true;
+    script.dataset.elBarrioEstadisticasUsuario = '1';
+    script.onerror = () => console.warn('No se pudo cargar el módulo de estadísticas personales.');
+    document.head.appendChild(script);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', cargar, { once: true });
+  else cargar();
+})();
 
 console.log('✅ API de El Barrio: Supabase exclusivo, sin Google Apps Script');
