@@ -11,8 +11,8 @@
 })();
 
 const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec';
-const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
+const API_SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
+const API_API_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
 function getUsuarioLocal() {
   try {
@@ -41,8 +41,8 @@ async function getSupabaseClient() {
   }
 
   window.__elBarrioSupabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    API_SUPABASE_URL,
+    API_SUPABASE_PUBLISHABLE_KEY
   );
 
   return window.__elBarrioSupabaseClient;
