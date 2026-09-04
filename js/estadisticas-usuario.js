@@ -3,15 +3,11 @@
 // ============================================================
 (function () {
     'use strict';
-    // El listado global de usuarios es estrictamente admin-only.
-    // Evitamos el ruido de una llamada accidental desde scripts legacy.
     const usuarioActual = () => {
         try { return JSON.parse(localStorage.getItem('usuario') || 'null'); } catch (_) { return null; }
     };
     const esAdmin = () => String(usuarioActual()?.rol || '').toLowerCase() === 'admin';
 
-    // Si admin.js expone la función global, protegemos invocaciones posteriores.
-    // La seguridad real sigue estando en Supabase/RLS.
     if (!esAdmin() && typeof window.cargarUsuariosAdmin === 'function' && !window.cargarUsuariosAdmin.__elBarrioNormalGuard) {
         const original = window.cargarUsuariosAdmin;
         const guard = function () {
@@ -22,7 +18,6 @@
         window.cargarUsuariosAdmin = guard;
     }
 
-    // Normaliza el valor de fecha cuando admin.js abre el formulario de edición.
     function protegerFecha() {
         const campo = document.getElementById('edit-fecha_evento');
         if (!campo || campo.type !== 'date' || campo.dataset.elBarrioFechaGuard === '1') return;
@@ -41,13 +36,28 @@
     }
     protegerFecha();
     new MutationObserver(protegerFecha).observe(document.documentElement, { childList: true, subtree: true });
+
+    // El módulo de multimedia se carga desde aquí porque este archivo ya está
+    // cargado en admin.html después de la autenticación.
+    function cargarMultimediaEdicion() {
+        if (!/\/admin\.html$/i.test(window.location.pathname)) return;
+        if (document.querySelector('script[data-el-barrio-admin-multimedia="1"]')) return;
+        const script = document.createElement('script');
+        script.src = '/js/admin-multimedia-fix.js?v=20260904-1';
+        script.async = true;
+        script.dataset.elBarrioAdminMultimedia = '1';
+        script.onerror = () => console.warn('No se pudo cargar el módulo de multimedia para edición.');
+        document.head.appendChild(script);
+    }
+    cargarMultimediaEdicion();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', cargarMultimediaEdicion, { once: true });
+    }
 })();
 
 // ============================================================
 // ESTADÍSTICAS PERSONALES DEL USUARIO
 // ============================================================
-// Este módulo se activa únicamente para usuarios normales.
-// Los administradores conservan su tablero global.
 (function () {
     if (window.__ELBARRIO_ESTADISTICAS_USUARIO__) return;
     if (!/\/admin\.html$/i.test(window.location.pathname)) return;
