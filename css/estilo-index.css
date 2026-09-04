@@ -737,3 +737,7 @@
     } */
 
     
+
+/* Nombre real del usuario que publicó el aviso */
+.aviso-autor{margin:7px 0 10px;color:#56606a;font-size:.82rem;font-weight:650;display:flex;align-items:center;gap:5px}
+.aviso-autor span{font-size:.9rem}

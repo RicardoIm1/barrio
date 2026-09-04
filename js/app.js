@@ -304,7 +304,7 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
         ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" alt="${aviso.titulo}" class="aviso-imagen" loading="lazy">` : ''}
         
         <div style="padding: 1rem;">
-          <h3 class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</h3>
+          <h3 class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</h3>\n          <div class="aviso-autor"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</div>
           
           <div class="aviso-fecha">
             <span>📅</span> ${fecha}

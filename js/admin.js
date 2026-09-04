@@ -349,7 +349,7 @@ console.log('ℹ️ admin.js: controlador embebido de admin.html activo.');
             tbody.innerHTML = avisosFiltrados.map(aviso => {
                 const estado = aviso.status || 'pendiente';
                 const estadoTexto = estado === 'activo' ? '🟢 Activo' : (estado === 'rechazado' ? '🔴 Rechazado' : '⏳ Pendiente');
-                const nombreAutor = aviso.nombre_autor || aviso.autor_nombre || aviso.created_by_nombre || 'Vecino';
+                const nombreAutor = aviso.nombre_autor || aviso.autor_nombre || aviso.created_by_nombre || 'Usuario';
                 const vistas = aviso.vistas || 0;
                 const comentarios = aviso.comentarios_count || aviso.total_comentarios || 0;
                 const votosPos = aviso.votos_positivos || aviso.likes || 0;

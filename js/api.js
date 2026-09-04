@@ -71,7 +71,7 @@ function normalizarAviso(aviso) {
   if (!aviso) return aviso;
   return {
     ...aviso,
-    nombre_autor: aviso.usuarios?.nombre || aviso.nombre_autor || 'Vecino'
+    nombre_autor: aviso.usuarios?.nombre || aviso.nombre_autor || 'Usuario'
   };
 }
 
