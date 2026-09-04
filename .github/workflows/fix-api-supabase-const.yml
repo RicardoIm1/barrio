@@ -1,0 +1,36 @@
+name: Fix api.js Supabase constants
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/fix-api-supabase-const.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rename api.js Supabase constants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('js/api.js')
+          s = p.read_text()
+          s = s.replace('const SUPABASE_URL =', 'const API_SUPABASE_URL =')
+          s = s.replace('const SUPABASE_PUBLISHABLE_KEY =', 'const API_SUPABASE_PUBLISHABLE_KEY =')
+          s = s.replace('SUPABASE_URL,', 'API_SUPABASE_URL,')
+          s = s.replace('SUPABASE_PUBLISHABLE_KEY', 'API_SUPABASE_PUBLISHABLE_KEY')
+          p.write_text(s)
+          PY
+      - name: Commit fix and remove workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/api.js .github/workflows/fix-api-supabase-const.yml
+          git commit -m 'fix: evitar colision de constantes Supabase en api.js'
+          git rm .github/workflows/fix-api-supabase-const.yml
+          git commit -m 'chore: retirar workflow temporal de correccion'
+          git push
