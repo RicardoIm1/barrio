@@ -145,8 +145,6 @@
             return;
         }
         for(const fila of document.querySelectorAll('.tabla-admin tbody tr')){
-            // MUY IMPORTANTE: 'pending' también significa que otra ejecución ya está trabajando esta fila.
-            // Esto evita que el MutationObserver dispare consultas Supabase concurrentes en cascada.
             if(fila.dataset.promocionesReady==='1'||fila.dataset.promocionesReady==='pending')continue;
             const id=extraerIdFila(fila);if(!id)continue;
             const acciones=fila.querySelector('td:last-child');if(!acciones)continue;
@@ -154,7 +152,10 @@
             const aviso=await obtenerAviso(id);
             if(!aviso){fila.dataset.promocionesReady='';continue;}
 
-            let dest=[...acciones.querySelectorAll('button')].find(b=>/destacar/i.test(b.textContent||''));
+            // Debe existir exactamente UN botón de Destacado por fila.
+            let destacados=[...acciones.querySelectorAll('button')].filter(b=>/destacar/i.test(b.textContent||'')||b.dataset.promocionDestacado==='1');
+            let dest=destacados.shift();
+            destacados.forEach(b=>b.remove());
             if(dest){
                 const clon=dest.cloneNode(true);dest.replaceWith(clon);dest=clon;
                 dest.classList.add('promo-btn');
@@ -170,12 +171,21 @@
                 acciones.appendChild(dest);
             }
 
-            let urg=acciones.querySelector('[data-promocion-urgente="1"]');
+            // Debe existir exactamente UN botón de Urgente por fila.
+            let urgentes=[...acciones.querySelectorAll('button')].filter(b=>b.dataset.promocionUrgente==='1'||/urgente/i.test(b.textContent||''));
+            let urg=urgentes.shift();
+            urgentes.forEach(b=>b.remove());
             if(!urg){
                 urg=botonPromo('urgente',VERDADERO(aviso.urgente));
-                urg.style.cssText+='padding:5px 9px!important;font-size:.72rem!important;line-height:1.15!important;border-radius:9px!important;min-height:30px!important;box-shadow:none!important;';
-                urg.addEventListener('click',async e=>{e.preventDefault();e.stopImmediatePropagation();const actual=await obtenerAviso(id);await guardarFlag(id,'urgente',!VERDADERO(actual?.urgente),urg);},true);
                 acciones.appendChild(urg);
+            }
+            urg.style.cssText+='padding:5px 9px!important;font-size:.72rem!important;line-height:1.15!important;border-radius:9px!important;min-height:30px!important;box-shadow:none!important;';
+            urg.dataset.promocionUrgente='1';
+            urg.textContent=VERDADERO(aviso.urgente)?'⚠️ Quitar urgente':'⚠️ Urgente';
+            urg.title=VERDADERO(aviso.urgente)?'Quitar urgente':'Marcar como urgente';
+            if(!urg.dataset.promocionHandler){
+                urg.dataset.promocionHandler='1';
+                urg.addEventListener('click',async e=>{e.preventDefault();e.stopImmediatePropagation();const actual=await obtenerAviso(id);await guardarFlag(id,'urgente',!VERDADERO(actual?.urgente),urg);},true);
             }
             ponerEstadoVisual(fila,id,VERDADERO(aviso.urgente),VERDADERO(aviso.destacado));
             fila.dataset.promocionesReady='1';
