@@ -84,6 +84,11 @@
                                 ...(chkDestacado ? {destacado: !!chkDestacado.checked} : {})
                             }
                         };
+                        console.log('🔐 PROMOCIONES ADMIN: payload ACTUALIZAR', {
+                            id: payload.id,
+                            urgente: !!chkUrgente?.checked,
+                            destacado: !!chkDestacado?.checked
+                        });
                     }
                 }
             }catch(error){
@@ -108,4 +113,73 @@
     }else{
         intentar();
     }
+})();
+
+// ============================================================== 
+// RESPALDO DIRECTO DEL GUARDADO DE PROMOCIONES
+// Este listener corre en captura, antes del handler legacy de admin.js,
+// para garantizar que urgente y destacado lleguen a Supabase.
+// ============================================================== 
+(function respaldoGuardadoPromociones(){
+    document.addEventListener('submit', async function(event){
+        const form = event.target;
+        if(!form || form.id !== 'form-editar') return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        const obtener = id => document.getElementById(id);
+        const valor = id => {
+            const el = obtener(id);
+            return el ? String(el.value || '').trim() : '';
+        };
+
+        const id = valor('edit-id');
+        if(!id){
+            alert('❌ No se encontró el ID del aviso.');
+            return;
+        }
+
+        const datos = {
+            titulo: valor('edit-titulo'),
+            contenido: valor('edit-contenido'),
+            ubicacion: valor('edit-ubicacion'),
+            contacto: valor('edit-contacto'),
+            imagen_url: valor('edit-imagen_url'),
+            video_url: valor('edit-video_url')
+        };
+
+        const fecha = valor('edit-fecha_evento');
+        if(fecha) datos.fecha_evento = fecha.split('T')[0];
+
+        const chkUrgente = obtener('edit-urgente');
+        const chkDestacado = obtener('edit-destacado');
+        if(chkUrgente) datos.urgente = !!chkUrgente.checked;
+        if(chkDestacado) datos.destacado = !!chkDestacado.checked;
+
+        try{
+            const apiKey = localStorage.getItem('api_key');
+            console.log('✏️ PROMOCIONES ADMIN: guardado directo', { id, datos });
+
+            const resultado = await API.peticion('ACTUALIZAR', {
+                coleccion: 'AVISOS',
+                id,
+                datos
+            }, apiKey);
+
+            if(!resultado?.success){
+                throw new Error(resultado?.error || 'No se pudo actualizar el aviso.');
+            }
+
+            console.log('✅ PROMOCIONES ADMIN: urgente/destacado guardados correctamente.', resultado.data);
+            alert('✅ Aviso actualizado correctamente');
+
+            const modal = document.getElementById('modal-editar');
+            if(modal) modal.style.display = 'none';
+            location.reload();
+        }catch(error){
+            console.error('❌ PROMOCIONES ADMIN: error al guardar:', error);
+            alert('❌ Error al actualizar: ' + (error?.message || error));
+        }
+    }, true);
 })();
