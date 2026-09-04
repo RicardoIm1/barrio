@@ -1,0 +1,68 @@
+name: Fix author names
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-author-names.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Replace author fallback and add author to cards
+        shell: python
+        run: |
+          from pathlib import Path
+
+          app = Path('js/app.js')
+          s = app.read_text(encoding='utf-8')
+          old = "<h3 class=\"tarjeta-titulo\">${escapeHTML(aviso.titulo || 'Sin título')}</h3>"
+          new = old + "\\n          <div class=\"aviso-autor\"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</div>"
+          if old not in s:
+              raise SystemExit('No se encontró el encabezado de tarjeta esperado en js/app.js')
+          s = s.replace(old, new, 1)
+          app.write_text(s, encoding='utf-8')
+
+          aviso = Path('aviso.html')
+          s = aviso.read_text(encoding='utf-8')
+          old = "a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Vecino'"
+          new = "a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario'"
+          if old in s:
+              s = s.replace(old, new, 1)
+          aviso.write_text(s, encoding='utf-8')
+
+          # Elimina el texto genérico como fallback en archivos de interfaz,
+          # sin tocar documentación ni contenido histórico.
+          for p in list(Path('.').glob('*.html')) + list(Path('js').glob('*.js')):
+              try:
+                  t = p.read_text(encoding='utf-8')
+              except Exception:
+                  continue
+              nt = t.replace("|| 'Vecino'", "|| 'Usuario'").replace('||\"Vecino\"', '||\"Usuario\"')
+              if nt != t:
+                  p.write_text(nt, encoding='utf-8')
+
+      - name: Add author card styling
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('css/estilo-index.css')
+          s = p.read_text(encoding='utf-8')
+          if '.aviso-autor' in s:
+              raise SystemExit(0)
+          s += '\n\n/* Nombre real del usuario que publicó el aviso */\n.aviso-autor{margin:7px 0 10px;color:#56606a;font-size:.82rem;font-weight:650;display:flex;align-items:center;gap:5px}\n.aviso-autor span{font-size:.9rem}\n'
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/app.js aviso.html css/estilo-index.css js/*.js *.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Mostrar nombre real del autor en avisos"
+          git push
