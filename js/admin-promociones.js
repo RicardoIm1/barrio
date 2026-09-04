@@ -1,230 +1,247 @@
-// ============================================================== 
-// RECUPERACIÓN DE ADMIN.JS
-// Si el navegador conserva la versión truncada anterior, cargar
-// explícitamente el admin.js completo con cache-busting.
-// ============================================================== 
-(function recuperarAdminJsSiEsNecesario(){
-    const faltaAdmin = typeof window.cargarAvisosParaAdmin !== 'function' ||
-                       typeof window.cargarUsuariosAdmin !== 'function' ||
-                       typeof window.renderizarTablaAvisos !== 'function';
-
-    if(!faltaAdmin) return;
-    if(window.__ELBARRIO_ADMIN_RECUPERANDO__) return;
-
-    window.__ELBARRIO_ADMIN_RECUPERANDO__ = true;
-    const script = document.createElement('script');
-    script.src = '/js/admin.js?v=20260904-RECOVERY-' + Date.now();
-    script.onload = () => console.log('✅ ADMIN.JS RECOVERY: versión completa cargada sin caché.');
-    script.onerror = () => console.error('❌ ADMIN.JS RECOVERY: no se pudo cargar admin.js.');
-    document.head.appendChild(script);
-})();
-
 // ==============================================================
 // ADMIN-PROMOCIONES.JS
-// Control exclusivo de campos promocionales de avisos.
-// La seguridad real está reforzada en Supabase mediante trigger/RLS.
+// Interfaz de Urgente / Destacado para administradores.
+// La seguridad real permanece en Supabase mediante trigger/RLS.
 // ============================================================== 
-(function protegerCamposPromocionalesAdmin(){
-    function esVerdadero(valor){
-        return valor === true || valor === 'TRUE' || valor === 'true' || valor === 1 || valor === '1';
+(function inicializarPromocionesAdmin(){
+    const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i;
+
+    function esVerdadero(v){
+        return v === true || v === 'true' || v === 'TRUE' || v === 1 || v === '1';
     }
 
-    async function sincronizarCheckboxes(id){
+    function usuarioActual(){
         try{
-            let aviso = Array.isArray(window.todosLosAvisos)
-                ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
-                : null;
-
-            // admin.js puede no conservar 'urgente' al construir todosLosAvisos.
-            // El cliente compartido se crea en auth.js como
-            // window.__elBarrioSupabaseClient, por lo que usamos ese cliente
-            // como fuente de verdad para ambos campos.
-            let client = window.__elBarrioSupabaseClient || window.supabaseClient || null;
-
-            // Si todavía no está disponible, usar el cargador compartido de auth.js.
-            if(!client && typeof window.obtenerSupabaseClient === 'function'){
-                client = await window.obtenerSupabaseClient();
+            if(window.API && typeof window.API.getUsuarioActual === 'function'){
+                const u = window.API.getUsuarioActual();
+                if(u) return u;
             }
+        }catch(e){}
+        try{return JSON.parse(localStorage.getItem('usuario') || 'null');}catch(e){return null;}
+    }
 
-            if(client && id){
-                const {data,error} = await client
-                    .from('avisos')
+    function esAdmin(){
+        const u = usuarioActual();
+        return String(u?.rol || '').toLowerCase() === 'admin';
+    }
+
+    function buscarCheckbox(form, tipo){
+        if(!form) return null;
+        const ids = tipo === 'urgente'
+            ? ['edit-urgente','crear-urgente','urgente','nuevo-urgente']
+            : ['edit-destacado','crear-destacado','destacado','nuevo-destacado'];
+
+        for(const id of ids){
+            const el = document.getElementById(id);
+            if(el && el.type === 'checkbox' && form.contains(el)) return el;
+        }
+
+        const palabras = tipo === 'urgente' ? ['urgente'] : ['destacado'];
+        return [...form.querySelectorAll('input[type="checkbox"]')].find(input => {
+            const label = input.closest('label');
+            const texto = String(label?.textContent || '').toLowerCase();
+            return palabras.some(p => texto.includes(p));
+        }) || null;
+    }
+
+    function ocultarControl(input, ocultar){
+        if(!input) return;
+        const contenedor = input.closest('label') || input.parentElement;
+        if(contenedor) contenedor.style.display = ocultar ? 'none' : '';
+        input.disabled = !!ocultar;
+    }
+
+    function actualizarVisibilidadFormularios(){
+        const admin = esAdmin();
+        const crear = document.getElementById('form-aviso');
+        const editar = document.getElementById('form-editar');
+
+        ocultarControl(buscarCheckbox(crear,'urgente'), !admin);
+        ocultarControl(buscarCheckbox(crear,'destacado'), !admin);
+        ocultarControl(buscarCheckbox(editar,'urgente'), !admin);
+        ocultarControl(buscarCheckbox(editar,'destacado'), !admin);
+    }
+
+    async function obtenerAviso(id){
+        let aviso = Array.isArray(window.todosLosAvisos)
+            ? window.todosLosAvisos.find(a => a && String(a.id) === String(id))
+            : null;
+
+        try{
+            let client = window.__elBarrioSupabaseClient || null;
+            if(!client && typeof window.obtenerSupabaseClient === 'function') client = await window.obtenerSupabaseClient();
+            if(client){
+                const {data,error} = await client.from('avisos')
                     .select('id,urgente,destacado')
                     .eq('id',id)
                     .maybeSingle();
-
-                if(!error && data){
-                    aviso = {...(aviso || {}), ...data};
-                    console.log('📌 PROMOCIONES ADMIN: valores reales desde Supabase', {
-                        id: String(id),
-                        urgente: data.urgente,
-                        destacado: data.destacado
-                    });
-                }else if(error){
-                    console.warn('⚠️ No se pudieron consultar promociones en Supabase:', error);
-                }
+                if(!error && data) aviso = {...(aviso || {}), ...data};
+                if(error) console.warn('⚠️ Promociones: no se pudo leer el aviso:', error);
             }
-
-            const chkUrgente = document.getElementById('edit-urgente');
-            const chkDestacado = document.getElementById('edit-destacado');
-
-            if(!aviso) return false;
-
-            if(chkUrgente) chkUrgente.checked = esVerdadero(aviso.urgente);
-            if(chkDestacado) chkDestacado.checked = esVerdadero(aviso.destacado);
-
-            console.log('✅ PROMOCIONES ADMIN: checkboxes sincronizados visualmente', {
-                id: String(id),
-                urgente: !!chkUrgente?.checked,
-                destacado: !!chkDestacado?.checked,
-                urgenteBD: aviso.urgente,
-                destacadoBD: aviso.destacado
-            });
-            return true;
         }catch(error){
-            console.warn('⚠️ No se pudieron sincronizar promociones:', error);
-            return false;
+            console.warn('⚠️ Promociones: error leyendo Supabase:', error);
         }
+        return aviso;
     }
 
-    function instalar(){
-        if(!window.API || typeof window.API.peticion !== 'function') return false;
-        if(window.API.__promocionesAdminProtegidas__) return true;
+    async function sincronizarEdicion(id){
+        if(!esAdmin()) return;
+        const aviso = await obtenerAviso(id);
+        if(!aviso) return;
+        const urgente = document.getElementById('edit-urgente');
+        const destacado = document.getElementById('edit-destacado');
+        if(urgente) urgente.checked = esVerdadero(aviso.urgente);
+        if(destacado) destacado.checked = esVerdadero(aviso.destacado);
+        console.log('📌 PROMOCIONES ADMIN: estado real desde Supabase', {
+            id: String(id), urgente: esVerdadero(aviso.urgente), destacado: esVerdadero(aviso.destacado)
+        });
+    }
 
-        // 1) Sincronizar ambos checkboxes DESPUÉS de que admin.js termine
-        // de llenar el formulario y abrir el modal.
-        if(typeof window.editarAviso === 'function' && !window.__editarAvisoPromocionesPatched__){
-            const editarOriginal = window.editarAviso;
-            window.editarAviso = function(id){
-                const resultado = editarOriginal.apply(this, arguments);
-
-                // Supabase es la fuente de verdad para urgente/destacado.
-                setTimeout(() => sincronizarCheckboxes(id), 0);
-                setTimeout(() => sincronizarCheckboxes(id), 150);
-
-                return resultado;
-            };
-            window.__editarAvisoPromocionesPatched__ = true;
+    function extraerIdFila(fila){
+        const directo = fila.dataset?.id || fila.getAttribute('data-id');
+        if(directo && UUID_RE.test(directo)) return directo.match(UUID_RE)[0];
+        for(const el of fila.querySelectorAll('[onclick],[data-id],[href]')){
+            const texto = [el.getAttribute('onclick'),el.getAttribute('data-id'),el.getAttribute('href')].filter(Boolean).join(' ');
+            const match = texto.match(UUID_RE);
+            if(match) return match[0];
         }
+        const match = String(fila.innerHTML || '').match(UUID_RE);
+        return match ? match[0] : null;
+    }
 
-        // 2) Completar el payload del guardado Supabase.
-        const peticionOriginal = window.API.peticion.bind(window.API);
+    function botonPromocion(texto, clase){
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'boton boton-chico ' + (clase || '');
+        b.style.margin = '2px';
+        return b;
+    }
 
-        window.API.peticion = async function(accion, payload, apiKey){
-            try{
-                if(
-                    accion === 'ACTUALIZAR' &&
-                    payload?.coleccion === 'AVISOS' &&
-                    payload?.datos
-                ){
-                    const chkUrgente = document.getElementById('edit-urgente');
-                    const chkDestacado = document.getElementById('edit-destacado');
-
-                    if(chkUrgente || chkDestacado){
-                        payload = {
-                            ...payload,
-                            datos: {
-                                ...payload.datos,
-                                ...(chkUrgente ? {urgente: !!chkUrgente.checked} : {}),
-                                ...(chkDestacado ? {destacado: !!chkDestacado.checked} : {})
-                            }
-                        };
-                        console.log('🔐 PROMOCIONES ADMIN: payload ACTUALIZAR', {
-                            id: payload.id,
-                            urgente: !!chkUrgente?.checked,
-                            destacado: !!chkDestacado?.checked
-                        });
-                    }
-                }
-            }catch(error){
-                console.warn('⚠️ No se pudieron preparar los campos promocionales:', error);
+    async function alternarUrgente(id, boton){
+        if(!esAdmin()) return alert('⛔ Esta acción requiere permisos de administrador.');
+        const aviso = await obtenerAviso(id);
+        if(!aviso) return alert('❌ No se encontró el aviso.');
+        const nuevo = !esVerdadero(aviso.urgente);
+        try{
+            const resultado = await API.peticion('ACTUALIZAR', {
+                coleccion:'AVISOS', id, datos:{urgente:nuevo}
+            }, localStorage.getItem('api_key'));
+            if(!resultado?.success) throw new Error(resultado?.error || 'No se pudo actualizar urgente.');
+            if(Array.isArray(window.todosLosAvisos)){
+                const local = window.todosLosAvisos.find(a => String(a?.id) === String(id));
+                if(local) local.urgente = nuevo;
             }
-
-            return peticionOriginal(accion, payload, apiKey);
-        };
-
-        window.API.__promocionesAdminProtegidas__ = true;
-        console.log('✅ PROMOCIONES ADMIN: urgente y destacado integrados al guardado Supabase.');
-        return true;
+            if(boton) boton.textContent = nuevo ? '⚠️ Quitar urgente' : '⚠️ Urgente';
+            console.log('✅ URGENTE actualizado:', {id, urgente:nuevo});
+        }catch(error){
+            console.error('❌ Error actualizando urgente:', error);
+            alert('❌ No se pudo cambiar Urgente: ' + (error?.message || error));
+        }
     }
 
-    function intentar(){
-        if(instalar()) return;
-        setTimeout(intentar, 250);
-    }
-
-    if(document.readyState === 'loading'){
-        document.addEventListener('DOMContentLoaded', intentar, {once:true});
-    }else{
-        intentar();
-    }
-})();
-
-// ============================================================== 
-// RESPALDO DIRECTO DEL GUARDADO DE PROMOCIONES
-// Este listener corre en captura, antes del handler legacy de admin.js,
-// para garantizar que urgente y destacado lleguen a Supabase.
-// ============================================================== 
-(function respaldoGuardadoPromociones(){
-    document.addEventListener('submit', async function(event){
-        const form = event.target;
-        if(!form || form.id !== 'form-editar') return;
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
-        const obtener = id => document.getElementById(id);
-        const valor = id => {
-            const el = obtener(id);
-            return el ? String(el.value || '').trim() : '';
-        };
-
-        const id = valor('edit-id');
-        if(!id){
-            alert('❌ No se encontró el ID del aviso.');
+    async function prepararTabla(){
+        if(!esAdmin()){
+            document.querySelectorAll('.tabla-admin button').forEach(b=>{
+                if(/destacar|urgente/i.test(b.textContent || '')) b.style.display='none';
+            });
             return;
         }
 
-        const datos = {
-            titulo: valor('edit-titulo'),
-            contenido: valor('edit-contenido'),
-            ubicacion: valor('edit-ubicacion'),
-            contacto: valor('edit-contacto'),
-            imagen_url: valor('edit-imagen_url'),
-            video_url: valor('edit-video_url')
-        };
+        document.querySelectorAll('.tabla-admin tbody tr').forEach(async fila=>{
+            if(fila.dataset.promocionesReady === '1') return;
+            const id = extraerIdFila(fila);
+            if(!id) return;
+            const celdas = fila.querySelectorAll('td');
+            const acciones = celdas[celdas.length - 1];
+            if(!acciones) return;
 
-        const fecha = valor('edit-fecha_evento');
-        if(fecha) datos.fecha_evento = fecha.split('T')[0];
+            const aviso = await obtenerAviso(id);
+            if(!aviso) return;
 
-        const chkUrgente = obtener('edit-urgente');
-        const chkDestacado = obtener('edit-destacado');
-        if(chkUrgente) datos.urgente = !!chkUrgente.checked;
-        if(chkDestacado) datos.destacado = !!chkDestacado.checked;
+            // Normalizar el botón Destacado existente para que refleje la BD.
+            acciones.querySelectorAll('button').forEach(b=>{
+                if(/destacar/i.test(b.textContent || '')){
+                    b.textContent = esVerdadero(aviso.destacado) ? '⭐ Quitar destacado' : '⭐ Destacar';
+                    b.title = esVerdadero(aviso.destacado) ? 'Quitar destacado' : 'Marcar como destacado';
+                }
+            });
 
-        try{
-            const apiKey = localStorage.getItem('api_key');
-            console.log('✏️ PROMOCIONES ADMIN: guardado directo', { id, datos });
-
-            const resultado = await API.peticion('ACTUALIZAR', {
-                coleccion: 'AVISOS',
-                id,
-                datos
-            }, apiKey);
-
-            if(!resultado?.success){
-                throw new Error(resultado?.error || 'No se pudo actualizar el aviso.');
+            if(!acciones.querySelector('[data-promocion-urgente="1"]')){
+                const b = botonPromocion('', 'boton-secundario');
+                b.dataset.promocionUrgente = '1';
+                b.textContent = esVerdadero(aviso.urgente) ? '⚠️ Quitar urgente' : '⚠️ Urgente';
+                b.title = esVerdadero(aviso.urgente) ? 'Quitar urgente' : 'Marcar como urgente';
+                b.addEventListener('click', e=>{e.preventDefault();e.stopPropagation();alternarUrgente(id,b);});
+                acciones.appendChild(b);
             }
+            fila.dataset.promocionesReady = '1';
+        });
+    }
 
-            console.log('✅ PROMOCIONES ADMIN: urgente/destacado guardados correctamente.', resultado.data);
-            alert('✅ Aviso actualizado correctamente');
+    function instalar(){
+        actualizarVisibilidadFormularios();
 
-            const modal = document.getElementById('modal-editar');
-            if(modal) modal.style.display = 'none';
-            location.reload();
-        }catch(error){
-            console.error('❌ PROMOCIONES ADMIN: error al guardar:', error);
-            alert('❌ Error al actualizar: ' + (error?.message || error));
+        // Al abrir Editar, admin.js llena primero el formulario. Después leemos
+        // los valores reales de Supabase y corregimos la interfaz.
+        if(typeof window.editarAviso === 'function' && !window.__promocionesEditarPatched){
+            const original = window.editarAviso;
+            window.editarAviso = function(id){
+                const r = original.apply(this, arguments);
+                setTimeout(()=>sincronizarEdicion(id), 0);
+                setTimeout(()=>sincronizarEdicion(id), 200);
+                setTimeout(actualizarVisibilidadFormularios, 250);
+                return r;
+            };
+            window.__promocionesEditarPatched = true;
         }
-    }, true);
+
+        // admin.js crea el payload de CREAR con destacado:false y no incluye urgente.
+        // Aquí lo completamos sin duplicar el handler de creación.
+        if(window.API && typeof window.API.peticion === 'function' && !window.API.__promocionesCreatePatched){
+            const originalPeticion = window.API.peticion.bind(window.API);
+            window.API.peticion = async function(accion,payload,apiKey){
+                if(accion === 'CREAR' && payload?.coleccion === 'AVISOS' && payload?.datos && esAdmin()){
+                    const form = document.getElementById('form-aviso');
+                    const urgente = buscarCheckbox(form,'urgente');
+                    const destacado = buscarCheckbox(form,'destacado');
+                    payload = {...payload, datos:{...payload.datos,
+                        urgente: !!urgente?.checked,
+                        destacado: !!destacado?.checked
+                    }};
+                    console.log('🔐 PROMOCIONES ADMIN: payload CREAR', {
+                        urgente:!!urgente?.checked, destacado:!!destacado?.checked
+                    });
+                }
+                return originalPeticion(accion,payload,apiKey);
+            };
+            window.API.__promocionesCreatePatched = true;
+        }
+
+        prepararTabla();
+        console.log('✅ PROMOCIONES ADMIN: interfaz sincronizada con Supabase.');
+        return true;
+    }
+
+    function arrancar(){
+        instalar();
+        let ciclos = 0;
+        const timer = setInterval(()=>{
+            ciclos++;
+            actualizarVisibilidadFormularios();
+            prepararTabla();
+            if(ciclos >= 30) clearInterval(timer);
+        }, 1000);
+
+        const observer = new MutationObserver(()=>{
+            actualizarVisibilidadFormularios();
+            prepararTabla();
+        });
+        observer.observe(document.body,{childList:true,subtree:true});
+        setTimeout(()=>observer.disconnect(),35000);
+    }
+
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',arrancar,{once:true});
+    else arrancar();
+
+    window.alternarUrgenteAdmin = alternarUrgente;
 })();
