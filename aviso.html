@@ -30,7 +30,7 @@ const AVISO_ID=new URLSearchParams(location.search).get('id');
 const WHATSAPP_EL_BARRIO='523222354331';
 let avisoActual=null,usuarioActual=null;
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
-function fecha(v){if(!v)return '';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short'})}
+function fecha(v){if(!v)return '';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Bahia_Banderas'})}
 function url(v){const s=String(v??'').trim();return /^https?:\/\//i.test(s)||s.startsWith('/')||s.startsWith('./')?s:''}
 function yt(v){try{const u=new URL(v);let id='';if(u.hostname.includes('youtu.be'))id=u.pathname.slice(1);if(u.hostname.includes('youtube.com'))id=u.searchParams.get('v')||u.pathname.match(/\/embed\/([^/]+)/)?.[1]||u.pathname.match(/\/shorts\/([^/]+)/)?.[1]||'';return id?'https://www.youtube.com/embed/'+encodeURIComponent(id):''}catch{return ''}}
 function media(a){const img=url(a.imagen_url||a.imagen||a.image_url||a.foto_url||a.foto),vid=url(a.video_url||a.video||a.video_url_publico||a.videoUrl);if(!img&&!vid)return '';let h='<div class="article-media">';if(img)h+='<img src="'+esc(img)+'" alt="Imagen del aviso" loading="eager" referrerpolicy="no-referrer">';if(vid){const e=yt(vid);h+=e?'<iframe src="'+esc(e)+'" title="Video del aviso" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share" allowfullscreen></iframe>':'<video controls playsinline preload="metadata" src="'+esc(vid)+'"></video>'}return h+'</div>'}
