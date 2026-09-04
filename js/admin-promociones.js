@@ -37,6 +37,21 @@
     }
     window.elBarrioToast=toast;
 
+    // ==============================================================
+    // ALERTAS ADMIN -> TOAST
+    // Evita ventanas nativas del navegador sin tocar la lógica legacy.
+    // ==============================================================
+    if(!window.__elBarrioAlertPatched){
+        window.alert=function(mensaje){
+            const texto=String(mensaje??'');
+            const tipo=/error|obligatorio|no se pudo|no disponible|rechaz|fall|requiere permisos/i.test(texto)?'error':'ok';
+            toast(texto,tipo);
+            console.log('🔔 Toast admin:',texto);
+        };
+        window.__elBarrioAlertPatched=true;
+        console.log('✅ Alertas nativas de admin convertidas a toast.');
+    }
+
     function buscarCheckbox(form,tipo){
         if(!form)return null;
         const ids=tipo==='urgente'?['edit-urgente','crear-urgente','urgente','nuevo-urgente']:['edit-destacado','crear-destacado','destacado','nuevo-destacado'];
@@ -351,12 +366,10 @@
     window.alternarUrgenteAdmin=(id,boton)=>obtenerAviso(id).then(a=>guardarFlag(id,'urgente',!VERDADERO(a?.urgente),boton));
 })();
 
-// ============================================================== 
+// ==============================================================
 // ELIMINAR AVISO SIN RECARGAR LA PÁGINA
-// Intercepta el botón de borrar antes del handler legacy y actualiza
-// únicamente la fila afectada. La eliminación real sigue siendo
-// el cambio de status a "eliminado" en Supabase.
-// ============================================================== 
+// Confirmación integrada en la fila, sin alert ni confirm nativos.
+// ==============================================================
 (function eliminarAvisoSinRecarga(){
     const UUID_RE=/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i;
     let procesando=false;
@@ -401,6 +414,46 @@
         },220);
     }
 
+    function pedirConfirmacion(fila,boton){
+        return new Promise(resolve=>{
+            if(!fila||!boton){resolve(false);return;}
+            const acciones=boton.closest('td');
+            const cont=acciones?.querySelector('.acciones-botones');
+            if(!acciones||!cont){resolve(false);return;}
+            if(acciones.querySelector('.elbarrio-confirmacion-eliminar')){resolve(false);return;}
+
+            const caja=document.createElement('div');
+            caja.className='elbarrio-confirmacion-eliminar';
+            caja.style.cssText='display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;padding:3px 6px;border-radius:9px;background:#f7f8f9;border:1px solid #e2e6e9;box-shadow:0 3px 12px rgba(30,36,42,.10);white-space:nowrap;animation:elbarrioConfirmIn .16s ease;';
+            caja.innerHTML='<span style="font:600 12px system-ui,sans-serif;color:#4b5359;">¿Eliminar?</span><button type="button" data-elbarrio-confirmar="1" style="border:0;border-radius:7px;padding:5px 8px;background:#b23a3a;color:#fff;font:700 12px system-ui,sans-serif;cursor:pointer;">Sí</button><button type="button" data-elbarrio-cancelar="1" style="border:0;border-radius:7px;padding:5px 8px;background:#e9ecef;color:#30363b;font:700 12px system-ui,sans-serif;cursor:pointer;">No</button>';
+
+            cont.style.display='none';
+            acciones.appendChild(caja);
+
+            let cerrado=false;
+            const cerrar=resultado=>{
+                if(cerrado)return;
+                cerrado=true;
+                clearTimeout(tiempo);
+                caja.remove();
+                cont.style.display='';
+                resolve(resultado);
+            };
+
+            const tiempo=setTimeout(()=>cerrar(false),6000);
+            caja.querySelector('[data-elbarrio-confirmar="1"]').addEventListener('click',e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                cerrar(true);
+            });
+            caja.querySelector('[data-elbarrio-cancelar="1"]').addEventListener('click',e=>{
+                e.preventDefault();
+                e.stopPropagation();
+                cerrar(false);
+            });
+        });
+    }
+
     async function eliminar(id,boton,fila){
         if(procesando)return;
         const admin=(()=>{try{return String(window.API?.getUsuarioActual?.()?.rol||JSON.parse(localStorage.getItem('usuario')||'null')?.rol||'').toLowerCase()==='admin';}catch(e){return false;}})();
@@ -412,7 +465,7 @@
             window.elBarrioToast?.('No se pudo identificar el aviso.','error');
             return;
         }
-        if(!window.confirm('¿Eliminar este aviso?'))return;
+        if(!await pedirConfirmacion(fila,boton))return;
         procesando=true;
         if(boton){
             boton.disabled=true;
@@ -453,3 +506,5 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instalar,{once:true});
     else instalar();
 })();
+
+@keyframes elbarrioConfirmIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
