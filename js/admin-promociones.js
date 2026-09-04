@@ -120,7 +120,8 @@
                 const a=window.todosLosAvisos.find(x=>String(x?.id)===String(id));
                 if(a)a[campo]=nuevo;
             }
-            ponerEstadoVisual(filaDeId(id),id,campo==='urgente'?nuevo:VERDADERO(filaDeId(id)?.dataset.promocionesUrgente),campo==='destacado'?nuevo:VERDADERO(filaDeId(id)?.dataset.promocionesDestacado));
+            const fila=filaDeId(id);
+            ponerEstadoVisual(fila,id,campo==='urgente'?nuevo:VERDADERO(fila?.dataset.promocionesUrgente),campo==='destacado'?nuevo:VERDADERO(fila?.dataset.promocionesDestacado));
             toast(campo==='urgente'?(nuevo?'Aviso marcado como urgente.':'Urgente desactivado.'):(nuevo?'Aviso destacado.':'Destacado desactivado.'));
             return true;
         }catch(e){
@@ -348,4 +349,107 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',arrancar,{once:true});
     else arrancar();
     window.alternarUrgenteAdmin=(id,boton)=>obtenerAviso(id).then(a=>guardarFlag(id,'urgente',!VERDADERO(a?.urgente),boton));
+})();
+
+// ============================================================== 
+// ELIMINAR AVISO SIN RECARGAR LA PÁGINA
+// Intercepta el botón de borrar antes del handler legacy y actualiza
+// únicamente la fila afectada. La eliminación real sigue siendo
+// el cambio de status a "eliminado" en Supabase.
+// ============================================================== 
+(function eliminarAvisoSinRecarga(){
+    const UUID_RE=/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i;
+    let procesando=false;
+
+    function esBotonEliminar(boton){
+        if(!boton)return false;
+        const texto=[boton.textContent||'',boton.title||'',boton.getAttribute('aria-label')||'',boton.getAttribute('onclick')||''].join(' ').toLowerCase();
+        return boton.dataset?.promocionDestacado==='1'||boton.dataset?.promocionUrgente==='1'?false:/eliminar|borrar|delete|eliminari?aviso/.test(texto);
+    }
+
+    function extraerId(fila,boton){
+        const directo=fila?.dataset?.id||fila?.getAttribute('data-id')||boton?.dataset?.id;
+        if(directo&&UUID_RE.test(directo))return directo.match(UUID_RE)[0];
+        const texto=[fila?.innerHTML||'',boton?.getAttribute('onclick')||'',boton?.getAttribute('data-id')||''].join(' ');
+        const m=texto.match(UUID_RE);
+        return m?m[0]:null;
+    }
+
+    function quitarDeMemoria(id){
+        if(Array.isArray(window.todosLosAvisos)){
+            window.todosLosAvisos=window.todosLosAvisos.filter(a=>String(a?.id)!==String(id));
+        }
+    }
+
+    function animarSalida(fila){
+        if(!fila)return;
+        fila.style.pointerEvents='none';
+        fila.style.transition='opacity .22s ease, transform .22s ease, filter .22s ease';
+        fila.style.opacity='0';
+        fila.style.transform='translateX(18px) scale(.985)';
+        fila.style.filter='blur(2px)';
+        setTimeout(()=>{
+            fila.style.transition='opacity .18s ease, height .22s ease, transform .18s ease';
+            fila.querySelectorAll('td').forEach(td=>{
+                td.style.transition='padding .22s ease, border-width .22s ease';
+                td.style.paddingTop='0';
+                td.style.paddingBottom='0';
+                td.style.borderTopWidth='0';
+                td.style.borderBottomWidth='0';
+            });
+            setTimeout(()=>fila.remove(),230);
+        },220);
+    }
+
+    async function eliminar(id,boton,fila){
+        if(procesando)return;
+        const admin=(()=>{try{return String(window.API?.getUsuarioActual?.()?.rol||JSON.parse(localStorage.getItem('usuario')||'null')?.rol||'').toLowerCase()==='admin';}catch(e){return false;}})();
+        if(!admin){
+            window.elBarrioToast?.('Esta acción requiere permisos de administrador.','error');
+            return;
+        }
+        if(!id){
+            window.elBarrioToast?.('No se pudo identificar el aviso.','error');
+            return;
+        }
+        if(!window.confirm('¿Eliminar este aviso?'))return;
+        procesando=true;
+        if(boton){
+            boton.disabled=true;
+            boton.textContent='⌛';
+            boton.style.opacity='.55';
+        }
+        try{
+            const resultado=await window.API.peticion('ACTUALIZAR',{coleccion:'AVISOS',id,datos:{status:'eliminado'}},localStorage.getItem('api_key'));
+            if(!resultado?.success)throw new Error(resultado?.error||'Supabase rechazó la eliminación.');
+            quitarDeMemoria(id);
+            animarSalida(fila);
+            window.elBarrioToast?.('🗑️ Aviso eliminado.','ok');
+        }catch(error){
+            console.error('❌ Error eliminando aviso:',error);
+            if(boton){boton.disabled=false;boton.textContent='🗑️';boton.style.opacity='';}
+            window.elBarrioToast?.('No se pudo eliminar el aviso.','error');
+        }finally{
+            procesando=false;
+        }
+    }
+
+    function instalar(){
+        if(window.__elBarrioEliminarSinRecarga)return;
+        document.addEventListener('click',event=>{
+            const boton=event.target.closest('.tabla-admin tbody button');
+            if(!boton||!esBotonEliminar(boton))return;
+            const fila=boton.closest('tr');
+            const id=extraerId(fila,boton);
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            eliminar(id,boton,fila);
+        },true);
+        window.__elBarrioEliminarSinRecarga=true;
+        console.log('✅ Eliminación admin: fila local, sin recarga de página.');
+    }
+
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instalar,{once:true});
+    else instalar();
 })();
