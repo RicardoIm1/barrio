@@ -424,7 +424,7 @@
 
             const caja=document.createElement('div');
             caja.className='elbarrio-confirmacion-eliminar';
-            caja.style.cssText='display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;padding:3px 6px;border-radius:9px;background:#f7f8f9;border:1px solid #e2e6e9;box-shadow:0 3px 12px rgba(30,36,42,.10);white-space:nowrap;animation:elbarrioConfirmIn .16s ease;';
+            caja.style.cssText='display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:30px;padding:3px 6px;border-radius:9px;background:#f7f8f9;border:1px solid #e2e6e9;box-shadow:0 3px 12px rgba(30,36,42,.10);white-space:nowrap;';
             caja.innerHTML='<span style="font:600 12px system-ui,sans-serif;color:#4b5359;">¿Eliminar?</span><button type="button" data-elbarrio-confirmar="1" style="border:0;border-radius:7px;padding:5px 8px;background:#b23a3a;color:#fff;font:700 12px system-ui,sans-serif;cursor:pointer;">Sí</button><button type="button" data-elbarrio-cancelar="1" style="border:0;border-radius:7px;padding:5px 8px;background:#e9ecef;color:#30363b;font:700 12px system-ui,sans-serif;cursor:pointer;">No</button>';
 
             cont.style.display='none';
@@ -506,5 +506,3 @@
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instalar,{once:true});
     else instalar();
 })();
-
-@keyframes elbarrioConfirmIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
