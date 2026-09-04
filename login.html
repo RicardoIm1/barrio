@@ -82,6 +82,21 @@
       } else alert(mensaje);
     }
 
+    // Control de mostrar/ocultar contraseña. Se define aquí porque login.html
+    // no depende de una función externa para esta interacción de UI.
+    function initPasswordToggle() {
+      const input = document.getElementById('password');
+      const button = document.getElementById('togglePassword');
+      if (!input || !button) return;
+
+      button.addEventListener('click', () => {
+        const visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        button.textContent = visible ? '🙉' : '🙈';
+        button.setAttribute('aria-label', visible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+      });
+    }
+
     document.addEventListener('DOMContentLoaded', async function () {
       if (typeof UI !== 'undefined' && UI.cargarHeader) {
         await UI.cargarHeader();
