@@ -226,7 +226,7 @@ async function cargarYMostrarComentarios(avisoId) {
   
   container.innerHTML = comentarios.map(com => `
     <div class="comment-item">
-      <div class="comment-author">${escapeHTML(com.autor)}</div>
+      <div class="comment-author${sesionActiva ? ' autor-visible' : ''}">${escapeHTML(com.autor)}</div>
       <div class="comment-text">${escapeHTML(com.texto)}</div>
       <div class="comment-date">${new Date(com.fecha).toLocaleString('es-MX')}</div>
     </div>

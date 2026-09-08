@@ -739,7 +739,8 @@
     
 
 /* Nombre real del usuario que publicó el aviso */
-.aviso-autor{margin:7px 0 10px;color:#56606a;font-size:.82rem;font-weight:650;display:flex;align-items:center;gap:5px}
+.aviso-autor{margin:7px 0 10px;color:#56606a;font-size:.82rem;font-weight:650;display:flex;align-items:center;gap:5px;filter:blur(5px);user-select:none}
+.aviso-autor.autor-visible{filter:none;user-select:text}
 .aviso-autor span{font-size:.9rem}
 /* Privacidad visual del nombre del autor en tarjetas públicas */
 .aviso-autor-privado {
@@ -748,3 +749,8 @@
   user-select: none;
   cursor: default;
 }
+
+
+/* Privacidad visual del nombre de los comentaristas */
+.comment-author{filter:blur(5px);user-select:none;pointer-events:none}
+.comment-author.autor-visible{filter:none;user-select:text;pointer-events:auto}
