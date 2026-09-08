@@ -1,0 +1,35 @@
+name: Fix index author class
+on:
+  push:
+    branches: [main]
+
+jobs:
+  fix:
+    if: github.event.head_commit.message != 'Fix index author class'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply author visibility class
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem; text-transform: uppercase;">👤 ${escapeHtml(aviso.usuario_nombre || aviso.nombre_autor || "")}</div>'
+          new = '<div class="card-fecha-moderna aviso-autor${localStorage.getItem("api_key") ? " autor-visible" : ""}" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem; text-transform: uppercase;">👤 ${escapeHtml(aviso.usuario_nombre || aviso.nombre_autor || "")}</div>'
+          if old not in s:
+              raise SystemExit('Author render anchor not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+          grep -q 'aviso-autor${localStorage.getItem("api_key") ? " autor-visible" : ""}' index.html
+      - name: Commit and remove workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/index-author-class-fix.yml
+          git add index.html .github/workflows/index-author-class-fix.yml
+          git commit -m "Fix index author class"
+          git push origin main
