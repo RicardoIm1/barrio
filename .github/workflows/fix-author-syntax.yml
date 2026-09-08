@@ -18,7 +18,7 @@ jobs:
           from pathlib import Path
           p = Path('js/app.js')
           s = p.read_text(encoding='utf-8')
-          s2 = s.replace("\\\\'Usuario\\\\'", "'Usuario'")
+          s2 = s.replace("\\'Usuario\\'", "'Usuario'")
           if s2 == s:
               raise SystemExit('No se encontraron escapes incorrectos en js/app.js')
           p.write_text(s2, encoding='utf-8')
