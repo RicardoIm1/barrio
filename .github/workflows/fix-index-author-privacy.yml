@@ -1,0 +1,34 @@
+name: Fix index author privacy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add author privacy CSS
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('css/estilo-index.css')
+          s = p.read_text(encoding='utf-8')
+          css = '''\n/* Privacidad visual del nombre del autor en tarjetas públicas */\n.aviso-autor-privado {\n  display: inline-block;\n  filter: blur(5px);\n  user-select: none;\n  cursor: default;\n}\n'''
+          if '.aviso-autor-privado' not in s:
+              p.write_text(s.rstrip() + css, encoding='utf-8')
+          else:
+              print('El CSS de privacidad ya existe')
+      - name: Commit and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add css/estilo-index.css
+          git rm .github/workflows/fix-index-author-privacy.yml
+          git commit -m "Difuminar nombre del autor en index"
+          git push
