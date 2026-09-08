@@ -259,11 +259,22 @@ console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
     }
     const original = window.renderizarTablaAvisos;
     window.renderizarTablaAvisos = function () {
-      if (Array.isArray(todosLosAvisos))
-        todosLosAvisos = todosLosAvisos.filter(
-          (a) => a?.status !== "eliminado",
-        );
-      return original.apply(this, arguments);
+      if (!Array.isArray(todosLosAvisos)) {
+        return original.apply(this, arguments);
+      }
+
+      const avisosCompletos = todosLosAvisos;
+      const avisosVisibles = avisosCompletos.filter(
+        (a) => a?.status !== "eliminado",
+      );
+
+      todosLosAvisos = avisosVisibles;
+
+      try {
+        return original.apply(this, arguments);
+      } finally {
+        todosLosAvisos = avisosCompletos;
+      }
     };
     instalado = true;
     return true;
@@ -1561,6 +1572,7 @@ function limpiarBusqueda() {
     aplicarBusqueda();
   }
 }
+
 function guardarCopiasOriginales() {
   if (todosLosAvisos.length && avisosOriginales.length === 0)
     avisosOriginales = [...todosLosAvisos];
