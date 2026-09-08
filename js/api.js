@@ -86,7 +86,7 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   let query = client
     .from('avisos')
-    .select(`*, usuarios!avisos_created_by_fkey!inner (nombre)`, { count: 'exact' })
+    .select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (soloMios) query = query.eq('created_by', usuario.id);
@@ -116,7 +116,7 @@ async function supabasePeticion(accion, datos = {}) {
       if (!id) throw new Error('ID de aviso no proporcionado');
       const { data, error } = await client
         .from('avisos')
-        .select(`*, usuarios!avisos_created_by_fkey!inner (nombre)`)
+        .select(`*, usuarios!avisos_created_by_fkey (nombre)`)
         .eq('id', id)
         .maybeSingle();
       if (error) throw error;
@@ -149,7 +149,7 @@ async function supabasePeticion(accion, datos = {}) {
     case 'LISTAR_AVISOS_PUBLICOS': {
       let query = client
         .from('avisos')
-        .select(`*, usuarios!avisos_created_by_fkey!inner (nombre)`, { count: 'exact' })
+        .select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' })
         .eq('status', 'activo')
         .order('created_at', { ascending: false });
       if (datos?.categoria && datos.categoria !== 'todos') query = query.eq('categoria', datos.categoria);
