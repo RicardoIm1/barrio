@@ -18,17 +18,21 @@ jobs:
           from pathlib import Path
           import re
 
-          # index.html
+          # CSS used by both pages
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           if 'aviso-autor-privado' not in s:
               s = s.replace('</head>', '<style>\n.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>\n</head>', 1)
+          p.write_text(s, encoding='utf-8')
 
-          pattern = r'(<div class="aviso-autor"><span>👤</span>).*?(</div>)'
-          replacement = r'\1 ${((!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario"))) ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</span>`}\2'
+          # index.html loads app.js, where the cards are rendered
+          p = Path('js/app.js')
+          s = p.read_text(encoding='utf-8')
+          pattern = r'(<div class="aviso-autor">).*?(</div>)'
+          replacement = r'\1<span>👤</span> ${((!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario"))) ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</span>`}\2'
           s, n = re.subn(pattern, replacement, s, count=1, flags=re.S)
           if n != 1:
-              raise SystemExit('No se encontró la línea de autor en index.html')
+              raise SystemExit('No se encontró el render del autor en js/app.js')
           p.write_text(s, encoding='utf-8')
 
           # aviso.html
@@ -36,13 +40,6 @@ jobs:
           s = p.read_text(encoding='utf-8')
           if 'aviso-autor-privado' not in s:
               s = s.replace('</style>', '.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>', 1)
-
-          old = "function render(){const a=avisoActual;if(!a)return;const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',"
-          new = "function render(){const a=avisoActual;if(!a)return;const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',"
-          if old not in s:
-              raise SystemExit('No se encontró render() en aviso.html')
-          s = s.replace(old, new, 1)
-
           old = "<div class=\"article-meta\"><span>Autor: '+esc(autor)+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>"
           new = "<div class=\"article-meta\"><span>Autor: '+((!!localStorage.getItem('api_key')&&!!localStorage.getItem('usuario'))?esc(autor):'<span class=\"aviso-autor-privado\">'+esc(autor)+'</span>')+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>"
           if old not in s:
@@ -54,7 +51,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html aviso.html
+          git add index.html js/app.js aviso.html
           git rm .github/workflows/protect-author-names.yml
           git commit -m "Ocultar nombres de autores sin sesión"
           git push
