@@ -1,0 +1,81 @@
+name: Fix index author names
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-index-author-names.yml'
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update index only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          css_old = '<style>\n.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>'
+          css_new = '''<style>\n.aviso-autor{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n.aviso-autor.autor-visible{filter:none;user-select:text;pointer-events:auto;opacity:1}\n</style>'''
+          if css_old in s:
+              s = s.replace(css_old, css_new, 1)
+          elif '.aviso-autor{display:inline-block;filter:blur(5px)' not in s:
+              raise SystemExit('Author CSS anchor not found')
+
+          marker = "      // ========== VOTACIÓN OPTIMIZADA (SIN llamadas por separado) =========="
+          helper = r'''      // ========== NOMBRES REALES DE AUTORES ==========
+      async function enriquecerNombresAutores(avisos) {
+        const lista = Array.isArray(avisos) ? avisos : [];
+        const ids = [...new Set(lista.map(a => a?.created_by).filter(Boolean).map(String))];
+        if (!ids.length) return lista;
+        try {
+          const client = await getSupabaseClient();
+          const { data, error } = await client.from('usuarios').select('id,nombre').in('id', ids);
+          if (error) throw error;
+          const nombres = new Map((data || []).map(u => [String(u.id), String(u.nombre || '').trim()]));
+          lista.forEach(a => {
+            const nombre = nombres.get(String(a.created_by));
+            if (nombre) a.nombre_autor = nombre;
+          });
+        } catch (e) {
+          console.warn('No se pudieron enriquecer los nombres de autores:', e);
+        }
+        return lista;
+      }
+
+'''
+          if 'async function enriquecerNombresAutores' not in s:
+              if marker not in s:
+                  raise SystemExit('Insertion marker not found')
+              s = s.replace(marker, helper + marker, 1)
+
+          old = "      todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);\n      await filtrarYAplicarPaginacion();"
+          new = "      todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);\n      await enriquecerNombresAutores(todosLosAvisos);\n      await filtrarYAplicarPaginacion();"
+          if old not in s:
+              raise SystemExit('Load anchor not found')
+          s = s.replace(old, new, 1)
+
+          old_render = "${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}"
+          new_render = "${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || '')}"
+          if old_render not in s:
+              raise SystemExit('Render fallback anchor not found')
+          s = s.replace(old_render, new_render, 1)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit index fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Mostrar nombre real del autor en index" || exit 0
+          git push
+      - name: Remove temporary workflow
+        run: |
+          rm -f .github/workflows/fix-index-author-names.yml
+          git add -A
+          git commit -m "Eliminar workflow temporal de autores" || exit 0
+          git push
