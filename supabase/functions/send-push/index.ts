@@ -6,12 +6,11 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY') ?? '';
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY') ?? '';
-const PUSH_WEBHOOK_SECRET = Deno.env.get('PUSH_WEBHOOK_SECRET') ?? '';
 const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') || 'mailto:admin@elbarrio.me';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-elbarrio-push-secret',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
@@ -28,8 +27,13 @@ function validarConfiguracion() {
   if (!SERVICE_ROLE_KEY) faltantes.push('SUPABASE_SERVICE_ROLE_KEY');
   if (!VAPID_PUBLIC_KEY) faltantes.push('VAPID_PUBLIC_KEY');
   if (!VAPID_PRIVATE_KEY) faltantes.push('VAPID_PRIVATE_KEY');
-  if (!PUSH_WEBHOOK_SECRET) faltantes.push('PUSH_WEBHOOK_SECRET');
   return faltantes;
+}
+
+function autorizado(req: Request) {
+  const apiKey = req.headers.get('apikey') || '';
+  const authorization = req.headers.get('authorization') || '';
+  return apiKey === SERVICE_ROLE_KEY || authorization === `Bearer ${SERVICE_ROLE_KEY}`;
 }
 
 function obtenerPayloadNotificacion(notificacion: any) {
@@ -63,8 +67,7 @@ Deno.serve(async (req: Request) => {
     return respuesta({ success: false, error: 'Configuración incompleta de Web Push' }, 500);
   }
 
-  const secreto = req.headers.get('x-elbarrio-push-secret') || '';
-  if (!secreto || secreto !== PUSH_WEBHOOK_SECRET) return respuesta({ success: false, error: 'No autorizado' }, 401);
+  if (!autorizado(req)) return respuesta({ success: false, error: 'No autorizado' }, 401);
 
   let body: any;
   try { body = await req.json(); } catch (_) { return respuesta({ success: false, error: 'JSON inválido' }, 400); }
@@ -88,7 +91,6 @@ Deno.serve(async (req: Request) => {
     if (notificacionError) throw notificacionError;
     if (!notificacion) return respuesta({ success: false, error: 'Notificación no encontrada' }, 404);
 
-    // El Web Push de esta fase se reserva para interacciones sobre avisos.
     if (!['like', 'dislike', 'comentario'].includes(notificacion.tipo)) {
       return respuesta({ success: true, enviados: 0, motivo: 'Tipo de notificación fuera del alcance push' });
     }
