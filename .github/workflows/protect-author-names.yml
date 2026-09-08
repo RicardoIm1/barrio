@@ -1,0 +1,80 @@
+name: Protect author names visually
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply author privacy UI
+        shell: python
+        run: |
+          from pathlib import Path
+
+          # index.html
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''          <meta name="theme-color" content="#2c3e50" />\n'''
+          new = '''          <meta name="theme-color" content="#2c3e50" />\n          <style>\n            .aviso-autor-privado {\n              display: inline-block;\n              filter: blur(5px);\n              user-select: none;\n              pointer-events: none;\n              opacity: .78;\n              transform: translateZ(0);\n            }\n          </style>\n'''
+          if 'aviso-autor-privado' not in s:
+              if old not in s:
+                  raise SystemExit('No se encontró el punto de inserción de CSS en index.html')
+              s = s.replace(old, new, 1)
+
+          old = '''      let avisosCargados = false;\n\n      // UNA SOLA llamada para obtener TODOS los votos del usuario\n'''
+          new = '''      let avisosCargados = false;\n\n      function sesionActivaParaAutores() {\n        try {\n          return !!localStorage.getItem("api_key") && !!localStorage.getItem("usuario");\n        } catch {\n          return false;\n        }\n      }\n\n      // UNA SOLA llamada para obtener TODOS los votos del usuario\n'''
+          if 'function sesionActivaParaAutores()' not in s:
+              if old not in s:
+                  raise SystemExit('No se encontró el bloque de estado en index.html')
+              s = s.replace(old, new, 1)
+
+          old = '''  avisos.forEach(aviso => {\n    const fecha = aviso.created_at \n'''
+          new = '''  const sesionActiva = sesionActivaParaAutores();\n\n  avisos.forEach(aviso => {\n    const fecha = aviso.created_at \n'''
+          if old not in s:
+              raise SystemExit('No se encontró renderizarAvisos en index.html')
+          s = s.replace(old, new, 1)
+
+          old = '''          <div class="aviso-autor"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</div>\n'''
+          new = '''          <div class="aviso-autor"><span>👤</span> ${sesionActiva ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</span>`}</div>\n'''
+          if old not in s:
+              raise SystemExit('No se encontró la línea de autor en index.html')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # aviso.html
+          p = Path('aviso.html')
+          s = p.read_text(encoding='utf-8')
+          old = '''.article-meta span{display:inline-flex;align-items:center;gap:5px}\n'''
+          new = '''.article-meta span{display:inline-flex;align-items:center;gap:5px}.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n'''
+          if 'filter:blur(5px)' not in s:
+              if old not in s:
+                  raise SystemExit('No se encontró el punto de inserción CSS en aviso.html')
+              s = s.replace(old, new, 1)
+
+          old = '''function render(){const a=avisoActual;if(!a)return;const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',titulo=a.titulo||a.nombre||'Aviso',desc=a.descripcion||a.contenido||a.texto||'',cat=a.categoria||'General',f=a.created_at||a.fecha||a.timestamp,numero=a.telefono||a.contacto||'',id=a.id||AVISO_ID;'''
+          new = '''function render(){const a=avisoActual;if(!a)return;const sesionActiva=!!usuarioActual,autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',autorHtml=sesionActiva?esc(autor):'<span class="aviso-autor-privado">'+esc(autor)+'</span>',titulo=a.titulo||a.nombre||'Aviso',desc=a.descripcion||a.contenido||a.texto||'',cat=a.categoria||'General',f=a.created_at||a.fecha||a.timestamp,numero=a.telefono||a.contacto||'',id=a.id||AVISO_ID;'''
+          if old not in s:
+              raise SystemExit('No se encontró render() en aviso.html')
+          s = s.replace(old, new, 1)
+
+          old = '''<div class="article-meta"><span>Autor: '+esc(autor)+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>'''
+          new = '''<div class="article-meta"><span>Autor: '+autorHtml+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>'''
+          if old not in s:
+              raise SystemExit('No se encontró el meta del autor en aviso.html')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html aviso.html .github/workflows/protect-author-names.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Ocultar nombres de autores sin sesión"
+          git push
