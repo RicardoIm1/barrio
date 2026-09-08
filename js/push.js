@@ -20,6 +20,36 @@
     return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
   }
 
+  async function esperarServiceWorkerActivo(registration) {
+    if (registration.active) return registration;
+
+    const worker = registration.installing || registration.waiting;
+
+    if (!worker) {
+      throw new Error("El Service Worker no tiene worker activo");
+    }
+
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Tiempo agotado esperando al Service Worker"));
+      }, 10000);
+
+      worker.addEventListener("statechange", () => {
+        if (worker.state === "activated") {
+          clearTimeout(timeout);
+          resolve();
+        }
+
+        if (worker.state === "redundant") {
+          clearTimeout(timeout);
+          reject(new Error("El Service Worker quedó en estado redundant"));
+        }
+      });
+    });
+
+    return registration;
+  }
+
   async function obtenerCliente() {
     if (typeof getSupabaseClient === "function") return getSupabaseClient();
     if (typeof obtenerSupabaseClient === "function")
@@ -200,31 +230,31 @@
   }
 
   window.ElBarrioPush = {
-  activar: activarPush,
-  sincronizar: sincronizarPushSiYaExiste,
-};
+    activar: activarPush,
+    sincronizar: sincronizarPushSiYaExiste,
+  };
 
-document.addEventListener("DOMContentLoaded", () => {
-  sincronizarPushSiYaExiste();
+  document.addEventListener("DOMContentLoaded", () => {
+    sincronizarPushSiYaExiste();
 
-  const botonActivar = document.getElementById("activar-notificaciones");
+    const botonActivar = document.getElementById("activar-notificaciones");
 
-  if (botonActivar) {
-    botonActivar.addEventListener("click", () => {
-      activarPush().catch((error) => {
-        console.error("Web Push:", error);
+    if (botonActivar) {
+      botonActivar.addEventListener("click", () => {
+        activarPush().catch((error) => {
+          console.error("Web Push:", error);
 
-        if (typeof showToast === "function") {
-          showToast("No se pudieron activar las notificaciones.", 2500);
-        }
+          if (typeof showToast === "function") {
+            showToast("No se pudieron activar las notificaciones.", 2500);
+          }
+        });
       });
-    });
 
-    console.log("🔔 Botón #activar-notificaciones conectado a Web Push");
-  }
+      console.log("🔔 Botón #activar-notificaciones conectado a Web Push");
+    }
 
-  setTimeout(actualizarControlPush, 500);
-});
+    setTimeout(actualizarControlPush, 500);
+  });
 
-window.addEventListener("storage", actualizarControlPush);
+  window.addEventListener("storage", actualizarControlPush);
 })();
