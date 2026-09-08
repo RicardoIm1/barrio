@@ -80,10 +80,21 @@
             return null;
         }
 
-        function cerrarSesion() {
-            localStorage.removeItem('usuario');
-            localStorage.removeItem('api_key');
-            window.location.href = '/index.html';
+        async function cerrarSesion() {
+            try {
+                if (typeof obtenerSupabaseClient === 'function') {
+                    const client = await obtenerSupabaseClient();
+                    await client.auth.signOut();
+                } else if (window.__elBarrioSupabaseClient) {
+                    await window.__elBarrioSupabaseClient.auth.signOut();
+                }
+            } catch (e) {
+                console.warn('No se pudo cerrar la sesión Supabase:', e);
+            } finally {
+                localStorage.removeItem('usuario');
+                localStorage.removeItem('api_key');
+                window.location.href = '/index.html';
+            }
         }
 
         function actualizarBotones() {

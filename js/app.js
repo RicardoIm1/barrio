@@ -27,7 +27,17 @@ let sesionActiva = false;
 
 async function actualizarSesionActiva() {
   try {
+    const tieneSesionLocal = !!localStorage.getItem('usuario') && !!localStorage.getItem('api_key');
     const client = await getSupabaseClient();
+
+    // Si el encabezado ya considera cerrada la sesión, eliminamos cualquier
+    // sesión Supabase huérfana para que la privacidad visual sea consistente.
+    if (!tieneSesionLocal) {
+      try { await client.auth.signOut(); } catch (_) {}
+      sesionActiva = false;
+      return;
+    }
+
     const { data } = await client.auth.getSession();
     sesionActiva = !!data?.session?.user;
   } catch (_) {
