@@ -50,6 +50,36 @@
     return registration;
   }
 
+  async function esperarServiceWorkerActivo(registration) {
+    if (registration.active) return registration;
+
+    const worker = registration.installing || registration.waiting;
+
+    if (!worker) {
+      throw new Error("El Service Worker no tiene worker activo");
+    }
+
+    await new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error("Tiempo agotado esperando al Service Worker"));
+      }, 10000);
+
+      worker.addEventListener("statechange", () => {
+        if (worker.state === "activated") {
+          clearTimeout(timeout);
+          resolve();
+        }
+
+        if (worker.state === "redundant") {
+          clearTimeout(timeout);
+          reject(new Error("El Service Worker quedó en estado redundant"));
+        }
+      });
+    });
+
+    return registration;
+  }
+
   async function obtenerCliente() {
     if (typeof getSupabaseClient === "function") return getSupabaseClient();
     if (typeof obtenerSupabaseClient === "function")
@@ -124,7 +154,7 @@
       SERVICE_WORKER_URL,
       { scope: "/js/" },
     );
-    await navigator.serviceWorker.ready;
+    await esperarServiceWorkerActivo(registration);
     const subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) return false;
@@ -162,7 +192,7 @@
       SERVICE_WORKER_URL,
       { scope: "/js/" },
     );
-    await navigator.serviceWorker.ready;
+    await esperarServiceWorkerActivo(registration);
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
