@@ -23,25 +23,18 @@ jobs:
           s = p.read_text(encoding='utf-8')
 
           if 'aviso-autor-privado' not in s:
-              s = s.replace(
-                  '</head>',
-                  '''<style>\n.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>\n</head>''',
-                  1
-              )
+              s = s.replace('</head>', '''<style>\n.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>\n</head>''', 1)
 
-          if 'const sesionActiva = !!localStorage.getItem("api_key")' not in s:
-              marker = '  avisos.forEach(aviso => {'
-              if marker not in s:
+          if 'const sesionActivaAutores=' not in s:
+              pattern = r'(?m)^(\s*)avisos\.forEach\(aviso => \{'
+              replacement = r'\1const sesionActivaAutores=!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario");\n\1avisos.forEach(aviso => {'
+              s, n = re.subn(pattern, replacement, s, count=1)
+              if n != 1:
                   raise SystemExit('No se encontró el bucle de renderizado de avisos en index.html')
-              s = s.replace(
-                  marker,
-                  '''  const sesionActiva = !!localStorage.getItem("api_key") && !!localStorage.getItem("usuario");\n\n  avisos.forEach(aviso => {''',
-                  1
-              )
 
-          author_pattern = r'''<div class="aviso-autor"><span>👤</span> \$\{escapeHTML\(aviso\.nombre_autor \|\| aviso\.autor_nombre \|\| aviso\.nombre_usuario \|\| 'Usuario'\)\}</div>'''
-          author_replacement = '''<div class="aviso-autor"><span>👤</span> ${sesionActiva ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</span>`}</div>'''
-          s, n = re.subn(author_pattern, author_replacement, s, count=1)
+          pattern = r'<div class="aviso-autor"><span>👤</span>\s*\$\{escapeHTML\(aviso\.nombre_autor\s*\|\|\s*aviso\.autor_nombre\s*\|\|\s*aviso\.nombre_usuario\s*\|\|\s*\'Usuario\'\)\}</div>'
+          replacement = '<div class="aviso-autor"><span>👤</span> ${sesionActivaAutores ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</span>`}</div>'
+          s, n = re.subn(pattern, replacement, s, count=1)
           if n != 1:
               raise SystemExit('No se encontró la línea de autor en index.html')
           p.write_text(s, encoding='utf-8')
@@ -51,30 +44,26 @@ jobs:
           s = p.read_text(encoding='utf-8')
 
           if 'aviso-autor-privado' not in s:
-              s = s.replace(
-                  '</style>',
-                  '''.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>''',
-                  1
-              )
+              s = s.replace('</style>', '.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>', 1)
 
           old = "function render(){const a=avisoActual;if(!a)return;const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',"
-          new = "function render(){const a=avisoActual;if(!a)return;const sesionActiva=!!localStorage.getItem('api_key')&&!!localStorage.getItem('usuario'),autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',"
+          new = "function render(){const a=avisoActual;if(!a)return;const sesionActivaAutores=!!localStorage.getItem('api_key')&&!!localStorage.getItem('usuario'),autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',"
           if old not in s:
               raise SystemExit('No se encontró render() en aviso.html')
           s = s.replace(old, new, 1)
 
-          old = '<div class="article-meta"><span>Autor: \'+esc(autor)\'</span><span>Fecha: \'+esc(fecha(f))\'</span></div>'
-          new = '<div class="article-meta"><span>Autor: \'+(sesionActiva?esc(autor):\'<span class="aviso-autor-privado">\'+esc(autor)+\'</span>\')+\'</span><span>Fecha: \'+esc(fecha(f))\'</span></div>'
+          old = "<div class=\"article-meta\"><span>Autor: '+esc(autor)+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>"
+          new = "<div class=\"article-meta\"><span>Autor: '+(sesionActivaAutores?esc(autor):'<span class=\"aviso-autor-privado\">'+esc(autor)+'</span>')+'</span><span>Fecha: '+esc(fecha(f))+'</span></div>"
           if old not in s:
               raise SystemExit('No se encontró el meta del autor en aviso.html')
           s = s.replace(old, new, 1)
           p.write_text(s, encoding='utf-8')
 
-      - name: Commit changes
+      - name: Commit changes and remove helper
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html aviso.html .github/workflows/protect-author-names.yml
-          git diff --cached --quiet && exit 0
+          git add index.html aviso.html
+          git rm .github/workflows/protect-author-names.yml
           git commit -m "Ocultar nombres de autores sin sesión"
           git push
