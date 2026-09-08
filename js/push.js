@@ -200,36 +200,30 @@
   }
 
   window.ElBarrioPush = {
-    activar: activarPush,
-    sincronizar: sincronizarPushSiYaExiste,
-  };
+  activar: activarPush,
+  sincronizar: sincronizarPushSiYaExiste,
+};
 
-  document.addEventListener("DOMContentLoaded", () => {
-    sincronizarPushSiYaExiste();
+document.addEventListener("DOMContentLoaded", () => {
+  sincronizarPushSiYaExiste();
 
-    const botonActivar = document.getElementById("activar-notificaciones");
+  const botonActivar = document.getElementById("activar-notificaciones");
 
-    if (botonActivar) {
-      botonActivar.addEventListener("click", () => {
-        activarPush().catch((error) => {
-          console.error("Web Push:", error);
+  if (botonActivar) {
+    botonActivar.addEventListener("click", () => {
+      activarPush().catch((error) => {
+        console.error("Web Push:", error);
 
-          if (typeof showToast === "function") {
-            showToast("No se pudieron activar las notificaciones.", 2500);
-          }
-        });
+        if (typeof showToast === "function") {
+          showToast("No se pudieron activar las notificaciones.", 2500);
+        }
       });
+    });
 
-      console.log("🔔 Botón #activar-notificaciones conectado a Web Push");
-    }
+    console.log("🔔 Botón #activar-notificaciones conectado a Web Push");
+  }
 
-    setTimeout(actualizarControlPush, 500);
-  });
+  setTimeout(actualizarControlPush, 500);
+});
 
-  const observer = new MutationObserver(() => actualizarControlPush());
-  observer.observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
-  window.addEventListener("storage", actualizarControlPush);
-})();
+window.addEventListener("storage", actualizarControlPush);
