@@ -50,36 +50,6 @@
     return registration;
   }
 
-  async function esperarServiceWorkerActivo(registration) {
-    if (registration.active) return registration;
-
-    const worker = registration.installing || registration.waiting;
-
-    if (!worker) {
-      throw new Error("El Service Worker no tiene worker activo");
-    }
-
-    await new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error("Tiempo agotado esperando al Service Worker"));
-      }, 10000);
-
-      worker.addEventListener("statechange", () => {
-        if (worker.state === "activated") {
-          clearTimeout(timeout);
-          resolve();
-        }
-
-        if (worker.state === "redundant") {
-          clearTimeout(timeout);
-          reject(new Error("El Service Worker quedó en estado redundant"));
-        }
-      });
-    });
-
-    return registration;
-  }
-
   async function obtenerCliente() {
     if (typeof getSupabaseClient === "function") return getSupabaseClient();
     if (typeof obtenerSupabaseClient === "function")
@@ -137,6 +107,32 @@
     return true;
   }
 
+  async function renovarSuscripcionPush(registration) {
+    const actual = await registration.pushManager.getSubscription();
+
+    if (actual) {
+      try {
+        await actual.unsubscribe();
+      } catch (error) {
+        console.warn("Web Push: no se pudo cancelar la suscripción anterior:", error);
+      }
+    }
+
+    const nueva = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: base64UrlToUint8Array(VAPID_PUBLIC_KEY),
+    });
+
+    return registrarSuscripcion(nueva);
+  }
+
+  function esConflictoRLS(error) {
+    return (
+      error?.code === "42501" ||
+      /row-level security policy|USING expression/i.test(error?.message || "")
+    );
+  }
+
   async function registrarPush() {
     if (
       !("serviceWorker" in navigator) ||
@@ -158,7 +154,17 @@
     const subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) return false;
-    return registrarSuscripcion(subscription);
+
+    try {
+      return await registrarSuscripcion(subscription);
+    } catch (error) {
+      if (!esConflictoRLS(error)) throw error;
+
+      console.info(
+        "Web Push: la suscripción anterior pertenece a otra sesión; renovando suscripción."
+      );
+      return renovarSuscripcionPush(registration);
+    }
   }
 
   async function activarPush() {
@@ -202,7 +208,19 @@
       });
     }
 
-    const guardado = await registrarSuscripcion(subscription);
+    let guardado;
+
+    try {
+      guardado = await registrarSuscripcion(subscription);
+    } catch (error) {
+      if (!esConflictoRLS(error)) throw error;
+
+      console.info(
+        "Web Push: la suscripción anterior pertenece a otra sesión; renovando suscripción."
+      );
+      guardado = await renovarSuscripcionPush(registration);
+    }
+
     if (guardado && typeof showToast === "function")
       showToast("🔔 Notificaciones activadas", 2200);
     actualizarControlPush();
