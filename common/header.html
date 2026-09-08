@@ -158,57 +158,6 @@
     })();
 </script>
 <script>
-    let notifInterval = null;
-    function toggleNotificaciones() {
-        const panel = document.getElementById('notifPanel');
-        if (panel) { const isVisible = panel.style.display === 'block'; panel.style.display = isVisible ? 'none' : 'block'; if (!isVisible) cargarNotificaciones(); }
-    }
-    document.addEventListener('click', function (event) {
-        const wrapper = document.querySelector('.notif-wrapper'); const panel = document.getElementById('notifPanel');
-        if (wrapper && panel && !wrapper.contains(event.target)) panel.style.display = 'none';
-    });
-    async function cargarNotificaciones() {
-        const apiKey = localStorage.getItem('api_key'); const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-        if (!apiKey || !usuario.email) return;
-        try {
-            const url = `https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec?accion=OBTENER_NOTIFICACIONES&email=${encodeURIComponent(usuario.email)}&soloNoLeidas=true&api_key=${apiKey}`;
-            const response = await fetch(url); const data = await response.json();
-            if (data && data.data) { const notis = data.data; actualizarBadge(notis.length); renderNotificaciones(notis); }
-            else console.warn('Respuesta inválida:', data);
-        } catch (e) { console.error(e); }
-    }
-    function actualizarBadge(count) {
-        const badge = document.getElementById('notifBadge');
-        if (badge) { if (count > 0) { badge.textContent = count > 99 ? '99+' : count; badge.style.display = 'inline-block'; } else badge.style.display = 'none'; }
-    }
-    function renderNotificaciones(notis) {
-        const container = document.getElementById('notifList'); if (!container) return;
-        if (!notis.length) { container.innerHTML = '<p class="notif-empty">📭 No hay notificaciones</p>'; return; }
-        container.innerHTML = notis.map(n => `
-        <div class="notif-item no-leida" onclick="marcarNotificacion('${n.id}', '${n.aviso_id}')">
-            <div class="notif-icon">${n.tipo === 'like' ? '👍' : '💬'}</div>
-            <div class="notif-content"><div class="notif-mensaje">${escapeHtml(n.mensaje)}</div><div class="notif-tiempo">${tiempoRelativo(n.fecha)}</div></div>
-        </div>`).join('');
-    }
-    async function marcarNotificacion(id, avisoId) {
-        const apiKey = localStorage.getItem('api_key');
-        try {
-            await fetch(`https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec?accion=MARCAR_NOTIFICACION_LEIDA&id=${id}&api_key=${apiKey}`);
-            if (avisoId) window.location.href = `/aviso.html?id=${avisoId}`;
-            cargarNotificaciones();
-        } catch (e) { console.error(e); }
-    }
-    async function marcarTodasLeidas() { const panel = document.getElementById('notifPanel'); if (panel) panel.style.display = 'none'; cargarNotificaciones(); }
-    function tiempoRelativo(fechaISO) {
-        if (!fechaISO) return ''; const diff = Math.floor((new Date() - new Date(fechaISO)) / 60000);
-        if (diff < 1) return 'ahora'; if (diff < 60) return `hace ${diff} min`; if (diff < 1440) return `hace ${Math.floor(diff / 60)} h`; return `hace ${Math.floor(diff / 1440)} d`;
-    }
-    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
-    document.getElementById('notifBellBtn')?.addEventListener('click', toggleNotificaciones);
-    setInterval(() => { if (localStorage.getItem('api_key')) cargarNotificaciones(); }, 30000);
-    setTimeout(cargarNotificaciones, 1000);
-</script>
-<script>
     setTimeout(() => {
         const buscadorHeader = document.getElementById('buscador-input-header');
         if (buscadorHeader) {
