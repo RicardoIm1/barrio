@@ -79,18 +79,11 @@
     const usuario = await obtenerUsuarioAutenticado();
     if (!usuario?.id) return false;
 
-    const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, {
-      scope: '/js/'
-    });
-
+    const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: '/js/' });
     await navigator.serviceWorker.ready;
-    let subscription = await registration.pushManager.getSubscription();
+    const subscription = await registration.pushManager.getSubscription();
 
-    if (!subscription) {
-      // No solicitamos permiso automáticamente. Debe ocurrir tras una acción del usuario.
-      return false;
-    }
-
+    if (!subscription) return false;
     return registrarSuscripcion(subscription);
   }
 
@@ -114,10 +107,7 @@
       return false;
     }
 
-    const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, {
-      scope: '/js/'
-    });
-
+    const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: '/js/' });
     await navigator.serviceWorker.ready;
     let subscription = await registration.pushManager.getSubscription();
 
@@ -129,20 +119,50 @@
     }
 
     const guardado = await registrarSuscripcion(subscription);
-    if (guardado && typeof showToast === 'function') {
-      showToast('🔔 Notificaciones activadas', 2200);
-    }
+    if (guardado && typeof showToast === 'function') showToast('🔔 Notificaciones activadas', 2200);
+    actualizarControlPush();
     return guardado;
   }
 
   async function sincronizarPushSiYaExiste() {
     try {
-      if (Notification.permission !== 'granted') return false;
+      if (!('Notification' in window) || Notification.permission !== 'granted') return false;
       return await registrarPush();
     } catch (error) {
       console.warn('Web Push: no se pudo sincronizar la suscripción:', error);
       return false;
     }
+  }
+
+  function actualizarControlPush() {
+    const usuario = localStorage.getItem('usuario');
+    const userArea = document.getElementById('user-area');
+    if (!userArea) return;
+
+    let boton = document.getElementById('btn-elbarrio-push');
+    if (!usuario) {
+      if (boton) boton.remove();
+      return;
+    }
+
+    if (!boton) {
+      boton = document.createElement('button');
+      boton.id = 'btn-elbarrio-push';
+      boton.type = 'button';
+      boton.style.cssText = 'border:0;background:transparent;cursor:pointer;font-size:1.05rem;padding:6px 8px;border-radius:50%;';
+      boton.title = 'Activar notificaciones';
+      boton.setAttribute('aria-label', 'Activar notificaciones');
+      boton.addEventListener('click', () => activarPush().catch((error) => {
+        console.error('Web Push:', error);
+        if (typeof showToast === 'function') showToast('No se pudieron activar las notificaciones.', 2500);
+      }));
+      userArea.insertBefore(boton, userArea.firstChild);
+    }
+
+    const activadas = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+    boton.textContent = activadas ? '🔔' : '🔕';
+    boton.title = activadas ? 'Notificaciones activadas' : 'Activar notificaciones';
+    boton.setAttribute('aria-label', boton.title);
   }
 
   window.ElBarrioPush = {
@@ -152,5 +172,10 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     sincronizarPushSiYaExiste();
+    setTimeout(actualizarControlPush, 500);
   });
+
+  const observer = new MutationObserver(() => actualizarControlPush());
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener('storage', actualizarControlPush);
 })();
