@@ -1,1 +1,0 @@
-PR temporal para ejecutar el ajuste de index.html.
