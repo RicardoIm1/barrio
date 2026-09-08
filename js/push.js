@@ -227,3 +227,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("storage", actualizarControlPush);
+})();
