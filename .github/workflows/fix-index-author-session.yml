@@ -1,0 +1,50 @@
+name: Fix index author session
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use real Supabase session for author visibility
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('js/app.js')
+          s = p.read_text(encoding='utf-8')
+
+          marker = "let avisoComentariosActual = null;\nconst AVISOS_POR_PAGINA = 6;"
+          replacement = "let avisoComentariosActual = null;\nconst AVISOS_POR_PAGINA = 6;\nlet sesionActiva = false;"
+          if marker in s and 'let sesionActiva = false;' not in s:
+              s = s.replace(marker, replacement, 1)
+
+          marker = "// ==================== INICIO ====================\n\ndocument.addEventListener('DOMContentLoaded', function () {\n  cargarAvisos();"
+          replacement = "// ==================== INICIO ====================\n\nasync function actualizarSesionActiva() {\n  try {\n    const client = await getSupabaseClient();\n    const { data } = await client.auth.getSession();\n    sesionActiva = !!data?.session?.user;\n  } catch (_) {\n    sesionActiva = false;\n  }\n}\n\ndocument.addEventListener('DOMContentLoaded', async function () {\n  await actualizarSesionActiva();\n  cargarAvisos();"
+          if marker in s:
+              s = s.replace(marker, replacement, 1)
+          elif 'actualizarSesionActiva' not in s:
+              raise SystemExit('No se encontró el bloque de inicio de js/app.js')
+
+          old = '<div class="aviso-autor"><span>👤</span> ${((!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario"))) ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</span>`}</div>'
+          new = '<div class="aviso-autor${sesionActiva ? \' autor-visible\' : \'\'}"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</div>'
+          if old in s:
+              s = s.replace(old, new, 1)
+          elif 'sesionActiva ?' not in s:
+              raise SystemExit('No se encontró el render actual del autor en js/app.js')
+
+          p.write_text(s, encoding='utf-8')
+      - name: Commit and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/app.js
+          git rm .github/workflows/fix-index-author-session.yml .github/workflows/fix-index-author-privacy-2.yml
+          git commit -m "Usar sesión Supabase real para privacidad del autor"
+          git push
