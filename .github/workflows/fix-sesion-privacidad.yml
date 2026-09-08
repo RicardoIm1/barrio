@@ -1,0 +1,78 @@
+name: Fix session privacy
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-sesion-privacidad.yml'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch session handling and privacy
+        shell: python
+        run: |
+          from pathlib import Path
+
+          # index: do not trust a stale Supabase session when the site's local session is gone.
+          p = Path('js/app.js')
+          s = p.read_text(encoding='utf-8')
+          old = """async function actualizarSesionActiva() {\n  try {\n    const client = await getSupabaseClient();\n    const { data } = await client.auth.getSession();\n    sesionActiva = !!data?.session?.user;\n  } catch (_) {\n    sesionActiva = false;\n  }\n}"""
+          new = """async function actualizarSesionActiva() {\n  try {\n    const tieneSesionLocal = !!localStorage.getItem('usuario') && !!localStorage.getItem('api_key');\n    const client = await getSupabaseClient();\n\n    // Si el encabezado ya considera cerrada la sesión, eliminamos cualquier\n    // sesión Supabase huérfana para que la privacidad visual sea consistente.\n    if (!tieneSesionLocal) {\n      try { await client.auth.signOut(); } catch (_) {}\n      sesionActiva = false;\n      return;\n    }\n\n    const { data } = await client.auth.getSession();\n    sesionActiva = !!data?.session?.user;\n  } catch (_) {\n    sesionActiva = false;\n  }\n}"""
+          if old not in s:
+              raise SystemExit('No se encontró actualizarSesionActiva en js/app.js')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+
+          # aviso: use the same real session rule instead of only localStorage.
+          p = Path('aviso.html')
+          s = p.read_text(encoding='utf-8')
+          marker = "async function getSharedClient(){if(typeof getSupabaseClient==='function')return await getSupabaseClient();throw Error('Cliente Supabase no disponible')}"
+          helper = marker + "\nasync function obtenerSesionActiva(){try{const tieneSesionLocal=!!localStorage.getItem('usuario')&&!!localStorage.getItem('api_key');const c=await getSharedClient();if(!tieneSesionLocal){try{await c.auth.signOut()}catch(_){}return false}const r=await c.auth.getSession();return !!r?.data?.session?.user}catch(_){return false}}"
+          if marker not in s:
+              raise SystemExit('No se encontró getSharedClient en aviso.html')
+          s = s.replace(marker, helper, 1)
+
+          old_comments = """const d=r.data||[];const sesion=!!localStorage.getItem('api_key')&&!!localStorage.getItem('usuario');l.innerHTML=d.length?d.map(x=>'<div class=\"comment-item\"><div class=\"comment-author privado'+(sesion?' autor-visible':'')+'\">'+esc(x.nombre_autor||'Anónimo')+'</div><div class=\"comment-text\">'+esc(x.contenido||'')+'</div><div class=\"comment-date\">'+esc(fecha(x.created_at))+'</div></div>').join(''):''"""
+          # Replace the complete comentarios function using stable boundaries.
+          start = s.index("async function comentarios(id){")
+          end = s.index("function render(){", start)
+          old_fn = s[start:end]
+          new_fn = """async function comentarios(id){const l=document.getElementById('comments-list');if(!l)return;try{const c=await getSharedClient(),r=await c.from('comentarios').select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at').eq('aviso_id',id).order('created_at',{ascending:true});if(r.error)throw r.error;const d=r.data||[];const sesion=await obtenerSesionActiva();l.innerHTML=d.length?d.map(x=>'<div class=\"comment-item\"><div class=\"comment-author privado'+(sesion?' autor-visible':'')+'\">'+esc(x.nombre_autor||'Anónimo')+'</div><div class=\"comment-text\">'+esc(x.contenido||'')+'</div><div class=\"comment-date\">'+esc(fecha(x.created_at))+'</div></div>').join(''):'<div style=\"text-align:center;color:#888;padding:8px 0\">No hay comentarios aún. ¡Sé el primero!</div>';avisoActual.comments_count=d.length;actualizarMetricas()}catch(e){console.error('Comentarios:',e);l.innerHTML='<div style=\"text-align:center;color:#888;padding:8px 0\">No fue posible cargar los comentarios.</div>'}}\n"""
+          s = s[:start] + new_fn + s[end:]
+
+          # Render author: use the verified session, not stale localStorage.
+          old_render = """function render(){const a=avisoActual;if(!a)return;const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',titulo=a.titulo||a.nombre||'Aviso',desc=a.descripcion||a.contenido||a.texto||'',cat=a.categoria||'General',f=a.created_at||a.fecha||a.timestamp,numero=a.telefono||a.contacto||'',id=a.id||AVISO_ID;"""
+          new_render = """async function render(){const a=avisoActual;if(!a)return;const sesion=await obtenerSesionActiva();const autor=a.nombre_autor||a.autor_nombre||a.nombre_usuario||'Usuario',titulo=a.titulo||a.nombre||'Aviso',desc=a.descripcion||a.contenido||a.texto||'',cat=a.categoria||'General',f=a.created_at||a.fecha||a.timestamp,numero=a.telefono||a.contacto||'',id=a.id||AVISO_ID;"""
+          if old_render not in s:
+              raise SystemExit('No se encontró render() en aviso.html')
+          s = s.replace(old_render, new_render, 1)
+          old_author = "((!!localStorage.getItem('api_key')&&!!localStorage.getItem('usuario'))?esc(autor):'<span class=\"aviso-autor-privado\">'+esc(autor)+'</span>')"
+          new_author = "(sesion?esc(autor):'<span class=\"aviso-autor-privado\">'+esc(autor)+'</span>')"
+          if old_author not in s:
+              raise SystemExit('No se encontró el render del autor en aviso.html')
+          s = s.replace(old_author, new_author, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # Logout: close the real Supabase session before clearing local state.
+          p = Path('common/header.html')
+          s = p.read_text(encoding='utf-8')
+          old = """        function cerrarSesion() {\n            localStorage.removeItem('usuario');\n            localStorage.removeItem('api_key');\n            window.location.href = '/index.html';\n        }"""
+          new = """        async function cerrarSesion() {\n            try {\n                if (typeof obtenerSupabaseClient === 'function') {\n                    const client = await obtenerSupabaseClient();\n                    await client.auth.signOut();\n                } else if (window.__elBarrioSupabaseClient) {\n                    await window.__elBarrioSupabaseClient.auth.signOut();\n                }\n            } catch (e) {\n                console.warn('No se pudo cerrar la sesión Supabase:', e);\n            } finally {\n                localStorage.removeItem('usuario');\n                localStorage.removeItem('api_key');\n                window.location.href = '/index.html';\n            }\n        }"""
+          if old not in s:
+              raise SystemExit('No se encontró cerrarSesion en common/header.html')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/app.js aviso.html common/header.html
+          git commit -m "Sincronizar sesión real y privacidad de nombres"
+          git push
+      - name: Remove temporary workflow
+        run: |
+          rm -f .github/workflows/fix-sesion-privacidad.yml
+          git add .github/workflows/fix-sesion-privacidad.yml
+          git commit -m "Eliminar workflow temporal de sesión"
+          git push
