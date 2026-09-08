@@ -26,7 +26,8 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#2c3e50" />
   <style>
-.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}
+.aviso-autor{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}
+.aviso-autor.autor-visible{filter:none;user-select:text;pointer-events:auto;opacity:1}
 </style>
 </head>
 
@@ -768,7 +769,7 @@
                 <div class="card-header-moderno">
                     <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📅 ${formatearFecha(aviso.created_at)}</div>
                     <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📍 ${aviso.ubicacion || "Jardines PVR"}</div>
-                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem; text-transform: uppercase;">👤 ${escapeHtml(aviso.nombre_autor || "Vecino")}</div>
+                    <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; border-bottom: 1px solid #fdfdfd; margin-bottom: 1.0rem; text-transform: uppercase;">👤 ${escapeHtml(aviso.usuario_nombre || aviso.nombre_autor || "")}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
                 <div class="card-preview-moderno">
@@ -823,133 +824,26 @@
         container.insertAdjacentHTML("beforeend", html);
       }
 
-      // Función para enriquecer avisos con nombres de usuario
+      // Obtener el nombre real mediante created_by -> usuarios.id -> usuarios.nombre.
+      // Se consulta desde index.html para no modificar la API ni ocultar avisos.
       async function enriquecerAvisosConUsuarios(avisos) {
-        if (!avisos || avisos.length === 0) return avisos;
-
-        // 👇 PRIMERO: Intentar obtener los datos directamente si ya vienen en el aviso
-        let avisosConNombre = [];
-        let avisosSinEmail = [];
-
-        for (const aviso of avisos) {
-          // Si ya tiene nombre de usuario, úsalo
-          if (aviso.usuario_nombre && aviso.usuario_nombre !== "") {
-            aviso.usuario_nombre = aviso.usuario_nombre;
-            avisosConNombre.push(aviso);
-          }
-          // Si tiene autor (puede venir como 'autor')
-          else if (aviso.autor && aviso.autor !== "") {
-            aviso.usuario_nombre = aviso.autor;
-            avisosConNombre.push(aviso);
-          }
-          // Si tiene usuario_id pero no nombre, buscar
-          else {
-            avisosSinEmail.push(aviso);
-          }
-        }
-
-        if (avisosSinEmail.length === 0) {
-          return avisos;
-        }
-
-        // Extraer emails o IDs de usuario
-        const emailsUnicos = [];
-        const idsUnicos = [];
-
-        for (const aviso of avisosSinEmail) {
-          const email = aviso.usuario_email || aviso.email;
-          const userId = aviso.usuario_id;
-
-          if (email && !emailsUnicos.includes(email)) {
-            emailsUnicos.push(email);
-          }
-          if (userId && !idsUnicos.includes(userId)) {
-            idsUnicos.push(userId);
-          }
-        }
-
+        if (!Array.isArray(avisos) || avisos.length === 0) return avisos;
+        const ids = [...new Set(avisos.map((aviso) => aviso?.created_by || aviso?.usuario_id).filter(Boolean).map(String))];
+        if (ids.length === 0) return avisos;
         try {
-          const apiKey = localStorage.getItem("api_key");
-          let mapaNombres = {};
-
-          // Intentar obtener por emails
-          if (emailsUnicos.length > 0) {
-            try {
-              const resultado = await API.peticion(
-                "OBTENER_USUARIOS_POR_EMAIL",
-                {
-                  emails: emailsUnicos,
-                },
-                apiKey,
-              );
-
-              if (resultado && resultado.success && resultado.data) {
-                if (Array.isArray(resultado.data)) {
-                  resultado.data.forEach((usuario) => {
-                    if (usuario.email && usuario.nombre) {
-                      mapaNombres[usuario.email] = usuario.nombre;
-                    }
-                  });
-                } else if (typeof resultado.data === "object") {
-                  for (const [key, value] of Object.entries(resultado.data)) {
-                    if (value && value.nombre) {
-                      mapaNombres[key] = value.nombre;
-                    }
-                  }
-                }
-              }
-            } catch (e) {
-              console.warn("Error obteniendo por email:", e);
-            }
-          }
-
-          // Si no funcionó por email, intentar obtener por IDs
-          if (Object.keys(mapaNombres).length === 0 && idsUnicos.length > 0) {
-            try {
-              const resultado = await API.peticion(
-                "OBTENER_USUARIOS_POR_IDS",
-                {
-                  ids: idsUnicos,
-                },
-                apiKey,
-              );
-
-              if (resultado && resultado.success && resultado.data) {
-                if (Array.isArray(resultado.data)) {
-                  resultado.data.forEach((usuario) => {
-                    if (usuario.id && usuario.nombre) {
-                      mapaNombres[usuario.id] = usuario.nombre;
-                    }
-                  });
-                }
-              }
-            } catch (e) {
-              console.warn("Error obteniendo por ID:", e);
-            }
-          }
-
-          // Asignar nombres a los avisos
-          for (const aviso of avisosSinEmail) {
-            const email = aviso.usuario_email || aviso.email;
-            const userId = aviso.usuario_id;
-
-            if (email && mapaNombres[email]) {
-              aviso.usuario_nombre = mapaNombres[email];
-            } else if (userId && mapaNombres[userId]) {
-              aviso.usuario_nombre = mapaNombres[userId];
-            } else {
-              // Si no se encuentra, usar un valor por defecto
-              aviso.usuario_nombre = email ? email.split("@")[0] : "Vecino";
-            }
-          }
+          const client = await getSupabaseClient();
+          const { data: usuarios, error } = await client.from("usuarios").select("id,nombre").in("id", ids);
+          if (error) throw error;
+          const nombres = new Map((usuarios || []).filter((usuario) => usuario?.id && usuario?.nombre).map((usuario) => [String(usuario.id), String(usuario.nombre).trim()]));
+          avisos.forEach((aviso) => {
+            const autorId = aviso?.created_by || aviso?.usuario_id;
+            const nombre = autorId ? nombres.get(String(autorId)) : "";
+            if (nombre) { aviso.usuario_nombre = nombre; aviso.nombre_autor = nombre; }
+          });
         } catch (error) {
-          console.error("Error en enriquecerAvisosConUsuarios:", error);
-          for (const aviso of avisosSinEmail) {
-            aviso.usuario_nombre = "Vecino";
-          }
+          console.warn("No se pudieron obtener los nombres reales de los autores:", error);
         }
-
-        return [...avisosConNombre, ...avisosSinEmail];
+        return avisos;
       }
 
       async function cargarAvisos() {
