@@ -1,0 +1,83 @@
+name: Fix author joins
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-joins.yml'
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Supabase joins
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('js/api.js')
+          s = p.read_text(encoding='utf-8')
+
+          # Use an explicit INNER JOIN through the existing FK so the author's
+          # name comes from public.usuarios, not from a stale copied field.
+          s = s.replace(
+              'usuarios!avisos_created_by_fkey (nombre)',
+              'usuarios!avisos_created_by_fkey!inner (nombre)'
+          )
+          s = s.replace(
+              "nombre_autor: aviso.usuarios?.nombre || aviso.nombre_autor || 'Usuario'",
+              "nombre_autor: aviso.usuarios?.nombre || aviso.autor?.nombre || aviso.nombre_autor || aviso.nombre_usuario || 'Usuario'"
+          )
+
+          # Comments: always expose the current user's name through the
+          # usuarios relation. Keep the existing API shape expected by index.
+          pattern = r"case 'LISTAR_COMENTARIOS':\s*\{.*?\n\s*\}\n\n    case '"
+          m = re.search(pattern, s, flags=re.S)
+          if not m:
+              raise SystemExit('No se encontró LISTAR_COMENTARIOS en api.js')
+          block = m.group(0)
+          next_case = "    case '"
+          replacement_case = """case 'LISTAR_COMENTARIOS': {
+      const avisoId = String(datos?.avisoId || datos?.aviso_id || '').trim();
+      if (!avisoId) throw new Error('ID de aviso no proporcionado');
+      const { data, error } = await client
+        .from('comentarios')
+        .select(`*, usuarios!inner (nombre)`)
+        .eq('aviso_id', avisoId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const comentarios = (data || []).map(c => ({
+        ...c,
+        autor: c.usuarios?.nombre || c.nombre_autor || c.autor || 'Anónimo'
+      }));
+      return respuestaOK(comentarios);
+    }
+
+    case '"""
+          s = s[:m.start()] + replacement_case + s[m.end()-len(next_case):]
+          p.write_text(s, encoding='utf-8')
+
+          # aviso.html also reads comments directly, so make that query use the
+          # same INNER JOIN and render the joined name.
+          p = Path('aviso.html')
+          s = p.read_text(encoding='utf-8')
+          old = "select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at')"
+          new = "select('id,aviso_id,usuario_id,contenido,created_at,usuarios!inner(nombre)')"
+          if old not in s:
+              raise SystemExit('No se encontró la consulta directa de comentarios en aviso.html')
+          s = s.replace(old, new, 1)
+          s = s.replace("esc(x.nombre_autor||'Anónimo')", "esc(x.usuarios?.nombre||x.nombre_autor||'Anónimo')", 1)
+          p.write_text(s, encoding='utf-8')
+
+          # Remove the temporary workflow in the same run.
+          p = Path('.github/workflows/fix-joins.yml')
+          p.unlink()
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/api.js aviso.html .github/workflows/fix-joins.yml
+          git commit -m "Usar inner join para nombres de autores y comentaristas"
+          git push
