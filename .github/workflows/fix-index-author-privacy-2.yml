@@ -1,0 +1,59 @@
+name: Fix index author privacy 2
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make author private by default
+        shell: python
+        run: |
+          from pathlib import Path
+
+          app = Path('js/app.js')
+          s = app.read_text(encoding='utf-8')
+          old = '<div class="aviso-autor"><span>👤</span> ${((!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario"))) ? escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\') : `<span class="aviso-autor-privado">${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</span>`}</div>'
+          new = '<div class="aviso-autor${((!!localStorage.getItem("api_key")&&!!localStorage.getItem("usuario"))) ? \' autor-visible\' : \'\'}"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || \'Usuario\')}</div>'
+          if old in s:
+              app.write_text(s.replace(old, new, 1), encoding='utf-8')
+          elif 'autor-visible' not in s:
+              raise SystemExit('No se encontró el render actual del autor en js/app.js')
+
+          css = Path('css/estilo-index.css')
+          c = css.read_text(encoding='utf-8')
+          c = c.replace('''/* Privacidad visual del nombre del autor en tarjetas públicas */
+.aviso-autor-privado {
+  display: inline-block;
+  filter: blur(5px);
+  user-select: none;
+  cursor: default;
+}
+''', '''/* Privacidad visual del nombre del autor en tarjetas públicas */
+.aviso-autor {
+  filter: blur(5px);
+  user-select: none;
+}
+.aviso-autor.autor-visible {
+  filter: none;
+  user-select: text;
+}
+''')
+          if '.aviso-autor {\n  filter: blur(5px);' not in c:
+              raise SystemExit('No se encontró el bloque CSS de privacidad en estilo-index.css')
+          css.write_text(c, encoding='utf-8')
+      - name: Commit and remove helper
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/app.js css/estilo-index.css
+          git rm .github/workflows/fix-index-author-privacy-2.yml
+          git commit -m "Difuminar autor del index sin sesión"
+          git push
