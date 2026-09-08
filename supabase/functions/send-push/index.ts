@@ -18,10 +18,7 @@ const corsHeaders = {
 function respuesta(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: {
-      ...corsHeaders,
-      'Content-Type': 'application/json; charset=utf-8',
-    },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json; charset=utf-8' },
   });
 }
 
@@ -41,16 +38,12 @@ function obtenerPayloadNotificacion(notificacion: any) {
     like: 'A alguien le gustó tu aviso',
     dislike: 'Alguien marcó tu aviso como no recomendado',
     comentario: 'Nuevo comentario en tu aviso',
-    sistema: 'El Barrio',
-    aviso_aprobado: 'Tu aviso fue aprobado',
   };
 
   return {
     titulo: tituloPorTipo[tipo] || 'El Barrio',
     descripcion: notificacion.mensaje || tituloPorTipo[tipo] || 'Tienes una nueva notificación',
-    url: notificacion.aviso_id
-      ? `/aviso.html?id=${encodeURIComponent(notificacion.aviso_id)}`
-      : '/index.html',
+    url: notificacion.aviso_id ? `/aviso.html?id=${encodeURIComponent(notificacion.aviso_id)}` : '/index.html',
     aviso_id: notificacion.aviso_id || null,
     id: notificacion.id,
     tipo,
@@ -71,21 +64,13 @@ Deno.serve(async (req: Request) => {
   }
 
   const secreto = req.headers.get('x-elbarrio-push-secret') || '';
-  if (!secreto || secreto !== PUSH_WEBHOOK_SECRET) {
-    return respuesta({ success: false, error: 'No autorizado' }, 401);
-  }
+  if (!secreto || secreto !== PUSH_WEBHOOK_SECRET) return respuesta({ success: false, error: 'No autorizado' }, 401);
 
   let body: any;
-  try {
-    body = await req.json();
-  } catch (_) {
-    return respuesta({ success: false, error: 'JSON inválido' }, 400);
-  }
+  try { body = await req.json(); } catch (_) { return respuesta({ success: false, error: 'JSON inválido' }, 400); }
 
   const notificationId = body?.notification_id || body?.record?.id || body?.id;
-  if (!notificationId) {
-    return respuesta({ success: false, error: 'Falta notification_id' }, 400);
-  }
+  if (!notificationId) return respuesta({ success: false, error: 'Falta notification_id' }, 400);
 
   const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -102,6 +87,12 @@ Deno.serve(async (req: Request) => {
 
     if (notificacionError) throw notificacionError;
     if (!notificacion) return respuesta({ success: false, error: 'Notificación no encontrada' }, 404);
+
+    // El Web Push de esta fase se reserva para interacciones sobre avisos.
+    if (!['like', 'dislike', 'comentario'].includes(notificacion.tipo)) {
+      return respuesta({ success: true, enviados: 0, motivo: 'Tipo de notificación fuera del alcance push' });
+    }
+
     if (!notificacion.usuario_id) return respuesta({ success: true, enviados: 0, motivo: 'Sin destinatario' });
 
     const { data: suscripciones, error: suscripcionesError } = await supabase
@@ -111,10 +102,7 @@ Deno.serve(async (req: Request) => {
       .eq('activo', true);
 
     if (suscripcionesError) throw suscripcionesError;
-
-    if (!suscripciones?.length) {
-      return respuesta({ success: true, enviados: 0, motivo: 'El usuario no tiene suscripciones activas' });
-    }
+    if (!suscripciones?.length) return respuesta({ success: true, enviados: 0, motivo: 'El usuario no tiene suscripciones activas' });
 
     const payload = JSON.stringify(obtenerPayloadNotificacion(notificacion));
     let enviados = 0;
@@ -124,18 +112,9 @@ Deno.serve(async (req: Request) => {
     for (const suscripcion of suscripciones) {
       try {
         await webpush.sendNotification(
-          {
-            endpoint: suscripcion.endpoint,
-            keys: {
-              p256dh: suscripcion.p256dh,
-              auth: suscripcion.auth,
-            },
-          },
+          { endpoint: suscripcion.endpoint, keys: { p256dh: suscripcion.p256dh, auth: suscripcion.auth } },
           payload,
-          {
-            TTL: 60,
-            urgency: 'high',
-          },
+          { TTL: 60, urgency: 'high' },
         );
         enviados++;
       } catch (error: any) {
@@ -147,11 +126,8 @@ Deno.serve(async (req: Request) => {
             .update({ activo: false, updated_at: new Date().toISOString() })
             .eq('id', suscripcion.id);
 
-          if (updateError) {
-            console.error('No se pudo desactivar suscripción:', updateError);
-          } else {
-            desactivados++;
-          }
+          if (updateError) console.error('No se pudo desactivar suscripción:', updateError);
+          else desactivados++;
         } else {
           console.error('Error enviando Web Push:', error);
           errores.push(`subscription:${suscripcion.id}:${statusCode || 'unknown'}`);
@@ -159,19 +135,9 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    return respuesta({
-      success: true,
-      notificacion_id: notificationId,
-      destinatario: notificacion.usuario_id,
-      enviados,
-      desactivados,
-      errores,
-    });
+    return respuesta({ success: true, notificacion_id: notificationId, destinatario: notificacion.usuario_id, enviados, desactivados, errores });
   } catch (error: any) {
     console.error('send-push error:', error);
-    return respuesta({
-      success: false,
-      error: error?.message || 'Error interno enviando notificación push',
-    }, 500);
+    return respuesta({ success: false, error: error?.message || 'Error interno enviando notificación push' }, 500);
   }
 });
