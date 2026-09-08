@@ -41,7 +41,44 @@ function contactarAnunciante(){const a=avisoActual;if(!a)return;const numero=a.t
 function contactarElBarrio(){const a=avisoActual;if(!a)return;abrirWhatsApp(WHATSAPP_EL_BARRIO,'Hola, vi el aviso "'+(a.titulo||a.nombre||'Aviso')+'" en EL BARRIO y quiero ponerme en contacto con El Barrio.')}
 function actualizarMetricas(){const a=avisoActual||{};const likes=Number(a.likes??a.votos_positivos??0),dislikes=Number(a.dislikes??a.votos_negativos??0),comentariosCount=Number(a.comments_count??a.comentarios??0);const interacciones=likes+dislikes+comentariosCount;const v=document.querySelector('.vistas-count');if(v)v.textContent=Number(a.vistas??a.visitas??a.visualizaciones??0);const i=document.querySelector('.interacciones-count');if(i)i.textContent=interacciones;const l=document.querySelector('.likes-count');if(l)l.textContent=likes;const d=document.querySelector('.dislikes-count');if(d)d.textContent=dislikes;const c=document.querySelector('.comments-count');if(c)c.textContent=comentariosCount}
 async function registrarVistaYActualizar(id){try{if(typeof API.registrarVista!=='function')return;const r=await API.registrarVista(id);const valor=Number(r?.vistas??r?.visualizaciones??r?.views??r?.data?.vistas??NaN);if(Number.isFinite(valor)){avisoActual.vistas=valor;actualizarMetricas()}}catch(e){console.warn('Vista:',e)}}
-async function cargarHeader(){try{const r=await fetch('/common/header.html',{cache:'no-store'});if(!r.ok)throw Error('No se pudo cargar el encabezado');const html=await r.text(),doc=new DOMParser().parseFromString(html,'text/html'),target=document.getElementById('header-container');target.innerHTML='';doc.body.childNodes.forEach(n=>target.appendChild(document.importNode(n,true)));doc.head.querySelectorAll('style').forEach(s=>document.head.appendChild(document.importNode(s,true)));doc.querySelectorAll('script').forEach(old=>{const s=document.createElement('script');for(const a of old.attributes)s.setAttribute(a.name,old.attributes[a.name]);s.textContent=old.textContent;document.body.appendChild(s)})}catch(e){console.warn('Header:',e)}}
+```js
+async function cargarHeader(){
+    try{
+        const r=await fetch('/common/header.html',{cache:'no-store'});
+        if(!r.ok) throw Error('No se pudo cargar el encabezado');
+
+        const html=await r.text();
+        const doc=new DOMParser().parseFromString(html,'text/html');
+        const target=document.getElementById('header-container');
+
+        target.innerHTML='';
+
+        doc.body.childNodes.forEach(n=>{
+            target.appendChild(document.importNode(n,true));
+        });
+
+        doc.head.querySelectorAll('style').forEach(s=>{
+            document.head.appendChild(document.importNode(s,true));
+        });
+
+        doc.querySelectorAll('script').forEach(old=>{
+            const s=document.createElement('script');
+
+            // CORRECCIÓN: usar el valor del atributo, no el objeto Attr
+            for(const a of old.attributes){
+                s.setAttribute(a.name,a.value);
+            }
+
+            s.textContent=old.textContent;
+            document.body.appendChild(s);
+        });
+
+    }catch(e){
+        console.warn('Header:',e);
+    }
+}
+```
+
 async function getSharedClient(){if(typeof getSupabaseClient==='function')return await getSupabaseClient();throw Error('Cliente Supabase no disponible')}
 async function obtenerSesionActiva(){try{const tieneSesionLocal=!!localStorage.getItem('usuario')&&!!localStorage.getItem('api_key');const c=await getSharedClient();if(!tieneSesionLocal){try{await c.auth.signOut()}catch(_){}return false}const r=await c.auth.getSession();return !!r?.data?.session?.user}catch(_){return false}}
 async function comentarios(id){const l=document.getElementById('comments-list');if(!l)return;try{const c=await getSharedClient(),r=await c.from('comentarios').select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at').eq('aviso_id',id).order('created_at',{ascending:true});if(r.error)throw r.error;const d=r.data||[];const sesion=await obtenerSesionActiva();l.innerHTML=d.length?d.map(x=>'<div class="comment-item"><div class="comment-author privado'+(sesion?' autor-visible':'')+'">'+esc(x.nombre_autor||'Anónimo')+'</div><div class="comment-text">'+esc(x.contenido||'')+'</div><div class="comment-date">'+esc(fecha(x.created_at))+'</div></div>').join(''):'<div style="text-align:center;color:#888;padding:8px 0">No hay comentarios aún. ¡Sé el primero!</div>';avisoActual.comments_count=d.length;actualizarMetricas()}catch(e){console.error('Comentarios:',e);l.innerHTML='<div style="text-align:center;color:#888;padding:8px 0">No fue posible cargar los comentarios.</div>'}}
