@@ -1,8 +1,7 @@
 name: Fix index author names
 on:
-  push:
-    paths:
-      - '.github/workflows/fix-index-author-names.yml'
+  pull_request_target:
+    types: [opened]
 
 jobs:
   fix:
@@ -11,6 +10,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Update index only
         run: |
           python3 - <<'PY'
@@ -19,17 +20,21 @@ jobs:
           s = p.read_text(encoding='utf-8')
           css_old = '<style>\n.aviso-autor-privado{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n</style>'
           css_new = '<style>\n.aviso-autor{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}\n.aviso-autor.autor-visible{filter:none;user-select:text;pointer-events:auto;opacity:1}\n</style>'
-          if css_old in s: s = s.replace(css_old, css_new, 1)
+          if css_old in s:
+              s = s.replace(css_old, css_new, 1)
           marker = "      // ========== VOTACIÓN OPTIMIZADA (SIN llamadas por separado) =========="
-          helper = '''      // ========== NOMBRES REALES DE AUTORES ==========\n      async function enriquecerNombresAutores(avisos) {\n        const lista = Array.isArray(avisos) ? avisos : [];\n        const ids = [...new Set(lista.map(a => a?.created_by).filter(Boolean).map(String))];\n        if (!ids.length) return lista;\n        try {\n          const client = await getSupabaseClient();\n          const { data, error } = await client.from('usuarios').select('id,nombre').in('id', ids);\n          if (error) throw error;\n          const nombres = new Map((data || []).map(u => [String(u.id), String(u.nombre || '').trim()]));\n          lista.forEach(a => { const nombre = nombres.get(String(a.created_by)); if (nombre) a.nombre_autor = nombre; });\n        } catch (e) { console.warn('No se pudieron enriquecer los nombres de autores:', e); }\n        return lista;\n      }\n\n'''
-          if 'async function enriquecerNombresAutores' not in s: s = s.replace(marker, helper + marker, 1)
+          helper = '''      // ========== NOMBRES REALES DE AUTORES ==========\n      async function enriquecerNombresAutores(avisos) {\n        const lista = Array.isArray(avisos) ? avisos : [];\n        const ids = [...new Set(lista.map(a => a?.created_by).filter(Boolean).map(String))];\n        if (!ids.length) return lista;\n        try {\n          const client = await getSupabaseClient();\n          const { data, error } = await client.from('usuarios').select('id,nombre').in('id', ids);\n          if (error) throw error;\n          const nombres = new Map((data || []).map(u => [String(u.id), String(u.nombre || '').trim()]));\n          lista.forEach(a => {\n            const nombre = nombres.get(String(a.created_by));\n            if (nombre) a.nombre_autor = nombre;\n          });\n        } catch (e) {\n          console.warn('No se pudieron enriquecer los nombres de autores:', e);\n        }\n        return lista;\n      }\n\n'''
+          if 'async function enriquecerNombresAutores' not in s:
+              s = s.replace(marker, helper + marker, 1)
           old = "      todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);\n      await filtrarYAplicarPaginacion();"
           new = "      todosLosAvisos = resultado.datos.filter(a => a.status === 'activo' || a.status === undefined);\n      await enriquecerNombresAutores(todosLosAvisos);\n      await filtrarYAplicarPaginacion();"
-          if old not in s: raise SystemExit('Load anchor not found')
+          if old not in s:
+              raise SystemExit('Load anchor not found')
           s = s.replace(old, new, 1)
           old_render = "${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}"
           new_render = "${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || '')}"
-          if old_render not in s: raise SystemExit('Render anchor not found')
+          if old_render not in s:
+              raise SystemExit('Render anchor not found')
           s = s.replace(old_render, new_render, 1)
           p.write_text(s, encoding='utf-8')
           PY
@@ -39,10 +44,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git commit -m "Mostrar nombre real del autor en index" || exit 0
-          git push
+          git push origin main
       - name: Remove temporary workflow
         run: |
           rm -f .github/workflows/fix-index-author-names.yml
           git add -A
           git commit -m "Eliminar workflow temporal de autores" || exit 0
-          git push
+          git push origin main
