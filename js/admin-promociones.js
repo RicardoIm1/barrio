@@ -38,6 +38,7 @@
   }
 
   function obtenerId(fila) {
+    if (fila?.dataset?.id) return String(fila.dataset.id);
     const match = (fila?.innerHTML || '').match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);
     return match ? match[0] : null;
   }
