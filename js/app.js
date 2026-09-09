@@ -281,7 +281,7 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
       ? new Date(aviso.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
       : 'Fecha no disponible';
     
-    const esUrgente = aviso.destacado === 'TRUE' || aviso.categoria === 'urgente';
+    const esUrgente = aviso.categoria === 'urgente';
     
     const vistas = aviso.vistas || 0;
     const clicksWhatsApp = aviso.clicks_whatsapp || 0;
