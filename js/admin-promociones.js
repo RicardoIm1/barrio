@@ -19,6 +19,8 @@
     setTimeout(function () { t.style.opacity = '0'; setTimeout(function () { t.remove(); }, 180); }, 2200);
   }
 
+  window.elBarrioToast = toast;
+
   if (!window.__elBarrioAlertPatched) {
     window.alert = function (mensaje) {
       const texto = String(mensaje ?? '');
@@ -26,6 +28,20 @@
       toast(texto, error ? 'error' : 'ok');
     };
     window.__elBarrioAlertPatched = true;
+  }
+
+  function valorVerdadero(v) {
+    return v === true || v === 'true' || v === 1 || v === '1';
+  }
+
+  function obtenerId(fila) {
+    const match = (fila?.innerHTML || '').match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);
+    return match ? match[0] : null;
+  }
+
+  function obtenerAviso(id) {
+    if (!Array.isArray(window.todosLosAvisos)) return null;
+    return window.todosLosAvisos.find(function (a) { return String(a?.id) === String(id); }) || null;
   }
 
   function compactarBoton(boton) {
@@ -68,6 +84,61 @@
     boton.style.setProperty('border-radius', '7px', 'important');
   }
 
+  function crearUrgente(fila, id, aviso) {
+    const acciones = fila.querySelector('td:last-child');
+    if (!acciones || !id || !aviso) return;
+    let cont = acciones.querySelector('.acciones-botones');
+    if (!cont) {
+      cont = document.createElement('div');
+      cont.className = 'acciones-botones';
+      while (acciones.firstChild) cont.appendChild(acciones.firstChild);
+      acciones.appendChild(cont);
+    }
+
+    if (cont.querySelector('[data-admin-urgente="1"]')) return;
+
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'boton boton-chico accion-btn-urgente';
+    boton.dataset.adminUrgente = '1';
+    boton.textContent = '⚠️';
+    boton.title = valorVerdadero(aviso.urgente) ? 'Quitar urgente' : 'Marcar como urgente';
+    boton.setAttribute('aria-label', boton.title);
+    boton.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;padding:0!important;margin:0!important;font-size:1rem!important;line-height:1!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:7px!important;cursor:pointer!important;';
+
+    boton.addEventListener('click', async function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!window.API || typeof window.API.peticion !== 'function') {
+        toast('No está disponible la API de administración.', 'error');
+        return;
+      }
+      const actual = obtenerAviso(id);
+      const nuevo = !valorVerdadero(actual?.urgente);
+      boton.disabled = true;
+      try {
+        const r = await window.API.peticion('ACTUALIZAR', {
+          coleccion: 'AVISOS',
+          id: id,
+          datos: { urgente: nuevo }
+        }, localStorage.getItem('api_key'));
+        if (!r?.success) throw new Error(r?.error || 'No se pudo actualizar.');
+        if (actual) actual.urgente = nuevo;
+        boton.textContent = '⚠️';
+        boton.title = nuevo ? 'Quitar urgente' : 'Marcar como urgente';
+        boton.setAttribute('aria-label', boton.title);
+        toast(nuevo ? 'Aviso marcado como urgente.' : 'Urgente desactivado.');
+      } catch (error) {
+        console.error('Error actualizando urgente:', error);
+        toast('No se pudo actualizar Urgente.', 'error');
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
+    cont.appendChild(boton);
+  }
+
   function prepararFila(fila) {
     if (!fila || fila.dataset.adminUiReady === '1') return;
     fila.dataset.adminUiReady = '1';
@@ -79,6 +150,9 @@
     fila.style.transition = '';
 
     const acciones = fila.querySelector('td:last-child');
+    const id = obtenerId(fila);
+    const aviso = obtenerAviso(id);
+
     if (acciones) {
       acciones.style.whiteSpace = 'nowrap';
       acciones.style.textAlign = 'center';
@@ -87,6 +161,7 @@
         compactarBoton(boton);
         boton.addEventListener('click', function (e) { e.stopPropagation(); });
       });
+      crearUrgente(fila, id, aviso);
     }
 
     fila.querySelectorAll('select, input, textarea, a, button').forEach(function (el) {
@@ -94,11 +169,7 @@
     });
 
     fila.addEventListener('click', function () {
-      const html = fila.innerHTML || '';
-      const match = html.match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i);
-      if (match && typeof window.editarAviso === 'function') {
-        window.editarAviso(match[0]);
-      }
+      if (id && typeof window.editarAviso === 'function') window.editarAviso(id);
     });
   }
 
