@@ -153,13 +153,6 @@ async function iniciarEscuchaModeracion() {
   }
 }
 
-// ============================================================
-// PRESENCIA
-// La presencia representa el estado de sesión, no la actividad.
-// LOGIN  -> fila presente en presencia_usuarios.
-// LOGOUT -> fila eliminada de presencia_usuarios.
-// No existe vencimiento por tiempo.
-// ============================================================
 async function registrarPresencia() {
   try {
     const client = await obtenerSupabaseClient();
@@ -245,15 +238,30 @@ const Auth = {
   },
   async requireAuth() {
     const client = await obtenerSupabaseClient();
-    const { data, error } = await client.auth.getSession();
-    if (error) { console.error('❌ Error comprobando sesión:', error); return null; }
-    const session = data?.session;
-    if (!session?.user) { detenerPresencia(); return null; }
-    const usuario = await construirUsuario(client, session.user);
-    guardarCompatibilidad(usuario, session);
-    await iniciarPresencia();
-    iniciarEscuchaModeracion();
-    return usuario;
+
+    // Supabase puede tardar unos instantes en restaurar la sesión persistida
+    // desde localStorage. No confundimos ese estado transitorio con un logout.
+    for (let intento = 1; intento <= 12; intento++) {
+      const { data, error } = await client.auth.getSession();
+      if (error) {
+        console.warn(`⚠️ Comprobación de sesión ${intento}/12:`, error.message);
+      } else if (data?.session?.user) {
+        const usuario = await construirUsuario(client, data.session.user);
+        guardarCompatibilidad(usuario, data.session);
+        await iniciarPresencia();
+        iniciarEscuchaModeracion();
+        return usuario;
+      }
+
+      // 1.ª espera corta, después dejamos que el cliente termine su
+      // inicialización/refresh. Máximo aproximado: 4 segundos.
+      if (intento < 12) {
+        await new Promise(resolve => setTimeout(resolve, intento === 1 ? 150 : 350));
+      }
+    }
+
+    detenerPresencia();
+    return null;
   },
   async logout() {
     const client = await obtenerSupabaseClient();
@@ -289,21 +297,13 @@ if (typeof API !== 'undefined') {
   console.log('✅ Compatibilidad API.listar/listarPublicos restaurada');
 }
 
-// Las funciones de moderación y presencia no deben competir con la carga inicial
-// de la página pública en dispositivos móviles.
 setTimeout(() => {
   iniciarEscuchaModeracion();
 }, 1800);
 
-// ============================================================
-// PRESENCIA GLOBAL
-// Inicia automáticamente si ya existe una sesión Supabase.
-// ============================================================
 let presenciaAuthListenerInstalado = false;
 
 async function iniciarPresenciaSiExisteSesion() {
-  // En una página pública anónima no necesitamos inicializar Supabase Auth.
-  // El login ya registra presencia explícitamente.
   if (!localStorage.getItem('api_key')) return;
 
   try {
@@ -338,11 +338,6 @@ setTimeout(() => {
   iniciarPresenciaSiExisteSesion();
 }, 1200);
 
-// ============================================================
-// SPLASH NO BLOQUEANTE
-// No esperamos a que terminen imágenes, realtime u otras tareas secundarias.
-// La aplicación debe quedar visible aunque una dependencia externa tarde.
-// ============================================================
 function quitarSplashSinEsperarCargaTotal() {
   const splash = document.getElementById('splash-screen');
   if (!splash || splash.dataset.elBarrioOculto === '1') return;
@@ -359,5 +354,4 @@ if (document.readyState === 'loading') {
   quitarSplashSinEsperarCargaTotal();
 }
 
-// Seguro adicional para móviles: nunca dejar la pantalla de carga bloqueando la app.
 setTimeout(quitarSplashSinEsperarCargaTotal, 2500);
