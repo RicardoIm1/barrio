@@ -95,7 +95,7 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   if (paginacion) {
     const pagina = Math.max(1, Number(paginacion.pagina) || 1);
-    const limite = Math.min(1000, Math.max(1, Number(paginacion.limite) || 50));
+    const limite = Math.min(1000, Math.max(1, Number(paginacion.limite) || 1000));
     const desde = (pagina - 1) * limite;
     query = query.range(desde, desde + limite - 1);
   }
