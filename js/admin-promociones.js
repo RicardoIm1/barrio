@@ -44,6 +44,34 @@
     return window.todosLosAvisos.find(function (a) { return String(a?.id) === String(id); }) || null;
   }
 
+  function estiloBoton(boton, tipo, activo) {
+    const estilos = {
+      destacado: { fondo: activo ? 'rgba(212,160,67,.13)' : 'rgba(100,116,139,.08)', borde: activo ? 'rgba(212,160,67,.32)' : 'rgba(100,116,139,.18)', sombra: activo ? '0 2px 8px rgba(212,160,67,.12)' : 'none' },
+      urgente: { fondo: activo ? 'rgba(220,70,70,.13)' : 'rgba(100,116,139,.08)', borde: activo ? 'rgba(220,70,70,.30)' : 'rgba(100,116,139,.18)', sombra: activo ? '0 2px 8px rgba(220,70,70,.12)' : 'none' },
+      eliminar: { fondo: 'rgba(100,116,139,.07)', borde: 'rgba(100,116,139,.16)', sombra: 'none' }
+    };
+    const s = estilos[tipo] || estilos.eliminar;
+    boton.style.setProperty('display', 'inline-flex', 'important');
+    boton.style.setProperty('align-items', 'center', 'important');
+    boton.style.setProperty('justify-content', 'center', 'important');
+    boton.style.setProperty('width', '32px', 'important');
+    boton.style.setProperty('min-width', '32px', 'important');
+    boton.style.setProperty('max-width', '32px', 'important');
+    boton.style.setProperty('height', '32px', 'important');
+    boton.style.setProperty('padding', '0', 'important');
+    boton.style.setProperty('margin', '0 2px', 'important');
+    boton.style.setProperty('font-size', '15px', 'important');
+    boton.style.setProperty('line-height', '1', 'important');
+    boton.style.setProperty('border', '1px solid ' + s.borde, 'important');
+    boton.style.setProperty('background', s.fondo, 'important');
+    boton.style.setProperty('box-shadow', s.sombra, 'important');
+    boton.style.setProperty('border-radius', '9px', 'important');
+    boton.style.setProperty('cursor', 'pointer', 'important');
+    boton.style.setProperty('transition', 'background .15s ease, border-color .15s ease, transform .15s ease', 'important');
+    boton.onmouseenter = function () { boton.style.transform = 'translateY(-1px)'; };
+    boton.onmouseleave = function () { boton.style.transform = 'translateY(0)'; };
+  }
+
   function compactarBoton(boton) {
     const texto = ((boton.textContent || '') + ' ' + (boton.title || '') + ' ' + (boton.getAttribute('aria-label') || '')).toLowerCase();
     if (/editar|edit(ar| aviso)?/.test(texto)) {
@@ -55,33 +83,20 @@
       boton.textContent = '⭐';
       boton.title = /quitar/.test(texto) ? 'Quitar destacado' : 'Marcar como destacado';
       boton.setAttribute('aria-label', boton.title);
+      estiloBoton(boton, 'destacado', /quitar/.test(texto));
     } else if (/urgent/.test(texto)) {
       boton.textContent = '⚠️';
       boton.title = /quitar/.test(texto) ? 'Quitar urgente' : 'Marcar como urgente';
       boton.setAttribute('aria-label', boton.title);
+      estiloBoton(boton, 'urgente', /quitar/.test(texto));
     } else if (/eliminar|borrar|delete/.test(texto)) {
       boton.textContent = '🗑️';
       boton.title = 'Eliminar aviso';
       boton.setAttribute('aria-label', boton.title);
+      estiloBoton(boton, 'eliminar', false);
     } else {
       return;
     }
-
-    boton.style.setProperty('display', 'inline-flex', 'important');
-    boton.style.setProperty('align-items', 'center', 'important');
-    boton.style.setProperty('justify-content', 'center', 'important');
-    boton.style.setProperty('width', '30px', 'important');
-    boton.style.setProperty('min-width', '30px', 'important');
-    boton.style.setProperty('max-width', '30px', 'important');
-    boton.style.setProperty('height', '30px', 'important');
-    boton.style.setProperty('padding', '0', 'important');
-    boton.style.setProperty('margin', '0', 'important');
-    boton.style.setProperty('font-size', '1rem', 'important');
-    boton.style.setProperty('line-height', '1', 'important');
-    boton.style.setProperty('border', '0', 'important');
-    boton.style.setProperty('background', 'transparent', 'important');
-    boton.style.setProperty('box-shadow', 'none', 'important');
-    boton.style.setProperty('border-radius', '7px', 'important');
   }
 
   function crearUrgente(fila, id, aviso) {
@@ -91,6 +106,7 @@
     if (!cont) {
       cont = document.createElement('div');
       cont.className = 'acciones-botones';
+      cont.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:2px;';
       while (acciones.firstChild) cont.appendChild(acciones.firstChild);
       acciones.appendChild(cont);
     }
@@ -104,7 +120,7 @@
     boton.textContent = '⚠️';
     boton.title = valorVerdadero(aviso.urgente) ? 'Quitar urgente' : 'Marcar como urgente';
     boton.setAttribute('aria-label', boton.title);
-    boton.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;width:30px!important;min-width:30px!important;max-width:30px!important;height:30px!important;padding:0!important;margin:0!important;font-size:1rem!important;line-height:1!important;border:0!important;background:transparent!important;box-shadow:none!important;border-radius:7px!important;cursor:pointer!important;';
+    estiloBoton(boton, 'urgente', valorVerdadero(aviso.urgente));
 
     boton.addEventListener('click', async function (e) {
       e.preventDefault();
@@ -127,6 +143,7 @@
         boton.textContent = '⚠️';
         boton.title = nuevo ? 'Quitar urgente' : 'Marcar como urgente';
         boton.setAttribute('aria-label', boton.title);
+        estiloBoton(boton, 'urgente', nuevo);
         toast(nuevo ? 'Aviso marcado como urgente.' : 'Urgente desactivado.');
       } catch (error) {
         console.error('Error actualizando urgente:', error);
@@ -141,17 +158,11 @@
 
   function prepararFila(fila) {
     if (!fila || fila.dataset.adminUiReady === '1') return;
-
     const acciones = fila.querySelector('td:last-child');
     const id = obtenerId(fila);
     const aviso = obtenerAviso(id);
-
-    // Si los datos aún no están disponibles, dejamos que el siguiente intento
-    // vuelva a preparar la fila y pueda crear el botón ⚠️.
     if (!id || !aviso) return;
-
     fila.dataset.adminUiReady = '1';
-
     fila.style.border = '';
     fila.style.borderRadius = '';
     fila.style.boxShadow = '';
@@ -162,7 +173,15 @@
       acciones.style.whiteSpace = 'nowrap';
       acciones.style.textAlign = 'center';
       acciones.style.verticalAlign = 'middle';
-      acciones.querySelectorAll('button').forEach(function (boton) {
+      let cont = acciones.querySelector('.acciones-botones');
+      if (!cont) {
+        cont = document.createElement('div');
+        cont.className = 'acciones-botones';
+        cont.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:2px;';
+        while (acciones.firstChild) cont.appendChild(acciones.firstChild);
+        acciones.appendChild(cont);
+      }
+      cont.querySelectorAll('button').forEach(function (boton) {
         compactarBoton(boton);
         boton.addEventListener('click', function (e) { e.stopPropagation(); });
       });
@@ -172,7 +191,6 @@
     fila.querySelectorAll('select, input, textarea, a, button').forEach(function (el) {
       el.addEventListener('click', function (e) { e.stopPropagation(); });
     });
-
     fila.addEventListener('click', function () {
       if (id && typeof window.editarAviso === 'function') window.editarAviso(id);
     });
