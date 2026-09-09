@@ -168,3 +168,47 @@
         }
     }, 500);
 </script>
+<script>
+    // Evita la carrera de inicialización entre auth.js y el dashboard de administración.
+    // No concede permisos: únicamente espera a que Supabase termine de restaurar la sesión.
+    (function instalarEsperaSesionAdmin() {
+        let instalado = false;
+        let intentos = 0;
+        const maxIntentos = 20;
+
+        function instalar() {
+            if (instalado || !window.Auth || typeof window.Auth.requireAuth !== 'function') return;
+            const original = window.Auth.requireAuth;
+            if (original.__elBarrioRetrySesion) {
+                instalado = true;
+                return;
+            }
+
+            async function requireAuthConEspera() {
+                let ultimoUsuario = null;
+                for (let intento = 0; intento < 8; intento++) {
+                    try {
+                        ultimoUsuario = await original();
+                        if (ultimoUsuario?.id) return ultimoUsuario;
+                    } catch (error) {
+                        if (intento === 7) throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 350));
+                }
+                return ultimoUsuario;
+            }
+
+            requireAuthConEspera.__elBarrioRetrySesion = true;
+            window.Auth.requireAuth = requireAuthConEspera;
+            instalado = true;
+            console.log('🟢 Espera de sesión admin instalada');
+        }
+
+        instalar();
+        const timer = setInterval(() => {
+            instalar();
+            intentos++;
+            if (instalado || intentos >= maxIntentos) clearInterval(timer);
+        }, 100);
+    })();
+</script>
