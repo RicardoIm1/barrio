@@ -141,6 +141,15 @@
 
   function prepararFila(fila) {
     if (!fila || fila.dataset.adminUiReady === '1') return;
+
+    const acciones = fila.querySelector('td:last-child');
+    const id = obtenerId(fila);
+    const aviso = obtenerAviso(id);
+
+    // Si los datos aún no están disponibles, dejamos que el siguiente intento
+    // vuelva a preparar la fila y pueda crear el botón ⚠️.
+    if (!id || !aviso) return;
+
     fila.dataset.adminUiReady = '1';
 
     fila.style.border = '';
@@ -148,10 +157,6 @@
     fila.style.boxShadow = '';
     fila.style.transform = '';
     fila.style.transition = '';
-
-    const acciones = fila.querySelector('td:last-child');
-    const id = obtenerId(fila);
-    const aviso = obtenerAviso(id);
 
     if (acciones) {
       acciones.style.whiteSpace = 'nowrap';
