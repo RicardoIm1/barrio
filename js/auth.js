@@ -79,8 +79,28 @@ function obtenerCardIndicePorId(id) {
 }
 
 function eliminarAvisoDelIndice(id) {
+  const objetivo = String(id);
+
+  // El índice usa allAvisos/filteredAvisos para su scroll infinito.
+  // Actualizamos esos arrays localmente para que el card desaparezca sin
+  // reconstruir ni recargar todo el feed.
+  if (typeof allAvisos !== 'undefined' && Array.isArray(allAvisos)) {
+    const antes = allAvisos.length;
+    allAvisos = allAvisos.filter(a => String(a.id) !== objetivo);
+    if (typeof filteredAvisos !== 'undefined' && Array.isArray(filteredAvisos)) {
+      filteredAvisos = filteredAvisos.filter(a => String(a.id) !== objetivo);
+    }
+    if (antes !== allAvisos.length && typeof renderedCount !== 'undefined' && renderedCount > 0) {
+      renderedCount = Math.max(0, renderedCount - 1);
+    }
+    if (typeof hasMore !== 'undefined') {
+      hasMore = typeof renderedCount !== 'undefined' ? renderedCount < filteredAvisos.length : false;
+    }
+  }
+
+  // Compatibilidad con aviso.html y el paginado antiguo.
   if (typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos)) {
-    todosLosAvisos = todosLosAvisos.filter(a => String(a.id) !== String(id));
+    todosLosAvisos = todosLosAvisos.filter(a => String(a.id) !== objetivo);
   }
   if (typeof paginaActual !== 'undefined' && typeof totalPaginas !== 'undefined') {
     const cantidad = typeof todosLosAvisos !== 'undefined' && Array.isArray(todosLosAvisos) ? todosLosAvisos.length : 0;
@@ -93,21 +113,32 @@ function ejecutarRechazoVisual(id) {
   if (!id) return;
   instalarEstilosApagadoTV();
   const avisoId = String(id);
+
+  // Solo redirigimos cuando realmente estamos dentro de aviso.html.
+  // En el índice, la desaparición debe ser exclusivamente local.
+  const paper = document.querySelector('.aviso-paper');
   const avisoIdActual = typeof AVISO_ID !== 'undefined' ? String(AVISO_ID || '') : '';
-  if (avisoIdActual && avisoIdActual === avisoId) {
-    const paper = document.querySelector('.aviso-paper');
-    if (paper && !paper.classList.contains('aviso-apagando-tv')) {
+  if (paper && avisoIdActual && avisoIdActual === avisoId) {
+    if (!paper.classList.contains('aviso-apagando-tv')) {
       paper.classList.add('aviso-apagando-tv');
       setTimeout(() => { window.location.replace('/index.html'); }, 800);
     }
     return;
   }
+
   const card = obtenerCardIndicePorId(avisoId);
   if (card && !card.classList.contains('aviso-apagando-tv')) {
     card.classList.add('aviso-apagando-tv');
     eliminarAvisoDelIndice(avisoId);
     setTimeout(() => {
       if (card.isConnected) card.remove();
+
+      // El índice usa scroll infinito y ya actualizamos sus arrays arriba.
+      // No llamamos a filtrarYAplicarPaginacion(), porque esa función pertenece
+      // al renderizador antiguo de app.js y reconstruiría el contenedor vacío.
+      if (typeof allAvisos !== 'undefined' && Array.isArray(allAvisos)) return;
+
+      // En aviso.html/otras vistas antiguas sí mantenemos la actualización local.
       if (typeof filtrarYAplicarPaginacion === 'function') {
         filtrarYAplicarPaginacion().catch(error => console.warn('Actualización tras rechazo:', error));
       }
