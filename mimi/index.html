@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrióloga De Niz | Transforma tu Salud</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        select {
+            appearance: none;
+            /* Quita estilos raros del navegador */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        :root {
+            --primary-color: #41C7C4
+                /*#27ae60*/
+            ;
+            --secondary-color: #83D1B6
+                /*#2ecc71*/
+            ;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --text-light: #555;
+            --white: #fff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--light-color);
+            overflow-x: hidden;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 3rem;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--secondary-color);
+        }
+
+        ul {
+            list-style-type: none;
+            /* Esto quita las viñetas */
+        }
+
+        li {
+            text-align: left;
+        }
+
+        .contenedor {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+
+        .contenedor-1>h1,
+        .contenedor-1>p {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 0;
+            color: var(--light-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-radius: 50px;
+            font-weight: 600;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .btn:hover {
+            background-color: transparent;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-cta {
+            background-color: var(--accent-color);
+            color: var(--white);
+        }
+
+        .btn-cta:hover {
+            background-color: transparent;
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        section {
+            padding: 5rem 0;
+            c
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--white);
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            padding: 1rem 0;
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .navbar .contenedor {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .logo span {
+            color: var(--dark-color);
+        }
+
+        .logo1 {
+            color: var(--light-color);
+            font-size: 1.8rem;
+        }
+
+        .logo1>span {
+            color: var(--primary-color);
+            /* otro color para diferenciar */
+        }
+
+        .menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .menu a {
+            font-weight: 600;
+            color: var(--dark-color);
+            position: relative;
+        }
+
+        .menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .menu a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1350&q=80') no-repeat center center/cover;
+            color: var(--white);
+            text-align: center;
+            padding: 10rem 0;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInDown 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease;
+            animation-delay: 0.3s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .hero .btn-cta {
+            animation: fadeInUp 1s ease;
+            animation-delay: 0.6s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        /* Sobre Mí Section */
+        .sobre-mi {
+            background-color: var(--white);
+        }
+
+        .sobre-mi .contenido {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .sobre-mi img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .sobre-mi img:hover {
+            transform: scale(1.03);
+        }
+
+        .sobre-mi .texto {
+            flex: 1;
+        }
+
+        /* Servicios Section */
+        .servicios {
+            background-color: var(--light-color);
+        }
+
+        .grid-servicios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .servicio {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .servicio:hover {
+            transform: translateY(-10px);
+        }
+
+        .servicio i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .servicio h3 {
+            margin-bottom: 1rem;
+        }
+
+        /* Testimonios Section */
+        .testimonios {
+            background-color: var(--white);
+        }
+
+        .grid-testimonios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonio {
+            background-color: var(--light-color);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .testimonio::before {
+            content: '\201C';
+            font-size: 5rem;
+            color: var(--primary-color);
+            opacity: 0.2;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+
+        .testimonio p {
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonio h4 {
+            color: var(--primary-color);
+            margin-top: 1.5rem;
+        }
+
+        /* Blog Section */
+        .blog {
+            background-color: var(--light-color);
+        }
+
+        .grid-blog {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .articulo {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .articulo:hover {
+            transform: translateY(-10px);
+        }
+
+        .articulo img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .articulo:hover img {
+            transform: scale(1.05);
+        }
+
+        .articulo .contenido {
+            padding: 1.5rem;
+        }
+
+        .articulo h3 {
+            margin-bottom: 1rem;
+        }
+
+        .articulo .meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Contacto Section */
+        .contacto {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+        }
+
+        .contacto h2::after {
+            background-color: var(--white);
+        }
+
+        .contacto form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contacto input,
+        .contacto textarea {
+            padding: 1rem;
+            border-radius: 5px;
+            border: none;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .contacto textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .contacto button {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: none;
+            padding: 1rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .contacto button:hover {
+            background-color: var(--dark-color);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: var(--white);
+            padding: 3rem 0 1rem;
+        }
+
+        .footer-contenido {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-col h3 {
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-col ul li a {
+            color: var(--light-color);
+            transition: var(--transition);
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+
+        .footer-col>p {
+            color: var(--light-color);
+        }
+
+        .social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .social a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        .social i {
+            font-size: 1.2rem;
+            color: var(--white);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+            >p {
+                color: var(--light-color);
+            }
+        }
+
+        /* Animaciones */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            h2 {
+                font-size: 2.2rem;
+            }
+
+            .hero {
+                padding: 8rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background-color: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                transition: var(--transition);
+                z-index: 999;
+            }
+
+            .menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .sobre-mi .contenido {
+                flex-direction: column;
+            }
+
+            .sobre-mi img {
+                max-width: 100%;
+            }
+
+            section {
+                padding: 4rem 0;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .hero {
+                padding: 6rem 0;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            .btn {
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="contenedor">
+            <a href="index.html" class="logo">Nutri<span>óloga</span> De Niz</a>
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <div class="menu">
+                <!--a href="#inicio">Inicio</a-->
+                <a href="#sobre-mi">Sobre Mí</a>
+                <a href="#servicios">Servicios</a>
+                <a href="#testimonios">Testimonios</a>
+                <a href="#blog">Blog</a>
+                <a href="#contacto">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="contenedor-1">
+            <h1>Transforma tu Salud con una Nutrición Personalizada</h1>
+            <p>Descubre cómo una alimentación balanceada puede cambiar tu vida y bienestar</p>
+            <a href="https://calendar.app.google/ZWFp3tR1LFRQiCRHA" class="btn" target="_blank"
+                class="btn btn-cta">¡Agenda una cita!</a>
+        </div>
+    </section>
+
+    <!-- Sobre Mí Section -->
+    <section id="sobre-mi" class="sobre-mi">
+        <div class="contenedor">
+            <h2 class="text-center">Sobre Mí</h2>
+            <div class="contenido">
+                <img src="/nutrideniz/mimi-wa.jpeg" alt="Nutrióloga Mimi"
+                    style="width:100%; max-width:400px; border-radius:10px;">
+                <div class="texto">
+                    <p><strong>Tu salud, mi misión:</strong> Nutrición + Movimiento para sentirte increíble.</p>
+
+                    <p>Soy nutrióloga y creo que <strong>comer bien y moverte con alegría</strong> son la clave para una
+                        vida llena de energía. Mi enfoque es simple: combino <strong>alimentación personalizada</strong>
+                        con <strong>rehabilitación física suave</strong> para ayudarte a recuperar tu bienestar, de
+                        adentro hacia afuera.</p>
+
+                    <p>Durante mi formación, he acompañado a personas con distintos objetivos. Por eso, <strong>no solo
+                            miro lo que comes</strong>; entiendo cómo te sientes, tu día a día y tu relación con el
+                        movimiento. Juntos, crearemos un plan que <strong>se adapte a tu ritmo, gustos y metas</strong>.
+                    </p>
+
+                    <p>Te doy las herramientas y el apoyo para que <strong>tomes decisiones que te hagan sentir fuerte y
+                            vital</strong>. Porque creo que <strong>pequeños cambios, sostenidos con cariño, crean
+                            transformaciones enormes</strong>.</p>
+
+                    <p><strong>¿Listo para nutrir tu cuerpo, recuperar tu movilidad y disfrutar del camino?</strong>
+                        ¡Vamos paso a paso!</p>
+                    <a href="#servicios" class="btn">Conoce mis servicios</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios Section -->
+    <section id="servicios" class="servicios">
+        <div class="contenedor">
+            <h2 class="text-center">Servicios</h2>
+            <div class="grid-servicios">
+                <div class="servicio">
+                    <i class="fas fa-utensils"></i>
+                    <h3>Consulta Nutricional</h3>
+                    <p>Evaluación completa de tu estado nutricional, hábitos alimenticios y estilo de vida para crear un
+                        plan personalizado.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 1rem;"></i>Evaluación
+                            antropométrica</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Análisis
+                            de composición corporal</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Plan de
+                            alimentación personalizado</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Seguimiento
+                            continuo</li>
+                    </ul>
+                </div>
+                <div class="servicio">
+                    <i class="fas fa-weight"></i>
+                    <h3>Control de Peso</h3>
+                    <p>Programas adaptados a tus necesidades, ya sea para pérdida, mantenimiento o aumento de peso
+                        saludable.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Pérdida de
+                            peso saludable</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Mantenimiento
+                            de peso</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Aumento de
+                            masa muscular</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Educación
+                            nutricional</li>
+                    </ul>
+                </div>
+                <div class="servicio">
+                    <i class="fas fa-running"></i>
+                    <h3>Nutrición Deportiva</h3>
+                    <p>Optimiza tu rendimiento deportivo con una alimentación diseñada para tus necesidades específicas.
+                    </p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Planificación
+                            pre y post entrenamiento</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Hidratación
+                            adecuada</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Suplementación
+                            (si es necesaria)</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Recuperación
+                            muscular</li>
+                    </ul>
+                </div>
+                <div class="servicio">
+                    <i class="fas fa-heartbeat"></i>
+                    <h3>Nutrición Clínica</h3>
+                    <p>Manejo nutricional de condiciones como diabetes, hipertensión, dislipidemias y otras
+                        enfermedades.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Diabetes
+                            mellitus</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Hipertensión
+                            arterial</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Dislipidemias
+                        </li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Enfermedades
+                            gastrointestinales</li>
+                    </ul>
+                </div>
+                <div class="servicio">
+                    <i class="fas fa-baby"></i>
+                    <h3>Nutrición Materno-Infantil</h3>
+                    <p>Acompañamiento nutricional durante el embarazo, lactancia y alimentación complementaria.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Nutrición
+                            en el embarazo</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Lactancia
+                            materna</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Alimentación
+                            complementaria</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Nutrición
+                            infantil</li>
+                    </ul>
+                </div>
+                <div class="servicio">
+                    <i class="fas fa-seedling"></i>
+                    <h3>Alimentación Vegetariana/Vegana</h3>
+                    <p>Asesoría para llevar una alimentación vegetariana o vegana equilibrada y completa.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Planificación
+                            de menús</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Suplementación
+                            necesaria</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Recetas y
+                            opciones prácticas</li>
+                        <li><i class="fas fa-check-circle"
+                                style="color: var(--primary-color); margin-right: 4px; font-size: 0.8em;"></i>Prevención
+                            de deficiencias</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios Section -->
+    <section id="testimonios" class="testimonios">
+        <div class="contenedor">
+            <h2 class="text-center">Testimonios</h2>
+            <div class="grid-testimonios">
+                <div class="testimonio">
+                    <p>"Gracias a la asesoría nutricional recibida, logré bajar 12 kg de manera saludable y sostenible.
+                        Lo mejor fue que nunca pasé hambre y aprendí a comer de todo en las porciones adecuadas."</p>
+                    <h4>- María G., 32 años</h4>
+                </div>
+                <div class="testimonio">
+                    <p>"Como deportista, necesitaba optimizar mi alimentación para mejorar mi rendimiento. El plan
+                        nutricional personalizado hizo una gran diferencia en mis tiempos de recuperación y energía
+                        durante los entrenamientos."</p>
+                    <h4>- Juan P., 28 años</h4>
+                </div>
+                <div class="testimonio">
+                    <p>"Después de mi diagnóstico de diabetes, estaba muy confundida sobre qué comer. La nutrióloga me
+                        enseñó a controlar mis niveles de glucosa a través de la alimentación y ahora me siento mucho
+                        mejor."</p>
+                    <h4>- Ana L., 45 años</h4>
+                </div>
+                <div class="testimonio">
+                    <p>"Durante mi embarazo recibí orientación nutricional que me ayudó a llevar una gestación
+                        saludable. Ahora continuamos trabajando en mi recuperación postparto y la alimentación de mi
+                        bebé."</p>
+                    <h4>- Sofía M., 30 años</h4>
+                </div>
+                <div class="testimonio">
+                    <p>"Decidí adoptar una alimentación vegetariana y estaba preocupado por no cubrir mis necesidades
+                        nutricionales. La asesoría me dio la confianza y herramientas para hacerlo de manera
+                        equilibrada."</p>
+                    <h4>- Carlos R., 35 años</h4>
+                </div>
+                <div class="testimonio">
+                    <p>"Mi hijo tenía problemas de bajo peso y falta de apetito. Con las estrategias aprendidas,
+                        logramos mejorar su crecimiento y desarrollo de manera significativa."</p>
+                    <h4>- Laura V., 38 años</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="blog">
+        <div class="contenedor">
+            <h2 class="text-center">Artículos Recientes</h2>
+            <div class="grid-blog">
+                <div class="articulo">
+                    <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                        alt="Alimentos energéticos">
+                    <div class="contenido">
+                        <h3>5 Alimentos para Mejorar tu Energía Diaria</h3>
+                        <p>Descubre qué alimentos pueden ayudarte a mantener altos tus niveles de energía durante todo
+                            el día sin necesidad de estimulantes artificiales.</p>
+                        <div class="meta">
+                            <span><i class="far fa-calendar-alt"></i> 15 Junio 2025</span>
+                            <a href="#">Leer más <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="articulo">
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                        alt="Dieta balanceada">
+                    <div class="contenido">
+                        <h3>Los Beneficios de una Dieta Balanceada</h3>
+                        <p>Conoce cómo una alimentación equilibrada puede mejorar tu salud física, mental y emocional a
+                            corto y largo plazo.</p>
+                        <div class="meta">
+                            <span><i class="far fa-calendar-alt"></i> 2 Junio 2025</span>
+                            <a href="#">Leer más <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="articulo">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
+                        alt="Alimentación saludable">
+                    <div class="contenido">
+                        <h3>Consejos Prácticos para una Alimentación Saludable</h3>
+                        <p>Pequeños cambios que puedes implementar hoy mismo para mejorar tus hábitos alimenticios sin
+                            sentir que estás a dieta.</p>
+                        <div class="meta">
+                            <span><i class="far fa-calendar-alt"></i> 20 Mayo 2025</span>
+                            <a href="#">Leer más <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center" style="margin-top: 3rem;">
+                <a href="#" class="btn">Ver todos los artículos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacto Section -->
+    <section id="contacto" class="contacto">
+        <div class="contenedor">
+            <h2 class="text-center">Contacto</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center;">
+                <div>
+                    <h3 style="color: var(--white); margin-bottom: 1.5rem;">¡Agenda tu cita hoy mismo!</h3>
+                    <p style="color: var(--white); margin-bottom: 2rem;">Estoy aquí para ayudarte a alcanzar tus metas
+                        de salud y bienestar a través de una nutrición personalizada.</p>
+                    <div style="margin-bottom: 2rem;">
+                        <p style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-map-marker-alt"
+                                style="margin-right: 10px;"></i> Dirección: Calle España #224, Col. Díaz Ordaz. Puerto
+                            Vallarta, JAL</p>
+                        <p style="color: var(--white); margin-bottom: 0.5rem;"><i class="fas fa-phone"
+                                style="margin-right: 10px;"></i> Teléfono: 322 109 5582</p>
+                        <p style="color: var(--white);"><i class="fas fa-envelope" style="margin-right: 10px;"></i>
+                            Email: adrehabnutricion@gmail.com</p>
+                        <p style="color: var(--white);">
+                            <i class="fas fa-calendar-alt" style="margin-right: 10px;"></i>
+                            <a href="https://calendar.app.google/ZWFp3tR1LFRQiCRHA" target="_blank"
+                                style="color: var(--white); text-decoration: none;">
+                                ¡Agenda una cita!
+                            </a>
+                        </p>
+                    </div>
+                    <div class="social" style="justify-content: flex-start;">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/523221095582?text=Hola%20quiero%20más%20información%20sobre%20tus%20servicios"
+                            target="_blank" style="color: #25D366; font-size: 24px;">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <!-- <form action="enviar.php" method="POST">
+                  //Campos ocultos para configuración
+                  <input type="hidden" name="_captcha" value="false">
+                  <input type="hidden" name="_next" value="https://seniorcarepv.com/gracias.html"> //Cambia esta URL
+                  <input type="hidden" name="_template" value="table"> //Formato del email
+                  
+                  // Campos de tu formulario
+                  <input type="text" name="nombre" placeholder="Nombre completo" required>
+                  <input type="email" name="email" placeholder="Correo electrónico" required>
+                  <input type="tel" name="telefono" placeholder="Teléfono">
+                  
+                  <select name="servicio" required>
+                    <option value="" disabled selected>Selecciona un servicio</option>
+                    <option value="Consulta Nutricional">Consulta Nutricional</option>
+                    <option value="Control de Peso">Control de Peso</option>
+                    <option value="Nutrición Deportiva">Nutrición Deportiva</option>
+                    <option value="Nutrición Clínica">Nutrición Clínica</option>
+                    <option value="Nutrición Materno-Infantil">Nutrición Materno-Infantil</option>
+                    <option value="Alimentación Vegetariana/Vegana">Alimentación Vegetariana/Vegana</option>
+                  </select>
+                  
+                  <textarea name="mensaje" placeholder="Mensaje" rows="5" required></textarea>
+                  
+                  <button type="submit">Enviar Mensaje</button>
+                </form> -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="contenedor">
+            <div class="footer-contenido">
+                <div class="footer-col">
+                    <a href="index.html" class="logo1">Nutri<span>óloga</span> De Niz</a>
+                    <p>Transformando vidas a través de la nutrición personalizada y basada en evidencia científica.</p>
+                    <div class="social">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/523221095582?text=Hola%20quiero%20más%20información%20sobre%20tus%20servicios"
+                            target="_blank" style="color: #25D366; font-size: 24px;">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h3>Servicios</h3>
+                    <ul>
+                        <li><a href="#">Consulta Nutricional</a></li>
+                        <li><a href="#">Control de Peso</a></li>
+                        <li><a href="#">Nutrición Deportiva</a></li>
+                        <li><a href="#">Nutrición Clínica</a></li>
+                        <li><a href="#">Nutrición Materno-Infantil</a></li>
+                        <li><a href="#">Alimentación Vegetariana/Vegana</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#sobre-mi">Sobre Mí</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#testimonios">Testimonios</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Horario de Atención</h3>
+                    <ul>
+                        <li>Lunes a Viernes: 9:00 - 14:00 hrs</li>
+                    </ul>
+                    <h3 style="margin-top: 1.5rem;">Formas de Pago</h3>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <i class="fab fa-cc-visa" style="font-size: 1.5rem;"></i>
+                        <i class="fab fa-cc-mastercard" style="font-size: 1.5rem;"></i>
+                        <i class="fas fa-money-bill-wave" style="font-size: 1.5rem;"></i>
+                        <i class="fas fa-university" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; <span id="year"></span> Nutrióloga De Niz. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menu = document.querySelector('.menu');
+
+        menuToggle.addEventListener('click', function () {
+            menu.classList.toggle('active');
+            menuToggle.innerHTML = menu.classList.contains('active') ?
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                if (menu.classList.contains('active')) {
+                    menu.classList.remove('active');
+                    menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Form submission
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                alert('Gracias por tu mensaje. Me pondré en contacto contigo pronto.');
+                this.reset();
+            });
+        }
+    </script>
+</body>
+
+</html>
