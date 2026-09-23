@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101514">
+  <meta name="description" content="Minds Under the Palm — El Barrio Retreat. Hotel-Coworking Boutique en Puerto Vallarta / Riviera Nayarit.">
+  <title>Minds Under the Palm — El Barrio Retreat</title>
+  <style>
+    :root{
+      --ink:#0d1110;
+      --ink2:#151c19;
+      --glass:rgba(255,255,255,.075);
+      --glass2:rgba(255,255,255,.11);
+      --line:rgba(255,255,255,.15);
+      --text:#f3f1e9;
+      --muted:#b9c0ba;
+      --sand:#d6c3a0;
+      --wood:#9d7048;
+      --leaf:#71846e;
+      --water:#75a7a0;
+      --brick:#9b5941;
+      --max:1240px;
+      --shadow:0 24px 70px rgba(0,0,0,.30);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(113,132,110,.16), transparent 28%),
+        radial-gradient(circle at 88% 22%, rgba(117,167,160,.10), transparent 26%),
+        linear-gradient(145deg,#0a0e0d,#111815 48%,#0b100e);
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,"Segoe UI",sans-serif;
+      line-height:1.6;
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{width:min(calc(100% - 40px),var(--max));margin:auto}
+    .nav{
+      position:fixed;z-index:50;top:16px;left:50%;transform:translateX(-50%);
+      width:min(calc(100% - 28px),1120px);
+      padding:11px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      border:1px solid var(--line);border-radius:18px;
+      background:rgba(10,14,13,.68);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      box-shadow:0 15px 45px rgba(0,0,0,.22);
+    }
+    .brand{font-weight:800;letter-spacing:.08em;font-size:.82rem}
+    .brand span{color:var(--sand)}
+    .navlinks{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+    .navlinks a{font-size:.76rem;color:#cdd2cc;padding:7px 9px;border-radius:10px}
+    .navlinks a:hover{background:var(--glass2);color:white}
+    .hero{min-height:100svh;display:grid;align-items:end;position:relative;overflow:hidden}
+    .hero:before{
+      content:"";position:absolute;inset:0;
+      background:
+        linear-gradient(180deg,rgba(6,9,8,.28),rgba(6,9,8,.76) 72%,#0a0e0d 100%),
+        url("sotano-bunker-silencio.png") center/cover no-repeat;
+      filter:saturate(.88);
+      transform:scale(1.01);
+    }
+    .hero-content{position:relative;padding:170px 0 82px;max-width:980px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:7px 11px;border:1px solid var(--line);border-radius:999px;
+      background:rgba(7,10,9,.38);backdrop-filter:blur(12px);
+      text-transform:uppercase;letter-spacing:.16em;font-size:.69rem;color:#d7ddd7;
+    }
+    .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--water);display:block}
+    h1{font-size:clamp(3.2rem,8vw,7.7rem);line-height:.9;letter-spacing:-.065em;margin:22px 0 24px;max-width:900px}
+    h1 em{font-style:normal;color:var(--sand)}
+    .lead{font-size:clamp(1rem,2vw,1.32rem);max-width:780px;color:#d9ddd8}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+    .pill{border:1px solid var(--line);background:rgba(255,255,255,.06);padding:8px 12px;border-radius:999px;color:#d4dad4;font-size:.78rem}
+    section{padding:100px 0}
+    .section-head{display:grid;grid-template-columns:1fr 2fr;gap:60px;margin-bottom:48px}
+    .kicker{color:var(--sand);text-transform:uppercase;letter-spacing:.18em;font-size:.68rem;font-weight:800}
+    h2{font-size:clamp(2rem,4vw,4rem);line-height:1;letter-spacing:-.045em;margin:8px 0 0}
+    .section-intro{font-size:1.08rem;color:var(--muted);max-width:780px}
+    .glass{
+      border:1px solid var(--line);background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));
+      box-shadow:var(--shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+    }
+    .executive{display:grid;grid-template-columns:1.15fr .85fr;gap:20px}
+    .panel{border-radius:26px;padding:30px}
+    .quote{
+      font-size:clamp(1.45rem,2.8vw,2.5rem);line-height:1.15;letter-spacing:-.03em;
+      color:#f5f0e4;margin:0;
+    }
+    .quote b{color:var(--sand)}
+    .metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .metric{padding:22px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.045)}
+    .metric strong{display:block;font-size:2rem;line-height:1.1;color:white}
+    .metric span{display:block;color:var(--muted);font-size:.78rem;margin-top:7px}
+    .levels{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .level{position:relative;overflow:hidden;border-radius:24px;padding:30px;min-height:310px}
+    .level:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-70px;bottom:-75px;background:rgba(255,255,255,.04)}
+    .level .num{font-size:.7rem;letter-spacing:.18em;color:var(--sand);font-weight:800}
+    .level h3{font-size:1.65rem;line-height:1.05;margin:14px 0 12px;max-width:470px}
+    .level p{color:#c2c9c3;margin:0;max-width:610px}
+    .tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px}
+    .tag{font-size:.7rem;border:1px solid var(--line);padding:6px 8px;border-radius:8px;color:#cbd1cb}
+    .level.-1{background:linear-gradient(145deg,rgba(55,63,61,.52),rgba(18,24,22,.75))}
+    .level.zero{background:linear-gradient(145deg,rgba(97,73,50,.42),rgba(18,24,22,.75))}
+    .level.one{background:linear-gradient(145deg,rgba(86,94,73,.42),rgba(18,24,22,.75))}
+    .level.two{background:linear-gradient(145deg,rgba(67,96,91,.44),rgba(18,24,22,.75))}
+    .architecture{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+    .image-card{overflow:hidden;border-radius:26px;min-height:500px}
+    .image-card img{width:100%;height:100%;display:block;object-fit:cover}
+    .stack{display:grid;gap:20px}
+    .principle{padding:28px;border-radius:24px}
+    .principle h3{margin:0 0 8px;font-size:1.2rem}
+    .principle p{margin:0;color:var(--muted)}
+    .commercial{display:grid;grid-template-columns:.95fr 1.05fr;gap:20px}
+    .founder{padding:34px;border-radius:28px;background:linear-gradient(145deg,rgba(214,195,160,.13),rgba(255,255,255,.045))}
+    .price{font-size:clamp(3rem,6vw,5rem);font-weight:800;letter-spacing:-.06em;line-height:.9;margin:15px 0}
+    .price small{font-size:1rem;color:var(--muted);letter-spacing:0;font-weight:500}
+    ul{padding-left:19px;color:#c9d0ca}
+    li{margin:9px 0}
+    .benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+    .benefit{padding:13px;border:1px solid var(--line);border-radius:14px;color:#d9ded9;font-size:.86rem}
+    .finance{padding:34px;border-radius:28px}
+    .finance-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .bar-row{margin:18px 0}
+    .bar-label{display:flex;justify-content:space-between;gap:20px;font-size:.82rem;color:#d2d7d2;margin-bottom:7px}
+    .bar{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sand),var(--wood))}
+    .income{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+    .income .metric{min-height:118px}
+    .income .metric strong{font-size:1.55rem}
+    .payback{margin-top:18px;padding:18px;border-radius:18px;background:rgba(117,167,160,.10);border:1px solid rgba(117,167,160,.24)}
+    .payback strong{font-size:1.5rem}
+    .note{font-size:.75rem;color:#919a93;margin-top:22px;line-height:1.55}
+    .closing{padding:120px 0 90px;text-align:center}
+    .closing h2{max-width:900px;margin:0 auto 20px}
+    .closing p{color:var(--muted);max-width:680px;margin:0 auto 30px}
+    .cta{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;border-radius:14px;background:#e5dac3;color:#111714;font-weight:800}
+    footer{border-top:1px solid var(--line);padding:24px 0 36px;color:#8e9890;font-size:.75rem}
+    footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media(max-width:900px){
+      .navlinks{display:none}
+      .section-head,.executive,.architecture,.commercial{grid-template-columns:1fr}
+      .levels{grid-template-columns:1fr}
+      .image-card{min-height:380px}
+    }
+    @media(max-width:620px){
+      .wrap{width:min(calc(100% - 26px),var(--max))}
+      section{padding:72px 0}
+      .hero-content{padding-top:150px;padding-bottom:60px}
+      .metrics,.finance-grid,.benefits,.income{grid-template-columns:1fr}
+      .panel,.founder,.finance,.principle,.level{padding:24px}
+      h1{font-size:clamp(3rem,17vw,5rem)}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="#inicio">EL BARRIO <span>RETREAT</span></a>
+    <div class="navlinks">
+      <a href="#concepto">Concepto</a>
+      <a href="#niveles">Niveles</a>
+      <a href="#membresia">Fundador</a>
+      <a href="#finanzas">Finanzas</a>
+    </div>
+  </nav>
+
+  <header class="hero" id="inicio">
+    <div class="wrap hero-content">
+      <div class="eyebrow"><i></i> Puerto Vallarta / Riviera Nayarit</div>
+      <h1>Minds Under<br>the <em>Palm</em></h1>
+      <p class="lead">
+        El Barrio Retreat. Un Hotel-Coworking Boutique de nicho que combina
+        <strong>Deep Work, arquitectura tropical y desconexión genuina</strong>
+        en una propiedad vertical de alta eficiencia.
+      </p>
+      <div class="hero-meta">
+        <span class="pill">Terreno 8 × 17 m</span>
+        <span class="pill">Desplante 6 × 6 m</span>
+        <span class="pill">4 niveles + sótano</span>
+        <span class="pill">Brutalismo Tropical Balinés</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="concepto">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="kicker">01 · Resumen ejecutivo</div>
+            <h2>Arquitectura para pensar.</h2>
+          </div>
+          <p class="section-intro">
+            El proyecto nace de una tensión concreta: el nómada digital de alto valor necesita
+            aislamiento acústico y concentración durante el trabajo, pero también espacios capaces
+            de apagar el ruido mental cuando termina la jornada.
+          </p>
+        </div>
+
+        <div class="executive">
+          <article class="panel glass">
+            <p class="quote">
+              “No es solamente un lugar donde dormir o trabajar.
+              Es una pequeña infraestructura diseñada alrededor del
+              <b>ritmo cognitivo</b> de quien la habita.”
+            </p>
+            <p class="section-intro" style="margin-top:24px">
+              La estrategia espacial divide el inmueble en cuatro atmósferas de energía independiente:
+              silencio, convivencia, descanso y contemplación.
+            </p>
+          </article>
+
+          <div class="metrics">
+            <div class="metric glass"><strong>6 × 6</strong><span>metros de desplante eficiente</span></div>
+            <div class="metric glass"><strong>5</strong><span>atmósferas verticales contando el sótano</span></div>
+            <div class="metric glass"><strong>$3 M</strong><span>presupuesto total planteado</span></div>
+            <div class="metric glass"><strong>$89 K</strong><span>ingreso bruto mensual estabilizado</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="niveles">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="kicker">02 · Las cuatro atmósferas</div>
+            <h2>Un edificio.<br>Cuatro estados mentales.</h2>
+          </div>
+          <p class="section-intro">
+            Cada nivel tiene una función económica y sensorial distinta. El conjunto evita que
+            coworking, hospedaje, convivencia y descanso compitan entre sí.
+          </p>
+        </div>
+
+        <div class="levels">
+          <article class="level glass -1">
+            <div class="num">SÓTANO · −1</div>
+            <h3>El Búnker del Silencio</h3>
+            <p>
+              Cuatro oficinas privadas para máximo enfoque acústico. Muros de cristal templado
+              orientados al Jardín Inglés, con luz cenital indirecta y una cascada como fondo sonoro.
+            </p>
+            <div class="tags">
+              <span class="tag">4 oficinas</span><span class="tag">Deep Work</span>
+              <span class="tag">Parota maciza</span><span class="tag">Jardín enterrado</span>
+            </div>
+          </article>
+
+          <article class="level glass zero">
+            <div class="num">PLANTA BAJA · 0</div>
+            <h3>La Zona Neutra</h3>
+            <p>
+              Cocina y comedor abiertos bajo una gran losa de concreto aparente. Barra monumental,
+              parrilla de acero inoxidable, pileta exterior y una bodega blindada con control biométrico.
+            </p>
+            <div class="tags">
+              <span class="tag">Convivencia</span><span class="tag">Barra de parota</span>
+              <span class="tag">Asados</span><span class="tag">Seguridad</span>
+            </div>
+          </article>
+
+          <article class="level glass one">
+            <div class="num">NIVEL 1 · +1</div>
+            <h3>La Suite Eco-Boutique</h3>
+            <p>
+              Una suite concebida como refugio privado. Clóset integral de teca, baño abierto,
+              ducha de lluvia y tina exenta de piedra natural frente a las copas de los árboles.
+            </p>
+            <div class="tags">
+              <span class="tag">Hospedaje</span><span class="tag">Teca</span>
+              <span class="tag">Tina de piedra</span><span class="tag">Vista al jardín</span>
+            </div>
+          </article>
+
+          <article class="level glass two">
+            <div class="num">NIVEL 2 · +2</div>
+            <h3>El Rooftop Santuario</h3>
+            <p>
+              Una palapa tradicional del Pacífico como techo emocional del proyecto:
+              hamacas, mirador de 360°, degustaciones herbales y las Charlas de Bonsái.
+            </p>
+            <div class="tags">
+              <span class="tag">360°</span><span class="tag">Palapa</span>
+              <span class="tag">Hamacas</span><span class="tag">Charlas de Bonsái</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap architecture">
+        <div class="image-card glass">
+          <img src="sotano-bunker-silencio.png" alt="Concepto arquitectónico del Búnker del Silencio con oficinas acristaladas y jardín inglés enterrado">
+        </div>
+        <div class="stack">
+          <article class="principle glass">
+            <h3>Materialidad honesta</h3>
+            <p>
+              Concreto aparente, ladrillo artesanal, parota y piedra. El proyecto utiliza la propia
+              textura de los materiales como acabado arquitectónico, reduciendo capas innecesarias.
+            </p>
+          </article>
+          <article class="principle glass">
+            <h3>Silencio + naturaleza</h3>
+            <p>
+              El jardín inglés funciona como pulmón visual del sótano. La vegetación, el agua y la
+              luz natural introducen una dimensión sensorial sin sacrificar privacidad.
+            </p>
+          </article>
+          <article class="principle glass">
+            <h3>Verticalidad eficiente</h3>
+            <p>
+              Un desplante compacto permite reservar superficie del terreno para accesos, paisaje,
+              retiro frontal y áreas exteriores, mientras el programa se distribuye verticalmente.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="membresia">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="kicker">03 · Primeros compradores</div>
+            <h2>Membresía Fundador.</h2>
+          </div>
+          <p class="section-intro">
+            Una preventa limitada para construir una primera comunidad de usuarios, en lugar de
+            perseguir volumen masivo desde el inicio.
+          </p>
+        </div>
+
+        <div class="commercial">
+          <article class="founder glass">
+            <div class="kicker">Preventa · contrato de 6 meses</div>
+            <div class="price">$36,000 <small>MXN anticipados</small></div>
+            <p style="color:var(--muted)">$6,000 MXN mensuales equivalentes, pagados por adelantado.</p>
+            <div class="benefits">
+              <div class="benefit">1 de las 4 oficinas privadas garantizada durante el contrato</div>
+              <div class="benefit">10 noches en la Suite Eco-Boutique</div>
+              <div class="benefit">Acceso preferencial de por vida al Rooftop</div>
+              <div class="benefit">Charlas de Bonsái y eventos de la marca</div>
+              <div class="benefit">Uso preferente del stock privado</div>
+              <div class="benefit">Infraestructura digital de elbarrio.me</div>
+            </div>
+          </article>
+
+          <article class="panel glass">
+            <div class="kicker">Tesis comercial</div>
+            <h3 style="font-size:2rem;line-height:1.05;margin:12px 0">Comunidad pequeña, experiencia deliberada.</h3>
+            <ul>
+              <li>Selección de un grupo piloto de usuarios iniciales.</li>
+              <li>Monetización combinada de oficinas, hospedaje y eventos.</li>
+              <li>Uso de una infraestructura digital propia para comunicación y captación.</li>
+              <li>Posicionamiento de nicho alrededor de productividad, arquitectura y bienestar.</li>
+            </ul>
+            <p class="note">
+              La membresía descrita corresponde al modelo comercial propuesto y debe formalizarse
+              mediante contratos, condiciones de uso y la estructura jurídica aplicable antes de su comercialización.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="finanzas">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="kicker">04 · Modelo financiero</div>
+            <h2>Los números<br>sobre la mesa.</h2>
+          </div>
+          <p class="section-intro">
+            Modelo de referencia proporcionado para el concepto. Los porcentajes de inversión suman
+            100% y la proyección operativa parte de una ocupación estabilizada.
+          </p>
+        </div>
+
+        <article class="finance glass">
+          <div class="finance-grid">
+            <div>
+              <h3 style="margin-top:0">Estructura del costo de capital</h3>
+
+              <div class="bar-row"><div class="bar-label"><span>Cimentación y sótano estructural</span><b>21.6%</b></div><div class="bar"><i style="width:21.6%"></i></div></div>
+              <div class="bar-row"><div class="bar-label"><span>Obra negra brutalista</span><b>36.6%</b></div><div class="bar"><i style="width:36.6%"></i></div></div>
+              <div class="bar-row"><div class="bar-label"><span>Carpinterías y cristalería</span><b>18.3%</b></div><div class="bar"><i style="width:18.3%"></i></div></div>
+              <div class="bar-row"><div class="bar-label"><span>Instalaciones y paisajismo</span><b>15.0%</b></div><div class="bar"><i style="width:15%"></i></div></div>
+              <div class="bar-row"><div class="bar-label"><span>Acceso y logística</span><b>8.5%</b></div><div class="bar"><i style="width:8.5%"></i></div></div>
+            </div>
+
+            <div>
+              <h3 style="margin-top:0">Operación mensual estabilizada</h3>
+              <div class="income">
+                <div class="metric"><strong>$24 K</strong><span>4 oficinas privadas</span></div>
+                <div class="metric"><strong>$40 K</strong><span>Suite · 20 noches</span></div>
+                <div class="metric"><strong>$25 K</strong><span>Eventos y consumos</span></div>
+              </div>
+              <div class="payback">
+                <div style="color:#9dbdb8;font-size:.74rem;text-transform:uppercase;letter-spacing:.12em">Resultado del modelo</div>
+                <strong>$89,000 MXN</strong> <span style="color:var(--muted)">ingreso bruto mensual</span><br>
+                <strong>$65,000 MXN</strong> <span style="color:var(--muted)">flujo neto mensual estimado</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:18px;background:rgba(255,255,255,.035)">
+            <div class="kicker">Referencia matemática</div>
+            <h3 style="font-size:1.5rem;margin:10px 0 4px">Recuperación simple del capital</h3>
+            <p style="margin:0;color:var(--muted)">
+              Con una inversión de $3,000,000 MXN y un flujo neto mensual estimado de $65,000 MXN,
+              la recuperación simple del capital sería de aproximadamente <strong style="color:white">46.2 meses</strong>,
+              equivalente a <strong style="color:white">3.85 años</strong>, antes de considerar impuestos,
+              depreciación, financiamiento, vacancia, contingencias o reinversión.
+            </p>
+          </div>
+
+          <p class="note">
+            Nota: las cifras financieras, costos, ocupación, ingresos, ROI y supuestos de ejecución de esta página
+            son los proporcionados para el concepto y no constituyen una valuación, garantía de rentabilidad,
+            oferta financiera ni dictamen de factibilidad. Antes de invertir deben validarse costos de obra,
+            permisos, uso de suelo, estructura, impermeabilización, mercado, operación, fiscalidad y regulación aplicable.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap">
+        <div class="kicker">Minds Under the Palm</div>
+        <h2>Una propiedad pequeña puede tener una idea grande.</h2>
+        <p>
+          El Barrio Retreat propone una arquitectura compacta, sensorial y deliberada:
+          trabajar profundamente abajo, convivir al nivel de la tierra, descansar entre árboles
+          y terminar el día bajo una palapa mirando la bahía.
+        </p>
+        <a class="cta" href="https://elbarrio.me" target="_blank" rel="noopener">Explorar elbarrio.me</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span>EL BARRIO RETREAT · Minds Under the Palm</span>
+      <span>Puerto Vallarta / Riviera Nayarit · Concepto arquitectónico y comercial</span>
+    </div>
+  </footer>
+</body>
+</html>
