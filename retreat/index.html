@@ -598,6 +598,172 @@ Usa el código con precaución.=================================================
       position: relative;
       z-index: 2;
     }
+
+    /* =========================================================
+   EFECTO DE TARJETAS GIRATORIAS 3D (CARD FLIP)
+========================================================= */
+
+    .grid-niveles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--espaciado-lg);
+      padding-top: var(--espaciado-md);
+    }
+
+    /* El contenedor principal establece la perspectiva 3D */
+    .tarjeta-giratoria {
+      background-color: transparent;
+      width: 100%;
+      height: 380px; /* Altura fija para que los renders luzcan uniformes */
+      perspective: 1000px; /* Crucial para el efecto de profundidad */
+    }
+
+    /* El contenedor interno que realmente va a rotar */
+    .tarjeta-interno {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: left;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      box-shadow: var(--shadow-sm);
+      border-radius: var(--border-radius);
+    }
+
+    /* Activación de la rotación al pasar el mouse (Hover) */
+    .tarjeta-giratoria:hover .tarjeta-interno {
+      transform: rotateY(180deg);
+    }
+
+    /* Propiedades comunes para ambas caras (frontal y trasera) */
+    .tarjeta-frontal,
+    .tarjeta-trasera {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden; /* Oculta la cara opuesta durante el giro */
+      backface-visibility: hidden;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--color-borde);
+      padding: var(--espaciado-lg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- CARA FRONTAL: SOLO EL RENDER --- */
+    .tarjeta-frontal {
+      background-size: cover;
+      background-position: center;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+
+    /* Capa ahumada sutil para la cara frontal */
+    .tarjeta-frontal::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.1) 100%
+      );
+      z-index: 1;
+      border-radius: var(--border-radius);
+    }
+
+    .tarjeta-badge,
+    .tarjeta-badge-destacado {
+      position: relative;
+      z-index: 2;
+      background: rgba(17, 20, 24, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--color-borde);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .tarjeta-badge-destacado {
+      border-color: var(--color-dorado);
+      color: var(--color-dorado);
+    }
+
+    /* --- CARA TRASERA: LOS TEXTOS --- */
+    .tarjeta-trasera {
+      background-color: var(--color-secundario);
+      color: var(--color-texto);
+      transform: rotateY(180deg); /* Se inicializa volteada de espaldas */
+      justify-content: center;
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .tarjeta-back-destacada {
+      background: linear-gradient(135deg, var(--color-secundario), #221c15);
+      border-color: rgba(212, 160, 67, 0.3);
+    }
+
+    .tarjeta-trasera .tarjeta-titulo {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: var(--espaciado-xs);
+    }
+
+    .tarjeta-trasera .tarjeta-fecha {
+      font-size: 0.75rem;
+      color: var(--color-dorado);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: var(--espaciado-md);
+      text-transform: uppercase;
+    }
+
+    .tarjeta-trasera .tarjeta-contenido {
+      font-size: 0.85rem;
+      color: var(--color-texto-claro);
+      line-height: 1.5;
+      margin-bottom: var(--espaciado-lg);
+    }
+
+    /* Botón interno de la tarjeta */
+    .btn-tarjeta-giro {
+      display: block;
+      text-align: center;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--color-borde);
+      color: var(--color-texto);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      margin-top: auto; /* Empuja el botón al fondo de la tarjeta */
+    }
+
+    .btn-tarjeta-giro:hover {
+      background: #fff;
+      color: #111418;
+      border-color: #fff;
+    }
+
+    .btn-giro-oro {
+      border-color: var(--color-dorado);
+      color: var(--color-dorado);
+    }
+
+    .btn-giro-oro:hover {
+      background: var(--color-dorado);
+      color: #111418;
+      border-color: var(--color-dorado);
+    }
   </style>
   <body>
     <!-- STICKY HEADER -->
@@ -687,55 +853,120 @@ Usa el código con precaución.=================================================
       <section class="seccion-niveles">
         <div class="contenedor">
           <h3 class="seccion-titulo-general">La Arquitectura del Enfoque</h3>
+
           <div class="grid-niveles">
-            <div class="tarjeta nivel-bunker">
-              <div class="tarjeta-titulo">
-                1. El Búnker del Silencio (-1 Nivel)
+            <!-- TARJETA 1: SÓTANO -->
+            <div class="tarjeta-giratoria">
+              <div class="tarjeta-interno">
+                <!-- CARA FRONTAL (SOLO EL RENDER) -->
+                <div
+                  class="tarjeta-frontal"
+                  style="
+                    background-image: url(&quot;/retreat/img/render-bunker.jpg&quot;);
+                  "
+                >
+                  <div class="tarjeta-badge">1. El Búnker</div>
+                </div>
+                <!-- CARA TRASERA (LOS TEXTOS) -->
+                <div class="tarjeta-trasera">
+                  <div class="tarjeta-titulo">
+                    1. El Búnker del Silencio (-1 Nivel)
+                  </div>
+                  <div class="tarjeta-fecha">SÓTANO TECH & PATIO INGLÉS</div>
+                  <p class="tarjeta-contenido">
+                    4 micro-oficinas privadas con tablones flotantes de parota
+                    maciza y cristal templado acústico. Todo el espacio se abre
+                    hacia un jardín enterrado inundado de luz cenital indirecta,
+                    hortensias y una cascada de agua que elimina el ruido
+                    exterior.
+                  </p>
+                  <a href="#aplicar" class="btn-tarjeta-giro"
+                    >Reservar Espacio</a
+                  >
+                </div>
               </div>
-              <div class="tarjeta-fecha">SÓTANO TECH & PATIO INGLÉS</div>
-              <p class="tarjeta-contenido">
-                4 micro-oficinas privadas con tablones flotantes de parota
-                maciza y cristal templado acústico. Todo el espacio se abre
-                hacia un jardín enterrado inundado de luz cenital indirecta,
-                hortensias y una cascada de agua que elimina el ruido exterior.
-              </p>
             </div>
 
-            <div class="tarjeta">
-              <div class="tarjeta-titulo">2. La Zona Neutra (Nivel 0)</div>
-              <div class="tarjeta-fecha">PLANTA BAJA SOCIAL</div>
-              <p class="tarjeta-contenido">
-                Cocina y comedor al aire libre pero bajo resguardo de la losa.
-                Cuenta con una barra monumental de concreto pulido y parota para
-                comidas rápidas (4 bancos) y parrilla para asados junto a la
-                pileta. Aloja la bodega blindada biométrica.
-              </p>
+            <!-- TARJETA 2: PLANTA BAJA -->
+            <div class="tarjeta-giratoria">
+              <div class="tarjeta-interno">
+                <div
+                  class="tarjeta-frontal"
+                  style="
+                    background-image: url(&quot;/retreat/img/render-plantabaja.jpg&quot;);
+                  "
+                >
+                  <div class="tarjeta-badge">2. Zona Neutra</div>
+                </div>
+                <div class="tarjeta-trasera">
+                  <div class="tarjeta-titulo">2. La Zona Neutra (Nivel 0)</div>
+                  <div class="tarjeta-fecha">PLANTA BAJA SOCIAL</div>
+                  <p class="tarjeta-contenido">
+                    Cocina y comedor al aire libre pero bajo resguardo de la
+                    losa. Cuenta con una barra monumental de concreto pulido y
+                    parota para comidas rápidas (4 bancos) y parrilla para
+                    asados junto a la pileta. Aloja la bodega blindada
+                    biométrica.
+                  </p>
+                  <a href="#aplicar" class="btn-tarjeta-giro">Ver Espacio</a>
+                </div>
+              </div>
             </div>
 
-            <div class="tarjeta">
-              <div class="tarjeta-titulo">
-                3. La Suite Eco-Boutique (+1 Nivel)
+            <!-- TARJETA 3: SUITE -->
+            <div class="tarjeta-giratoria">
+              <div class="tarjeta-interno">
+                <div
+                  class="tarjeta-frontal"
+                  style="
+                    background-image: url(&quot;/retreat/img/render-suite.jpg&quot;);
+                  "
+                >
+                  <div class="tarjeta-badge">3. La Suite</div>
+                </div>
+                <div class="tarjeta-trasera">
+                  <div class="tarjeta-titulo">
+                    3. La Suite Eco-Boutique (+1 Nivel)
+                  </div>
+                  <div class="tarjeta-fecha">PRIMERA PLANTA / HOSPEDAJE</div>
+                  <p class="tarjeta-contenido">
+                    Hospedaje premium con clóset de teca que abraza la cama. El
+                    baño de concepto abierto independiza el inodoro y la ducha,
+                    dejando una tina exenta de piedra natural en una esquina
+                    acristalada para máxima relajación.
+                  </p>
+                  <a href="#aplicar" class="btn-tarjeta-giro">Reservar Noche</a>
+                </div>
               </div>
-              <div class="tarjeta-fecha">PRIMERA PLANTA / HOSPEDAJE</div>
-              <p class="tarjeta-contenido">
-                Hospedaje premium con clóset integral de teca que abraza la
-                cama. El baño de concepto abierto independiza el inodoro y la
-                ducha, dejando una majestuosa tina exenta de piedra natural en
-                una esquina acristalada.
-              </p>
             </div>
 
-            <div class="tarjeta urgente">
-              <div class="tarjeta-titulo">
-                4. El Rooftop Santuario (+2 Niveles)
+            <!-- TARJETA 4: ROOFTOP -->
+            <div class="tarjeta-giratoria">
+              <div class="tarjeta-interno">
+                <div
+                  class="tarjeta-frontal"
+                  style="
+                    background-image: url(&quot;/retreat/img/render-rooftop.jpg&quot;);
+                  "
+                >
+                  <div class="tarjeta-badge-destacado">4. El Rooftop</div>
+                </div>
+                <div class="tarjeta-trasera tarjeta-back-destacada">
+                  <div class="tarjeta-titulo">
+                    4. El Rooftop Santuario (+2 Niveles)
+                  </div>
+                  <div class="tarjeta-fecha">SEGUNDA PLANTA / WEED & ZEN</div>
+                  <p class="tarjeta-contenido">
+                    Bajo una palapa tradicional de Nayarit se despliega un
+                    mirador de 360 grados. Espacio adaptado para el consumo
+                    consciente, relajación, hamacas y las icónicas Charlas de
+                    Bonsái y té herbal de los fines de semana.
+                  </p>
+                  <a href="#aplicar" class="btn-tarjeta-giro btn-giro-oro"
+                    >Unirse a Charlas</a
+                  >
+                </div>
               </div>
-              <div class="tarjeta-fecha">SEGUNDA PLANTA / WEED & ZEN</div>
-              <p class="tarjeta-contenido">
-                Bajo la estructura expuesta de una palapa tradicional de
-                Nayarit, se despliega un mirador de 360 grados. Espacio libre de
-                humo sintético, adaptado para el consumo consciente, relajación,
-                hamacas y las icónicas Charlas de Bonsái de los fines de semana.
-              </p>
             </div>
           </div>
         </div>
