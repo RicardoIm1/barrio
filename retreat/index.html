@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Minds Under the Palm | El Barrio Retreat</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <style>
+    /* =========================================================
+       RESET + BASE
+    ========================================================= */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+        sans-serif;
+      background: var(--color-fondo);
+      color: var(--color-texto);
+      line-height: 1.6;
+      font-size: var(--fuente-cuerpo);
+      overflow-x: hidden;
+    }
+
+    main,
+    .contenido-principal {
+      flex: 1;
+      width: 100%;
+    }
+
+    /* =========================================================
+       VARIABLES (REINGENIERÍA: BRUTALISMO TROPICAL MODO OSCURO)
+    ========================================================= */
+
+    :root {
+      --color-primario: #111418; /* Negro de fondo principal */
+      --color-secundario: #1a1d24; /* Gris concreto oscuro para tarjetas */
+      --color-acento: #e74c3c; /* Rojo Ladrillo Artesanal */
+      --color-fondo: #0b0d10; /* Fondo base profundo */
+      --color-texto: #e2e8f0; /* Blanco roto de alta lectura */
+      --color-texto-claro: #94a3b8; /* Gris slate para subtítulos */
+      --color-borde: #2a313c; /* Líneas divisorias de concreto */
+      --color-error: #ef4444;
+      --color-exito: #10b981;
+      --color-urgente: #d4a043; /* Oro Balinés / Madera de Parota */
+
+      --color-verde: #1e5e3a; /* Verde Selva Vallarta */
+      --color-naranja: #e67e22;
+      --color-dorado: #d4a043; /* Tono parota/bambú */
+
+      --espaciado-xs: 4px;
+      --espaciado-sm: 8px;
+      --espaciado-md: 16px;
+      --espaciado-lg: 24px;
+      --espaciado-xl: 32px;
+
+      --fuente-titulo: 36px;
+      --fuente-subtitulo: 24px;
+      --fuente-cuerpo: 16px;
+      --fuente-pequena: 14px;
+
+      --border-radius: 16px;
+
+      --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+      --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    /* =========================================================
+       LAYOUT & RESTRICCIONES
+    ========================================================= */
+
+    .contenedor {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--espaciado-xl) var(--espaciado-md);
+      width: 100%;
+    }
+
+    .contenedor-chico {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: var(--espaciado-xl) var(--espaciado-md);
+      width: 100%;
+    }
+
+    /* =========================================================
+       HEADER STICKY (FIJO ARRIBA DE LA FINCA)
+    ========================================================= */
+
+    html,
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: auto;
+    }
+
+    .header {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      width: 100%;
+      background: rgba(17, 20, 24, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-borde);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-contenido {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem var(--espaciado-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 4.5rem;
+    }
+
+    /* =========================================================
+       LOGO
+    ========================================================= */
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+
+    .logo-icon-placeholder {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(
+        135deg,
+        var(--color-acento),
+        var(--color-dorado)
+      );
+      color: white;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .logo-texto h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ffffff, var(--color-texto-claro));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+
+    .header-slogan {
+      margin: 0;
+      font-size: 0.7rem;
+      color: var(--color-dorado);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* =========================================================
+       HEADER ACTIONS
+    ========================================================= */
+
+    .header-acciones {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .user-area {
+      display: flex;
+      align-items: center;
+    }
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--color-texto-claro);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--color-borde);
+    }
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+
+    .btn-login {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, var(--color-dorado), #b8860b);
+      color: #111418;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(212, 160, 67, 0.3);
+    }
+
+    .btn-grande {
+      padding: 1rem 2rem;
+      font-size: 1.05rem;
+      border-radius: var(--border-radius);
+      margin-top: var(--espaciado-md);
+    }
+
+    /* =========================================================
+       SECCIÓN HERO SECTOR (DISEÑO GRID ASIMÉTRICO)
+    ========================================================= */
+
+    .hero-section {
+      background: radial-gradient(
+        circle at top right,
+        rgba(212, 160, 67, 0.05),
+        transparent 60%
+      );
+      border-bottom: 1px solid var(--color-borde);
+      padding: 40px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: var(--espaciado-xl);
+      align-items: center;
+    }
+
+    .tag-exclusivo {
+      font-size: 0.75rem;
+      color: var(--color-dorado);
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      display: inline-block;
+      margin-bottom: var(--espaciado-md);
+    }
+
+    .hero-titulo {
+      font-size: var(--fuente-titulo);
+      line-height: 1.15;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: var(--espaciado-sm);
+    }
+
+    .hero-subtitulo {
+      font-size: 1.15rem;
+      color: var(--color-texto-claro);
+      margin-bottom: var(--espaciado-lg);
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--espaciado-sm);
+      margin-bottom: var(--espaciado-lg);
+    }
+
+    .hero-badges span {
+      background: var(--color-secundario);
+      border: 1px solid var(--color-borde);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--color-texto);
+    }
+
+    /* CONTENEDOR DE NUESTRO RENDER TRIDIMENSIONAL */
+    .hero-visual {
+      width: 100%;
+    }
+
+    .render-placeholder {
+      width: 100%;
+      min-height: 320px;
+      background: linear-gradient(135deg, #1e232b, #111418);
+      border: 1px solid var(--color-borde);
+      border-radius: var(--border-radius);
+      padding: var(--espaciado-xl);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+
+    .render-badge {
+      position: absolute;
+      top: var(--espaciado-md);
+      left: var(--espaciado-md);
+      background: rgba(231, 76, 60, 0.15);
+      border: 1px solid var(--color-acento);
+      color: var(--color-acento);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .render-placeholder p {
+      font-size: 0.85rem;
+      color: var(--color-texto-claro);
+    }
+
+    /* =========================================================
+       SECCIÓN MANIFIESTO
+    ========================================================= */
+
+    .seccion-manifiesto {
+      background: var(--color-primario);
+      border-bottom: 1px solid var(--color-borde);
+      text-align: center;
+    }
+
+    .centralizado blockquote {
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--color-dorado);
+      margin-bottom: var(--espaciado-md);
+      line-height: 1.4;
+    }
+
+    .centralizado p {
+      color: var(--color-texto-claro);
+    }
+
+    /* =========================================================
+       SECCIÓN NIVELES Y TARJETAS
+    ========================================================= */
+
+    .seccion-niveles {
+      background: var(--color-fondo);
+    }
+
+    .seccion-titulo-general {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: var(--espaciado-xl);
+    }
+
+    .grid-niveles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--espaciado-lg);
+    }
+
+    .tarjeta {
+      background: var(--color-secundario);
+      border: 1px solid var(--color-borde);
+      border-radius: var(--border-radius);
+      padding: var(--espaciado-lg);
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(212, 160, 67, 0.4);
+    }
+
+    .tarjeta.urgente {
+      border-top: 4px solid var(--color-dorado); /* El rooftop de palapa destaca */
+      background: linear-gradient(180deg, var(--color-secundario), #221c15);
+    }
+
+    .tarjeta-titulo {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: var(--espaciado-xs);
+      color: #fff;
+    }
+
+    .tarjeta-fecha {
+      font-size: 0.75rem;
+      color: var(--color-dorado);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: var(--espaciado-md);
+      text-transform: uppercase;
+    }
+
+    .tarjeta-contenido {
+      font-size: 0.9rem;
+      color: var(--color-texto-claro);
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       FORMULARIOS DE PREVENTA DE ALTA EXCLUSIVIDAD*/
+    .seccion-formulario {
+      background: var(--color-primario);
+      border-top: 1px solid var(--color-borde);
+    }
+    .formulario {
+      background: var(--color-secundario);
+      border: 1px solid var(--color-borde);
+      border-radius: var(--border-radius);
+      padding: var(--espaciado-xl);
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-md);
+    }
+    .formulario-encabezado {
+      text-align: center;
+      margin-bottom: var(--espaciado-xl);
+      border-bottom: 1px solid var(--color-borde);
+      padding-bottom: var(--espaciado-lg);
+    }
+    .formulario-encabezado h4 {
+      font-size: 1.4rem;
+      color: #fff;
+      margin-bottom: var(--espaciado-xs);
+    }
+    .precio-tag {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--color-dorado);
+    }
+    .precio-tag span {
+      font-size: 0.9rem;
+      color: var(--color-texto-claro);
+      font-weight: 400;
+    }
+    .formulario-nota {
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      background: rgba(230, 126, 34, 0.1);
+      border: 1px solid var(--color-naranja);
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-top: var(--espaciado-sm);
+      line-height: 1.4;
+    }
+    .campo {
+      margin-bottom: var(--espaciado-lg);
+    }
+    .campo label {
+      display: block;
+      margin-bottom: var(--espaciado-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--color-texto);
+      letter-spacing: 0.5px;
+    }
+    .campo input,
+    .campo textarea {
+      width: 100%;
+      padding: var(--espaciado-md);
+      border: 1px solid var(--color-borde);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: var(--color-primario);
+      color: #fff;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+    }
+    .campo input:focus,
+    .campo textarea:focus {
+      outline: none;
+      border-color: var(--color-dorado);
+      box-shadow: 0 0 0 3px rgba(212, 160, 67, 0.15);
+    }
+    .btn-formulario {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      margin-bottom: var(--espaciado-md);
+    }
+    .garantia-texto {
+      font-size: 0.75rem;
+      color: var(--color-texto-claro);
+      text-align: center;
+      line-height: 1.4;
+    } /* =========================================================FOOTER COMUNIDAD========================================================= */
+    .footer-comunidad {
+      background: var(--color-fondo);
+      border-top: 1px solid var(--color-borde);
+      padding: var(--espaciado-lg) var(--espaciado-md);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--color-texto-claro);
+    } /* =========================================================RESPONSIVE DESIGN (BREAKPOINTS)========================================================= */
+    @media (max-width: 768px) {
+      :root {
+        --fuente-titulo: 28px;
+        --fuente-subtitulo: 20px;
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: var(--espaciado-xl);
+      }
+      .formulario {
+        padding: var(--espaciado-lg);
+      }
+    }
+  </style>
+  <body>
+    <!-- STICKY HEADER -->
+    <header class="header">
+      <div class="header-contenido">
+        <a href="#" class="header-logo">
+          <!-- Ícono o inicial representativa de El Barrio -->
+          <div class="logo-icon-placeholder">EB</div>
+          <div class="logo-texto">
+            <h1>EL BARRIO</h1>
+            <p class="header-slogan">Comunidad & Desarrollo</p>
+          </div>
+        </a>
+        <div class="header-acciones">
+          <div class="user-area">
+            <span class="user-name">📍 Riviera Nayarit</span>
+          </div>
+          <a href="#aplicar" class="btn-login">Aplicar VIP</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="contenido-principal">
+      <!-- SECCIÓN HERO -->
+      <section class="hero-section">
+        <div class="contenedor hero-grid">
+          <div class="hero-info">
+            <span class="tag-exclusivo">✨ PREVENTA EXCLUSIVA FUNDADORES</span>
+            <h2 class="hero-titulo">Minds Under the Palm</h2>
+            <p class="hero-subtitulo">
+              El primer Hotel-Coworking de alta concentración y desconexión zen
+              en la costa del Pacífico.
+            </p>
+            <div class="hero-badges">
+              <span>🕳 Sótano Deep Work</span>
+              <span>🌱 Jardín Inglés</span>
+              <span>🪵 Madera de Parota</span>
+              <span>🌴 Rooftop Weed-Friendly</span>
+            </div>
+            <a href="#aplicar" class="btn-login btn-grande"
+              >Bloquear mi Lugar</a
+            >
+          </div>
+          <div class="hero-visual">
+            <!-- Aquí se renderiza el mockup tridimensional -->
+            <div class="render-placeholder">
+              <div class="render-badge">
+                Render Conceptual de la Cabaña 6x6m
+              </div>
+              <p>
+                Estructura de Concreto Aparente, Muros de Ladrillo Artesanal
+                Rojo y Cubierta de Palapa Balinesa.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN MANIFIESTO / EL DOLOR -->
+      <section class="seccion-manifiesto">
+        <div class="contenedor-chico centralizado">
+          <blockquote>
+            "El burnout tecnológico no se cura con vacaciones; se cura cambiando
+            la arquitectura de tu día a día."
+          </blockquote>
+          <p>
+            Si eres arquitecto de sistemas o desarrollador senior, conoces el
+            problema: los coworkings tradicionales son ruidosos y los hoteles de
+            playa carecen de internet redundante o ergonomía.
+            <strong>El Barrio Retreat</strong> es un manifiesto de diseño
+            brutalista tropical donde dividimos la energía para maximizar tu
+            rendimiento y enfoque profundo.
+          </p>
+        </div>
+      </section>
+
+      <!-- SECCIÓN LOS 4 NIVELES -->
+      <section class="seccion-niveles">
+        <div class="contenedor">
+          <h3 class="seccion-titulo-general">La Arquitectura del Enfoque</h3>
+          <div class="grid-niveles">
+            <div class="tarjeta nivel-bunker">
+              <div class="tarjeta-titulo">
+                1. El Búnker del Silencio (-1 Nivel)
+              </div>
+              <div class="tarjeta-fecha">SÓTANO TECH & PATIO INGLÉS</div>
+              <p class="tarjeta-contenido">
+                4 micro-oficinas privadas con tablones flotantes de parota
+                maciza y cristal templado acústico. Todo el espacio se abre
+                hacia un jardín enterrado inundado de luz cenital indirecta,
+                hortensias y una cascada de agua que elimina el ruido exterior.
+              </p>
+            </div>
+
+            <div class="tarjeta">
+              <div class="tarjeta-titulo">2. La Zona Neutra (Nivel 0)</div>
+              <div class="tarjeta-fecha">PLANTA BAJA SOCIAL</div>
+              <p class="tarjeta-contenido">
+                Cocina y comedor al aire libre pero bajo resguardo de la losa.
+                Cuenta con una barra monumental de concreto pulido y parota para
+                comidas rápidas (4 bancos) y parrilla para asados junto a la
+                pileta. Aloja la bodega blindada biométrica.
+              </p>
+            </div>
+
+            <div class="tarjeta">
+              <div class="tarjeta-titulo">
+                3. La Suite Eco-Boutique (+1 Nivel)
+              </div>
+              <div class="tarjeta-fecha">PRIMERA PLANTA / HOSPEDAJE</div>
+              <p class="tarjeta-contenido">
+                Hospedaje premium con clóset integral de teca que abraza la
+                cama. El baño de concepto abierto independiza el inodoro y la
+                ducha, dejando una majestuosa tina exenta de piedra natural en
+                una esquina acristalada.
+              </p>
+            </div>
+
+            <div class="tarjeta urgente">
+              <div class="tarjeta-titulo">
+                4. El Rooftop Santuario (+2 Niveles)
+              </div>
+              <div class="tarjeta-fecha">SEGUNDA PLANTA / WEED & ZEN</div>
+              <p class="tarjeta-contenido">
+                Bajo la estructura expuesta de una palapa tradicional de
+                Nayarit, se despliega un mirador de 360 grados. Espacio libre de
+                humo sintético, adaptado para el consumo consciente, relajación,
+                hamacas y las icónicas Charlas de Bonsái de los fines de semana.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN FORMULARIO (APLICAR) -->
+      <section id="aplicar" class="seccion-formulario">
+        <div class="contenedor">
+          <form class="formulario">
+            <div class="formulario-encabezado">
+              <h4>Membresía Fundador - Acceso VIP</h4>
+              <p class="precio-tag">
+                $6,000 MXN <span>/ mes (Contrato a 6 meses)</span>
+              </p>
+              <p class="formulario-nota">
+                ⚠️ Solo 4 lugares disponibles para el grupo piloto. Acceso
+                completo a oficina privada en búnker, 10 noches en la suite y
+                pases libres al Rooftop.
+              </p>
+            </div>
+
+            <div class="campo">
+              <label for="nombre">Nombre Completo</label>
+              <input
+                type="text"
+                id="nombre"
+                placeholder="Rick Sanchez"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="rol">¿A qué te dedicas?</label>
+              <input
+                type="text"
+                id="rol"
+                placeholder="Ej. Arquitecto de Software / Diseñador UI"
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="portafolio"
+                >Portafolio o Enlaces (GitHub, LinkedIn)</label
+              >
+              <input
+                type="url"
+                id="portafolio"
+                placeholder="https://github.com..."
+                required
+              />
+            </div>
+
+            <div class="campo">
+              <label for="interes"
+                >¿Por qué te interesa el ecosistema de El Barrio Retreat?</label
+              >
+              <textarea
+                id="interes"
+                rows="4"
+                placeholder="Cuéntanos tu conexión con el código, el arte del bonsái o la cultura weed..."
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn-login btn-formulario">
+              Enviar Aplicación y Bloquear Lugar
+            </button>
+            <p class="garantia-texto">
+              🔒 Garantía El Barrio: Pagos seguros procesados por Stripe. Si el
+              piloto no se consolida en 60 días, se reembolsa el 100%.
+            </p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer-comunidad">
+      <p>
+        © 2026 elbarrio.me • Diseñado en Puerto Vallarta para mentes del futuro.
+      </p>
+    </footer>
+  </body>
+</html>
