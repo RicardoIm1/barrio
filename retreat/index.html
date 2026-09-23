@@ -555,6 +555,49 @@ Usa el código con precaución.=================================================
         padding: var(--espaciado-lg);
       }
     }
+    .tarjeta.nivel-bunker {
+      /* Combinamos un degradado negro (del 60% al 95% de opacidad) con tu ruta local para blindar la lectura de las letras */
+      background:
+        linear-gradient(
+          180deg,
+          rgba(26, 29, 36, 0.6) 0%,
+          rgba(11, 13, 16, 0.95) 100%
+        ),
+        url("/retreat/img/render-bunker.jpg"); /* <-- Aquí pones el nombre exacto de la imagen de tu búnker */
+
+      background-size: cover; /* Fuerza a la imagen a llenar toda la tarjeta sin deformarse */
+      background-position: center; /* Centra el render en el fondo de la tarjeta */
+      position: relative;
+      overflow: hidden;
+      border-color: var(--color-borde);
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    /* Efecto visual premium cuando el usuario pasa el mouse encima */
+    .tarjeta.nivel-bunker:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-dorado);
+      box-shadow: 0 12px 24px rgba(212, 160, 67, 0.25);
+    }
+
+    /* Forzamos que las letras dentro de esta tarjeta sean blancas y tengan sombra para que resalten sobre el render */
+    .tarjeta.nivel-bunker .tarjeta-titulo,
+    .tarjeta.nivel-bunker .tarjeta-contenido {
+      color: #ffffff !important;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      position: relative;
+      z-index: 2;
+    }
+
+    .tarjeta.nivel-bunker .tarjeta-fecha {
+      color: var(--color-dorado);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      position: relative;
+      z-index: 2;
+    }
   </style>
   <body>
     <!-- STICKY HEADER -->
@@ -646,12 +689,6 @@ Usa el código con precaución.=================================================
           <h3 class="seccion-titulo-general">La Arquitectura del Enfoque</h3>
           <div class="grid-niveles">
             <div class="tarjeta nivel-bunker">
-                <img
-                src="/retreat/img/8x16_vista-de-la-fachada-2.jpg"
-                alt="Render Fachada Cabaña El Barrio"
-                class="imagen-render"
-              />
-              <!-- EJEMPLO DE CÓMO AGREGAR IMAGEN EN MINIATURA DE DRIVE A UNA TARJETA SI LO DESEAS MÁS ADELANTE -->
               <div class="tarjeta-titulo">
                 1. El Búnker del Silencio (-1 Nivel)
               </div>
