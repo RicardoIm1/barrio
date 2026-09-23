@@ -8,8 +8,8 @@
   </head>
   <style>
     /* =========================================================
-       RESET + BASE
-    ========================================================= */
+   RESET + BASE
+========================================================= */
 
     * {
       margin: 0;
@@ -45,24 +45,24 @@
     }
 
     /* =========================================================
-       VARIABLES (REINGENIERÍA: BRUTALISMO TROPICAL MODO OSCURO)
-    ========================================================= */
+   VARIABLES (BRUTALISMO TROPICAL MODO OSCURO DE LUJO)
+========================================================= */
 
     :root {
-      --color-primario: #111418; /* Negro de fondo principal */
-      --color-secundario: #1a1d24; /* Gris concreto oscuro para tarjetas */
-      --color-acento: #e74c3c; /* Rojo Ladrillo Artesanal */
-      --color-fondo: #0b0d10; /* Fondo base profundo */
-      --color-texto: #e2e8f0; /* Blanco roto de alta lectura */
-      --color-texto-claro: #94a3b8; /* Gris slate para subtítulos */
-      --color-borde: #2a313c; /* Líneas divisorias de concreto */
+      --color-primario: #111418;
+      --color-secundario: #1a1d24;
+      --color-acento: #e74c3c;
+      --color-fondo: #0b0d10;
+      --color-texto: #e2e8f0;
+      --color-texto-claro: #94a3b8;
+      --color-borde: #2a313c;
       --color-error: #ef4444;
       --color-exito: #10b981;
-      --color-urgente: #d4a043; /* Oro Balinés / Madera de Parota */
+      --color-urgente: #d4a043;
 
-      --color-verde: #1e5e3a; /* Verde Selva Vallarta */
+      --color-verde: #1e5e3a;
       --color-naranja: #e67e22;
-      --color-dorado: #d4a043; /* Tono parota/bambú */
+      --color-dorado: #d4a043;
 
       --espaciado-xs: 4px;
       --espaciado-sm: 8px;
@@ -82,8 +82,8 @@
     }
 
     /* =========================================================
-       LAYOUT & RESTRICCIONES
-    ========================================================= */
+   LAYOUT
+========================================================= */
 
     .contenedor {
       max-width: 1200px;
@@ -100,15 +100,8 @@
     }
 
     /* =========================================================
-       HEADER STICKY (FIJO ARRIBA DE LA FINCA)
-    ========================================================= */
-
-    html,
-    body {
-      overflow-x: hidden;
-      overflow-y: auto;
-      height: auto;
-    }
+   HEADER STICKY
+========================================================= */
 
     .header {
       position: -webkit-sticky;
@@ -135,8 +128,8 @@
     }
 
     /* =========================================================
-       LOGO
-    ========================================================= */
+   LOGO
+========================================================= */
 
     .header-logo {
       display: flex;
@@ -187,8 +180,8 @@
     }
 
     /* =========================================================
-       HEADER ACTIONS
-    ========================================================= */
+   HEADER ACTIONS
+========================================================= */
 
     .header-acciones {
       display: flex;
@@ -213,8 +206,8 @@
     }
 
     /* =========================================================
-       BUTTONS
-    ========================================================= */
+   BUTTONS
+========================================================= */
 
     .btn-login {
       display: inline-flex;
@@ -246,8 +239,8 @@
     }
 
     /* =========================================================
-       SECCIÓN HERO SECTOR (DISEÑO GRID ASIMÉTRICO)
-    ========================================================= */
+   HERO SECTOR (DISEÑO GRID ASIMÉTRICO)
+========================================================= */
 
     .hero-section {
       background: radial-gradient(
@@ -305,14 +298,14 @@
       color: var(--color-texto);
     }
 
-    /* CONTENEDOR DE NUESTRO RENDER TRIDIMENSIONAL */
+    /* CONTENEDOR DE RENDERS DESDE DRIVE */
     .hero-visual {
       width: 100%;
     }
 
     .render-placeholder {
       width: 100%;
-      min-height: 320px;
+      min-height: 360px;
       background: linear-gradient(135deg, #1e232b, #111418);
       border: 1px solid var(--color-borde);
       border-radius: var(--border-radius);
@@ -322,13 +315,25 @@
       justify-content: flex-end;
       position: relative;
       box-shadow: var(--shadow-md);
+      overflow: hidden; /* Evita que la imagen se salga de los bordes redondeados */
+    }
+
+    .imagen-render {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      z-index: 1;
     }
 
     .render-badge {
       position: absolute;
       top: var(--espaciado-md);
       left: var(--espaciado-md);
-      background: rgba(231, 76, 60, 0.15);
+      background: rgba(231, 76, 60, 0.2);
       border: 1px solid var(--color-acento);
       color: var(--color-acento);
       padding: 4px 10px;
@@ -336,16 +341,24 @@
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
+      z-index: 2;
     }
 
-    .render-placeholder p {
+    .render-texto-encima {
       font-size: 0.85rem;
-      color: var(--color-texto-claro);
+      color: #ffffff;
+      z-index: 2;
+      position: relative;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+      background: rgba(11, 13, 16, 0.6);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     /* =========================================================
-       SECCIÓN MANIFIESTO
-    ========================================================= */
+   SECCIÓN MANIFIESTO
+========================================================= */
 
     .seccion-manifiesto {
       background: var(--color-primario);
@@ -366,8 +379,8 @@
     }
 
     /* =========================================================
-       SECCIÓN NIVELES Y TARJETAS
-    ========================================================= */
+   SECCIÓN NIVELES Y TARJETAS
+========================================================= */
 
     .seccion-niveles {
       background: var(--color-fondo);
@@ -404,7 +417,7 @@
     }
 
     .tarjeta.urgente {
-      border-top: 4px solid var(--color-dorado); /* El rooftop de palapa destaca */
+      border-top: 4px solid var(--color-dorado);
       background: linear-gradient(180deg, var(--color-secundario), #221c15);
     }
 
@@ -431,7 +444,8 @@
     }
 
     /* =========================================================
-       FORMULARIOS DE PREVENTA DE ALTA EXCLUSIVIDAD*/
+   FORMULARIOS DE PREVENTA DE ALTA EXCLUSIVIDAD
+Usa el código con precaución.========================================================= */
     .seccion-formulario {
       background: var(--color-primario);
       border-top: 1px solid var(--color-borde);
@@ -514,7 +528,7 @@
       border-radius: 8px;
       margin-bottom: var(--espaciado-md);
     }
-    .garantia-texto {
+    .garantie-texto {
       font-size: 0.75rem;
       color: var(--color-texto-claro);
       text-align: center;
@@ -546,15 +560,11 @@
     <!-- STICKY HEADER -->
     <header class="header">
       <div class="header-contenido">
-        <a href="/index.html" class="header-logo">
-          <img
-            src="/icons/logo-elbarrio.png"
-            alt="Logo de El Barrio"
-            class="logo-icon"
-          />
+        <a href="#" class="header-logo">
+          <div class="logo-icon-placeholder">EB</div>
           <div class="logo-texto">
-            <h1>El Barrio</h1>
-            <h2 class="header-slogan">¡El barrio te respalda!</h2>
+            <h1>EL BARRIO</h1>
+            <p class="header-slogan">Comunidad & Desarrollo</p>
           </div>
         </a>
         <div class="header-acciones">
@@ -587,14 +597,23 @@
               >Bloquear mi Lugar</a
             >
           </div>
+
           <div class="hero-visual">
-            <!-- Aquí se renderiza el mockup tridimensional -->
             <div class="render-placeholder">
-                <!-- Enlace transformado a ID directo de imagen para que la web lo renderice -->
-                <img src="https://drive.google.com/file/d/1TaB5BSMV0cVOZvHBWytzqusSXJGV9O_A/view?usp=sharing" alt="Render Cabaña El Barrio" class="imagen-render">
-                
-                <div class="render-badge">Render Conceptual de la Cabaña 6x6m</div>
-                <p class="render-texto-encima">Estructura de Concreto Aparente, Muros de Ladrillo Artesanal Rojo y Cubierta de Palapa Balinesa.</p>
+              <!-- ENLACE RECTIFICADO DIRECTO DE GOOGLE DRIVE -->
+              <img
+                src="https://googleusercontent.com"
+                alt="Render Fachada Cabaña El Barrio"
+                class="imagen-render"
+              />
+
+              <div class="render-badge">
+                Render Conceptual de la Cabaña 6x6m
+              </div>
+              <p class="render-texto-encima">
+                Estructura de Concreto Aparente, Muros de Ladrillo Artesanal
+                Rojo y Cubierta de Palapa Balinesa.
+              </p>
             </div>
           </div>
         </div>
@@ -624,6 +643,7 @@
           <h3 class="seccion-titulo-general">La Arquitectura del Enfoque</h3>
           <div class="grid-niveles">
             <div class="tarjeta nivel-bunker">
+              <!-- EJEMPLO DE CÓMO AGREGAR IMAGEN EN MINIATURA DE DRIVE A UNA TARJETA SI LO DESEAS MÁS ADELANTE -->
               <div class="tarjeta-titulo">
                 1. El Búnker del Silencio (-1 Nivel)
               </div>
@@ -739,7 +759,7 @@
             <button type="submit" class="btn-login btn-formulario">
               Enviar Aplicación y Bloquear Lugar
             </button>
-            <p class="garantia-texto">
+            <p class="garantie-texto">
               🔒 Garantía El Barrio: Pagos seguros procesados por Stripe. Si el
               piloto no se consolida en 60 días, se reembolsa el 100%.
             </p>
