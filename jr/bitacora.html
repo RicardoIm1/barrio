@@ -695,6 +695,40 @@
           var(--text-dim) 100%
         );
       }
+
+      /* ============================================
+   FILTRO GLOBAL DE PROYECTO
+   ============================================ */
+      .filtro-proyecto {
+        margin-top: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .filtro-proyecto label {
+        font-size: 0.65rem;
+      }
+
+      .filtro-proyecto select {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+        outline: none;
+        cursor: pointer;
+        letter-spacing: 0.05em;
+      }
+
+      .filtro-proyecto select:focus {
+        border-color: var(--gold-soft);
+      }
     </style>
   </head>
   <body>
@@ -761,6 +795,12 @@
         <button data-view="sellos">Sellos</button>
       </nav>
       <div class="user-info" id="userInfo" style="margin-top: 0.8rem"></div>
+      <div class="filtro-proyecto" id="filtroProyectoWrap">
+        <label>Filtro:</label>
+        <select id="filtroProyecto">
+          <option value="">Todo</option>
+        </select>
+      </div>
     </header>
 
     <main>
@@ -1212,6 +1252,22 @@
       });
 
       /* ============================================
+   LISTENER DEL FILTRO GLOBAL
+   ============================================ */
+      const filtroEl = document.getElementById("filtroProyecto");
+      if (filtroEl) {
+        filtroEl.addEventListener("change", (e) => {
+          filtroProyectoId = e.target.value;
+          // Re-renderizar vistas activas
+          renderRecientes();
+          const vistaActiva = document.querySelector(".view.active")?.id;
+          if (vistaActiva === "view-mes") renderMes();
+          if (vistaActiva === "view-sellos") renderSellos();
+          if (vistaActiva === "view-carta") renderCartas();
+        });
+      }
+
+      /* ============================================
          FECHAS
          ============================================ */
       const hoy = () => new Date().toISOString().split("T")[0];
@@ -1230,6 +1286,20 @@
         cacheMetricas = null,
         cacheSellos = [],
         cacheProyectos = [];
+
+      /* ============================================
+   FILTRO GLOBAL DE PROYECTO
+   ============================================ */
+      let filtroProyectoId = ""; // "" = todos
+
+      function aplicarFiltro(registro) {
+        if (!filtroProyectoId) return true;
+        return registro.proyecto_id === filtroProyectoId;
+      }
+
+      function filtrarCache(registros) {
+        return registros.filter(aplicarFiltro);
+      }
 
       /* ============================================
          CATÁLOGO DE SELLOS
@@ -1489,19 +1559,20 @@
          CALCULAR DATOS ACTUALES
          ============================================ */
       function calcularDatos() {
-        const totalGastos = cacheGastos.length;
-        const totalHoras = cacheHoras.reduce(
-          (s, h) => s + Number(h.cantidad),
-          0,
-        );
-        const totalGastosMonto = cacheGastos.reduce(
+        const gastos = filtrarCache(cacheGastos);
+        const horas = filtrarCache(cacheHoras);
+        const ingresos = filtrarCache(cacheIngresos);
+
+        const totalGastos = gastos.length;
+        const totalHoras = horas.reduce((s, h) => s + Number(h.cantidad), 0);
+        const totalGastosMonto = gastos.reduce(
           (s, g) => s + Number(g.monto),
           0,
         );
         const totalCartas = cacheCartas.length;
 
-        const totalIngresos = cacheIngresos.length;
-        const totalIngresosMonto = cacheIngresos.reduce(
+        const totalIngresos = ingresos.length;
+        const totalIngresosMonto = ingresos.reduce(
           (s, i) => s + Number(i.monto),
           0,
         );
@@ -1512,12 +1583,11 @@
 
         const racha = calcularRacha();
 
-        // Balance del mes actual
         const mes = new Date().toISOString().slice(0, 7);
-        const gastosMes = cacheGastos
+        const gastosMes = gastos
           .filter((g) => g.fecha.startsWith(mes))
           .reduce((s, g) => s + Number(g.monto), 0);
-        const ingresosMes = cacheIngresos
+        const ingresosMes = ingresos
           .filter((i) => i.fecha.startsWith(mes))
           .reduce((s, i) => s + Number(i.monto), 0);
         const balanceMes = ingresosMes - gastosMes;
@@ -1669,6 +1739,13 @@
             const el = document.getElementById(id);
             if (el) el.value = elBarrio.id;
           });
+        }
+
+        // Poblar el filtro global
+        const filtro = document.getElementById("filtroProyecto");
+        if (filtro) {
+          filtro.innerHTML = '<option value="">Todo</option>' + opciones;
+          filtro.value = filtroProyectoId;
         }
       }
 
@@ -1883,22 +1960,26 @@
          RECIENTES
          ============================================ */
       function renderRecientes() {
+        const gastos = filtrarCache(cacheGastos);
+        const ingresos = filtrarCache(cacheIngresos);
+        const horas = filtrarCache(cacheHoras);
+
         const items = [
-          ...cacheGastos.slice(0, 5).map((g) => ({
+          ...gastos.slice(0, 5).map((g) => ({
             fecha: g.fecha,
             tipo: "Gasto",
             detalle: g.concepto,
             valor: "-$" + g.monto,
             clase: "amount-neg",
           })),
-          ...cacheIngresos.slice(0, 5).map((i) => ({
+          ...ingresos.slice(0, 5).map((i) => ({
             fecha: i.fecha,
             tipo: "Ingreso",
             detalle: i.concepto,
             valor: "+$" + i.monto,
             clase: "amount-pos",
           })),
-          ...cacheHoras.slice(0, 5).map((h) => ({
+          ...horas.slice(0, 5).map((h) => ({
             fecha: h.fecha,
             tipo: "Horas",
             detalle: h.actividad,
@@ -1923,9 +2004,15 @@
          ============================================ */
       function renderMes() {
         const mes = new Date().toISOString().slice(0, 7);
-        const gastos = cacheGastos.filter((g) => g.fecha.startsWith(mes));
-        const horas = cacheHoras.filter((h) => h.fecha.startsWith(mes));
-        const ingresos = cacheIngresos.filter((i) => i.fecha.startsWith(mes));
+        const gastos = filtrarCache(cacheGastos).filter((g) =>
+          g.fecha.startsWith(mes),
+        );
+        const horas = filtrarCache(cacheHoras).filter((h) =>
+          h.fecha.startsWith(mes),
+        );
+        const ingresos = filtrarCache(cacheIngresos).filter((i) =>
+          i.fecha.startsWith(mes),
+        );
 
         const totalGasto = gastos.reduce((s, g) => s + Number(g.monto), 0);
         const totalHoras = horas.reduce((s, h) => s + Number(h.cantidad), 0);
@@ -1946,16 +2033,13 @@
         document.getElementById("mInversion").textContent =
           "$" + (totalGasto + valorTiempo).toFixed(0);
 
-        // Aplicar colores
         const utilidadEl = document.getElementById("mUtilidad");
-        if (utilidad >= 0) {
-          utilidadEl.style.color = "var(--jade)";
-        } else {
-          utilidadEl.style.color = "var(--danger)";
-        }
+        utilidadEl.style.color =
+          utilidad >= 0 ? "var(--jade)" : "var(--danger)";
 
         dibujarLineas("chartGastos", gastos, "monto", mes, "#c9a961");
         dibujarLineas("chartHoras", horas, "cantidad", mes, "#6b8e6b");
+        dibujarLineas("chartIngresos", ingresos, "monto", mes, "#6b8e6b");
 
         const catGasto = {};
         gastos.forEach((g) => {
@@ -1970,8 +2054,6 @@
             (catHora[h.categoria] || 0) + Number(h.cantidad);
         });
         dibujarPastel("chartHorasCat", catHora);
-
-        dibujarLineas("chartIngresos", ingresos, "monto", mes, "#6b8e6b");
 
         const catIngreso = {};
         ingresos.forEach((i) => {
@@ -2420,7 +2502,7 @@
         if (id === "mrr_de_mil") return pct(datos.mrr, 1000);
         if (id === "mrr_de_diez_mil") return pct(datos.mrr, 10000);
 
-                if (id === "primer_ingreso") return pct(datos.totalIngresos, 1);
+        if (id === "primer_ingreso") return pct(datos.totalIngresos, 1);
         if (id === "mil_ingresos") return pct(datos.totalIngresosMonto, 1000);
         if (id === "diez_mil_ingresos")
           return pct(datos.totalIngresosMonto, 10000);
