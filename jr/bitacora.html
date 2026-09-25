@@ -2059,6 +2059,75 @@
 
         return 0;
       }
+
+      /* ============================================
+   DEBUG: RESET DE SELLOS
+   ============================================ */
+      window.resetSellos = async () => {
+        await supabase.from("sellos").delete().eq("user_id", user.id);
+        await cargarTodo();
+        const nuevos = await verificarSellos();
+        await ritualSellos(nuevos);
+      };
+
+      window.cargarTodo = cargarTodo;
+      window.verificarSellos = verificarSellos;
+      window.ritualSellos = ritualSellos;
+
+            /* ============================================
+         PROGRESO HACIA UN SELLO
+         ============================================ */
+      function progresoSello(sello, datos) {
+        const id = sello.id;
+        const pct = (actual, meta) => Math.min(100, (actual / meta) * 100);
+
+        if (id === "primer_sello") {
+          const g = datos.totalGastos >= 1 ? 50 : 0;
+          const h = datos.totalHoras >= 1 ? 50 : 0;
+          return g + h;
+        }
+        if (id === "semana_firme") return pct(datos.racha, 7);
+        if (id === "mes_de_gobierno") return pct(datos.racha, 30);
+        if (id === "trimestre_de_hierro") return pct(datos.racha, 90);
+        if (id === "ano_del_conde") return pct(datos.racha, 365);
+
+        if (id === "primer_peso") return pct(datos.totalGastosMonto, 1);
+        if (id === "mil_pesos") return pct(datos.totalGastosMonto, 1000);
+        if (id === "diez_mil") return pct(datos.totalGastosMonto, 10000);
+        if (id === "cien_mil") return pct(datos.totalGastosMonto, 100000);
+
+        if (id === "primera_hora") return pct(datos.totalHoras, 1);
+        if (id === "cien_horas") return pct(datos.totalHoras, 100);
+        if (id === "mil_horas") return pct(datos.totalHoras, 1000);
+        if (id === "diez_mil_horas") return pct(datos.totalHoras, 10000);
+
+        if (id === "primera_carta") return pct(datos.totalCartas, 1);
+        if (id === "tres_cartas") return pct(datos.totalCartas, 3);
+        if (id === "doce_cartas") return pct(datos.totalCartas, 12);
+
+        if (id === "primeros_50") return pct(datos.usuarios, 50);
+        if (id === "primeros_100") return pct(datos.usuarios, 100);
+        if (id === "primer_negocio") return pct(datos.negocios, 1);
+        if (id === "diez_negocios") return pct(datos.negocios, 10);
+        if (id === "mrr_de_mil") return pct(datos.mrr, 1000);
+        if (id === "mrr_de_diez_mil") return pct(datos.mrr, 10000);
+
+        return 0;
+      }
+
+      /* ============================================
+         DEBUG: EXPOSICIÓN GLOBAL
+         ============================================ */
+      window.resetSellos = async () => {
+        await supabase.from("sellos").delete().eq("user_id", user.id);
+        await cargarTodo();
+        const nuevos = await verificarSellos();
+        await ritualSellos(nuevos);
+      };
+
+      window.cargarTodo = cargarTodo;
+      window.verificarSellos = verificarSellos;
+      window.ritualSellos = ritualSellos;
     </script>
   </body>
 </html>
