@@ -542,6 +542,102 @@
         color: var(--gold-soft);
         letter-spacing: 0.1em;
       }
+
+      /* ============================================
+   SELLOS
+   ============================================ */
+      .sellos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+      }
+
+      .sello {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        padding: 1.2rem 0.8rem;
+        text-align: center;
+        transition: all 0.3s;
+        position: relative;
+        cursor: default;
+      }
+
+      .sello:hover {
+        border-color: var(--gold-soft);
+        transform: translateY(-2px);
+      }
+
+      .sello.obtenido {
+        border-color: var(--gold-soft);
+        background: linear-gradient(
+          180deg,
+          var(--bg-soft) 0%,
+          rgba(201, 169, 97, 0.06) 100%
+        );
+      }
+
+      .sello.pendiente {
+        opacity: 0.4;
+        filter: grayscale(0.5);
+      }
+
+      .sello-icono {
+        font-family: var(--serif);
+        font-size: 2rem;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+        line-height: 1;
+        min-height: 2.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .sello-nombre {
+        font-size: 0.75rem;
+        color: var(--gold);
+        letter-spacing: 0.05em;
+        margin-bottom: 0.3rem;
+        font-weight: 500;
+      }
+
+      .sello-categoria {
+        font-size: 0.6rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+
+      .sello-desc {
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        line-height: 1.4;
+      }
+
+      .sello-fecha {
+        font-size: 0.6rem;
+        color: var(--gold-soft);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-top: 0.6rem;
+        padding-top: 0.6rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .sello-vacio {
+        text-align: center;
+        color: var(--text-faint);
+        font-size: 0.8rem;
+        padding: 2rem;
+        grid-column: 1 / -1;
+      }
+
+      /* Modo Conde: sellos con más brillo */
+      body.ritual .sello.obtenido {
+        box-shadow: 0 0 12px rgba(201, 169, 97, 0.15);
+      }
     </style>
   </head>
   <body>
@@ -604,6 +700,7 @@
         <button data-view="carta">Carta</button>
         <button data-view="activos">Activos</button>
         <button data-view="plan">Plan</button>
+        <button data-view="sellos">Sellos</button>
       </nav>
       <div class="user-info" id="userInfo" style="margin-top: 0.8rem"></div>
     </header>
@@ -843,6 +940,44 @@
           <div id="planList"></div>
         </div>
       </section>
+      <!-- SELLOS -->
+      <section id="view-sellos" class="view">
+        <div class="card">
+          <div class="card-title">Salón de Sellos</div>
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Sellos obtenidos</div>
+              <div class="metric-value" id="sellosObtenidos">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Sellos totales</div>
+              <div class="metric-value" id="sellosTotales">0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Progreso</div>
+              <div class="metric-value" id="sellosProgreso">
+                0<span class="metric-unit">%</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Racha actual</div>
+              <div class="metric-value" id="sellosRacha">
+                0<span class="metric-unit">días</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Sellos obtenidos</div>
+          <div id="sellosGridObtenidos" class="sellos-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Próximos sellos</div>
+          <div id="sellosGridPendientes" class="sellos-grid"></div>
+        </div>
+      </section>
     </main>
 
     <footer>Paciente pero incesante · 15 hrs/semana · 15 años</footer>
@@ -932,6 +1067,7 @@
             .classList.add("active");
           if (btn.dataset.view === "mes") renderMes();
           if (btn.dataset.view === "carta") renderCartas();
+          if (btn.dataset.view === "sellos") renderSellos();
         });
       });
 
@@ -1765,6 +1901,131 @@
       }
 
       window.toggleRitual = toggleRitual;
+
+      /* ============================================
+   RENDER SALÓN DE SELLOS
+   ============================================ */
+      function renderSellos() {
+        const datos = calcularDatos();
+        const obtenidos = new Set(cacheSellos.map((s) => s.sello_id));
+        const mapaFechas = new Map(
+          cacheSellos.map((s) => [s.sello_id, s.fecha]),
+        );
+
+        const total = SELLOS.length;
+        const obtenidosCount = cacheSellos.length;
+        const porcentaje =
+          total > 0 ? Math.round((obtenidosCount / total) * 100) : 0;
+
+        // Métricas superiores
+        document.getElementById("sellosObtenidos").textContent = obtenidosCount;
+        document.getElementById("sellosTotales").textContent = total;
+        document.getElementById("sellosProgreso").innerHTML =
+          porcentaje + '<span class="metric-unit">%</span>';
+        document.getElementById("sellosRacha").innerHTML =
+          datos.racha + '<span class="metric-unit">días</span>';
+
+        // Sellos obtenidos
+        const obtenidosList = SELLOS.filter((s) => obtenidos.has(s.id));
+        const gridObtenidos = document.getElementById("sellosGridObtenidos");
+
+        if (obtenidosList.length === 0) {
+          gridObtenidos.innerHTML =
+            '<div class="sello-vacio">Aún no has desbloqueado ningún sello. El gobierno apenas comienza.</div>';
+        } else {
+          gridObtenidos.innerHTML = obtenidosList
+            .map((s) => {
+              const fecha = mapaFechas.get(s.id);
+              const fechaStr = fecha
+                ? new Date(fecha).toLocaleDateString("es-MX", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : "";
+              return `
+      <div class="sello obtenido" title="${s.descripcion}">
+        <div class="sello-icono">${s.icono}</div>
+        <div class="sello-nombre">${s.nombre}</div>
+        <div class="sello-categoria">${s.categoria}</div>
+        <div class="sello-desc">${s.descripcion}</div>
+        <div class="sello-fecha">${fechaStr}</div>
+      </div>
+    `;
+            })
+            .join("");
+        }
+
+        // Próximos sellos (pendientes que están más cerca)
+        const pendientes = SELLOS.filter((s) => !obtenidos.has(s.id))
+          .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
+          .sort((a, b) => b.progreso - a.progreso)
+          .slice(0, 6);
+
+        const gridPendientes = document.getElementById("sellosGridPendientes");
+
+        if (pendientes.length === 0) {
+          gridPendientes.innerHTML =
+            '<div class="sello-vacio">Has desbloqueado todos los sellos. El conde ha completado su obra.</div>';
+        } else {
+          gridPendientes.innerHTML = pendientes
+            .map(
+              (s) => `
+      <div class="sello pendiente" title="${s.descripcion}">
+        <div class="sello-icono">${s.icono}</div>
+        <div class="sello-nombre">${s.nombre}</div>
+        <div class="sello-categoria">${s.categoria}</div>
+        <div class="sello-desc">${s.descripcion}</div>
+      </div>
+    `,
+            )
+            .join("");
+        }
+      }
+
+      /* ============================================
+   PROGRESO HACIA UN SELLO
+   ============================================ */
+      function progresoSello(sello, datos) {
+        // Devuelve un número 0-100 indicando qué tan cerca está el sello.
+        // Se calcula según el tipo de sello.
+        const id = sello.id;
+
+        const pct = (actual, meta) => Math.min(100, (actual / meta) * 100);
+
+        if (id === "primer_sello") {
+          const g = datos.totalGastos >= 1 ? 50 : 0;
+          const h = datos.totalHoras >= 1 ? 50 : 0;
+          return g + h;
+        }
+        if (id === "semana_firme") return pct(datos.racha, 7);
+        if (id === "mes_de_gobierno") return pct(datos.racha, 30);
+        if (id === "trimestre_de_hierro") return pct(datos.racha, 90);
+        if (id === "ano_del_conde") return pct(datos.racha, 365);
+
+        if (id === "primer_peso") return pct(datos.totalGastosMonto, 1);
+        if (id === "mil_pesos") return pct(datos.totalGastosMonto, 1000);
+        if (id === "diez_mil") return pct(datos.totalGastosMonto, 10000);
+        if (id === "cien_mil") return pct(datos.totalGastosMonto, 100000);
+
+        if (id === "primera_hora") return pct(datos.totalHoras, 1);
+        if (id === "cien_horas") return pct(datos.totalHoras, 100);
+        if (id === "mil_horas") return pct(datos.totalHoras, 1000);
+        if (id === "diez_mil_horas") return pct(datos.totalHoras, 10000);
+
+        if (id === "primera_carta") return pct(datos.totalCartas, 1);
+        if (id === "tres_cartas") return pct(datos.totalCartas, 3);
+        if (id === "doce_cartas") return pct(datos.totalCartas, 12);
+
+        if (id === "primeros_50") return pct(datos.usuarios, 50);
+        if (id === "primeros_100") return pct(datos.usuarios, 100);
+        if (id === "primer_negocio") return pct(datos.negocios, 1);
+        if (id === "diez_negocios") return pct(datos.negocios, 10);
+        if (id === "mrr_de_mil") return pct(datos.mrr, 1000);
+        if (id === "mrr_de_diez_mil") return pct(datos.mrr, 10000);
+
+        return 0;
+      }
     </script>
   </body>
 </html>
