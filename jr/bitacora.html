@@ -560,9 +560,7 @@
         min-height: 1em;
       }
 
-      /* ============================================
-   SELLOS
-   ============================================ */
+      /* SELLOS */
       .sellos-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -651,7 +649,6 @@
         grid-column: 1 / -1;
       }
 
-      /* Modo Conde: sellos con más brillo */
       body.ritual .sello.obtenido {
         box-shadow: 0 0 12px rgba(201, 169, 97, 0.15);
       }
@@ -958,6 +955,7 @@
           <div id="planList"></div>
         </div>
       </section>
+
       <!-- SELLOS -->
       <section id="view-sellos" class="view">
         <div class="card">
@@ -1109,7 +1107,6 @@
          CATÁLOGO DE SELLOS
          ============================================ */
       const SELLOS = [
-        // Constancia
         {
           id: "primer_sello",
           nombre: "Primer Sello",
@@ -1155,8 +1152,6 @@
           mensaje: "Un año entero. El conde ha gobernado sin fallar.",
           condicion: (d) => d.racha >= 365,
         },
-
-        // Inversión
         {
           id: "primer_peso",
           nombre: "Primer Peso",
@@ -1193,8 +1188,6 @@
           mensaje: "Cien mil pesos. El conde ha invertido con seriedad.",
           condicion: (d) => d.totalGastosMonto >= 100000,
         },
-
-        // Tiempo
         {
           id: "primera_hora",
           nombre: "Primera Hora",
@@ -1231,8 +1224,6 @@
           mensaje: "Diez mil horas. El maestro ha llegado.",
           condicion: (d) => d.totalHoras >= 10000,
         },
-
-        // Profundidad
         {
           id: "primera_carta",
           nombre: "Primera Carta",
@@ -1260,8 +1251,6 @@
           mensaje: "Doce cartas. Un año de palabras al porvenir.",
           condicion: (d) => d.totalCartas >= 12,
         },
-
-        // El Barrio
         {
           id: "primeros_50",
           nombre: "Primeros 50",
@@ -1505,10 +1494,7 @@
 
         const nuevos = await verificarSellos();
         if (nuevos.length > 0) {
-          console.log(
-            "Sellos desbloqueados:",
-            nuevos.map((s) => s.nombre),
-          );
+          await ritualSellos(nuevos);
         }
       }
       window.addGasto = addGasto;
@@ -1544,10 +1530,7 @@
 
         const nuevos = await verificarSellos();
         if (nuevos.length > 0) {
-          console.log(
-            "Sellos desbloqueados:",
-            nuevos.map((s) => s.nombre),
-          );
+          await ritualSellos(nuevos);
         }
       }
       window.addHora = addHora;
@@ -1785,10 +1768,7 @@
 
         const nuevos = await verificarSellos();
         if (nuevos.length > 0) {
-          console.log(
-            "Sellos desbloqueados:",
-            nuevos.map((s) => s.nombre),
-          );
+          await ritualSellos(nuevos);
         }
 
         ritual(
@@ -1836,10 +1816,7 @@
 
         const nuevos = await verificarSellos();
         if (nuevos.length > 0) {
-          console.log(
-            "Sellos desbloqueados:",
-            nuevos.map((s) => s.nombre),
-          );
+          await ritualSellos(nuevos);
         }
 
         ritual(
@@ -1909,20 +1886,64 @@
       document.getElementById("ritualToggle").classList.toggle("on", modoConde);
       document.body.classList.toggle("ritual", modoConde);
 
-      function ritual(titulo, texto) {
+      /* ============================================
+         RITUAL (mensajes simples)
+         ============================================ */
+      function ritual(titulo, texto, sub = "") {
         if (!modoConde) return;
         const overlay = document.getElementById("ritualOverlay");
         document.getElementById("ritualTitle").textContent = titulo;
         document.getElementById("ritualText").textContent = texto;
+        document.getElementById("ritualSub").textContent = sub;
+        document.getElementById("ritualSeal").textContent = "§";
         overlay.classList.add("active");
         setTimeout(() => overlay.classList.remove("active"), 2200);
+      }
+
+      /* ============================================
+         RITUAL DE SELLO (con icono y secuencia)
+         ============================================ */
+      async function ritualSellos(nuevos) {
+        if (nuevos.length === 0) return;
+
+        if (!modoConde) {
+          console.log(
+            "Sellos desbloqueados:",
+            nuevos.map((s) => s.nombre),
+          );
+          return;
+        }
+
+        const overlay = document.getElementById("ritualOverlay");
+        const titleEl = document.getElementById("ritualTitle");
+        const textEl = document.getElementById("ritualText");
+        const subEl = document.getElementById("ritualSub");
+        const sealEl = document.getElementById("ritualSeal");
+
+        for (const sello of nuevos) {
+          titleEl.textContent = "Sello desbloqueado";
+          textEl.textContent = sello.mensaje;
+          subEl.textContent = `${sello.categoria} · ${sello.nombre}`;
+          sealEl.textContent = sello.icono;
+
+          overlay.classList.add("active");
+
+          await new Promise((resolve) => setTimeout(resolve, 2800));
+
+          overlay.classList.remove("active");
+
+          await new Promise((resolve) => setTimeout(resolve, 400));
+        }
+
+        sealEl.textContent = "§";
+        subEl.textContent = "";
       }
 
       window.toggleRitual = toggleRitual;
 
       /* ============================================
-   RENDER SALÓN DE SELLOS
-   ============================================ */
+         RENDER SALÓN DE SELLOS
+         ============================================ */
       function renderSellos() {
         const datos = calcularDatos();
         const obtenidos = new Set(cacheSellos.map((s) => s.sello_id));
@@ -1935,7 +1956,6 @@
         const porcentaje =
           total > 0 ? Math.round((obtenidosCount / total) * 100) : 0;
 
-        // Métricas superiores
         document.getElementById("sellosObtenidos").textContent = obtenidosCount;
         document.getElementById("sellosTotales").textContent = total;
         document.getElementById("sellosProgreso").innerHTML =
@@ -1943,7 +1963,6 @@
         document.getElementById("sellosRacha").innerHTML =
           datos.racha + '<span class="metric-unit">días</span>';
 
-        // Sellos obtenidos
         const obtenidosList = SELLOS.filter((s) => obtenidos.has(s.id));
         const gridObtenidos = document.getElementById("sellosGridObtenidos");
 
@@ -1974,7 +1993,6 @@
             .join("");
         }
 
-        // Próximos sellos (pendientes que están más cerca)
         const pendientes = SELLOS.filter((s) => !obtenidos.has(s.id))
           .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
           .sort((a, b) => b.progreso - a.progreso)
@@ -2002,13 +2020,10 @@
       }
 
       /* ============================================
-   PROGRESO HACIA UN SELLO
-   ============================================ */
+         PROGRESO HACIA UN SELLO
+         ============================================ */
       function progresoSello(sello, datos) {
-        // Devuelve un número 0-100 indicando qué tan cerca está el sello.
-        // Se calcula según el tipo de sello.
         const id = sello.id;
-
         const pct = (actual, meta) => Math.min(100, (actual / meta) * 100);
 
         if (id === "primer_sello") {
