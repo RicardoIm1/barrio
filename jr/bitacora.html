@@ -1434,7 +1434,7 @@
           condicion: (d) => d.mrr >= 10000,
         },
 
-                // Ingresos
+        // Ingresos
         {
           id: "primer_ingreso",
           nombre: "Primer Ingreso",
@@ -1478,7 +1478,10 @@
           icono: "⚖",
           categoria: "Ingresos",
           mensaje: "El mes cerró en verde. Que siga así.",
-          condicion: (d) => d.balanceMes >= 0 && d.totalGastosMonto >= 1 && d.totalIngresosMonto >= 1,
+          condicion: (d) =>
+            d.balanceMes >= 0 &&
+            d.totalGastosMonto >= 1 &&
+            d.totalIngresosMonto >= 1,
         },
       ];
 
@@ -1497,21 +1500,40 @@
         );
         const totalCartas = cacheCartas.length;
 
+        const totalIngresos = cacheIngresos.length;
+        const totalIngresosMonto = cacheIngresos.reduce(
+          (s, i) => s + Number(i.monto),
+          0,
+        );
+
         const usuarios = cacheMetricas?.usuarios || 0;
         const negocios = cacheMetricas?.negocios || 0;
         const mrr = Number(cacheMetricas?.mrr) || 0;
 
         const racha = calcularRacha();
 
+        // Balance del mes actual
+        const mes = new Date().toISOString().slice(0, 7);
+        const gastosMes = cacheGastos
+          .filter((g) => g.fecha.startsWith(mes))
+          .reduce((s, g) => s + Number(g.monto), 0);
+        const ingresosMes = cacheIngresos
+          .filter((i) => i.fecha.startsWith(mes))
+          .reduce((s, i) => s + Number(i.monto), 0);
+        const balanceMes = ingresosMes - gastosMes;
+
         return {
           totalGastos,
           totalHoras,
           totalGastosMonto,
           totalCartas,
+          totalIngresos,
+          totalIngresosMonto,
           usuarios,
           negocios,
           mrr,
           racha,
+          balanceMes,
         };
       }
 
@@ -2397,6 +2419,21 @@
         if (id === "diez_negocios") return pct(datos.negocios, 10);
         if (id === "mrr_de_mil") return pct(datos.mrr, 1000);
         if (id === "mrr_de_diez_mil") return pct(datos.mrr, 10000);
+
+                if (id === "primer_ingreso") return pct(datos.totalIngresos, 1);
+        if (id === "mil_ingresos") return pct(datos.totalIngresosMonto, 1000);
+        if (id === "diez_mil_ingresos")
+          return pct(datos.totalIngresosMonto, 10000);
+        if (id === "cien_mil_ingresos")
+          return pct(datos.totalIngresosMonto, 100000);
+        if (id === "balance_mensual") {
+          if (datos.totalIngresosMonto < 1 || datos.totalGastosMonto < 1)
+            return 0;
+          if (datos.balanceMes >= 0) return 100;
+          // Si el balance es negativo, mostrar qué tan cerca está
+          const ratio = datos.totalIngresosMonto / datos.totalGastosMonto;
+          return Math.min(99, ratio * 100);
+        }
 
         return 0;
       }
