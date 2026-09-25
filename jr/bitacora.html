@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>elbarrio.me | Minds Under the Palm — Puerto Vallarta / Riviera Nayarit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-concrete: #d1cdc7;
+            --color-concrete-dark: #a8a29a;
+            --color-wood: #8B5A2B;
+            --color-wood-light: #C19A6B;
+            --color-jungle: #2d4a3e;
+            --color-jungle-light: #4a6b5a;
+            --color-gold: #c9a84c;
+            --color-gold-light: #e0c878;
+            --color-bg: #f5f2ed;
+            --color-text: #2c2c2c;
+            --color-text-light: #6b6b6b;
+            --color-white: #ffffff;
+            --color-water: #7ba7b8;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Inter', sans-serif;
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-strong: 0 8px 40px rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ---- NAVEGACIÓN ---- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(245, 242, 237, 0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-jungle);
+            letter-spacing: -0.02em;
+        }
+
+        .nav-logo span {
+            color: var(--color-gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--color-text);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: var(--color-gold);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-jungle);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: var(--color-jungle);
+            color: var(--color-white) !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--color-gold) !important;
+            color: var(--color-text) !important;
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--color-text);
+            transition: all 0.3s ease;
+        }
+
+        /* ---- HERO ---- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            background: linear-gradient(135deg, var(--color-jungle) 0%, #1a2e25 100%);
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(201, 168, 76, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(123, 167, 184, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(139, 90, 43, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--color-gold-light);
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            color: var(--color-white);
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .hero h1 em {
+            font-style: italic;
+            color: var(--color-gold-light);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            color: rgba(255,255,255,0.75);
+            max-width: 680px;
+            margin: 0 auto 2.5rem;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            background: var(--color-gold);
+            color: var(--color-text);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: 2px solid var(--color-gold);
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: var(--color-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            background: transparent;
+            color: var(--color-white);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-white);
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-2px);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        .hero-scroll::after {
+            content: '';
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ---- SECCIONES GENERALES ---- */
+        section {
+            padding: 6rem 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--color-gold);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--color-jungle);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.05rem;
+            color: var(--color-text-light);
+            max-width: 650px;
+            margin: 0 auto;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        /* ---- RESUMEN EJECUTIVO ---- */
+        .executive-summary {
+            background: var(--color-white);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .summary-text h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            color: var(--color-jungle);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+
+        .summary-text p {
+            color: var(--color-text-light);
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg);
+            padding: 2rem 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-soft);
+            border-color: var(--color-gold);
+        }
+
+        .stat-number {
+            font-family: var(--font-heading);
+            font-size: 2.5rem;
+            color: var(--color-jungle);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-light);
+            font-weight: 500;
+        }
+
+        /* ---- NIVELES / ATMÓSFERAS ---- */
+        .levels-section {
+            background: var(--color-bg);
+            position: relative;
+        }
+
+        .levels-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .level-card {
+            background: var(--color-white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .level-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-strong);
+        }
+
+        .level-card-header {
+            padding: 2rem 2rem 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:nth-child(1) .level-card-header { background: linear-gradient(135deg, #2d4a3e, #1a2e25); }
+        .level-card:nth-child(2) .level-card-header { background: linear-gradient(135deg, #8B5A2B, #6b4420); }
+        .level-card:nth-child(3) .level-card-header { background: linear-gradient(135deg, #4a6b5a, #2d4a3e); }
+        .level-card:nth-child(4) .level-card-header { background: linear-gradient(135deg, #c9a84c, #a8873a); }
+
+        .level-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .level-card-header h3 {
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            color: var(--color-white);
+            margin-bottom: 0.25rem;
+            font-weight: 400;
+        }
+
+        .level-card-header .level-subtitle {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            font-weight: 300;
+        }
+
+        .level-card-body {
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .level-card-body p {
+            color: var(--color-text-light);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            flex: 1;
+        }
+
+        .level-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .level-feature {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            background: var(--color-bg);
+            color: var(--color-jungle);
+            font-weight: 500;
+            border: 1px solid rgba(45, 74, 62, 0.12);
+        }
+
+        /* ---- PROPUESTA COMERCIAL ---- */
+        .commercial-section {
+            background: var(--color-white);
+        }
+
+        .commercial-card {
+            background: linear-gradient(135deg, var(--color-jungle) 0%, #1a2e25 100%);
+            border-radius: 24px;
+            padding: 4rem;
+            color: var(--color-white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .commercial-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .commercial-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(123, 167, 184, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .commercial-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .commercial-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .commercial-info h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+
+        .commercial-info p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin: 2rem 0;
+        }
+
+        .price-amount {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            color: var(--color-gold-light);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .price-note {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: -1rem;
+            margin-bottom: 2rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .benefits-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .benefits-list li::before {
+            content: '✦';
+            color: var(--color-gold);
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: 0.15rem;
+        }
+
+        /* ---- VIABILIDAD FINANCIERA ---- */
+        .financial-section {
+            background: var(--color-bg);
+        }
+
+        .financial-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .financial-card {
+            background: var(--color-white);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .financial-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--color-jungle);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--color-bg);
+        }
+
+        .cost-breakdown {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+
+        .cost-label {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+            flex: 1;
+            padding-right: 1rem;
+        }
+
+        .cost-value {
+            font-weight: 600;
+            color: var(--color-jungle);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .cost-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--color-bg);
+            border-radius: 2px;
+            margin-left: 1rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .cost-bar-fill {
+            height: 100%;
+            background: var(--color-gold);
+            border-radius: 2px;
+        }
+
+        .income-breakdown {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .income-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .income-item:last-child {
+            border-bottom: none;
+        }
+
+        .income-label {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        .income-value {
+            font-weight: 600;
+            color: var(--color-jungle);
+            font-size: 0.95rem;
+        }
+
+        .income-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 0 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid var(--color-jungle);
+            font-weight: 700;
+        }
+
+        .income-total .income-label {
+            color: var(--color-jungle);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .income-total .income-value {
+            font-size: 1.2rem;
+        }
+
+        .net-cashflow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            background: linear-gradient(135deg, var(--color-jungle), #1a2e25);
+            border-radius: 12px;
+            color: var(--color-white);
+        }
+
+        .net-cashflow .label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+
+        .net-cashflow .value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-gold-light);
+        }
+
+        .roi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--color-gold);
+            color: var(--color-text);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+        }
+
+        /* ---- FOOTER ---- */
+        footer {
+            background: var(--color-jungle);
+            color: rgba(255,255,255,0.6);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand h4 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-white);
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand h4 span {
+            color: var(--color-gold);
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            font-weight: 300;
+            max-width: 350px;
+        }
+
+        .footer-col h5 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--color-gold);
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-col a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-col a:hover {
+            color: var(--color-gold);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 1024px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .commercial-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .financial-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .levels-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--color-white);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                box-shadow: var(--shadow-soft);
+                border-bottom: 1px solid rgba(0,0,0,0.06);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .menu-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .menu-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .menu-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .levels-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .commercial-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .price-amount {
+                font-size: 2.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                max-width: 320px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* ---- ANIMACIONES ---- */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVEGACIÓN -->
+    <nav id="navbar">
+        <div class="nav-logo">elbarrio<span>.me</span></div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#resumen">Resumen</a></li>
+            <li><a href="#niveles">Niveles</a></li>
+            <li><a href="#membresia">Membresía</a></li>
+            <li><a href="#viabilidad">Inversionistas</a></li>
+            <li><a href="#contacto" class="nav-cta">Reservar</a></li>
+        </ul>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menú">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">Puerto Vallarta · Riviera Nayarit</div>
+            <h1>Minds Under<br><em>the Palm</em></h1>
+            <p>Un concepto inmobiliario de nicho bajo el modelo de Hotel-Coworking Boutique. Brutalismo Tropical Balinés en 8x17 metros. Cuatro atmósferas de energía independiente para el nómada digital de alto valor.</p>
+            <div class="hero-buttons">
+                <a href="#membresia" class="btn-primary">Membresía Fundador</a>
+                <a href="#niveles" class="btn-secondary">Explorar el Proyecto</a>
+            </div>
+        </div>
+        <div class="hero-scroll">Descubrir</div>
+    </header>
+
+    <!-- RESUMEN EJECUTIVO -->
+    <section class="executive-summary" id="resumen">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-label">Resumen Ejecutivo</div>
+                <h2 class="section-title">Un refugio para la mente</h2>
+                <p class="section-subtitle">El Barrio Retreat resuelve un problema crítico en el mercado actual de nómadas digitales de alto valor: la falta de espacios que equilibren el aislamiento acústico de alto rendimiento con santuarios de relajación y desconexión mental genuina.</p>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-text fade-in">
+                    <h2>Diseñado para el <em>Deep Work</em></h2>
+                    <p>Optimizamos una superficie de terreno de 8x17 m con una edificación vertical de 4 niveles sobre un desplante eficiente de 6x6 m. Cada decisión arquitectónica está pensada para directores de tecnología, arquitectos de software y creativos que buscan rendimiento sin sacrificar bienestar.</p>
+                    <p>La estructura de costos elimina acabados finos para exponer la honestidad de los materiales: concreto aparente, ladrillo artesanal rojo y madera de parota local. Un manifiesto de sostenibilidad y alto rendimiento por metro cuadrado.</p>
+                </div>
+                <div class="summary-stats fade-in">
+                    <div class="stat-card">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Niveles de Experiencia</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">6×6</div>
+                        <div class="stat-label">Metros de Desplante</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">4</div>
+                        <div class="stat-label">Oficinas Privadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">&lt;4</div>
+                        <div class="stat-label">Años para ROI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NIVELES / ATMÓSFERAS -->
+    <section class="levels-section" id="niveles">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-label">Tesis de Negocio y Pilares</div>
+                <h2 class="section-title">Cuatro atmósferas de energía</h2>
+                <p class="section-subtitle">Para mantener márgenes de utilidad netos elevados y mitigar los riesgos tradicionales del mercado inmobiliario, el desarrollo se segmenta en cuatro niveles independientes.</p>
+            </div>
+            <div class="levels-grid">
+                <!-- SÓTANO -->
+                <article class="level-card fade-in">
+                    <div class="level-card-header">
+                        <div class="level-tag">Sótano · -1 Nivel</div>
+                        <h3>El Búnker del Silencio</h3>
+                        <div class="level-subtitle">Ecosistema subterráneo de máximo enfoque acústico</div>
+                    </div>
+                    <div class="level-card-body">
+                        <p>Alberga 4 oficinas privadas equipadas con mobiliario ergonómico de alta gama y tablones flotantes de madera de parota maciza. Las oficinas cuentan con muros de cristal templado que miran hacia un Jardín Inglés (patio enterrado) que inunda el espacio con luz cenital indirecta y el murmullo de una cascada de agua.</p>
+                        <div class="level-features">
+                            <span class="level-feature">4 Oficinas</span>
+                            <span class="level-feature">Jardín Inglés</span>
+                            <span class="level-feature">Luz Cenital</span>
+                            <span class="level-feature">Cascada</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- PLANTA BAJA -->
+                <article class="level-card fade-in">
+                    <div class="level-card-header">
+                        <div class="level-tag">Planta Baja · Nivel 0</div>
+                        <h3>La Zona Neutra</h3>
+                        <div class="level-subtitle">Núcleo de convivencia comunitaria</div>
+                    </div>
+                    <div class="level-card-body">
+                        <p>Cocina y comedor al aire libre resguardados bajo una imponente losa de concreto aparente. Barra monumental de concreto pulido y parota para comidas rápidas (4 bancos), parrilla para asados de acero inoxidable y conectividad directa a la pileta de agua exterior. Aloja una bodega blindada de alta seguridad con control biométrico.</p>
+                        <div class="level-features">
+                            <span class="level-feature">Barra Monumental</span>
+                            <span class="level-feature">Parrilla</span>
+                            <span class="level-feature">Pileta</span>
+                            <span class="level-feature">Bodega Biométrica</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- NIVEL 1 -->
+                <article class="level-card fade-in">
+                    <div class="level-card-header">
+                        <div class="level-tag">Nivel 1 · +1 Nivel</div>
+                        <h3>La Suite Eco-Boutique</h3>
+                        <div class="level-subtitle">Hospedaje de lujo para el mercado global</div>
+                    </div>
+                    <div class="level-card-body">
+                        <p>Clóset integral de teca que abraza de forma envolvente la cabecera de la cama. Baño de concepto abierto que independiza el inodoro y la ducha de lluvia, cediendo el protagonismo a una majestuosa tina exenta de piedra natural esculpida a mano en una esquina acristalada orientada hacia las copas de los árboles del jardín.</p>
+                        <div class="level-features">
+                            <span class="level-feature">Clóset de Teca</span>
+                            <span class="level-feature">Baño Abierto</span>
+                            <span class="level-feature">Tina de Piedra</span>
+                            <span class="level-feature">Vista al Jardín</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- NIVEL 2 -->
+                <article class="level-card fade-in">
+                    <div class="level-card-header">
+                        <div class="level-tag">Nivel 2 · +2 Niveles</div>
+                        <h3>El Rooftop Santuario</h3>
+                        <div class="level-subtitle">Mirador de 360 grados para el descanso total</div>
+                    </div>
+                    <div class="level-card-body">
+                        <p>Diseñado bajo el resguardo y frescura de una palapa tejida tradicional de la costa del Pacífico. Espacio privado, libre de humo sintético, ideal para la relajación con hamacas y la celebración de las icónicas "Charlas de Bonsái" y degustaciones herbales durante los fines de semana.</p>
+                        <div class="level-features">
+                            <span class="level-feature">Palapa Tradicional</span>
+                            <span class="level-feature">Hamacas</span>
+                            <span class="level-feature">Charlas de Bonsái</span>
+                            <span class="level-feature">Vista 360°</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROPUESTA COMERCIAL -->
+    <section class="commercial-section" id="membresia">
+        <div class="container">
+            <div class="commercial-card fade-in">
+                <div class="commercial-content">
+                    <div class="commercial-grid">
+                        <div class="commercial-info">
+                            <div class="section-label" style="color: var(--color-gold-light);">Propuesta Comercial</div>
+                            <h2>Membresía Fundador</h2>
+                            <p>El lanzamiento al mercado se realiza bajo un formato de Preventa de Co-Financiamiento Limitado a través de la infraestructura digital de elbarrio.me. No se busca una venta masiva, sino la selección de un grupo piloto de usuarios iniciales.</p>
+                            <div class="price-tag">
+                                <span class="price-amount">$6,000</span>
+                                <span class="price-period">MXN / mes</span>
+                            </div>
+                            <div class="price-note">Contrato cerrado por 6 meses pagado por adelantado = $36,000 MXN</div>
+                        </div>
+                        <div>
+                            <h3 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 1.5rem; color: var(--color-gold-light); font-weight: 400;">Beneficios del Miembro Fundador</h3>
+                            <ul class="benefits-list">
+                                <li>Uso exclusivo garantizado de 1 de las 4 oficinas privadas en el búnker subterráneo durante el periodo del contrato.</li>
+                                <li>10 noches de hospedaje incluidas en la Suite Eco-Boutique para uso personal o invitados de negocios.</li>
+                                <li>Acceso preferencial de por vida al Rooftop Santuario y pase libre a todas las Charlas de Bonsái y eventos de la marca.</li>
+                                <li>Uso preferente del stock privado resguardado en la bodega biométrica de seguridad.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIABILIDAD FINANCIERA -->
+    <section class="financial-section" id="viabilidad">
+        <div class="container">
+            <div class="section-header fade-in">
+                <div class="section-label">Para Accionistas</div>
+                <h2 class="section-title">Viabilidad Financiera</h2>
+                <p class="section-subtitle">El proyecto ha sido calculado minuciosamente sobre un presupuesto total de ejecución de $3,000,000 MXN. Al utilizar la infraestructura comunitaria y publicitaria de elbarrio.me, se disminuyen drásticamente los costos de marketing y captación de clientes.</p>
+            </div>
+
+            <div class="financial-grid">
+                <!-- ESTRUCTURA DE COSTOS -->
+                <div class="financial-card fade-in">
+                    <h3>Estructura del Costo de Capital</h3>
+                    <ul class="cost-breakdown">
+                        <li class="cost-item">
+                            <span class="cost-label">Cimentación y Sótano Estructural</span>
+                            <span class="cost-value">21.6%</span>
+                            <div class="cost-bar"><div class="cost-bar-fill" style="width: 21.6%;"></div></div>
+                        </li>
+                        <li class="cost-item">
+                            <span class="cost-label">Obra Negra Brutalista</span>
+                            <span class="cost-value">36.6%</span>
+                            <div class="cost-bar"><div class="cost-bar-fill" style="width: 36.6%;"></div></div>
+                        </li>
+                        <li class="cost-item">
+                            <span class="cost-label">Carpinterías de Alta Gama y Cristalería</span>
+                            <span class="cost-value">18.3%</span>
+                            <div class="cost-bar"><div class="cost-bar-fill" style="width: 18.3%;"></div></div>
+                        </li>
+                        <li class="cost-item">
+                            <span class="cost-label">Instalaciones y Paisajismo Zen</span>
+                            <span class="cost-value">15.0%</span>
+                            <div class="cost-bar"><div class="cost-bar-fill" style="width: 15.0%;"></div></div>
+                        </li>
+                        <li class="cost-item">
+                            <span class="cost-label">Área de Acceso y Logística</span>
+                            <span class="cost-value">8.5%</span>
+                            <div class="cost-bar"><div class="cost-bar-fill" style="width: 8.5%;"></div></div>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid var(--color-bg);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-light);">Presupuesto Total</span>
+                            <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; color: var(--color-jungle);">$3,000,000 MXN</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROYECCIÓN DE INGRESOS -->
+                <div class="financial-card fade-in">
+                    <h3>Proyección de Ingreso Operativo Mensual</h3>
+                    <ul class="income-breakdown">
+                        <li class="income-item">
+                            <span class="income-label">Renta de 4 Oficinas Privadas (Sótano)</span>
+                            <span class="income-value">$24,000 MXN</span>
+                        </li>
+                        <li class="income-item">
+                            <span class="income-label">Ocupación Suite Eco-Boutique (20 noches/mes)</span>
+                            <span class="income-value">$40,000 MXN</span>
+                        </li>
+                        <li class="income-item">
+                            <span class="income-label">Eventos, Charlas de Bonsái y Consumos de Barra</span>
+                            <span class="income-value">$25,000 MXN</span>
+                        </li>
+                    </ul>
+                    <div class="income-total">
+                        <span class="income-label">Ingreso Bruto Mensual</span>
+                        <span class="income-value">$89,000 MXN</span>
+                    </div>
+                    <ul class="income-breakdown" style="margin-top: 0.5rem;">
+                        <li class="income-item">
+                            <span class="income-label">Costos Operativos Estimados</span>
+                            <span class="income-value" style="color: #c0392b;">−$24,000 MXN</span>
+                        </li>
+                    </ul>
+                    <div class="net-cashflow">
+                        <span class="label">Flujo de Efectivo Neto</span>
+                        <span class="value">$65,000 MXN</span>
+                    </div>
+                    <div class="roi-badge">
+                        <span>✦</span> ROI estimado en menos de 4 años
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="contacto">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h4>elbarrio<span>.me</span></h4>
+                <p>Minds Under the Palm — Un concepto inmobiliario de nicho bajo el modelo de Hotel-Coworking Boutique. Brutalismo Tropical Balinés en la Bahía de Banderas.</p>
+            </div>
+            <div class="footer-col">
+                <h5>Explorar</h5>
+                <ul>
+                    <li><a href="#resumen">Resumen Ejecutivo</a></li>
+                    <li><a href="#niveles">Niveles y Atmósferas</a></li>
+                    <li><a href="#membresia">Membresía Fundador</a></li>
+                    <li><a href="#viabilidad">Viabilidad Financiera</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h5>Contacto</h5>
+                <ul>
+                    <li><a href="mailto:hola@elbarrio.me">hola@elbarrio.me</a></li>
+                    <li><a href="#">Puerto Vallarta, Jalisco</a></li>
+                    <li><a href="#">Riviera Nayarit, México</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2025 elbarrio.me — Todos los derechos reservados.</span>
+            <span>Minds Under the Palm · Puerto Vallarta / Riviera Nayarit</span>
+        </div>
+    </footer>
+
+    <script>
+        // Menú móvil
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Cerrar menú al hacer clic en un enlace
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Animaciones al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Navbar con fondo al hacer scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.08)';
+            } else {
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+
+</body>
+</html>
