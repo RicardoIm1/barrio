@@ -1,761 +1,1770 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bitácora del Conde · El Barrio</title>
-<style>
-  :root {
-    --bg: #0e0e0c;
-    --bg-soft: #161613;
-    --bg-card: #1c1c18;
-    --border: #2a2a24;
-    --gold: #c9a961;
-    --gold-soft: #8a7544;
-    --jade: #6b8e6b;
-    --text: #d4d0c4;
-    --text-dim: #8a8678;
-    --text-faint: #5a5749;
-    --danger: #a85a4a;
-    --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    --serif: 'Georgia', 'Times New Roman', serif;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(circle at 20% 10%, rgba(201,169,97,0.04) 0%, transparent 50%),
-      radial-gradient(circle at 80% 90%, rgba(107,142,107,0.03) 0%, transparent 50%);
-    transition: background 1.2s ease;
-  }
-  /* MODO CONDE: fondo más ceremonioso */
-  body.ritual {
-    background-image:
-      radial-gradient(circle at 50% 0%, rgba(201,169,97,0.12) 0%, transparent 60%),
-      radial-gradient(circle at 50% 100%, rgba(107,142,107,0.08) 0%, transparent 60%);
-  }
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 2rem 2rem 1.5rem;
-    position: sticky;
-    top: 0;
-    background: rgba(14,14,12,0.95);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-  }
-  .header-top { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 1rem; }
-  h1 { font-family: var(--serif); font-size: 1.6rem; font-weight: normal; color: var(--gold); letter-spacing: 0.02em; }
-  h1::before { content: "§ "; color: var(--gold-soft); }
-  .subtitle { font-size: 0.75rem; color: var(--text-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.3rem; }
-  .header-right { display: flex; gap: 0.5rem; align-items: center; }
-  .year-badge { font-size: 0.7rem; color: var(--gold-soft); border: 1px solid var(--border); padding: 0.4rem 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  nav { margin-top: 1.2rem; display: flex; gap: 0.3rem; flex-wrap: wrap; }
-  nav button { background: transparent; border: 1px solid var(--border); color: var(--text-dim); font-family: var(--mono); font-size: 0.7rem; padding: 0.5rem 1rem; cursor: pointer; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; }
-  nav button:hover { color: var(--gold); border-color: var(--gold-soft); }
-  nav button.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
-  .user-info { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; }
-  .user-info button { background: none; border: none; color: var(--danger); cursor: pointer; font-family: var(--mono); font-size: 0.65rem; text-decoration: underline; }
-  main { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-  .view { display: none; }
-  .view.active { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-  .card { background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; margin-bottom: 1.5rem; }
-  .card-title { font-size: 0.7rem; color: var(--gold-soft); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
-  .card-title::after { content: ""; flex: 1; height: 1px; background: var(--border); margin-left: 1rem; }
-  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.8rem; margin-bottom: 1rem; }
-  .form-group { display: flex; flex-direction: column; gap: 0.3rem; }
-  .form-group label { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; }
-  input, select, textarea { background: var(--bg-soft); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.85rem; padding: 0.6rem 0.8rem; outline: none; transition: border-color 0.2s; }
-  input:focus, select:focus, textarea:focus { border-color: var(--gold-soft); }
-  textarea { resize: vertical; min-height: 80px; }
-  .btn { background: transparent; border: 1px solid var(--gold-soft); color: var(--gold); font-family: var(--mono); font-size: 0.75rem; padding: 0.6rem 1.4rem; cursor: pointer; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s; }
-  .btn:hover { background: var(--gold); color: var(--bg); }
-  .btn-danger { border-color: var(--danger); color: var(--danger); }
-  .btn-danger:hover { background: var(--danger); color: var(--bg); }
-  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 1rem; }
-  th { text-align: left; font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); font-weight: normal; }
-  td { padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--bg-soft); color: var(--text-dim); }
-  tr:hover td { background: var(--bg-soft); color: var(--text); }
-  .amount { color: var(--gold); font-weight: 500; }
-  .amount-neg { color: var(--danger); }
-  .amount-pos { color: var(--jade); }
-  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
-  .metric { background: var(--bg-soft); border: 1px solid var(--border); padding: 1.2rem; position: relative; overflow: hidden; }
-  .metric::before { content: ""; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: var(--gold-soft); }
-  .metric-label { font-size: 0.65rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.5rem; }
-  .metric-value { font-family: var(--serif); font-size: 1.8rem; color: var(--gold); line-height: 1.1; }
-  .metric-unit { font-size: 0.75rem; color: var(--text-faint); margin-left: 0.3rem; }
-  .letter { background: var(--bg-soft); border-left: 3px solid var(--gold-soft); padding: 1.5rem; font-family: var(--serif); font-size: 0.95rem; line-height: 1.8; color: var(--text); margin-bottom: 1rem; }
-  .letter-date { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.8rem; }
-  .phase { border-left: 2px solid var(--border); padding-left: 1.5rem; margin-bottom: 1.5rem; position: relative; }
-  .phase::before { content: ""; position: absolute; left: -5px; top: 0.5rem; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; }
-  .phase-title { font-size: 0.85rem; color: var(--gold); margin-bottom: 0.3rem; }
-  .phase-desc { font-size: 0.8rem; color: var(--text-dim); }
-  footer { text-align: center; padding: 2rem; font-size: 0.7rem; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase; border-top: 1px solid var(--border); margin-top: 3rem; }
-  ::-webkit-scrollbar { width: 8px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border); }
-  ::-webkit-scrollbar-thumb:hover { background: var(--gold-soft); }
-  @media (max-width: 600px) {
-    header { padding: 1.2rem 1rem 1rem; }
-    main { padding: 1rem; }
-    h1 { font-size: 1.2rem; }
-    .metric-value { font-size: 1.4rem; }
-    nav button { font-size: 0.65rem; padding: 0.4rem 0.7rem; }
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bitácora del Conde · El Barrio</title>
+    <style>
+      :root {
+        --bg: #0e0e0c;
+        --bg-soft: #161613;
+        --bg-card: #1c1c18;
+        --border: #2a2a24;
+        --gold: #c9a961;
+        --gold-soft: #8a7544;
+        --jade: #6b8e6b;
+        --text: #d4d0c4;
+        --text-dim: #8a8678;
+        --text-faint: #5a5749;
+        --danger: #a85a4a;
+        --mono: "SF Mono", "JetBrains Mono", "Fira Code", "Consolas", monospace;
+        --serif: "Georgia", "Times New Roman", serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 14px;
+        line-height: 1.6;
+        min-height: 100vh;
+        background-image:
+          radial-gradient(
+            circle at 20% 10%,
+            rgba(201, 169, 97, 0.04) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 90%,
+            rgba(107, 142, 107, 0.03) 0%,
+            transparent 50%
+          );
+        transition: background 1.2s ease;
+      }
+      body.ritual {
+        background-image:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(201, 169, 97, 0.12) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(107, 142, 107, 0.08) 0%,
+            transparent 60%
+          );
+      }
+      header {
+        border-bottom: 1px solid var(--border);
+        padding: 2rem 2rem 1.5rem;
+        position: sticky;
+        top: 0;
+        background: rgba(14, 14, 12, 0.95);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+      }
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      h1 {
+        font-family: var(--serif);
+        font-size: 1.6rem;
+        font-weight: normal;
+        color: var(--gold);
+        letter-spacing: 0.02em;
+      }
+      h1::before {
+        content: "§ ";
+        color: var(--gold-soft);
+      }
+      .subtitle {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 0.3rem;
+      }
+      .header-right {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .year-badge {
+        font-size: 0.7rem;
+        color: var(--gold-soft);
+        border: 1px solid var(--border);
+        padding: 0.4rem 0.8rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      nav {
+        margin-top: 1.2rem;
+        display: flex;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+      }
+      nav button {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: all 0.2s;
+      }
+      nav button:hover {
+        color: var(--gold);
+        border-color: var(--gold-soft);
+      }
+      nav button.active {
+        background: var(--gold);
+        color: var(--bg);
+        border-color: var(--gold);
+      }
+      .user-info {
+        font-size: 0.65rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+      }
+      .user-info button {
+        background: none;
+        border: none;
+        color: var(--danger);
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        text-decoration: underline;
+      }
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .card-title {
+        font-size: 0.7rem;
+        color: var(--gold-soft);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .card-title::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+        margin-left: 1rem;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.8rem;
+        margin-bottom: 1rem;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .form-group label {
+        font-size: 0.65rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      input,
+      select,
+      textarea {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--gold-soft);
+      }
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      .btn {
+        background: transparent;
+        border: 1px solid var(--gold-soft);
+        color: var(--gold);
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        padding: 0.6rem 1.4rem;
+        cursor: pointer;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: all 0.2s;
+      }
+      .btn:hover {
+        background: var(--gold);
+        color: var(--bg);
+      }
+      .btn-danger {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      .btn-danger:hover {
+        background: var(--danger);
+        color: var(--bg);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+        margin-top: 1rem;
+      }
+      th {
+        text-align: left;
+        font-size: 0.65rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.6rem 0.5rem;
+        border-bottom: 1px solid var(--border);
+        font-weight: normal;
+      }
+      td {
+        padding: 0.6rem 0.5rem;
+        border-bottom: 1px solid var(--bg-soft);
+        color: var(--text-dim);
+      }
+      tr:hover td {
+        background: var(--bg-soft);
+        color: var(--text);
+      }
+      .amount {
+        color: var(--gold);
+        font-weight: 500;
+      }
+      .amount-neg {
+        color: var(--danger);
+      }
+      .amount-pos {
+        color: var(--jade);
+      }
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+      }
+      .metric {
+        background: var(--bg-soft);
+        border: 1px solid var(--border);
+        padding: 1.2rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .metric::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: var(--gold-soft);
+      }
+      .metric-label {
+        font-size: 0.65rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      .metric-value {
+        font-family: var(--serif);
+        font-size: 1.8rem;
+        color: var(--gold);
+        line-height: 1.1;
+      }
+      .metric-unit {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        margin-left: 0.3rem;
+      }
+      .letter {
+        background: var(--bg-soft);
+        border-left: 3px solid var(--gold-soft);
+        padding: 1.5rem;
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        line-height: 1.8;
+        color: var(--text);
+        margin-bottom: 1rem;
+      }
+      .letter-date {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.8rem;
+      }
+      .phase {
+        border-left: 2px solid var(--border);
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+      .phase::before {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: 0.5rem;
+        width: 8px;
+        height: 8px;
+        background: var(--gold);
+        border-radius: 50%;
+      }
+      .phase-title {
+        font-size: 0.85rem;
+        color: var(--gold);
+        margin-bottom: 0.3rem;
+      }
+      .phase-desc {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+      }
+      footer {
+        text-align: center;
+        padding: 2rem;
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-top: 1px solid var(--border);
+        margin-top: 3rem;
+      }
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--bg);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--gold-soft);
+      }
+      @media (max-width: 600px) {
+        header {
+          padding: 1.2rem 1rem 1rem;
+        }
+        main {
+          padding: 1rem;
+        }
+        h1 {
+          font-size: 1.2rem;
+        }
+        .metric-value {
+          font-size: 1.4rem;
+        }
+        nav button {
+          font-size: 0.65rem;
+          padding: 0.4rem 0.7rem;
+        }
+      }
 
-  /* ============================================
-     LOGIN
-     ============================================ */
-  .login-overlay {
-    position: fixed; inset: 0;
-    background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
-  }
-  .login-overlay.hidden { display: none; }
-  .login-box {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 2.5rem;
-    width: 100%; max-width: 380px;
-  }
-  .login-box h2 { font-family: var(--serif); color: var(--gold); font-size: 1.3rem; font-weight: normal; margin-bottom: 0.5rem; }
-  .login-box p { font-size: 0.75rem; color: var(--text-faint); margin-bottom: 1.5rem; letter-spacing: 0.05em; }
-  .login-box input { width: 100%; margin-bottom: 0.8rem; }
-  .login-box .btn { width: 100%; }
-  .login-msg { font-size: 0.75rem; color: var(--danger); margin-top: 0.8rem; min-height: 1.2em; }
+      /* LOGIN */
+      .login-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      }
+      .login-overlay.hidden {
+        display: none;
+      }
+      .login-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 380px;
+      }
+      .login-box h2 {
+        font-family: var(--serif);
+        color: var(--gold);
+        font-size: 1.3rem;
+        font-weight: normal;
+        margin-bottom: 0.5rem;
+      }
+      .login-box p {
+        font-size: 0.75rem;
+        color: var(--text-faint);
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.05em;
+      }
+      .login-box input {
+        width: 100%;
+        margin-bottom: 0.8rem;
+      }
+      .login-box .btn {
+        width: 100%;
+      }
+      .login-msg {
+        font-size: 0.75rem;
+        color: var(--danger);
+        margin-top: 0.8rem;
+        min-height: 1.2em;
+      }
 
-  /* ============================================
-     GRÁFICAS
-     ============================================ */
-  .chart-wrap { margin-top: 1rem; }
-  canvas { width: 100%; display: block; }
+      /* GRÁFICAS */
+      .chart-wrap {
+        margin-top: 1rem;
+      }
+      canvas {
+        width: 100%;
+        display: block;
+      }
 
-  /* ============================================
-     MODO CONDE: ritual
-     ============================================ */
-  .ritual-toggle {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-faint);
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    padding: 0.4rem 0.8rem;
-    cursor: pointer;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    transition: all 0.3s;
-  }
-  .ritual-toggle:hover { border-color: var(--gold-soft); color: var(--gold); }
-  .ritual-toggle.on { background: var(--gold); color: var(--bg); border-color: var(--gold); }
-  .ritual-overlay {
-    position: fixed; inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(201,169,97,0.15), rgba(14,14,12,0.95));
-    display: flex; align-items: center; justify-content: center;
-    z-index: 2000;
-    opacity: 0; pointer-events: none;
-    transition: opacity 1s ease;
-  }
-  .ritual-overlay.active { opacity: 1; pointer-events: auto; }
-  .ritual-content {
-    text-align: center;
-    font-family: var(--serif);
-    color: var(--gold);
-    max-width: 500px;
-    padding: 2rem;
-  }
-  .ritual-content h3 { font-size: 1.8rem; font-weight: normal; margin-bottom: 1rem; letter-spacing: 0.05em; }
-  .ritual-content p { font-size: 1rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 1.5rem; }
-  .ritual-content .seal {
-    width: 80px; height: 80px;
-    border: 2px solid var(--gold-soft);
-    border-radius: 50%;
-    margin: 1.5rem auto;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--gold-soft);
-    letter-spacing: 0.1em;
-  }
-</style>
-</head>
-<body>
-
-<!-- ============================================
-     LOGIN
-     ============================================ -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <h2>Bitácora del Conde</h2>
-    <p>Identifícate, señor.</p>
-    <input type="email" id="loginEmail" placeholder="correo@ejemplo.com" autocomplete="email">
-    <input type="password" id="loginPassword" placeholder="Contraseña" autocomplete="current-password">
-    <button class="btn" onclick="authLogin()">Entrar</button>
-    <button class="btn" onclick="authSignup()" style="margin-top:0.5rem">Crear cuenta</button>
-    <div class="login-msg" id="loginMsg"></div>
-  </div>
-</div>
-
-<!-- ============================================
-     OVERLAY RITUAL
-     ============================================ -->
-<div class="ritual-overlay" id="ritualOverlay">
-  <div class="ritual-content">
-    <h3 id="ritualTitle">Ritual</h3>
-    <div class="seal">§</div>
-    <p id="ritualText">...</p>
-  </div>
-</div>
-
-<header>
-  <div class="header-top">
-    <div>
-      <h1>Bitácora del Conde</h1>
-      <div class="subtitle">El Barrio · O cómo un vecino construyó su pensión, un aviso a la vez</div>
+      /* MODO CONDE */
+      .ritual-toggle {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-faint);
+        font-family: var(--mono);
+        font-size: 0.65rem;
+        padding: 0.4rem 0.8rem;
+        cursor: pointer;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        transition: all 0.3s;
+      }
+      .ritual-toggle:hover {
+        border-color: var(--gold-soft);
+        color: var(--gold);
+      }
+      .ritual-toggle.on {
+        background: var(--gold);
+        color: var(--bg);
+        border-color: var(--gold);
+      }
+      .ritual-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          circle at 50% 50%,
+          rgba(201, 169, 97, 0.15),
+          rgba(14, 14, 12, 0.95)
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease;
+      }
+      .ritual-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .ritual-content {
+        text-align: center;
+        font-family: var(--serif);
+        color: var(--gold);
+        max-width: 500px;
+        padding: 2rem;
+      }
+      .ritual-content h3 {
+        font-size: 1.8rem;
+        font-weight: normal;
+        margin-bottom: 1rem;
+        letter-spacing: 0.05em;
+      }
+      .ritual-content p {
+        font-size: 1rem;
+        color: var(--text-dim);
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+      }
+      .ritual-content .seal {
+        width: 80px;
+        height: 80px;
+        border: 2px solid var(--gold-soft);
+        border-radius: 50%;
+        margin: 1.5rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--gold-soft);
+        letter-spacing: 0.1em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN -->
+    <div class="login-overlay" id="loginOverlay">
+      <div class="login-box">
+        <h2>Bitácora del Conde</h2>
+        <p>Identifícate, señor.</p>
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="correo@ejemplo.com"
+          autocomplete="email"
+        />
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Contraseña"
+          autocomplete="current-password"
+        />
+        <button class="btn" onclick="authLogin()">Entrar</button>
+        <button class="btn" onclick="authSignup()" style="margin-top: 0.5rem">
+          Crear cuenta
+        </button>
+        <div class="login-msg" id="loginMsg"></div>
+      </div>
     </div>
-    <div class="header-right">
-      <button class="ritual-toggle" id="ritualToggle" onclick="toggleRitual()">Modo Conde</button>
-      <div class="year-badge" id="yearBadge">Año 1 de 15</div>
-    </div>
-  </div>
-  <nav>
-    <button data-view="diario" class="active">Diario</button>
-    <button data-view="mes">Mes</button>
-    <button data-view="carta">Carta</button>
-    <button data-view="activos">Activos</button>
-    <button data-view="plan">Plan</button>
-  </nav>
-  <div class="user-info" id="userInfo" style="margin-top:0.8rem"></div>
-</header>
 
-<main>
-  <!-- DIARIO -->
-  <section id="view-diario" class="view active">
-    <div class="card">
-      <div class="card-title">Registrar gasto</div>
-      <div class="form-row">
-        <div class="form-group"><label>Fecha</label><input type="date" id="gastoFecha"></div>
-        <div class="form-group"><label>Concepto</label><input type="text" id="gastoConcepto" placeholder="Volantes, dominio, café..."></div>
-        <div class="form-group"><label>Categoría</label>
-          <select id="gastoCategoria">
-            <option>Infraestructura</option><option>Marketing</option><option>Operación</option>
-            <option>Profesional</option><option>Personal</option><option>Otros</option>
-          </select>
+    <!-- OVERLAY RITUAL -->
+    <div class="ritual-overlay" id="ritualOverlay">
+      <div class="ritual-content">
+        <h3 id="ritualTitle">Ritual</h3>
+        <div class="seal">§</div>
+        <p id="ritualText">...</p>
+      </div>
+    </div>
+
+    <header>
+      <div class="header-top">
+        <div>
+          <h1>Bitácora del Conde</h1>
+          <div class="subtitle">
+            El Barrio · O cómo un vecino construyó su pensión, un aviso a la vez
+          </div>
         </div>
-        <div class="form-group"><label>Monto (MXN)</label><input type="number" id="gastoMonto" placeholder="0.00" step="0.01"></div>
-        <div class="form-group"><label>Recurrente</label>
-          <select id="gastoRecurrente"><option value="No">No</option><option value="Sí">Sí</option></select>
+        <div class="header-right">
+          <button
+            class="ritual-toggle"
+            id="ritualToggle"
+            onclick="toggleRitual()"
+          >
+            Modo Conde
+          </button>
+          <div class="year-badge" id="yearBadge">Año 1 de 15</div>
         </div>
       </div>
-      <button class="btn" onclick="addGasto()">+ Registrar gasto</button>
-    </div>
+      <nav>
+        <button data-view="diario" class="active">Diario</button>
+        <button data-view="mes">Mes</button>
+        <button data-view="carta">Carta</button>
+        <button data-view="activos">Activos</button>
+        <button data-view="plan">Plan</button>
+      </nav>
+      <div class="user-info" id="userInfo" style="margin-top: 0.8rem"></div>
+    </header>
 
-    <div class="card">
-      <div class="card-title">Registrar horas</div>
-      <div class="form-row">
-        <div class="form-group"><label>Fecha</label><input type="date" id="horaFecha"></div>
-        <div class="form-group"><label>Horas</label><input type="number" id="horaCantidad" placeholder="1.5" step="0.25"></div>
-        <div class="form-group"><label>Actividad</label><input type="text" id="horaActividad" placeholder="Codificar push, volantes..."></div>
-        <div class="form-group"><label>Categoría</label>
-          <select id="horaCategoria">
-            <option>Producto</option><option>Campo</option><option>Marketing</option>
-            <option>Soporte</option><option>Admin</option><option>Reuniones</option>
-          </select>
+    <main>
+      <!-- DIARIO -->
+      <section id="view-diario" class="view active">
+        <div class="card">
+          <div class="card-title">Registrar gasto</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha</label><input type="date" id="gastoFecha" />
+            </div>
+            <div class="form-group">
+              <label>Concepto</label
+              ><input
+                type="text"
+                id="gastoConcepto"
+                placeholder="Volantes, dominio, café..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="gastoCategoria">
+                <option>Infraestructura</option>
+                <option>Marketing</option>
+                <option>Operación</option>
+                <option>Profesional</option>
+                <option>Personal</option>
+                <option>Otros</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monto (MXN)</label
+              ><input
+                type="number"
+                id="gastoMonto"
+                placeholder="0.00"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label>Recurrente</label>
+              <select id="gastoRecurrente">
+                <option value="No">No</option>
+                <option value="Sí">Sí</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" onclick="addGasto()">+ Registrar gasto</button>
         </div>
-      </div>
-      <button class="btn" onclick="addHora()">+ Registrar horas</button>
-    </div>
 
-    <div class="card">
-      <div class="card-title">Nota del día</div>
-      <textarea id="notaDia" placeholder="¿Qué fue lo más importante hoy?"></textarea>
-      <button class="btn" style="margin-top:0.8rem" onclick="saveNota()">Guardar nota</button>
-    </div>
+        <div class="card">
+          <div class="card-title">Registrar horas</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha</label><input type="date" id="horaFecha" />
+            </div>
+            <div class="form-group">
+              <label>Horas</label
+              ><input
+                type="number"
+                id="horaCantidad"
+                placeholder="1.5"
+                step="0.25"
+              />
+            </div>
+            <div class="form-group">
+              <label>Actividad</label
+              ><input
+                type="text"
+                id="horaActividad"
+                placeholder="Codificar push, volantes..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="horaCategoria">
+                <option>Producto</option>
+                <option>Campo</option>
+                <option>Marketing</option>
+                <option>Soporte</option>
+                <option>Admin</option>
+                <option>Reuniones</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn" onclick="addHora()">+ Registrar horas</button>
+        </div>
 
-    <div class="card">
-      <div class="card-title">Últimos registros</div>
-      <table>
-        <thead><tr><th>Fecha</th><th>Tipo</th><th>Detalle</th><th>Valor</th></tr></thead>
-        <tbody id="tablaRecientes"></tbody>
-      </table>
-    </div>
-  </section>
+        <div class="card">
+          <div class="card-title">Nota del día</div>
+          <textarea
+            id="notaDia"
+            placeholder="¿Qué fue lo más importante hoy?"
+          ></textarea>
+          <button class="btn" style="margin-top: 0.8rem" onclick="saveNota()">
+            Guardar nota
+          </button>
+        </div>
 
-  <!-- MES -->
-  <section id="view-mes" class="view">
-    <div class="card">
-      <div class="card-title">Resumen del mes</div>
-      <div class="metrics-grid">
-        <div class="metric"><div class="metric-label">Gasto total</div><div class="metric-value" id="mGasto">$0</div></div>
-        <div class="metric"><div class="metric-label">Horas totales</div><div class="metric-value" id="mHoras">0<span class="metric-unit">hrs</span></div></div>
-        <div class="metric"><div class="metric-label">Ingreso total</div><div class="metric-value" id="mIngreso">$0</div></div>
-        <div class="metric"><div class="metric-label">Utilidad neta</div><div class="metric-value" id="mUtilidad">$0</div></div>
-        <div class="metric"><div class="metric-label">Valor del tiempo</div><div class="metric-value" id="mValorTiempo">$0</div></div>
-        <div class="metric"><div class="metric-label">Inversión real</div><div class="metric-value" id="mInversion">$0</div></div>
-      </div>
-    </div>
+        <div class="card">
+          <div class="card-title">Últimos registros</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Detalle</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody id="tablaRecientes"></tbody>
+          </table>
+        </div>
+      </section>
 
-    <div class="card">
-      <div class="card-title">Gasto por día (mes actual)</div>
-      <div class="chart-wrap"><canvas id="chartGastos" height="180"></canvas></div>
-    </div>
+      <!-- MES -->
+      <section id="view-mes" class="view">
+        <div class="card">
+          <div class="card-title">Resumen del mes</div>
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Gasto total</div>
+              <div class="metric-value" id="mGasto">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Horas totales</div>
+              <div class="metric-value" id="mHoras">
+                0<span class="metric-unit">hrs</span>
+              </div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Ingreso total</div>
+              <div class="metric-value" id="mIngreso">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Utilidad neta</div>
+              <div class="metric-value" id="mUtilidad">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Valor del tiempo</div>
+              <div class="metric-value" id="mValorTiempo">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Inversión real</div>
+              <div class="metric-value" id="mInversion">$0</div>
+            </div>
+          </div>
+        </div>
 
-    <div class="card">
-      <div class="card-title">Horas por día (mes actual)</div>
-      <div class="chart-wrap"><canvas id="chartHoras" height="180"></canvas></div>
-    </div>
+        <div class="card">
+          <div class="card-title">Gasto por día (mes actual)</div>
+          <div class="chart-wrap">
+            <canvas id="chartGastos" height="180"></canvas>
+          </div>
+        </div>
 
-    <div class="card">
-      <div class="card-title">Gastos por categoría</div>
-      <div class="chart-wrap"><canvas id="chartCategorias" height="220"></canvas></div>
-    </div>
+        <div class="card">
+          <div class="card-title">Horas por día (mes actual)</div>
+          <div class="chart-wrap">
+            <canvas id="chartHoras" height="180"></canvas>
+          </div>
+        </div>
 
-    <div class="card">
-      <div class="card-title">Horas por categoría</div>
-      <div class="chart-wrap"><canvas id="chartHorasCat" height="220"></canvas></div>
-    </div>
-  </section>
+        <div class="card">
+          <div class="card-title">Gastos por categoría</div>
+          <div class="chart-wrap">
+            <canvas id="chartCategorias" height="220"></canvas>
+          </div>
+        </div>
 
-  <!-- CARTA -->
-  <section id="view-carta" class="view">
-    <div class="card">
-      <div class="card-title">Escribir carta al futuro</div>
-      <textarea id="cartaTexto" placeholder="Querido yo del futuro..." style="min-height:200px"></textarea>
-      <button class="btn" style="margin-top:0.8rem" onclick="saveCarta()">Sellar carta</button>
-    </div>
-    <div id="cartasGuardadas"></div>
-  </section>
+        <div class="card">
+          <div class="card-title">Horas por categoría</div>
+          <div class="chart-wrap">
+            <canvas id="chartHorasCat" height="220"></canvas>
+          </div>
+        </div>
+      </section>
 
-  <!-- ACTIVOS -->
-  <section id="view-activos" class="view">
-    <div class="card">
-      <div class="card-title">Inventario de activos</div>
-      <table>
-        <thead><tr><th>Activo</th><th>Estado</th></tr></thead>
-        <tbody id="tablaActivos"></tbody>
-      </table>
-    </div>
-    <div class="card">
-      <div class="card-title">Métricas clave</div>
-      <div class="form-row">
-        <div class="form-group"><label>Usuarios activos</label><input type="number" id="metUsuarios" placeholder="38"></div>
-        <div class="form-group"><label>Negocios pagando</label><input type="number" id="metNegocios" placeholder="0"></div>
-        <div class="form-group"><label>MRR (MXN)</label><input type="number" id="metMRR" placeholder="0"></div>
-      </div>
-      <button class="btn" onclick="saveMetricas()">Actualizar métricas</button>
-    </div>
-  </section>
+      <!-- CARTA -->
+      <section id="view-carta" class="view">
+        <div class="card">
+          <div class="card-title">Escribir carta al futuro</div>
+          <textarea
+            id="cartaTexto"
+            placeholder="Querido yo del futuro..."
+            style="min-height: 200px"
+          ></textarea>
+          <button class="btn" style="margin-top: 0.8rem" onclick="saveCarta()">
+            Sellar carta
+          </button>
+        </div>
+        <div id="cartasGuardadas"></div>
+      </section>
 
-  <!-- PLAN -->
-  <section id="view-plan" class="view">
-    <div class="card">
-      <div class="card-title">Plan a 15 años</div>
-      <div id="planList"></div>
-    </div>
-  </section>
-</main>
+      <!-- ACTIVOS -->
+      <section id="view-activos" class="view">
+        <div class="card">
+          <div class="card-title">Inventario de activos</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Activo</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tablaActivos"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">Métricas clave</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Usuarios activos</label
+              ><input type="number" id="metUsuarios" placeholder="38" />
+            </div>
+            <div class="form-group">
+              <label>Negocios pagando</label
+              ><input type="number" id="metNegocios" placeholder="0" />
+            </div>
+            <div class="form-group">
+              <label>MRR (MXN)</label
+              ><input type="number" id="metMRR" placeholder="0" />
+            </div>
+          </div>
+          <button class="btn" onclick="saveMetricas()">
+            Actualizar métricas
+          </button>
+        </div>
+      </section>
 
-<footer>
-  Paciente pero incesante · 15 hrs/semana · 15 años
-</footer>
+      <!-- PLAN -->
+      <section id="view-plan" class="view">
+        <div class="card">
+          <div class="card-title">Plan a 15 años</div>
+          <div id="planList"></div>
+        </div>
+      </section>
+    </main>
 
-<script type="module">
-/* ============================================
-   CONFIGURACIÓN SUPABASE
-   ============================================ */
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    <footer>Paciente pero incesante · 15 hrs/semana · 15 años</footer>
 
-const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduamF1bXBqZXJiYndsa2NneHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjQ5ODksImV4cCI6MjEwMzUwMDk4OX0.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU';
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+      const SUPABASE_URL = "https://gnjaumpjerbbwlkcgxqa.supabase.co";
+      const SUPABASE_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduamF1bXBqZXJiYndsa2NneHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjQ5ODksImV4cCI6MjEwMzUwMDk4OX0.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU";
 
-let user = null;
+      const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ============================================
-   AUTENTICACIÓN
-   ============================================ */
-async function authLogin() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const msg = document.getElementById('loginMsg');
-  msg.textContent = '...';
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) { msg.textContent = error.message; return; }
-  initApp(data.user);
-}
+      let user = null;
 
-async function authSignup() {
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  const msg = document.getElementById('loginMsg');
-  msg.textContent = '...';
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) { msg.textContent = error.message; return; }
-  if (data.user) { msg.textContent = 'Cuenta creada. Iniciando sesión...'; initApp(data.user); }
-}
+      /* ============================================
+         AUTENTICACIÓN
+         ============================================ */
+      async function authLogin() {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const msg = document.getElementById("loginMsg");
+        msg.textContent = "...";
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) {
+          msg.textContent = error.message;
+          return;
+        }
+        initApp(data.user);
+      }
 
-async function authLogout() {
-  await supabase.auth.signOut();
-  location.reload();
-}
+      async function authSignup() {
+        const email = document.getElementById("loginEmail").value;
+        const password = document.getElementById("loginPassword").value;
+        const msg = document.getElementById("loginMsg");
+        msg.textContent = "...";
+        const { data, error } = await supabase.auth.signUp({ email, password });
+        if (error) {
+          msg.textContent = error.message;
+          return;
+        }
+        if (data.user) {
+          msg.textContent = "Cuenta creada. Iniciando sesión...";
+          initApp(data.user);
+        }
+      }
 
-function initApp(u) {
-  user = u;
-  document.getElementById('loginOverlay').classList.add('hidden');
-  document.getElementById('userInfo').innerHTML = `${user.email} · <button onclick="authLogout()">Salir</button>`;
-  window.authLogout = authLogout;
-  cargarTodo();
-}
+      async function authLogout() {
+        await supabase.auth.signOut();
+        location.reload();
+      }
 
-// Verificar sesión activa
-const { data: { session } } = await supabase.auth.getSession();
-if (session) initApp(session.user);
+      function initApp(u) {
+        user = u;
+        document.getElementById("loginOverlay").classList.add("hidden");
+        document.getElementById("userInfo").innerHTML =
+          `${user.email} · <button onclick="authLogout()">Salir</button>`;
+        window.authLogout = authLogout;
+        cargarTodo();
+      }
 
-window.authLogin = authLogin;
-window.authSignup = authSignup;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session) initApp(session.user);
 
-/* ============================================
-   NAVEGACIÓN
-   ============================================ */
-document.querySelectorAll('nav button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('view-' + btn.dataset.view).classList.add('active');
-    if (btn.dataset.view === 'mes') renderMes();
-    if (btn.dataset.view === 'carta') renderCartas();
-  });
-});
+      window.authLogin = authLogin;
+      window.authSignup = authSignup;
 
-/* ============================================
-   FECHAS
-   ============================================ */
-const hoy = () => new Date().toISOString().split('T')[0];
-document.getElementById('gastoFecha').value = hoy();
-document.getElementById('horaFecha').value = hoy();
+      /* ============================================
+         NAVEGACIÓN
+         ============================================ */
+      document.querySelectorAll("nav button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("nav button")
+            .forEach((b) => b.classList.remove("active"));
+          document
+            .querySelectorAll(".view")
+            .forEach((v) => v.classList.remove("active"));
+          btn.classList.add("active");
+          document
+            .getElementById("view-" + btn.dataset.view)
+            .classList.add("active");
+          if (btn.dataset.view === "mes") renderMes();
+          if (btn.dataset.view === "carta") renderCartas();
+        });
+      });
 
-/* ============================================
-   CACHE LOCAL (para evitar consultas constantes)
-   ============================================ */
-let cacheGastos = [], cacheHoras = [], cacheCartas = [], cacheMetricas = null;
+      /* ============================================
+         FECHAS
+         ============================================ */
+      const hoy = () => new Date().toISOString().split("T")[0];
+      document.getElementById("gastoFecha").value = hoy();
+      document.getElementById("horaFecha").value = hoy();
 
-async function cargarTodo() {
-  const [g, h, c, m] = await Promise.all([
-    supabase.from('gastos').select('*').order('fecha', { ascending: false }),
-    supabase.from('horas').select('*').order('fecha', { ascending: false }),
-    supabase.from('cartas').select('*').order('fecha', { ascending: false }),
-    supabase.from('metricas').select('*').maybeSingle()
-  ]);
-  cacheGastos = g.data || [];
-  cacheHoras = h.data || [];
-  cacheCartas = c.data || [];
-  cacheMetricas = m.data || null;
-  renderRecientes();
-  if (cacheMetricas) {
-    document.getElementById('metUsuarios').value = cacheMetricas.usuarios;
-    document.getElementById('metNegocios').value = cacheMetricas.negocios;
-    document.getElementById('metMRR').value = cacheMetricas.mrr;
-  }
-  renderActivos();
-}
+      /* ============================================
+         CACHÉ LOCAL
+         ============================================ */
+      let cacheGastos = [],
+        cacheHoras = [],
+        cacheCartas = [],
+        cacheMetricas = null,
+        cacheSellos = [];
 
-/* ============================================
-   GASTOS
-   ============================================ */
-async function addGasto() {
-  const fecha = document.getElementById('gastoFecha').value;
-  const concepto = document.getElementById('gastoConcepto').value.trim();
-  const categoria = document.getElementById('gastoCategoria').value;
-  const monto = parseFloat(document.getElementById('gastoMonto').value);
-  const recurrente = document.getElementById('gastoRecurrente').value;
+      /* ============================================
+         CATÁLOGO DE SELLOS
+         ============================================ */
+      const SELLOS = [
+        // Constancia
+        {
+          id: "primer_sello",
+          nombre: "Primer Sello",
+          descripcion: "Registraste tu primer gasto y tu primera hora.",
+          icono: "§",
+          categoria: "Constancia",
+          mensaje: "El gobierno comienza. Que quede constancia.",
+          condicion: (d) => d.totalGastos >= 1 && d.totalHoras >= 1,
+        },
+        {
+          id: "semana_firme",
+          nombre: "Semana Firme",
+          descripcion: "7 días consecutivos registrando.",
+          icono: "7",
+          categoria: "Constancia",
+          mensaje: "Siete días de gobierno. El conde no falla.",
+          condicion: (d) => d.racha >= 7,
+        },
+        {
+          id: "mes_de_gobierno",
+          nombre: "Mes de Gobierno",
+          descripcion: "30 días consecutivos registrando.",
+          icono: "30",
+          categoria: "Constancia",
+          mensaje: "Un mes de gobierno. La disciplina se vuelve hábito.",
+          condicion: (d) => d.racha >= 30,
+        },
+        {
+          id: "trimestre_de_hierro",
+          nombre: "Trimestre de Hierro",
+          descripcion: "90 días consecutivos registrando.",
+          icono: "90",
+          categoria: "Constancia",
+          mensaje: "Noventa días. El hierro se forja con constancia.",
+          condicion: (d) => d.racha >= 90,
+        },
+        {
+          id: "ano_del_conde",
+          nombre: "Año del Conde",
+          descripcion: "365 días consecutivos registrando.",
+          icono: "365",
+          categoria: "Constancia",
+          mensaje: "Un año entero. El conde ha gobernado sin fallar.",
+          condicion: (d) => d.racha >= 365,
+        },
 
-  if (!fecha || !concepto || isNaN(monto)) { alert('Completa fecha, concepto y monto.'); return; }
+        // Inversión
+        {
+          id: "primer_peso",
+          nombre: "Primer Peso",
+          descripcion: "Registraste tu primer gasto.",
+          icono: "$",
+          categoria: "Inversión",
+          mensaje: "Cada peso invertido es un ladrillo en el legado.",
+          condicion: (d) => d.totalGastosMonto >= 1,
+        },
+        {
+          id: "mil_pesos",
+          nombre: "Mil Pesos",
+          descripcion: "Acumulaste $1,000 MXN en gastos.",
+          icono: "$1K",
+          categoria: "Inversión",
+          mensaje: "Mil pesos. La primera piedra del dominio.",
+          condicion: (d) => d.totalGastosMonto >= 1000,
+        },
+        {
+          id: "diez_mil",
+          nombre: "Diez Mil",
+          descripcion: "Acumulaste $10,000 MXN en gastos.",
+          icono: "$10K",
+          categoria: "Inversión",
+          mensaje: "Diez mil pesos. La inversión empieza a pesar.",
+          condicion: (d) => d.totalGastosMonto >= 10000,
+        },
+        {
+          id: "cien_mil",
+          nombre: "Cien Mil",
+          descripcion: "Acumulaste $100,000 MXN en gastos.",
+          icono: "$100K",
+          categoria: "Inversión",
+          mensaje: "Cien mil pesos. El conde ha invertido con seriedad.",
+          condicion: (d) => d.totalGastosMonto >= 100000,
+        },
 
-  const { error } = await supabase.from('gastos').insert([{ user_id: user.id, fecha, concepto, categoria, monto, recurrente }]);
-  if (error) { alert(error.message); return; }
-  document.getElementById('gastoConcepto').value = '';
-  document.getElementById('gastoMonto').value = '';
-  await cargarTodo();
-}
-window.addGasto = addGasto;
+        // Tiempo
+        {
+          id: "primera_hora",
+          nombre: "Primera Hora",
+          descripcion: "Registraste tu primera hora.",
+          icono: "⏱",
+          categoria: "Tiempo",
+          mensaje: "El tiempo registrado es el tiempo gobernado.",
+          condicion: (d) => d.totalHoras >= 1,
+        },
+        {
+          id: "cien_horas",
+          nombre: "Cien Horas",
+          descripcion: "Acumulaste 100 horas.",
+          icono: "100",
+          categoria: "Tiempo",
+          mensaje: "Cien horas. El trabajo empieza a notarse.",
+          condicion: (d) => d.totalHoras >= 100,
+        },
+        {
+          id: "mil_horas",
+          nombre: "Mil Horas",
+          descripcion: "Acumulaste 1,000 horas.",
+          icono: "1K",
+          categoria: "Tiempo",
+          mensaje: "El tiempo invertido es el verdadero capital.",
+          condicion: (d) => d.totalHoras >= 1000,
+        },
+        {
+          id: "diez_mil_horas",
+          nombre: "Diez Mil Horas",
+          descripcion: "Acumulaste 10,000 horas.",
+          icono: "10K",
+          categoria: "Tiempo",
+          mensaje: "Diez mil horas. El maestro ha llegado.",
+          condicion: (d) => d.totalHoras >= 10000,
+        },
 
-/* ============================================
-   HORAS
-   ============================================ */
-async function addHora() {
-  const fecha = document.getElementById('horaFecha').value;
-  const cantidad = parseFloat(document.getElementById('horaCantidad').value);
-  const actividad = document.getElementById('horaActividad').value.trim();
-  const categoria = document.getElementById('horaCategoria').value;
+        // Profundidad
+        {
+          id: "primera_carta",
+          nombre: "Primera Carta",
+          descripcion: "Sellaste tu primera carta al futuro.",
+          icono: "✉",
+          categoria: "Profundidad",
+          mensaje: "Tu palabra cruza el tiempo.",
+          condicion: (d) => d.totalCartas >= 1,
+        },
+        {
+          id: "tres_cartas",
+          nombre: "Tres Cartas",
+          descripcion: "Sellaste 3 cartas al futuro.",
+          icono: "✉3",
+          categoria: "Profundidad",
+          mensaje: "Tres cartas. El diálogo con tu yo futuro se profundiza.",
+          condicion: (d) => d.totalCartas >= 3,
+        },
+        {
+          id: "doce_cartas",
+          nombre: "Doce Cartas",
+          descripcion: "Sellaste 12 cartas al futuro.",
+          icono: "✉12",
+          categoria: "Profundidad",
+          mensaje: "Doce cartas. Un año de palabras al porvenir.",
+          condicion: (d) => d.totalCartas >= 12,
+        },
 
-  if (!fecha || isNaN(cantidad) || !actividad) { alert('Completa fecha, horas y actividad.'); return; }
+        // El Barrio
+        {
+          id: "primeros_50",
+          nombre: "Primeros 50",
+          descripcion: "50 usuarios activos en El Barrio.",
+          icono: "50",
+          categoria: "El Barrio",
+          mensaje: "Cincuenta vecinos. La comunidad despega.",
+          condicion: (d) => d.usuarios >= 50,
+        },
+        {
+          id: "primeros_100",
+          nombre: "Primeros 100",
+          descripcion: "100 usuarios activos en El Barrio.",
+          icono: "100",
+          categoria: "El Barrio",
+          mensaje: "Cien vecinos. El Barrio tiene vida propia.",
+          condicion: (d) => d.usuarios >= 100,
+        },
+        {
+          id: "primer_negocio",
+          nombre: "Primer Negocio",
+          descripcion: "Tu primer negocio pagando.",
+          icono: "1",
+          categoria: "El Barrio",
+          mensaje: "El dominio empieza a rendir.",
+          condicion: (d) => d.negocios >= 1,
+        },
+        {
+          id: "diez_negocios",
+          nombre: "Diez Negocios",
+          descripcion: "10 negocios pagando.",
+          icono: "10",
+          categoria: "El Barrio",
+          mensaje: "Diez negocios. El modelo se sostiene.",
+          condicion: (d) => d.negocios >= 10,
+        },
+        {
+          id: "mrr_de_mil",
+          nombre: "MRR de Mil",
+          descripcion: "$1,000 MXN de ingreso recurrente mensual.",
+          icono: "MRR1K",
+          categoria: "El Barrio",
+          mensaje: "El primer ingreso recurrente. El conde respira.",
+          condicion: (d) => d.mrr >= 1000,
+        },
+        {
+          id: "mrr_de_diez_mil",
+          nombre: "MRR de Diez Mil",
+          descripcion: "$10,000 MXN de ingreso recurrente mensual.",
+          icono: "MRR10K",
+          categoria: "El Barrio",
+          mensaje: "Diez mil de MRR. El negocio camina solo.",
+          condicion: (d) => d.mrr >= 10000,
+        },
+      ];
 
-  const { error } = await supabase.from('horas').insert([{ user_id: user.id, fecha, cantidad, actividad, categoria }]);
-  if (error) { alert(error.message); return; }
-  document.getElementById('horaActividad').value = '';
-  document.getElementById('horaCantidad').value = '';
-  await cargarTodo();
-}
-window.addHora = addHora;
+      /* ============================================
+         CALCULAR DATOS ACTUALES
+         ============================================ */
+      function calcularDatos() {
+        const totalGastos = cacheGastos.length;
+        const totalHoras = cacheHoras.reduce(
+          (s, h) => s + Number(h.cantidad),
+          0,
+        );
+        const totalGastosMonto = cacheGastos.reduce(
+          (s, g) => s + Number(g.monto),
+          0,
+        );
+        const totalCartas = cacheCartas.length;
 
-/* ============================================
-   NOTA
-   ============================================ */
-async function saveNota() {
-  const texto = document.getElementById('notaDia').value.trim();
-  if (!texto) return;
-  const { error } = await supabase.from('notas').insert([{ user_id: user.id, fecha: hoy(), texto }]);
-  if (error) { alert(error.message); return; }
-  document.getElementById('notaDia').value = '';
-  ritual('Nota sellada', 'Tu palabra ha sido registrada en la bitácora.');
-}
-window.saveNota = saveNota;
+        const usuarios = cacheMetricas?.usuarios || 0;
+        const negocios = cacheMetricas?.negocios || 0;
+        const mrr = Number(cacheMetricas?.mrr) || 0;
 
-/* ============================================
-   RECIENTES
-   ============================================ */
-function renderRecientes() {
-  const items = [
-    ...cacheGastos.slice(0, 5).map(g => ({ fecha: g.fecha, tipo: 'Gasto', detalle: g.concepto, valor: '-$' + g.monto })),
-    ...cacheHoras.slice(0, 5).map(h => ({ fecha: h.fecha, tipo: 'Horas', detalle: h.actividad, valor: h.cantidad + ' hrs' }))
-  ].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 10);
+        const racha = calcularRacha();
 
-  document.getElementById('tablaRecientes').innerHTML = items.map(i => `
+        return {
+          totalGastos,
+          totalHoras,
+          totalGastosMonto,
+          totalCartas,
+          usuarios,
+          negocios,
+          mrr,
+          racha,
+        };
+      }
+
+      /* ============================================
+         CALCULAR RACHA
+         ============================================ */
+      function calcularRacha() {
+        const fechas = new Set();
+        cacheGastos.forEach((g) => fechas.add(g.fecha));
+        cacheHoras.forEach((h) => fechas.add(h.fecha));
+
+        if (fechas.size === 0) return 0;
+
+        const ordenadas = Array.from(fechas).sort((a, b) => b.localeCompare(a));
+
+        const hoyStr = new Date().toISOString().split("T")[0];
+        const ayer = new Date(Date.now() - 86400000)
+          .toISOString()
+          .split("T")[0];
+
+        if (ordenadas[0] !== hoyStr && ordenadas[0] !== ayer) return 0;
+
+        let racha = 1;
+        let actual = new Date(ordenadas[0]);
+
+        for (let i = 1; i < ordenadas.length; i++) {
+          const anterior = new Date(ordenadas[i]);
+          const diffDias = Math.round((actual - anterior) / 86400000);
+
+          if (diffDias === 1) {
+            racha++;
+            actual = anterior;
+          } else {
+            break;
+          }
+        }
+
+        return racha;
+      }
+
+      /* ============================================
+         VERIFICAR Y DESBLOQUEAR SELLOS
+         ============================================ */
+      async function verificarSellos() {
+        const datos = calcularDatos();
+        const obtenidos = new Set(cacheSellos.map((s) => s.sello_id));
+        const nuevos = [];
+
+        for (const sello of SELLOS) {
+          if (obtenidos.has(sello.id)) continue;
+          if (sello.condicion(datos)) {
+            nuevos.push(sello);
+          }
+        }
+
+        if (nuevos.length === 0) return [];
+
+        const inserts = nuevos.map((s) => ({
+          user_id: user.id,
+          sello_id: s.id,
+        }));
+
+        const { error } = await supabase.from("sellos").insert(inserts);
+        if (error) {
+          console.error("Error al guardar sellos:", error.message);
+          return [];
+        }
+
+        const ahora = new Date().toISOString();
+        nuevos.forEach((s) => {
+          cacheSellos.push({ sello_id: s.id, fecha: ahora });
+        });
+
+        return nuevos;
+      }
+
+      /* ============================================
+         CARGAR SELLOS DESDE SUPABASE
+         ============================================ */
+      async function cargarSellos() {
+        const { data, error } = await supabase
+          .from("sellos")
+          .select("*")
+          .order("fecha", { ascending: false });
+
+        if (error) {
+          console.error("Error al cargar sellos:", error.message);
+          return;
+        }
+        cacheSellos = data || [];
+      }
+
+      /* ============================================
+         CARGAR TODO
+         ============================================ */
+      async function cargarTodo() {
+        const [g, h, c, m] = await Promise.all([
+          supabase
+            .from("gastos")
+            .select("*")
+            .order("fecha", { ascending: false }),
+          supabase
+            .from("horas")
+            .select("*")
+            .order("fecha", { ascending: false }),
+          supabase
+            .from("cartas")
+            .select("*")
+            .order("fecha", { ascending: false }),
+          supabase.from("metricas").select("*").maybeSingle(),
+        ]);
+        cacheGastos = g.data || [];
+        cacheHoras = h.data || [];
+        cacheCartas = c.data || [];
+        cacheMetricas = m.data || null;
+
+        await cargarSellos();
+
+        renderRecientes();
+        if (cacheMetricas) {
+          document.getElementById("metUsuarios").value = cacheMetricas.usuarios;
+          document.getElementById("metNegocios").value = cacheMetricas.negocios;
+          document.getElementById("metMRR").value = cacheMetricas.mrr;
+        }
+        renderActivos();
+      }
+
+      /* ============================================
+         GASTOS
+         ============================================ */
+      async function addGasto() {
+        const fecha = document.getElementById("gastoFecha").value;
+        const concepto = document.getElementById("gastoConcepto").value.trim();
+        const categoria = document.getElementById("gastoCategoria").value;
+        const monto = parseFloat(document.getElementById("gastoMonto").value);
+        const recurrente = document.getElementById("gastoRecurrente").value;
+
+        if (!fecha || !concepto || isNaN(monto)) {
+          alert("Completa fecha, concepto y monto.");
+          return;
+        }
+
+        const { error } = await supabase
+          .from("gastos")
+          .insert([
+            { user_id: user.id, fecha, concepto, categoria, monto, recurrente },
+          ]);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        document.getElementById("gastoConcepto").value = "";
+        document.getElementById("gastoMonto").value = "";
+        await cargarTodo();
+
+        const nuevos = await verificarSellos();
+        if (nuevos.length > 0) {
+          console.log(
+            "Sellos desbloqueados:",
+            nuevos.map((s) => s.nombre),
+          );
+        }
+      }
+      window.addGasto = addGasto;
+
+      /* ============================================
+         HORAS
+         ============================================ */
+      async function addHora() {
+        const fecha = document.getElementById("horaFecha").value;
+        const cantidad = parseFloat(
+          document.getElementById("horaCantidad").value,
+        );
+        const actividad = document.getElementById("horaActividad").value.trim();
+        const categoria = document.getElementById("horaCategoria").value;
+
+        if (!fecha || isNaN(cantidad) || !actividad) {
+          alert("Completa fecha, horas y actividad.");
+          return;
+        }
+
+        const { error } = await supabase
+          .from("horas")
+          .insert([
+            { user_id: user.id, fecha, cantidad, actividad, categoria },
+          ]);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        document.getElementById("horaActividad").value = "";
+        document.getElementById("horaCantidad").value = "";
+        await cargarTodo();
+
+        const nuevos = await verificarSellos();
+        if (nuevos.length > 0) {
+          console.log(
+            "Sellos desbloqueados:",
+            nuevos.map((s) => s.nombre),
+          );
+        }
+      }
+      window.addHora = addHora;
+
+      /* ============================================
+         NOTA
+         ============================================ */
+      async function saveNota() {
+        const texto = document.getElementById("notaDia").value.trim();
+        if (!texto) return;
+        const { error } = await supabase
+          .from("notas")
+          .insert([{ user_id: user.id, fecha: hoy(), texto }]);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        document.getElementById("notaDia").value = "";
+        ritual("Nota sellada", "Tu palabra ha sido registrada en la bitácora.");
+      }
+      window.saveNota = saveNota;
+
+      /* ============================================
+         RECIENTES
+         ============================================ */
+      function renderRecientes() {
+        const items = [
+          ...cacheGastos.slice(0, 5).map((g) => ({
+            fecha: g.fecha,
+            tipo: "Gasto",
+            detalle: g.concepto,
+            valor: "-$" + g.monto,
+          })),
+          ...cacheHoras.slice(0, 5).map((h) => ({
+            fecha: h.fecha,
+            tipo: "Horas",
+            detalle: h.actividad,
+            valor: h.cantidad + " hrs",
+          })),
+        ]
+          .sort((a, b) => b.fecha.localeCompare(a.fecha))
+          .slice(0, 10);
+
+        document.getElementById("tablaRecientes").innerHTML = items
+          .map(
+            (i) => `
     <tr><td>${i.fecha}</td><td>${i.tipo}</td><td>${i.detalle}</td><td class="amount">${i.valor}</td></tr>
-  `).join('');
-}
+  `,
+          )
+          .join("");
+      }
 
-/* ============================================
-   MES + GRÁFICAS
-   ============================================ */
-function renderMes() {
-  const mes = new Date().toISOString().slice(0, 7);
-  const gastos = cacheGastos.filter(g => g.fecha.startsWith(mes));
-  const horas = cacheHoras.filter(h => h.fecha.startsWith(mes));
+      /* ============================================
+         MES + GRÁFICAS
+         ============================================ */
+      function renderMes() {
+        const mes = new Date().toISOString().slice(0, 7);
+        const gastos = cacheGastos.filter((g) => g.fecha.startsWith(mes));
+        const horas = cacheHoras.filter((h) => h.fecha.startsWith(mes));
 
-  const totalGasto = gastos.reduce((s, g) => s + Number(g.monto), 0);
-  const totalHoras = horas.reduce((s, h) => s + Number(h.cantidad), 0);
-  const valorTiempo = totalHoras * 150;
+        const totalGasto = gastos.reduce((s, g) => s + Number(g.monto), 0);
+        const totalHoras = horas.reduce((s, h) => s + Number(h.cantidad), 0);
+        const valorTiempo = totalHoras * 150;
 
-  document.getElementById('mGasto').textContent = '$' + totalGasto.toFixed(0);
-  document.getElementById('mHoras').innerHTML = totalHoras.toFixed(1) + '<span class="metric-unit">hrs</span>';
-  document.getElementById('mIngreso').textContent = '$0';
-  document.getElementById('mUtilidad').textContent = '-$' + totalGasto.toFixed(0);
-  document.getElementById('mValorTiempo').textContent = '$' + valorTiempo.toFixed(0);
-  document.getElementById('mInversion').textContent = '$' + (totalGasto + valorTiempo).toFixed(0);
+        document.getElementById("mGasto").textContent =
+          "$" + totalGasto.toFixed(0);
+        document.getElementById("mHoras").innerHTML =
+          totalHoras.toFixed(1) + '<span class="metric-unit">hrs</span>';
+        document.getElementById("mIngreso").textContent = "$0";
+        document.getElementById("mUtilidad").textContent =
+          "-$" + totalGasto.toFixed(0);
+        document.getElementById("mValorTiempo").textContent =
+          "$" + valorTiempo.toFixed(0);
+        document.getElementById("mInversion").textContent =
+          "$" + (totalGasto + valorTiempo).toFixed(0);
 
-  dibujarLineas('chartGastos', gastos, 'monto', mes, '#c9a961');
-  dibujarLineas('chartHoras', horas, 'cantidad', mes, '#6b8e6b');
+        dibujarLineas("chartGastos", gastos, "monto", mes, "#c9a961");
+        dibujarLineas("chartHoras", horas, "cantidad", mes, "#6b8e6b");
 
-  const catGasto = {};
-  gastos.forEach(g => { catGasto[g.categoria] = (catGasto[g.categoria] || 0) + Number(g.monto); });
-  dibujarPastel('chartCategorias', catGasto);
+        const catGasto = {};
+        gastos.forEach((g) => {
+          catGasto[g.categoria] =
+            (catGasto[g.categoria] || 0) + Number(g.monto);
+        });
+        dibujarPastel("chartCategorias", catGasto);
 
-  const catHora = {};
-  horas.forEach(h => { catHora[h.categoria] = (catHora[h.categoria] || 0) + Number(h.cantidad); });
-  dibujarPastel('chartHorasCat', catHora);
-}
+        const catHora = {};
+        horas.forEach((h) => {
+          catHora[h.categoria] =
+            (catHora[h.categoria] || 0) + Number(h.cantidad);
+        });
+        dibujarPastel("chartHorasCat", catHora);
+      }
 
-function dibujarLineas(canvasId, datos, campo, mes, color) {
-  const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  canvas.width = w * dpr; canvas.height = h * dpr;
-  ctx.scale(dpr, dpr);
+      function dibujarLineas(canvasId, datos, campo, mes, color) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.clientWidth,
+          h = canvas.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.scale(dpr, dpr);
 
-  const diasMes = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-  const porDia = new Array(diasMes).fill(0);
-  datos.forEach(d => {
-    const dia = parseInt(d.fecha.split('-')[2]) - 1;
-    porDia[dia] += Number(d[campo]);
-  });
+        const diasMes = new Date(
+          new Date().getFullYear(),
+          new Date().getMonth() + 1,
+          0,
+        ).getDate();
+        const porDia = new Array(diasMes).fill(0);
+        datos.forEach((d) => {
+          const dia = parseInt(d.fecha.split("-")[2]) - 1;
+          porDia[dia] += Number(d[campo]);
+        });
 
-  const max = Math.max(...porDia, 1);
-  const padX = 30, padY = 20;
-  const graphW = w - padX * 2, graphH = h - padY * 2;
+        const max = Math.max(...porDia, 1);
+        const padX = 30,
+          padY = 20;
+        const graphW = w - padX * 2,
+          graphH = h - padY * 2;
 
-  ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(0, 0, w, h);
 
-  // grid
-  ctx.strokeStyle = '#2a2a24'; ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = padY + (graphH / 4) * i;
-    ctx.beginPath(); ctx.moveTo(padX, y); ctx.lineTo(w - padX, y); ctx.stroke();
-  }
+        ctx.strokeStyle = "#2a2a24";
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = padY + (graphH / 4) * i;
+          ctx.beginPath();
+          ctx.moveTo(padX, y);
+          ctx.lineTo(w - padX, y);
+          ctx.stroke();
+        }
 
-  // línea
-  ctx.strokeStyle = color; ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  porDia.forEach((v, i) => {
-    const x = padX + (graphW / (diasMes - 1)) * i;
-    const y = padY + graphH - (v / max) * graphH;
-    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-  });
-  ctx.stroke();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        porDia.forEach((v, i) => {
+          const x = padX + (graphW / (diasMes - 1)) * i;
+          const y = padY + graphH - (v / max) * graphH;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
 
-  // puntos
-  ctx.fillStyle = color;
-  porDia.forEach((v, i) => {
-    if (v === 0) return;
-    const x = padX + (graphW / (diasMes - 1)) * i;
-    const y = padY + graphH - (v / max) * graphH;
-    ctx.beginPath(); ctx.arc(x, y, 2, 0, Math.PI * 2); ctx.fill();
-  });
+        ctx.fillStyle = color;
+        porDia.forEach((v, i) => {
+          if (v === 0) return;
+          const x = padX + (graphW / (diasMes - 1)) * i;
+          const y = padY + graphH - (v / max) * graphH;
+          ctx.beginPath();
+          ctx.arc(x, y, 2, 0, Math.PI * 2);
+          ctx.fill();
+        });
 
-  // etiquetas
-  ctx.fillStyle = '#5a5749'; ctx.font = '10px monospace';
-  ctx.fillText(max.toFixed(0), 5, padY + 4);
-  ctx.fillText('0', 5, padY + graphH + 4);
-}
+        ctx.fillStyle = "#5a5749";
+        ctx.font = "10px monospace";
+        ctx.fillText(max.toFixed(0), 5, padY + 4);
+        ctx.fillText("0", 5, padY + graphH + 4);
+      }
 
-function dibujarPastel(canvasId, datos) {
-  const canvas = document.getElementById(canvasId);
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  canvas.width = w * dpr; canvas.height = h * dpr;
-  ctx.scale(dpr, dpr);
+      function dibujarPastel(canvasId, datos) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.clientWidth,
+          h = canvas.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.scale(dpr, dpr);
 
-  const entries = Object.entries(datos).sort((a, b) => b[1] - a[1]);
-  const total = entries.reduce((s, [, v]) => s + v, 0);
+        const entries = Object.entries(datos).sort((a, b) => b[1] - a[1]);
+        const total = entries.reduce((s, [, v]) => s + v, 0);
 
-  ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(0, 0, w, h);
 
-  if (total === 0) {
-    ctx.fillStyle = '#5a5749'; ctx.font = '12px monospace';
-    ctx.fillText('Sin datos este mes.', 20, h / 2);
-    return;
-  }
+        if (total === 0) {
+          ctx.fillStyle = "#5a5749";
+          ctx.font = "12px monospace";
+          ctx.fillText("Sin datos este mes.", 20, h / 2);
+          return;
+        }
 
-  const colores = ['#c9a961', '#6b8e6b', '#a85a4a', '#8a7544', '#5a5749', '#d4d0c4'];
-  const cx = h / 2, cy = h / 2, r = h / 2 - 10;
-  let angulo = -Math.PI / 2;
+        const colores = [
+          "#c9a961",
+          "#6b8e6b",
+          "#a85a4a",
+          "#8a7544",
+          "#5a5749",
+          "#d4d0c4",
+        ];
+        const cx = h / 2,
+          cy = h / 2,
+          r = h / 2 - 10;
+        let angulo = -Math.PI / 2;
 
-  entries.forEach(([cat, val], i) => {
-    const slice = (val / total) * Math.PI * 2;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy);
-    ctx.arc(cx, cy, r, angulo, angulo + slice);
-    ctx.closePath();
-    ctx.fillStyle = colores[i % colores.length];
-    ctx.fill();
-    angulo += slice;
-  });
+        entries.forEach(([cat, val], i) => {
+          const slice = (val / total) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, r, angulo, angulo + slice);
+          ctx.closePath();
+          ctx.fillStyle = colores[i % colores.length];
+          ctx.fill();
+          angulo += slice;
+        });
 
-  // leyenda
-  ctx.font = '11px monospace';
-  entries.forEach(([cat, val], i) => {
-    const y = 20 + i * 18;
-    ctx.fillStyle = colores[i % colores.length];
-    ctx.fillRect(h + 20, y - 8, 10, 10);
-    ctx.fillStyle = '#d4d0c4';
-    ctx.fillText(`${cat}: $${val.toFixed(0)} (${((val / total) * 100).toFixed(0)}%)`, h + 38, y);
-  });
-}
+        ctx.font = "11px monospace";
+        entries.forEach(([cat, val], i) => {
+          const y = 20 + i * 18;
+          ctx.fillStyle = colores[i % colores.length];
+          ctx.fillRect(h + 20, y - 8, 10, 10);
+          ctx.fillStyle = "#d4d0c4";
+          ctx.fillText(
+            `${cat}: $${val.toFixed(0)} (${((val / total) * 100).toFixed(0)}%)`,
+            h + 38,
+            y,
+          );
+        });
+      }
 
-/* ============================================
-   CARTAS
-   ============================================ */
-async function saveCarta() {
-  const texto = document.getElementById('cartaTexto').value.trim();
-  if (!texto) return;
-  const { error } = await supabase.from('cartas').insert([{ user_id: user.id, fecha: hoy(), texto }]);
-  if (error) { alert(error.message); return; }
-  document.getElementById('cartaTexto').value = '';
-  await cargarTodo();
-  ritual('Carta sellada', 'Tu mensaje ha sido enviado al conde del futuro.');
-}
-window.saveCarta = saveCarta;
+      /* ============================================
+         CARTAS
+         ============================================ */
+      async function saveCarta() {
+        const texto = document.getElementById("cartaTexto").value.trim();
+        if (!texto) return;
+        const { error } = await supabase
+          .from("cartas")
+          .insert([{ user_id: user.id, fecha: hoy(), texto }]);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        document.getElementById("cartaTexto").value = "";
+        await cargarTodo();
 
-function renderCartas() {
-  document.getElementById('cartasGuardadas').innerHTML = cacheCartas.map(c => `
+        const nuevos = await verificarSellos();
+        if (nuevos.length > 0) {
+          console.log(
+            "Sellos desbloqueados:",
+            nuevos.map((s) => s.nombre),
+          );
+        }
+
+        ritual(
+          "Carta sellada",
+          "Tu mensaje ha sido enviado al conde del futuro.",
+        );
+      }
+      window.saveCarta = saveCarta;
+
+      function renderCartas() {
+        document.getElementById("cartasGuardadas").innerHTML =
+          cacheCartas
+            .map(
+              (c) => `
     <div class="letter">
       <div class="letter-date">${c.fecha}</div>
-      <div>${c.texto.replace(/\n/g, '<br>')}</div>
+      <div>${c.texto.replace(/\n/g, "<br>")}</div>
     </div>
-  `).join('') || '<div class="card">Aún no has sellado ninguna carta.</div>';
-}
+  `,
+            )
+            .join("") ||
+          '<div class="card">Aún no has sellado ninguna carta.</div>';
+      }
 
-/* ============================================
-   MÉTRICAS
-   ============================================ */
-async function saveMetricas() {
-  const payload = {
-    user_id: user.id,
-    usuarios: parseInt(document.getElementById('metUsuarios').value) || 0,
-    negocios: parseInt(document.getElementById('metNegocios').value) || 0,
-    mrr: parseFloat(document.getElementById('metMRR').value) || 0,
-    updated_at: new Date().toISOString()
-  };
-  const { error } = await supabase.from('metricas').upsert(payload, { onConflict: 'user_id' });
-  if (error) { alert(error.message); return; }
-  cacheMetricas = payload;
-  renderActivos();
-  ritual('Métricas actualizadas', 'El estado del patrimonio ha sido registrado.');
-}
-window.saveMetricas = saveMetricas;
+      /* ============================================
+         MÉTRICAS
+         ============================================ */
+      async function saveMetricas() {
+        const payload = {
+          user_id: user.id,
+          usuarios: parseInt(document.getElementById("metUsuarios").value) || 0,
+          negocios: parseInt(document.getElementById("metNegocios").value) || 0,
+          mrr: parseFloat(document.getElementById("metMRR").value) || 0,
+          updated_at: new Date().toISOString(),
+        };
+        const { error } = await supabase
+          .from("metricas")
+          .upsert(payload, { onConflict: "user_id" });
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        cacheMetricas = payload;
+        renderActivos();
 
-function renderActivos() {
-  const m = cacheMetricas || {};
-  document.getElementById('tablaActivos').innerHTML = `
+        const nuevos = await verificarSellos();
+        if (nuevos.length > 0) {
+          console.log(
+            "Sellos desbloqueados:",
+            nuevos.map((s) => s.nombre),
+          );
+        }
+
+        ritual(
+          "Métricas actualizadas",
+          "El estado del patrimonio ha sido registrado.",
+        );
+      }
+      window.saveMetricas = saveMetricas;
+
+      function renderActivos() {
+        const m = cacheMetricas || {};
+        document.getElementById("tablaActivos").innerHTML = `
     <tr><td>El Barrio</td><td>${m.usuarios || 0} usuarios · ${m.negocios || 0} negocios · MRR $${m.mrr || 0}</td></tr>
     <tr><td>Portafolio jr/</td><td>—</td></tr>
     <tr><td>Proyecto Mimi</td><td>—</td></tr>
     <tr><td>Retreat</td><td>—</td></tr>
   `;
-}
+      }
 
-/* ============================================
-   PLAN
-   ============================================ */
-const PLAN = [
-  ['Año 1 · Tracción', '100 usuarios activos, push funcionando, segmentación por CP, 2-3 negocios pagando.'],
-  ['Año 2 · Monetización', '180 usuarios, 12 negocios, MRR $7,000 MXN.'],
-  ['Año 3 · Consolidación', '250 usuarios, 22 negocios, MRR $14,000 MXN.'],
-  ['Año 4 · Preparación', '300 usuarios, 30 negocios, MRR $20,000 MXN.'],
-  ['Años 5-7 · Réplica o profundización', 'Decisión estratégica según tiempo disponible.'],
-  ['Años 8-12 · Expansión sostenida', '3-5 colonias, MRR $80,000-$120,000 MXN.'],
-  ['Años 13-15 · Legado', 'El Barrio como pensión. MRR $120,000-$180,000 MXN.']
-];
-document.getElementById('planList').innerHTML = PLAN.map(([t, d]) => `
+      /* ============================================
+         PLAN
+         ============================================ */
+      const PLAN = [
+        [
+          "Año 1 · Tracción",
+          "100 usuarios activos, push funcionando, segmentación por CP, 2-3 negocios pagando.",
+        ],
+        ["Año 2 · Monetización", "180 usuarios, 12 negocios, MRR $7,000 MXN."],
+        [
+          "Año 3 · Consolidación",
+          "250 usuarios, 22 negocios, MRR $14,000 MXN.",
+        ],
+        ["Año 4 · Preparación", "300 usuarios, 30 negocios, MRR $20,000 MXN."],
+        [
+          "Años 5-7 · Réplica o profundización",
+          "Decisión estratégica según tiempo disponible.",
+        ],
+        [
+          "Años 8-12 · Expansión sostenida",
+          "3-5 colonias, MRR $80,000-$120,000 MXN.",
+        ],
+        [
+          "Años 13-15 · Legado",
+          "El Barrio como pensión. MRR $120,000-$180,000 MXN.",
+        ],
+      ];
+      document.getElementById("planList").innerHTML = PLAN.map(
+        ([t, d]) => `
   <div class="phase"><div class="phase-title">${t}</div><div class="phase-desc">${d}</div></div>
-`).join('');
+`,
+      ).join("");
 
-/* ============================================
-   MODO CONDE
-   ============================================ */
-let modoConde = localStorage.getItem('modoConde') === 'on';
+      /* ============================================
+         MODO CONDE
+         ============================================ */
+      let modoConde = localStorage.getItem("modoConde") === "on";
 
-function toggleRitual() {
-  modoConde = !modoConde;
-  localStorage.setItem('modoConde', modoConde ? 'on' : 'off');
-  document.getElementById('ritualToggle').classList.toggle('on', modoConde);
-  document.body.classList.toggle('ritual', modoConde);
-}
+      function toggleRitual() {
+        modoConde = !modoConde;
+        localStorage.setItem("modoConde", modoConde ? "on" : "off");
+        document
+          .getElementById("ritualToggle")
+          .classList.toggle("on", modoConde);
+        document.body.classList.toggle("ritual", modoConde);
+      }
 
-document.getElementById('ritualToggle').classList.toggle('on', modoConde);
-document.body.classList.toggle('ritual', modoConde);
+      document.getElementById("ritualToggle").classList.toggle("on", modoConde);
+      document.body.classList.toggle("ritual", modoConde);
 
-function ritual(titulo, texto) {
-  if (!modoConde) return;
-  const overlay = document.getElementById('ritualOverlay');
-  document.getElementById('ritualTitle').textContent = titulo;
-  document.getElementById('ritualText').textContent = texto;
-  overlay.classList.add('active');
-  setTimeout(() => overlay.classList.remove('active'), 2200);
-}
+      function ritual(titulo, texto) {
+        if (!modoConde) return;
+        const overlay = document.getElementById("ritualOverlay");
+        document.getElementById("ritualTitle").textContent = titulo;
+        document.getElementById("ritualText").textContent = texto;
+        overlay.classList.add("active");
+        setTimeout(() => overlay.classList.remove("active"), 2200);
+      }
 
-window.toggleRitual = toggleRitual;
-
-</script>
-</body>
+      window.toggleRitual = toggleRitual;
+    </script>
+  </body>
 </html>
