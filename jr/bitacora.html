@@ -807,6 +807,10 @@
                 <option value="Sí">Sí</option>
               </select>
             </div>
+            <div class="form-group">
+              <label>Proyecto</label>
+              <select id="gastoProyecto"></select>
+            </div>
           </div>
           <button class="btn" onclick="addGasto()">+ Registrar gasto</button>
         </div>
@@ -845,12 +849,22 @@
                 <option>Reuniones</option>
               </select>
             </div>
+            <div class="form-group">
+              <label>Proyecto</label>
+              <select id="horaProyecto"></select>
+            </div>
           </div>
           <button class="btn" onclick="addHora()">+ Registrar horas</button>
         </div>
 
         <div class="card">
           <div class="card-title">Nota del día</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Proyecto</label>
+              <select id="notaProyecto"></select>
+            </div>
+          </div>
           <textarea
             id="notaDia"
             placeholder="¿Qué fue lo más importante hoy?"
@@ -1143,8 +1157,10 @@
       let cacheGastos = [],
         cacheHoras = [],
         cacheCartas = [],
+        cacheNotas = [],
         cacheMetricas = null,
-        cacheSellos = [];
+        cacheSellos = [],
+        cacheProyectos = [];
 
       /* ============================================
          CATÁLOGO DE SELLOS
@@ -1473,10 +1489,59 @@
       }
 
       /* ============================================
+   CARGAR PROYECTOS DESDE SUPABASE
+   ============================================ */
+      async function cargarProyectos() {
+        const { data, error } = await supabase
+          .from("proyectos")
+          .select("*")
+          .eq("activo", true)
+          .order("created_at", { ascending: true });
+
+        if (error) {
+          console.error("Error al cargar proyectos:", error.message);
+          return;
+        }
+        cacheProyectos = data || [];
+      }
+
+      /* ============================================
+   POBLAR SELECTORES DE PROYECTO
+   ============================================ */
+      function poblarSelectoresProyecto() {
+        const opciones = cacheProyectos
+          .map((p) => `<option value="${p.id}">${p.nombre}</option>`)
+          .join("");
+
+        const selectores = ["gastoProyecto", "horaProyecto", "notaProyecto"];
+
+        selectores.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.innerHTML = opciones;
+        });
+
+        // Por defecto, seleccionar "El Barrio" si existe
+        const elBarrio = cacheProyectos.find((p) => p.nombre === "El Barrio");
+        if (elBarrio) {
+          selectores.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.value = elBarrio.id;
+          });
+        }
+      }
+
+      /* ============================================
+   OBTENER PROYECTO POR NOMBRE
+   ============================================ */
+      function proyectoPorNombre(nombre) {
+        return cacheProyectos.find((p) => p.nombre === nombre);
+      }
+
+      /* ============================================
          CARGAR TODO
          ============================================ */
       async function cargarTodo() {
-        const [g, h, c, m] = await Promise.all([
+        const [g, h, c, m, n] = await Promise.all([
           supabase
             .from("gastos")
             .select("*")
@@ -1490,13 +1555,20 @@
             .select("*")
             .order("fecha", { ascending: false }),
           supabase.from("metricas").select("*").maybeSingle(),
+          supabase
+            .from("notas")
+            .select("*")
+            .order("fecha", { ascending: false }),
         ]);
         cacheGastos = g.data || [];
         cacheHoras = h.data || [];
         cacheCartas = c.data || [];
         cacheMetricas = m.data || null;
+        cacheNotas = n.data || [];
 
         await cargarSellos();
+        await cargarProyectos();
+        poblarSelectoresProyecto();
 
         renderRecientes();
         if (cacheMetricas) {
@@ -1506,7 +1578,6 @@
         }
         renderActivos();
       }
-
       /* ============================================
          GASTOS
          ============================================ */
@@ -1516,17 +1587,24 @@
         const categoria = document.getElementById("gastoCategoria").value;
         const monto = parseFloat(document.getElementById("gastoMonto").value);
         const recurrente = document.getElementById("gastoRecurrente").value;
+        const proyecto_id = document.getElementById("gastoProyecto").value;
 
         if (!fecha || !concepto || isNaN(monto)) {
           alert("Completa fecha, concepto y monto.");
           return;
         }
 
-        const { error } = await supabase
-          .from("gastos")
-          .insert([
-            { user_id: user.id, fecha, concepto, categoria, monto, recurrente },
-          ]);
+        const { error } = await supabase.from("gastos").insert([
+          {
+            user_id: user.id,
+            fecha,
+            concepto,
+            categoria,
+            monto,
+            recurrente,
+            proyecto_id: proyecto_id || null,
+          },
+        ]);
         if (error) {
           alert(error.message);
           return;
@@ -1552,17 +1630,23 @@
         );
         const actividad = document.getElementById("horaActividad").value.trim();
         const categoria = document.getElementById("horaCategoria").value;
+        const proyecto_id = document.getElementById("horaProyecto").value;
 
         if (!fecha || isNaN(cantidad) || !actividad) {
           alert("Completa fecha, horas y actividad.");
           return;
         }
 
-        const { error } = await supabase
-          .from("horas")
-          .insert([
-            { user_id: user.id, fecha, cantidad, actividad, categoria },
-          ]);
+        const { error } = await supabase.from("horas").insert([
+          {
+            user_id: user.id,
+            fecha,
+            cantidad,
+            actividad,
+            categoria,
+            proyecto_id: proyecto_id || null,
+          },
+        ]);
         if (error) {
           alert(error.message);
           return;
@@ -1583,15 +1667,22 @@
          ============================================ */
       async function saveNota() {
         const texto = document.getElementById("notaDia").value.trim();
+        const proyecto_id = document.getElementById("notaProyecto").value;
         if (!texto) return;
-        const { error } = await supabase
-          .from("notas")
-          .insert([{ user_id: user.id, fecha: hoy(), texto }]);
+        const { error } = await supabase.from("notas").insert([
+          {
+            user_id: user.id,
+            fecha: hoy(),
+            texto,
+            proyecto_id: proyecto_id || null,
+          },
+        ]);
         if (error) {
           alert(error.message);
           return;
         }
         document.getElementById("notaDia").value = "";
+        await cargarTodo();
         ritual("Nota sellada", "Tu palabra ha sido registrada en la bitácora.");
       }
       window.saveNota = saveNota;
