@@ -816,6 +816,59 @@
         </div>
 
         <div class="card">
+          <div class="card-title">Registrar ingreso</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Fecha</label><input type="date" id="ingresoFecha" />
+            </div>
+            <div class="form-group">
+              <label>Concepto</label
+              ><input
+                type="text"
+                id="ingresoConcepto"
+                placeholder="Sueldo, consulta, venta..."
+              />
+            </div>
+            <div class="form-group">
+              <label>Categoría</label>
+              <select id="ingresoCategoria">
+                <option>Sueldo</option>
+                <option>Publicidad</option>
+                <option>Consultas</option>
+                <option>Consultoría</option>
+                <option>Rentas</option>
+                <option>Ventas</option>
+                <option>Rendimientos</option>
+                <option>Otros</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Monto (MXN)</label
+              ><input
+                type="number"
+                id="ingresoMonto"
+                placeholder="0.00"
+                step="0.01"
+              />
+            </div>
+            <div class="form-group">
+              <label>Recurrente</label>
+              <select id="ingresoRecurrente">
+                <option value="No">No</option>
+                <option value="Sí">Sí</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Proyecto</label>
+              <select id="ingresoProyecto"></select>
+            </div>
+          </div>
+          <button class="btn" onclick="addIngreso()">
+            + Registrar ingreso
+          </button>
+        </div>
+
+        <div class="card">
           <div class="card-title">Registrar horas</div>
           <div class="form-row">
             <div class="form-group">
@@ -942,6 +995,20 @@
           <div class="card-title">Gastos por categoría</div>
           <div class="chart-wrap">
             <canvas id="chartCategorias" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Ingresos por día (mes actual)</div>
+          <div class="chart-wrap">
+            <canvas id="chartIngresos" height="180"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Ingresos por categoría</div>
+          <div class="chart-wrap">
+            <canvas id="chartIngresosCat" height="220"></canvas>
           </div>
         </div>
 
@@ -1150,6 +1217,7 @@
       const hoy = () => new Date().toISOString().split("T")[0];
       document.getElementById("gastoFecha").value = hoy();
       document.getElementById("horaFecha").value = hoy();
+      document.getElementById("ingresoFecha").value = hoy();
 
       /* ============================================
          CACHÉ LOCAL
@@ -1158,6 +1226,7 @@
         cacheHoras = [],
         cacheCartas = [],
         cacheNotas = [],
+        cacheIngresos = [],
         cacheMetricas = null,
         cacheSellos = [],
         cacheProyectos = [];
@@ -1364,6 +1433,53 @@
           mensaje: "Diez mil de MRR. El negocio camina solo.",
           condicion: (d) => d.mrr >= 10000,
         },
+
+                // Ingresos
+        {
+          id: "primer_ingreso",
+          nombre: "Primer Ingreso",
+          descripcion: "Registraste tu primer ingreso.",
+          icono: "＋",
+          categoria: "Ingresos",
+          mensaje: "El dominio empieza a rendir. Que quede constancia.",
+          condicion: (d) => d.totalIngresos >= 1,
+        },
+        {
+          id: "mil_ingresos",
+          nombre: "Mil de Ingresos",
+          descripcion: "Acumulaste $1,000 MXN en ingresos.",
+          icono: "＋1K",
+          categoria: "Ingresos",
+          mensaje: "Mil pesos. El dominio respira.",
+          condicion: (d) => d.totalIngresosMonto >= 1000,
+        },
+        {
+          id: "diez_mil_ingresos",
+          nombre: "Diez Mil de Ingresos",
+          descripcion: "Acumulaste $10,000 MXN en ingresos.",
+          icono: "＋10K",
+          categoria: "Ingresos",
+          mensaje: "Diez mil pesos. El dominio camina solo.",
+          condicion: (d) => d.totalIngresosMonto >= 10000,
+        },
+        {
+          id: "cien_mil_ingresos",
+          nombre: "Cien Mil de Ingresos",
+          descripcion: "Acumulaste $100,000 MXN en ingresos.",
+          icono: "＋100K",
+          categoria: "Ingresos",
+          mensaje: "Cien mil pesos. El conde respira tranquilo.",
+          condicion: (d) => d.totalIngresosMonto >= 100000,
+        },
+        {
+          id: "balance_mensual",
+          nombre: "Balance Mensual",
+          descripcion: "Un mes donde ingresos ≥ gastos.",
+          icono: "⚖",
+          categoria: "Ingresos",
+          mensaje: "El mes cerró en verde. Que siga así.",
+          condicion: (d) => d.balanceMes >= 0 && d.totalGastosMonto >= 1 && d.totalIngresosMonto >= 1,
+        },
       ];
 
       /* ============================================
@@ -1513,14 +1629,18 @@
           .map((p) => `<option value="${p.id}">${p.nombre}</option>`)
           .join("");
 
-        const selectores = ["gastoProyecto", "horaProyecto", "notaProyecto"];
+        const selectores = [
+          "gastoProyecto",
+          "horaProyecto",
+          "notaProyecto",
+          "ingresoProyecto",
+        ];
 
         selectores.forEach((id) => {
           const el = document.getElementById(id);
           if (el) el.innerHTML = opciones;
         });
 
-        // Por defecto, seleccionar "El Barrio" si existe
         const elBarrio = cacheProyectos.find((p) => p.nombre === "El Barrio");
         if (elBarrio) {
           selectores.forEach((id) => {
@@ -1541,7 +1661,7 @@
          CARGAR TODO
          ============================================ */
       async function cargarTodo() {
-        const [g, h, c, m, n] = await Promise.all([
+        const [g, h, c, m, n, i] = await Promise.all([
           supabase
             .from("gastos")
             .select("*")
@@ -1559,12 +1679,17 @@
             .from("notas")
             .select("*")
             .order("fecha", { ascending: false }),
+          supabase
+            .from("ingresos")
+            .select("*")
+            .order("fecha", { ascending: false }),
         ]);
         cacheGastos = g.data || [];
         cacheHoras = h.data || [];
         cacheCartas = c.data || [];
         cacheMetricas = m.data || null;
         cacheNotas = n.data || [];
+        cacheIngresos = i.data || [];
 
         await cargarSellos();
         await cargarProyectos();
@@ -1578,6 +1703,7 @@
         }
         renderActivos();
       }
+
       /* ============================================
          GASTOS
          ============================================ */
@@ -1663,6 +1789,50 @@
       window.addHora = addHora;
 
       /* ============================================
+   INGRESOS
+   ============================================ */
+      async function addIngreso() {
+        const fecha = document.getElementById("ingresoFecha").value;
+        const concepto = document
+          .getElementById("ingresoConcepto")
+          .value.trim();
+        const categoria = document.getElementById("ingresoCategoria").value;
+        const monto = parseFloat(document.getElementById("ingresoMonto").value);
+        const recurrente = document.getElementById("ingresoRecurrente").value;
+        const proyecto_id = document.getElementById("ingresoProyecto").value;
+
+        if (!fecha || !concepto || isNaN(monto)) {
+          alert("Completa fecha, concepto y monto.");
+          return;
+        }
+
+        const { error } = await supabase.from("ingresos").insert([
+          {
+            user_id: user.id,
+            fecha,
+            concepto,
+            categoria,
+            monto,
+            recurrente,
+            proyecto_id: proyecto_id || null,
+          },
+        ]);
+        if (error) {
+          alert(error.message);
+          return;
+        }
+        document.getElementById("ingresoConcepto").value = "";
+        document.getElementById("ingresoMonto").value = "";
+        await cargarTodo();
+
+        const nuevos = await verificarSellos();
+        if (nuevos.length > 0) {
+          await ritualSellos(nuevos);
+        }
+      }
+      window.addIngreso = addIngreso;
+
+      /* ============================================
          NOTA
          ============================================ */
       async function saveNota() {
@@ -1697,12 +1867,21 @@
             tipo: "Gasto",
             detalle: g.concepto,
             valor: "-$" + g.monto,
+            clase: "amount-neg",
+          })),
+          ...cacheIngresos.slice(0, 5).map((i) => ({
+            fecha: i.fecha,
+            tipo: "Ingreso",
+            detalle: i.concepto,
+            valor: "+$" + i.monto,
+            clase: "amount-pos",
           })),
           ...cacheHoras.slice(0, 5).map((h) => ({
             fecha: h.fecha,
             tipo: "Horas",
             detalle: h.actividad,
             valor: h.cantidad + " hrs",
+            clase: "amount",
           })),
         ]
           .sort((a, b) => b.fecha.localeCompare(a.fecha))
@@ -1711,7 +1890,7 @@
         document.getElementById("tablaRecientes").innerHTML = items
           .map(
             (i) => `
-    <tr><td>${i.fecha}</td><td>${i.tipo}</td><td>${i.detalle}</td><td class="amount">${i.valor}</td></tr>
+    <tr><td>${i.fecha}</td><td>${i.tipo}</td><td>${i.detalle}</td><td class="${i.clase}">${i.valor}</td></tr>
   `,
           )
           .join("");
@@ -1724,22 +1903,34 @@
         const mes = new Date().toISOString().slice(0, 7);
         const gastos = cacheGastos.filter((g) => g.fecha.startsWith(mes));
         const horas = cacheHoras.filter((h) => h.fecha.startsWith(mes));
+        const ingresos = cacheIngresos.filter((i) => i.fecha.startsWith(mes));
 
         const totalGasto = gastos.reduce((s, g) => s + Number(g.monto), 0);
         const totalHoras = horas.reduce((s, h) => s + Number(h.cantidad), 0);
+        const totalIngreso = ingresos.reduce((s, i) => s + Number(i.monto), 0);
+        const utilidad = totalIngreso - totalGasto;
         const valorTiempo = totalHoras * 150;
 
         document.getElementById("mGasto").textContent =
           "$" + totalGasto.toFixed(0);
         document.getElementById("mHoras").innerHTML =
           totalHoras.toFixed(1) + '<span class="metric-unit">hrs</span>';
-        document.getElementById("mIngreso").textContent = "$0";
+        document.getElementById("mIngreso").textContent =
+          "$" + totalIngreso.toFixed(0);
         document.getElementById("mUtilidad").textContent =
-          "-$" + totalGasto.toFixed(0);
+          (utilidad >= 0 ? "$" : "-$") + Math.abs(utilidad).toFixed(0);
         document.getElementById("mValorTiempo").textContent =
           "$" + valorTiempo.toFixed(0);
         document.getElementById("mInversion").textContent =
           "$" + (totalGasto + valorTiempo).toFixed(0);
+
+        // Aplicar colores
+        const utilidadEl = document.getElementById("mUtilidad");
+        if (utilidad >= 0) {
+          utilidadEl.style.color = "var(--jade)";
+        } else {
+          utilidadEl.style.color = "var(--danger)";
+        }
 
         dibujarLineas("chartGastos", gastos, "monto", mes, "#c9a961");
         dibujarLineas("chartHoras", horas, "cantidad", mes, "#6b8e6b");
@@ -1757,6 +1948,15 @@
             (catHora[h.categoria] || 0) + Number(h.cantidad);
         });
         dibujarPastel("chartHorasCat", catHora);
+
+        dibujarLineas("chartIngresos", ingresos, "monto", mes, "#6b8e6b");
+
+        const catIngreso = {};
+        ingresos.forEach((i) => {
+          catIngreso[i.categoria] =
+            (catIngreso[i.categoria] || 0) + Number(i.monto);
+        });
+        dibujarPastel("chartIngresosCat", catIngreso);
       }
 
       function dibujarLineas(canvasId, datos, campo, mes, color) {
