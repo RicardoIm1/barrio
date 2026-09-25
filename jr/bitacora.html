@@ -653,9 +653,7 @@
         box-shadow: 0 0 12px rgba(201, 169, 97, 0.15);
       }
 
-      /* ============================================
-   BARRA DE PROGRESO EN SELLOS
-   ============================================ */
+      /* BARRA DE PROGRESO EN SELLOS */
       .sello-progreso {
         margin-top: 0.6rem;
         padding-top: 0.6rem;
@@ -696,9 +694,7 @@
         );
       }
 
-      /* ============================================
-   FILTRO GLOBAL DE PROYECTO
-   ============================================ */
+      /* FILTRO GLOBAL DE PROYECTO */
       .filtro-proyecto {
         margin-top: 0.8rem;
         display: flex;
@@ -730,9 +726,7 @@
         border-color: var(--gold-soft);
       }
 
-      /* ============================================
-   PULIDO: filtro activo
-   ============================================ */
+      /* PULIDO: filtro activo */
       body.filtro-activo .metric::before {
         background: var(--filtro-color, var(--gold-soft));
       }
@@ -796,7 +790,11 @@
           </button>
           <div class="year-badge" id="yearBadge">Año 1 de 15</div>
         </div>
-        <div class="subtitle" id="filtroActivoLabel" style="margin-top: 0.3rem;"></div>
+        <div
+          class="subtitle"
+          id="filtroActivoLabel"
+          style="margin-top: 0.3rem"
+        ></div>
       </div>
       <nav>
         <button data-view="diario" class="active">Diario</button>
@@ -1320,6 +1318,32 @@
       window.authSignup = authSignup;
 
       /* ============================================
+         CACHÉ LOCAL
+         ============================================ */
+      let cacheGastos = [],
+        cacheHoras = [],
+        cacheCartas = [],
+        cacheNotas = [],
+        cacheIngresos = [],
+        cacheMetricas = null,
+        cacheSellos = [],
+        cacheProyectos = [];
+
+      /* ============================================
+         FILTRO GLOBAL DE PROYECTO
+         ============================================ */
+      let filtroProyectoId = ""; // "" = todos
+
+      function aplicarFiltro(registro) {
+        if (!filtroProyectoId) return true;
+        return registro.proyecto_id === filtroProyectoId;
+      }
+
+      function filtrarCache(registros) {
+        return registros.filter(aplicarFiltro);
+      }
+
+      /* ============================================
          NAVEGACIÓN
          ============================================ */
       document.querySelectorAll("nav button").forEach((btn) => {
@@ -1342,12 +1366,27 @@
       });
 
       /* ============================================
-   LISTENER DEL FILTRO GLOBAL
-   ============================================ */
+         LISTENER DEL FILTRO GLOBAL
+         ============================================ */
       const filtroEl = document.getElementById("filtroProyecto");
       if (filtroEl) {
         filtroEl.addEventListener("change", (e) => {
           filtroProyectoId = e.target.value;
+
+          // Actualizar subtítulo
+          const label = document.getElementById("filtroActivoLabel");
+          if (filtroProyectoId) {
+            const p = proyectoPorId(filtroProyectoId);
+            if (label) label.textContent = p ? `Viendo: ${p.nombre}` : "";
+            const color = colorDeProyecto(filtroProyectoId);
+            document.body.style.setProperty("--filtro-color", color);
+            document.body.classList.add("filtro-activo");
+          } else {
+            if (label) label.textContent = "";
+            document.body.classList.remove("filtro-activo");
+            document.body.style.removeProperty("--filtro-color");
+          }
+
           // Re-renderizar vistas activas
           renderRecientes();
           const vistaActiva = document.querySelector(".view.active")?.id;
@@ -1356,15 +1395,6 @@
           if (vistaActiva === "view-carta") renderCartas();
           if (vistaActiva === "view-balance") renderBalance();
         });
-        // Aplicar color del filtro al body
-        if (filtroProyectoId) {
-          const color = colorDeProyecto(filtroProyectoId);
-          document.body.style.setProperty("--filtro-color", color);
-          document.body.classList.add("filtro-activo");
-        } else {
-          document.body.classList.remove("filtro-activo");
-          document.body.style.removeProperty("--filtro-color");
-        }
       }
 
       /* ============================================
@@ -1374,32 +1404,6 @@
       document.getElementById("gastoFecha").value = hoy();
       document.getElementById("horaFecha").value = hoy();
       document.getElementById("ingresoFecha").value = hoy();
-
-      /* ============================================
-         CACHÉ LOCAL
-         ============================================ */
-      let cacheGastos = [],
-        cacheHoras = [],
-        cacheCartas = [],
-        cacheNotas = [],
-        cacheIngresos = [],
-        cacheMetricas = null,
-        cacheSellos = [],
-        cacheProyectos = [];
-
-      /* ============================================
-   FILTRO GLOBAL DE PROYECTO
-   ============================================ */
-      let filtroProyectoId = ""; // "" = todos
-
-      function aplicarFiltro(registro) {
-        if (!filtroProyectoId) return true;
-        return registro.proyecto_id === filtroProyectoId;
-      }
-
-      function filtrarCache(registros) {
-        return registros.filter(aplicarFiltro);
-      }
 
       /* ============================================
          CATÁLOGO DE SELLOS
@@ -1603,8 +1607,6 @@
           mensaje: "Diez mil de MRR. El negocio camina solo.",
           condicion: (d) => d.mrr >= 10000,
         },
-
-        // Ingresos
         {
           id: "primer_ingreso",
           nombre: "Primer Ingreso",
@@ -1653,8 +1655,6 @@
             d.totalGastosMonto >= 1 &&
             d.totalIngresosMonto >= 1,
         },
-
-        // ─── Sellos de Vida ───
         {
           id: "vida_primer_paso",
           nombre: "Primer Paso",
@@ -1815,14 +1815,12 @@
 
         const mes = new Date().toISOString().slice(0, 7);
 
-        // Proyectos activos (con al menos un registro en total)
         const proyectosConActividad = new Set();
         [...cacheGastos, ...cacheHoras, ...cacheIngresos].forEach((r) => {
           if (r.proyecto_id) proyectosConActividad.add(r.proyecto_id);
         });
         const proyectosActivos = proyectosConActividad.size;
 
-        // Proyectos con actividad este mes
         const proyectosMesSet = new Set();
         [...cacheGastos, ...cacheHoras, ...cacheIngresos]
           .filter((r) => r.fecha && r.fecha.startsWith(mes))
@@ -1831,7 +1829,6 @@
           });
         const proyectosMes = proyectosMesSet.size;
 
-        // Proyectos con ingreso este mes
         const proyectosConIngresoMesSet = new Set();
         cacheIngresos
           .filter((i) => i.fecha && i.fecha.startsWith(mes))
@@ -1840,7 +1837,6 @@
           });
         const proyectosConIngresoMes = proyectosConIngresoMesSet.size;
 
-        // Balance del mes
         const gastosMes = cacheGastos
           .filter((g) => g.fecha.startsWith(mes))
           .reduce((s, g) => s + Number(g.monto), 0);
@@ -1957,8 +1953,8 @@
       }
 
       /* ============================================
-   CARGAR PROYECTOS DESDE SUPABASE
-   ============================================ */
+         CARGAR PROYECTOS DESDE SUPABASE
+         ============================================ */
       async function cargarProyectos() {
         const { data, error } = await supabase
           .from("proyectos")
@@ -1974,8 +1970,8 @@
       }
 
       /* ============================================
-   POBLAR SELECTORES DE PROYECTO
-   ============================================ */
+         POBLAR SELECTORES DE PROYECTO
+         ============================================ */
       function poblarSelectoresProyecto() {
         const opciones = cacheProyectos
           .map((p) => `<option value="${p.id}">${p.nombre}</option>`)
@@ -2001,7 +1997,6 @@
           });
         }
 
-        // Poblar el filtro global
         const filtro = document.getElementById("filtroProyecto");
         if (filtro) {
           filtro.innerHTML = '<option value="">Todo</option>' + opciones;
@@ -2010,15 +2005,15 @@
       }
 
       /* ============================================
-   OBTENER PROYECTO POR NOMBRE
-   ============================================ */
+         OBTENER PROYECTO POR NOMBRE
+         ============================================ */
       function proyectoPorNombre(nombre) {
         return cacheProyectos.find((p) => p.nombre === nombre);
       }
 
       /* ============================================
-   OBTENER PROYECTO POR ID
-   ============================================ */
+         OBTENER PROYECTO POR ID
+         ============================================ */
       function proyectoPorId(id) {
         return cacheProyectos.find((p) => p.id === id);
       }
@@ -2170,8 +2165,8 @@
       window.addHora = addHora;
 
       /* ============================================
-   INGRESOS
-   ============================================ */
+         INGRESOS
+         ============================================ */
       async function addIngreso() {
         const fecha = document.getElementById("ingresoFecha").value;
         const concepto = document
@@ -2279,7 +2274,6 @@
           .map((i) => {
             const color = colorDeProyecto(i.proyecto);
             const icono = iconoDeProyecto(i.proyecto);
-            const nombre = nombreDeProyecto(i.proyecto);
             return `
     <tr>
       <td>${i.fecha}</td>
@@ -2364,11 +2358,7 @@
           horasPorProyecto[nombre] =
             (horasPorProyecto[nombre] || 0) + Number(h.cantidad);
         });
-        dibujarPastelConColores(
-          "chartHorasProyecto",
-          horasPorProyecto,
-          horas.map((h) => h.proyecto_id),
-        );
+        dibujarPastelConColores("chartHorasProyecto", horasPorProyecto);
       }
 
       function dibujarLineas(canvasId, datos, campo, mes, color) {
@@ -2496,7 +2486,7 @@
         });
       }
 
-      function dibujarPastelConColores(canvasId, datos, ids) {
+      function dibujarPastelConColores(canvasId, datos) {
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext("2d");
         const dpr = window.devicePixelRatio || 1;
@@ -2524,7 +2514,6 @@
         let angulo = -Math.PI / 2;
 
         entries.forEach(([nombre, val], i) => {
-          // Buscar el color por nombre
           const proyecto = cacheProyectos.find((p) => p.nombre === nombre);
           const color = proyecto ? proyecto.color : "#5a5749";
 
@@ -2768,11 +2757,9 @@
         document.getElementById("sellosRacha").innerHTML =
           datos.racha + '<span class="metric-unit">días</span>';
 
-        // Separar por grupo
         const sellosVida = SELLOS.filter((s) => s.grupo === "Vida");
         const sellosBarrio = SELLOS.filter((s) => s.grupo !== "Vida");
 
-        // Sellos obtenidos - Vida
         const obtenidosVida = sellosVida.filter((s) => obtenidos.has(s.id));
         const gridObtenidosVida = document.getElementById(
           "sellosGridObtenidosVida",
@@ -2785,7 +2772,6 @@
           );
         }
 
-        // Sellos obtenidos - El Barrio
         const obtenidosBarrio = sellosBarrio.filter((s) => obtenidos.has(s.id));
         const gridObtenidosBarrio = document.getElementById(
           "sellosGridObtenidos",
@@ -2798,7 +2784,6 @@
           );
         }
 
-        // Próximos sellos - Vida
         const pendientesVida = sellosVida
           .filter((s) => !obtenidos.has(s.id))
           .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
@@ -2816,7 +2801,6 @@
           );
         }
 
-        // Próximos sellos - El Barrio
         const pendientesBarrio = sellosBarrio
           .filter((s) => !obtenidos.has(s.id))
           .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
@@ -2836,8 +2820,8 @@
       }
 
       /* ============================================
-   RENDER BALANCE
-   ============================================ */
+         RENDER BALANCE
+         ============================================ */
       function renderBalance() {
         const mes = new Date().toISOString().slice(0, 7);
 
@@ -2870,7 +2854,6 @@
         document.getElementById("balHoras").innerHTML =
           totalHoras.toFixed(1) + '<span class="metric-unit">hrs</span>';
 
-        // Balance por proyecto
         const proyectos = cacheProyectos;
         const filas = proyectos
           .map((p) => {
@@ -2907,16 +2890,14 @@
         document.getElementById("tablaBalance").innerHTML =
           filas || '<tr><td colspan="5">Sin datos este mes.</td></tr>';
 
-        // Gráfica histórica de horas por proyecto
         const horasPorProyecto = {};
         filtrarCache(cacheHoras).forEach((h) => {
           const nombre = nombreDeProyecto(h.proyecto_id);
           horasPorProyecto[nombre] =
             (horasPorProyecto[nombre] || 0) + Number(h.cantidad);
         });
-        dibujarPastelConColores("chartBalanceHoras", horasPorProyecto, []);
+        dibujarPastelConColores("chartBalanceHoras", horasPorProyecto);
 
-        // Gráfica histórica de dinero por proyecto
         const dineroPorProyecto = {};
         filtrarCache(cacheIngresos).forEach((i) => {
           const nombre = nombreDeProyecto(i.proyecto_id);
@@ -2928,12 +2909,12 @@
           dineroPorProyecto[nombre] =
             (dineroPorProyecto[nombre] || 0) - Number(g.monto);
         });
-        dibujarPastelConColores("chartBalanceDinero", dineroPorProyecto, []);
+        dibujarPastelConColores("chartBalanceDinero", dineroPorProyecto);
       }
 
       /* ============================================
-   RENDER DE UNA GRILLA DE SELLOS
-   ============================================ */
+         RENDER DE UNA GRILLA DE SELLOS
+         ============================================ */
       function renderSellosGrid(lista, mapaFechas, tipo) {
         if (lista.length === 0) {
           if (tipo === "obtenido") {
@@ -3031,12 +3012,10 @@
           if (datos.totalIngresosMonto < 1 || datos.totalGastosMonto < 1)
             return 0;
           if (datos.balanceMes >= 0) return 100;
-          // Si el balance es negativo, mostrar qué tan cerca está
           const ratio = datos.totalIngresosMonto / datos.totalGastosMonto;
           return Math.min(99, ratio * 100);
         }
 
-        // Sellos de Vida
         if (id === "vida_primer_paso") {
           const total =
             datos.totalGastos + datos.totalHoras + datos.totalIngresos;
