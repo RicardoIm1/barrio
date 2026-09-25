@@ -729,6 +729,17 @@
       .filtro-proyecto select:focus {
         border-color: var(--gold-soft);
       }
+
+      /* ============================================
+   PULIDO: filtro activo
+   ============================================ */
+      body.filtro-activo .metric::before {
+        background: var(--filtro-color, var(--gold-soft));
+      }
+
+      body.filtro-activo header {
+        border-bottom-color: var(--filtro-color, var(--border));
+      }
     </style>
   </head>
   <body>
@@ -785,6 +796,7 @@
           </button>
           <div class="year-badge" id="yearBadge">Año 1 de 15</div>
         </div>
+        <div class="subtitle" id="filtroActivoLabel" style="margin-top: 0.3rem;"></div>
       </div>
       <nav>
         <button data-view="diario" class="active">Diario</button>
@@ -793,6 +805,7 @@
         <button data-view="activos">Activos</button>
         <button data-view="plan">Plan</button>
         <button data-view="sellos">Sellos</button>
+        <button data-view="balance">Balance</button>
       </nav>
       <div class="user-info" id="userInfo" style="margin-top: 0.8rem"></div>
       <div class="filtro-proyecto" id="filtroProyectoWrap">
@@ -1032,6 +1045,13 @@
         </div>
 
         <div class="card">
+          <div class="card-title">Horas por proyecto (mes actual)</div>
+          <div class="chart-wrap">
+            <canvas id="chartHorasProyecto" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
           <div class="card-title">Gastos por categoría</div>
           <div class="chart-wrap">
             <canvas id="chartCategorias" height="220"></canvas>
@@ -1170,6 +1190,63 @@
           <div id="sellosGridPendientes" class="sellos-grid"></div>
         </div>
       </section>
+
+      <!-- BALANCE -->
+      <section id="view-balance" class="view">
+        <div class="card">
+          <div class="card-title">Balance del mes</div>
+          <div class="metrics-grid">
+            <div class="metric">
+              <div class="metric-label">Ingresos</div>
+              <div class="metric-value" id="balIngresos">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Gastos</div>
+              <div class="metric-value" id="balGastos">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Utilidad</div>
+              <div class="metric-value" id="balUtilidad">$0</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Horas totales</div>
+              <div class="metric-value" id="balHoras">
+                0<span class="metric-unit">hrs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Balance por proyecto</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Proyecto</th>
+                <th>Horas</th>
+                <th>Ingresos</th>
+                <th>Gastos</th>
+                <th>Utilidad</th>
+              </tr>
+            </thead>
+            <tbody id="tablaBalance"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Horas por proyecto (histórico)</div>
+          <div class="chart-wrap">
+            <canvas id="chartBalanceHoras" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Dinero por proyecto (histórico)</div>
+          <div class="chart-wrap">
+            <canvas id="chartBalanceDinero" height="220"></canvas>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer>Paciente pero incesante · 15 hrs/semana · 15 años</footer>
@@ -1260,6 +1337,7 @@
           if (btn.dataset.view === "mes") renderMes();
           if (btn.dataset.view === "carta") renderCartas();
           if (btn.dataset.view === "sellos") renderSellos();
+          if (btn.dataset.view === "balance") renderBalance();
         });
       });
 
@@ -1276,7 +1354,17 @@
           if (vistaActiva === "view-mes") renderMes();
           if (vistaActiva === "view-sellos") renderSellos();
           if (vistaActiva === "view-carta") renderCartas();
+          if (vistaActiva === "view-balance") renderBalance();
         });
+        // Aplicar color del filtro al body
+        if (filtroProyectoId) {
+          const color = colorDeProyecto(filtroProyectoId);
+          document.body.style.setProperty("--filtro-color", color);
+          document.body.classList.add("filtro-activo");
+        } else {
+          document.body.classList.remove("filtro-activo");
+          document.body.style.removeProperty("--filtro-color");
+        }
       }
 
       /* ============================================
@@ -1929,6 +2017,28 @@
       }
 
       /* ============================================
+   OBTENER PROYECTO POR ID
+   ============================================ */
+      function proyectoPorId(id) {
+        return cacheProyectos.find((p) => p.id === id);
+      }
+
+      function colorDeProyecto(id) {
+        const p = proyectoPorId(id);
+        return p ? p.color : "#5a5749";
+      }
+
+      function nombreDeProyecto(id) {
+        const p = proyectoPorId(id);
+        return p ? p.nombre : "Sin proyecto";
+      }
+
+      function iconoDeProyecto(id) {
+        const p = proyectoPorId(id);
+        return p ? p.icono || "·" : "·";
+      }
+
+      /* ============================================
          CARGAR TODO
          ============================================ */
       async function cargarTodo() {
@@ -2141,6 +2251,7 @@
             fecha: g.fecha,
             tipo: "Gasto",
             detalle: g.concepto,
+            proyecto: g.proyecto_id,
             valor: "-$" + g.monto,
             clase: "amount-neg",
           })),
@@ -2148,6 +2259,7 @@
             fecha: i.fecha,
             tipo: "Ingreso",
             detalle: i.concepto,
+            proyecto: i.proyecto_id,
             valor: "+$" + i.monto,
             clase: "amount-pos",
           })),
@@ -2155,6 +2267,7 @@
             fecha: h.fecha,
             tipo: "Horas",
             detalle: h.actividad,
+            proyecto: h.proyecto_id,
             valor: h.cantidad + " hrs",
             clase: "amount",
           })),
@@ -2163,11 +2276,22 @@
           .slice(0, 10);
 
         document.getElementById("tablaRecientes").innerHTML = items
-          .map(
-            (i) => `
-    <tr><td>${i.fecha}</td><td>${i.tipo}</td><td>${i.detalle}</td><td class="${i.clase}">${i.valor}</td></tr>
-  `,
-          )
+          .map((i) => {
+            const color = colorDeProyecto(i.proyecto);
+            const icono = iconoDeProyecto(i.proyecto);
+            const nombre = nombreDeProyecto(i.proyecto);
+            return `
+    <tr>
+      <td>${i.fecha}</td>
+      <td>
+        <span style="color: ${color}; margin-right: 0.4rem;">${icono}</span>
+        ${i.tipo}
+      </td>
+      <td>${i.detalle}</td>
+      <td class="${i.clase}">${i.valor}</td>
+    </tr>
+  `;
+          })
           .join("");
       }
 
@@ -2233,6 +2357,18 @@
             (catIngreso[i.categoria] || 0) + Number(i.monto);
         });
         dibujarPastel("chartIngresosCat", catIngreso);
+
+        const horasPorProyecto = {};
+        horas.forEach((h) => {
+          const nombre = nombreDeProyecto(h.proyecto_id);
+          horasPorProyecto[nombre] =
+            (horasPorProyecto[nombre] || 0) + Number(h.cantidad);
+        });
+        dibujarPastelConColores(
+          "chartHorasProyecto",
+          horasPorProyecto,
+          horas.map((h) => h.proyecto_id),
+        );
       }
 
       function dibujarLineas(canvasId, datos, campo, mes, color) {
@@ -2354,6 +2490,65 @@
           ctx.fillStyle = "#d4d0c4";
           ctx.fillText(
             `${cat}: $${val.toFixed(0)} (${((val / total) * 100).toFixed(0)}%)`,
+            h + 38,
+            y,
+          );
+        });
+      }
+
+      function dibujarPastelConColores(canvasId, datos, ids) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        const w = canvas.clientWidth,
+          h = canvas.clientHeight;
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+        ctx.scale(dpr, dpr);
+
+        const entries = Object.entries(datos).sort((a, b) => b[1] - a[1]);
+        const total = entries.reduce((s, [, v]) => s + v, 0);
+
+        ctx.clearRect(0, 0, w, h);
+
+        if (total === 0) {
+          ctx.fillStyle = "#5a5749";
+          ctx.font = "12px monospace";
+          ctx.fillText("Sin datos este mes.", 20, h / 2);
+          return;
+        }
+
+        const cx = h / 2,
+          cy = h / 2,
+          r = h / 2 - 10;
+        let angulo = -Math.PI / 2;
+
+        entries.forEach(([nombre, val], i) => {
+          // Buscar el color por nombre
+          const proyecto = cacheProyectos.find((p) => p.nombre === nombre);
+          const color = proyecto ? proyecto.color : "#5a5749";
+
+          const slice = (val / total) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.arc(cx, cy, r, angulo, angulo + slice);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+          angulo += slice;
+        });
+
+        ctx.font = "11px monospace";
+        entries.forEach(([nombre, val], i) => {
+          const proyecto = cacheProyectos.find((p) => p.nombre === nombre);
+          const color = proyecto ? proyecto.color : "#5a5749";
+
+          const y = 20 + i * 18;
+          ctx.fillStyle = color;
+          ctx.fillRect(h + 20, y - 8, 10, 10);
+          ctx.fillStyle = "#d4d0c4";
+          ctx.fillText(
+            `${nombre}: ${val.toFixed(1)} hrs (${((val / total) * 100).toFixed(0)}%)`,
             h + 38,
             y,
           );
@@ -2638,6 +2833,102 @@
             "pendiente",
           );
         }
+      }
+
+      /* ============================================
+   RENDER BALANCE
+   ============================================ */
+      function renderBalance() {
+        const mes = new Date().toISOString().slice(0, 7);
+
+        const ingresosMes = filtrarCache(cacheIngresos).filter((i) =>
+          i.fecha.startsWith(mes),
+        );
+        const gastosMes = filtrarCache(cacheGastos).filter((g) =>
+          g.fecha.startsWith(mes),
+        );
+        const horasMes = filtrarCache(cacheHoras).filter((h) =>
+          h.fecha.startsWith(mes),
+        );
+
+        const totalIngresos = ingresosMes.reduce(
+          (s, i) => s + Number(i.monto),
+          0,
+        );
+        const totalGastos = gastosMes.reduce((s, g) => s + Number(g.monto), 0);
+        const totalHoras = horasMes.reduce((s, h) => s + Number(h.cantidad), 0);
+        const utilidad = totalIngresos - totalGastos;
+
+        document.getElementById("balIngresos").textContent =
+          "$" + totalIngresos.toFixed(0);
+        document.getElementById("balGastos").textContent =
+          "$" + totalGastos.toFixed(0);
+        const utilEl = document.getElementById("balUtilidad");
+        utilEl.textContent =
+          (utilidad >= 0 ? "$" : "-$") + Math.abs(utilidad).toFixed(0);
+        utilEl.style.color = utilidad >= 0 ? "var(--jade)" : "var(--danger)";
+        document.getElementById("balHoras").innerHTML =
+          totalHoras.toFixed(1) + '<span class="metric-unit">hrs</span>';
+
+        // Balance por proyecto
+        const proyectos = cacheProyectos;
+        const filas = proyectos
+          .map((p) => {
+            const horasP = horasMes
+              .filter((h) => h.proyecto_id === p.id)
+              .reduce((s, h) => s + Number(h.cantidad), 0);
+            const ingresosP = ingresosMes
+              .filter((i) => i.proyecto_id === p.id)
+              .reduce((s, i) => s + Number(i.monto), 0);
+            const gastosP = gastosMes
+              .filter((g) => g.proyecto_id === p.id)
+              .reduce((s, g) => s + Number(g.monto), 0);
+            const utilidadP = ingresosP - gastosP;
+
+            if (horasP === 0 && ingresosP === 0 && gastosP === 0) return "";
+
+            return `
+      <tr>
+        <td>
+          <span style="color: ${p.color}; margin-right: 0.4rem;">${p.icono || "·"}</span>
+          ${p.nombre}
+        </td>
+        <td>${horasP.toFixed(1)}</td>
+        <td class="amount-pos">$${ingresosP.toFixed(0)}</td>
+        <td class="amount-neg">$${gastosP.toFixed(0)}</td>
+        <td class="${utilidadP >= 0 ? "amount-pos" : "amount-neg"}">
+          ${utilidadP >= 0 ? "$" : "-$"}${Math.abs(utilidadP).toFixed(0)}
+        </td>
+      </tr>
+    `;
+          })
+          .join("");
+
+        document.getElementById("tablaBalance").innerHTML =
+          filas || '<tr><td colspan="5">Sin datos este mes.</td></tr>';
+
+        // Gráfica histórica de horas por proyecto
+        const horasPorProyecto = {};
+        filtrarCache(cacheHoras).forEach((h) => {
+          const nombre = nombreDeProyecto(h.proyecto_id);
+          horasPorProyecto[nombre] =
+            (horasPorProyecto[nombre] || 0) + Number(h.cantidad);
+        });
+        dibujarPastelConColores("chartBalanceHoras", horasPorProyecto, []);
+
+        // Gráfica histórica de dinero por proyecto
+        const dineroPorProyecto = {};
+        filtrarCache(cacheIngresos).forEach((i) => {
+          const nombre = nombreDeProyecto(i.proyecto_id);
+          dineroPorProyecto[nombre] =
+            (dineroPorProyecto[nombre] || 0) + Number(i.monto);
+        });
+        filtrarCache(cacheGastos).forEach((g) => {
+          const nombre = nombreDeProyecto(g.proyecto_id);
+          dineroPorProyecto[nombre] =
+            (dineroPorProyecto[nombre] || 0) - Number(g.monto);
+        });
+        dibujarPastelConColores("chartBalanceDinero", dineroPorProyecto, []);
       }
 
       /* ============================================
