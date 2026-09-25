@@ -529,18 +529,35 @@
         margin-bottom: 1.5rem;
       }
       .ritual-content .seal {
-        width: 80px;
-        height: 80px;
+        width: 90px;
+        height: 90px;
         border: 2px solid var(--gold-soft);
         border-radius: 50%;
         margin: 1.5rem auto;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-family: var(--serif);
+        font-size: 2rem;
+        color: var(--gold);
+        letter-spacing: 0.05em;
+        transition: all 0.5s ease;
+      }
+
+      body.ritual .ritual-content .seal {
+        box-shadow:
+          0 0 20px rgba(201, 169, 97, 0.4),
+          inset 0 0 12px rgba(201, 169, 97, 0.15);
+      }
+
+      .ritual-content .ritual-sub {
         font-family: var(--mono);
         font-size: 0.7rem;
         color: var(--gold-soft);
-        letter-spacing: 0.1em;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-top: 0.5rem;
+        min-height: 1em;
       }
 
       /* ============================================
@@ -670,8 +687,9 @@
     <div class="ritual-overlay" id="ritualOverlay">
       <div class="ritual-content">
         <h3 id="ritualTitle">Ritual</h3>
-        <div class="seal">§</div>
+        <div class="seal" id="ritualSeal">§</div>
         <p id="ritualText">...</p>
+        <div class="ritual-sub" id="ritualSub"></div>
       </div>
     </div>
 
