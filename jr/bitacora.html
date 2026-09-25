@@ -1148,13 +1148,25 @@
           </div>
         </div>
 
+        <!-- SELLOS DE VIDA -->
         <div class="card">
-          <div class="card-title">Sellos obtenidos</div>
+          <div class="card-title">Sellos de Vida · Obtenidos</div>
+          <div id="sellosGridObtenidosVida" class="sellos-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Sellos de Vida · Próximos</div>
+          <div id="sellosGridPendientesVida" class="sellos-grid"></div>
+        </div>
+
+        <!-- SELLOS DE EL BARRIO -->
+        <div class="card">
+          <div class="card-title">Sellos de El Barrio · Obtenidos</div>
           <div id="sellosGridObtenidos" class="sellos-grid"></div>
         </div>
 
         <div class="card">
-          <div class="card-title">Próximos sellos</div>
+          <div class="card-title">Sellos de El Barrio · Próximos</div>
           <div id="sellosGridPendientes" class="sellos-grid"></div>
         </div>
       </section>
@@ -1553,6 +1565,136 @@
             d.totalGastosMonto >= 1 &&
             d.totalIngresosMonto >= 1,
         },
+
+        // ─── Sellos de Vida ───
+        {
+          id: "vida_primer_paso",
+          nombre: "Primer Paso",
+          descripcion: "Registraste algo en tu bitácora de vida.",
+          icono: "✦",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "El gobierno de tu vida comienza. Que quede constancia.",
+          condicion: (d) => d.totalGastos + d.totalHoras + d.totalIngresos >= 1,
+        },
+        {
+          id: "vida_multiproyecto",
+          nombre: "Multiproyecto",
+          descripcion: "Registraste actividad en 3 o más proyectos.",
+          icono: "❖",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje:
+            "Tu vida tiene varias dimensiones. El conde las gobierna todas.",
+          condicion: (d) => d.proyectosActivos >= 3,
+        },
+        {
+          id: "vida_diversificado",
+          nombre: "Diversificado",
+          descripcion: "Registraste actividad en 5 o más proyectos.",
+          icono: "❖5",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Cinco proyectos. El conde no depende de uno solo.",
+          condicion: (d) => d.proyectosActivos >= 5,
+        },
+        {
+          id: "vida_equilibrio",
+          nombre: "Equilibrio",
+          descripcion: "Un mes con horas registradas en al menos 4 proyectos.",
+          icono: "⚖",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "El equilibrio no es casualidad. Es gobierno.",
+          condicion: (d) => d.proyectosMes >= 4,
+        },
+        {
+          id: "vida_tiempo_consciente",
+          nombre: "Tiempo Consciente",
+          descripcion: "Acumulaste 100 horas registradas en total.",
+          icono: "⏳100",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Cien horas. El tiempo ya no se te escapa.",
+          condicion: (d) => d.totalHoras >= 100,
+        },
+        {
+          id: "vida_mil_horas",
+          nombre: "Mil Horas de Vida",
+          descripcion: "Acumulaste 1,000 horas registradas en total.",
+          icono: "⏳1K",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Mil horas. El conde ha vivido con intención.",
+          condicion: (d) => d.totalHoras >= 1000,
+        },
+        {
+          id: "vida_diez_mil_horas",
+          nombre: "Diez Mil Horas de Vida",
+          descripcion: "Acumulaste 10,000 horas registradas en total.",
+          icono: "⏳10K",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Diez mil horas. El maestro del tiempo ha llegado.",
+          condicion: (d) => d.totalHoras >= 10000,
+        },
+        {
+          id: "vida_racha_30",
+          nombre: "Mes de Vida",
+          descripcion:
+            "30 días consecutivos registrando en cualquier proyecto.",
+          icono: "30✦",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Un mes de vida registrada. La disciplina se volvió hábito.",
+          condicion: (d) => d.racha >= 30,
+        },
+        {
+          id: "vida_racha_90",
+          nombre: "Trimestre de Vida",
+          descripcion:
+            "90 días consecutivos registrando en cualquier proyecto.",
+          icono: "90✦",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Noventa días. El conde ha vivido sin fallar.",
+          condicion: (d) => d.racha >= 90,
+        },
+        {
+          id: "vida_racha_365",
+          nombre: "Año de Vida",
+          descripcion:
+            "365 días consecutivos registrando en cualquier proyecto.",
+          icono: "365✦",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Un año entero. El conde ha gobernado su vida sin descanso.",
+          condicion: (d) => d.racha >= 365,
+        },
+        {
+          id: "vida_balance_mes",
+          nombre: "Mes en Verde",
+          descripcion:
+            "Un mes donde los ingresos totales superan los gastos totales.",
+          icono: "▲",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "El mes cerró en verde. El conde respira tranquilo.",
+          condicion: (d) =>
+            d.balanceMes >= 0 &&
+            d.totalGastosMonto >= 1 &&
+            d.totalIngresosMonto >= 1,
+        },
+        {
+          id: "vida_diversificacion_ingresos",
+          nombre: "Ingresos Diversificados",
+          descripcion: "Ingresos de 3 o más proyectos en un mismo mes.",
+          icono: "◆3",
+          categoria: "Vida",
+          grupo: "Vida",
+          mensaje: "Tres fuentes de ingreso. El conde no depende de una sola.",
+          condicion: (d) => d.proyectosConIngresoMes >= 3,
+        },
       ];
 
       /* ============================================
@@ -1584,10 +1726,37 @@
         const racha = calcularRacha();
 
         const mes = new Date().toISOString().slice(0, 7);
-        const gastosMes = gastos
+
+        // Proyectos activos (con al menos un registro en total)
+        const proyectosConActividad = new Set();
+        [...cacheGastos, ...cacheHoras, ...cacheIngresos].forEach((r) => {
+          if (r.proyecto_id) proyectosConActividad.add(r.proyecto_id);
+        });
+        const proyectosActivos = proyectosConActividad.size;
+
+        // Proyectos con actividad este mes
+        const proyectosMesSet = new Set();
+        [...cacheGastos, ...cacheHoras, ...cacheIngresos]
+          .filter((r) => r.fecha && r.fecha.startsWith(mes))
+          .forEach((r) => {
+            if (r.proyecto_id) proyectosMesSet.add(r.proyecto_id);
+          });
+        const proyectosMes = proyectosMesSet.size;
+
+        // Proyectos con ingreso este mes
+        const proyectosConIngresoMesSet = new Set();
+        cacheIngresos
+          .filter((i) => i.fecha && i.fecha.startsWith(mes))
+          .forEach((i) => {
+            if (i.proyecto_id) proyectosConIngresoMesSet.add(i.proyecto_id);
+          });
+        const proyectosConIngresoMes = proyectosConIngresoMesSet.size;
+
+        // Balance del mes
+        const gastosMes = cacheGastos
           .filter((g) => g.fecha.startsWith(mes))
           .reduce((s, g) => s + Number(g.monto), 0);
-        const ingresosMes = ingresos
+        const ingresosMes = cacheIngresos
           .filter((i) => i.fecha.startsWith(mes))
           .reduce((s, i) => s + Number(i.monto), 0);
         const balanceMes = ingresosMes - gastosMes;
@@ -1604,6 +1773,9 @@
           mrr,
           racha,
           balanceMes,
+          proyectosActivos,
+          proyectosMes,
+          proyectosConIngresoMes,
         };
       }
 
@@ -2401,15 +2573,87 @@
         document.getElementById("sellosRacha").innerHTML =
           datos.racha + '<span class="metric-unit">días</span>';
 
-        const obtenidosList = SELLOS.filter((s) => obtenidos.has(s.id));
-        const gridObtenidos = document.getElementById("sellosGridObtenidos");
+        // Separar por grupo
+        const sellosVida = SELLOS.filter((s) => s.grupo === "Vida");
+        const sellosBarrio = SELLOS.filter((s) => s.grupo !== "Vida");
 
-        if (obtenidosList.length === 0) {
-          gridObtenidos.innerHTML =
-            '<div class="sello-vacio">Aún no has desbloqueado ningún sello. El gobierno apenas comienza.</div>';
-        } else {
-          gridObtenidos.innerHTML = obtenidosList
-            .map((s) => {
+        // Sellos obtenidos - Vida
+        const obtenidosVida = sellosVida.filter((s) => obtenidos.has(s.id));
+        const gridObtenidosVida = document.getElementById(
+          "sellosGridObtenidosVida",
+        );
+        if (gridObtenidosVida) {
+          gridObtenidosVida.innerHTML = renderSellosGrid(
+            obtenidosVida,
+            mapaFechas,
+            "obtenido",
+          );
+        }
+
+        // Sellos obtenidos - El Barrio
+        const obtenidosBarrio = sellosBarrio.filter((s) => obtenidos.has(s.id));
+        const gridObtenidosBarrio = document.getElementById(
+          "sellosGridObtenidos",
+        );
+        if (gridObtenidosBarrio) {
+          gridObtenidosBarrio.innerHTML = renderSellosGrid(
+            obtenidosBarrio,
+            mapaFechas,
+            "obtenido",
+          );
+        }
+
+        // Próximos sellos - Vida
+        const pendientesVida = sellosVida
+          .filter((s) => !obtenidos.has(s.id))
+          .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
+          .sort((a, b) => b.progreso - a.progreso)
+          .slice(0, 6);
+
+        const gridPendientesVida = document.getElementById(
+          "sellosGridPendientesVida",
+        );
+        if (gridPendientesVida) {
+          gridPendientesVida.innerHTML = renderSellosGrid(
+            pendientesVida,
+            mapaFechas,
+            "pendiente",
+          );
+        }
+
+        // Próximos sellos - El Barrio
+        const pendientesBarrio = sellosBarrio
+          .filter((s) => !obtenidos.has(s.id))
+          .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
+          .sort((a, b) => b.progreso - a.progreso)
+          .slice(0, 6);
+
+        const gridPendientesBarrio = document.getElementById(
+          "sellosGridPendientes",
+        );
+        if (gridPendientesBarrio) {
+          gridPendientesBarrio.innerHTML = renderSellosGrid(
+            pendientesBarrio,
+            mapaFechas,
+            "pendiente",
+          );
+        }
+      }
+
+      /* ============================================
+   RENDER DE UNA GRILLA DE SELLOS
+   ============================================ */
+      function renderSellosGrid(lista, mapaFechas, tipo) {
+        if (lista.length === 0) {
+          if (tipo === "obtenido") {
+            return '<div class="sello-vacio">Aún no has desbloqueado ningún sello en este grupo.</div>';
+          }
+          return '<div class="sello-vacio">No hay sellos pendientes en este grupo.</div>';
+        }
+
+        return lista
+          .map((s) => {
+            if (tipo === "obtenido") {
               const fecha = mapaFechas.get(s.id);
               const fechaStr = fecha
                 ? new Date(fecha).toLocaleDateString("es-MX", {
@@ -2427,41 +2671,25 @@
         <div class="sello-fecha">${fechaStr}</div>
       </div>
     `;
-            })
-            .join("");
-        }
-
-        const pendientes = SELLOS.filter((s) => !obtenidos.has(s.id))
-          .map((s) => ({ ...s, progreso: progresoSello(s, datos) }))
-          .sort((a, b) => b.progreso - a.progreso)
-          .slice(0, 6);
-
-        const gridPendientes = document.getElementById("sellosGridPendientes");
-
-        if (pendientes.length === 0) {
-          gridPendientes.innerHTML =
-            '<div class="sello-vacio">Has desbloqueado todos los sellos. El conde ha completado su obra.</div>';
-        } else {
-          gridPendientes.innerHTML = pendientes
-            .map((s) => {
+            } else {
               const progreso = Math.round(s.progreso);
               return `
-  <div class="sello pendiente" title="${s.descripcion}">
-    <div class="sello-icono">${s.icono}</div>
-    <div class="sello-nombre">${s.nombre}</div>
-    <div class="sello-categoria">${s.categoria}</div>
-    <div class="sello-desc">${s.descripcion}</div>
-    <div class="sello-progreso">
-      <div class="sello-progreso-barra">
-        <div class="sello-progreso-fill" style="width: ${progreso}%"></div>
+      <div class="sello pendiente" title="${s.descripcion}">
+        <div class="sello-icono">${s.icono}</div>
+        <div class="sello-nombre">${s.nombre}</div>
+        <div class="sello-categoria">${s.categoria}</div>
+        <div class="sello-desc">${s.descripcion}</div>
+        <div class="sello-progreso">
+          <div class="sello-progreso-barra">
+            <div class="sello-progreso-fill" style="width: ${progreso}%"></div>
+          </div>
+          <div class="sello-progreso-texto">${progreso}%</div>
+        </div>
       </div>
-      <div class="sello-progreso-texto">${progreso}%</div>
-    </div>
-  </div>
-`;
-            })
-            .join("");
-        }
+    `;
+            }
+          })
+          .join("");
       }
 
       /* ============================================
@@ -2516,6 +2744,31 @@
           const ratio = datos.totalIngresosMonto / datos.totalGastosMonto;
           return Math.min(99, ratio * 100);
         }
+
+        // Sellos de Vida
+        if (id === "vida_primer_paso") {
+          const total =
+            datos.totalGastos + datos.totalHoras + datos.totalIngresos;
+          return total >= 1 ? 100 : 0;
+        }
+        if (id === "vida_multiproyecto") return pct(datos.proyectosActivos, 3);
+        if (id === "vida_diversificado") return pct(datos.proyectosActivos, 5);
+        if (id === "vida_equilibrio") return pct(datos.proyectosMes, 4);
+        if (id === "vida_tiempo_consciente") return pct(datos.totalHoras, 100);
+        if (id === "vida_mil_horas") return pct(datos.totalHoras, 1000);
+        if (id === "vida_diez_mil_horas") return pct(datos.totalHoras, 10000);
+        if (id === "vida_racha_30") return pct(datos.racha, 30);
+        if (id === "vida_racha_90") return pct(datos.racha, 90);
+        if (id === "vida_racha_365") return pct(datos.racha, 365);
+        if (id === "vida_balance_mes") {
+          if (datos.totalIngresosMonto < 1 || datos.totalGastosMonto < 1)
+            return 0;
+          if (datos.balanceMes >= 0) return 100;
+          const ratio = datos.totalIngresosMonto / datos.totalGastosMonto;
+          return Math.min(99, ratio * 100);
+        }
+        if (id === "vida_diversificacion_ingresos")
+          return pct(datos.proyectosConIngresoMes, 3);
 
         return 0;
       }
