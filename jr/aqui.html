@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#18232d">
+  <meta name="description" content="JR | Soluciones digitales para organizaciones que quieren trabajar mejor. Sistemas, datos, automatización e inteligencia de negocio.">
+  <title>JR | Sistemas que hacen que la información trabaje</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1117;
+      --bg2:#111a22;
+      --panel:rgba(255,255,255,.055);
+      --panel2:rgba(255,255,255,.075);
+      --line:rgba(255,255,255,.12);
+      --text:#edf3f7;
+      --muted:#a9b6c0;
+      --soft:#d3dde3;
+      --accent:#72b8d6;
+      --accent2:#b8dced;
+      --warm:#d4a66a;
+      --max:1180px;
+      --radius:26px;
+      --shadow:0 24px 70px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;background:
+      radial-gradient(circle at 80% 0%,rgba(82,139,166,.13),transparent 30rem),
+      radial-gradient(circle at 10% 30%,rgba(255,255,255,.035),transparent 25rem),
+      var(--bg);
+      color:var(--text);font-family:"DM Sans",system-ui,sans-serif;line-height:1.65;
+    }
+    body:before{
+      content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+      background:linear-gradient(115deg,transparent 0 48%,rgba(255,255,255,.018) 48.2% 48.4%,transparent 48.6%);
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,textarea{font:inherit}
+    .wrap{width:min(calc(100% - 40px),var(--max));margin:auto}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:9px;color:var(--accent2);
+      font-size:.76rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    }
+    .eyebrow:before{content:"";width:24px;height:1px;background:var(--accent)}
+    h1,h2,h3{font-family:Manrope,sans-serif;line-height:1.08;margin:0}
+    h1{font-size:clamp(3rem,7vw,6.8rem);letter-spacing:-.065em;max-width:1050px}
+    h2{font-size:clamp(2rem,4vw,3.8rem);letter-spacing:-.045em}
+    h3{font-size:1.25rem;letter-spacing:-.02em}
+    p{margin:0;color:var(--muted)}
+    .lead{font-size:clamp(1.05rem,1.7vw,1.28rem);max-width:760px}
+    .nav{
+      position:sticky;top:0;z-index:20;
+      background:rgba(11,17,23,.78);backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .navin{height:72px;display:flex;align-items:center;justify-content:space-between;gap:25px}
+    .brand{display:flex;align-items:center;gap:12px;font-family:Manrope;font-weight:800;letter-spacing:-.03em}
+    .mark{width:38px;height:38px;border:1px solid var(--line);border-radius:12px;display:grid;place-items:center;background:var(--panel)}
+    .mark span{font-size:.82rem}
+    .links{display:flex;gap:23px;color:#b8c4cc;font-size:.88rem}
+    .links a:hover{color:white}
+    .navcta,.btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:9px;
+      min-height:46px;padding:0 19px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06);color:var(--text);font-weight:700;cursor:pointer;
+      transition:.2s ease;
+    }
+    .navcta:hover,.btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.1)}
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#091118}
+    .btn.primary:hover{background:#8bc7df}
+    .menu{display:none;background:none;border:0;color:white;font-size:1.4rem}
+    section{padding:120px 0;scroll-margin-top:70px}
+    .hero{padding:120px 0 105px;min-height:calc(100vh - 72px);display:flex;align-items:center}
+    .hero-grid{display:grid;grid-template-columns:1.25fr .55fr;gap:70px;align-items:end}
+    .hero h1{margin:24px 0 28px}
+    .hero h1 em{font-style:normal;color:var(--accent2)}
+    .hero-copy{font-size:1.15rem;max-width:690px}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+    .micro{margin-top:24px;font-size:.86rem;color:#8796a1;max-width:650px}
+    .hero-side{border-left:1px solid var(--line);padding-left:30px}
+    .hero-side strong{display:block;font-family:Manrope;font-size:1.55rem;line-height:1.2;margin-bottom:10px}
+    .hero-side p{font-size:.92rem}
+    .tagrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+    .tag{padding:7px 11px;border:1px solid var(--line);border-radius:999px;color:#bac7cf;font-size:.78rem}
+    .darkband{background:rgba(255,255,255,.025);border-block:1px solid rgba(255,255,255,.06)}
+    .section-head{display:grid;grid-template-columns:.75fr 1.25fr;gap:50px;margin-bottom:55px}
+    .section-head h2{margin-top:16px}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{
+      padding:30px;border:1px solid var(--line);border-radius:var(--radius);
+      background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
+      box-shadow:var(--shadow);
+    }
+    .card .num{font-family:Manrope;color:var(--accent);font-size:.78rem;font-weight:800;letter-spacing:.12em}
+    .card h3{margin:24px 0 12px}
+    .card p{font-size:.94rem}
+    .quote{
+      margin-top:30px;padding:25px 28px;border-left:2px solid var(--accent);
+      background:rgba(255,255,255,.025);border-radius:0 16px 16px 0;
+      color:#dfe8ed;font-family:Manrope;font-size:1.1rem;
+    }
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:24px;overflow:hidden}
+    .step{background:#101820;padding:30px;min-height:235px}
+    .step .n{font-family:Manrope;font-size:2rem;color:rgba(255,255,255,.2)}
+    .step h3{margin:25px 0 10px}
+    .services{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .service{padding:30px;border:1px solid var(--line);border-radius:24px;background:var(--panel)}
+    .service h3{margin-bottom:10px}
+    .service ul{padding:0;margin:18px 0 0;list-style:none;color:var(--muted);font-size:.9rem}
+    .service li{padding:7px 0;border-top:1px solid rgba(255,255,255,.07)}
+    .service li:first-child{border-top:0}
+    .toolkit{display:flex;flex-wrap:wrap;gap:9px;margin-top:28px}
+    .tool{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.055);border:1px solid var(--line);font-size:.78rem;color:#b8c5cd}
+    .demo{display:grid;grid-template-columns:.7fr 1.3fr;gap:18px}
+    .demo-panel{border:1px solid var(--line);border-radius:24px;background:var(--panel);padding:28px}
+    .demo-panel label{display:block;font-size:.76rem;color:#9eabb4;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
+    .demo-panel input{width:100%;border:1px solid var(--line);background:rgba(0,0,0,.16);color:white;padding:12px 13px;border-radius:12px;outline:0}
+    .demo-panel input:focus{border-color:var(--accent)}
+    .demo-result{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+    .metric{padding:22px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.035)}
+    .metric b{display:block;font-family:Manrope;font-size:1.6rem;margin-bottom:3px}
+    .metric span{font-size:.75rem;color:#9eabb4}
+    .demo-note{font-size:.76rem;margin-top:18px;color:#82919b}
+    .cases{display:grid;gap:16px}
+    .case{display:grid;grid-template-columns:.34fr 1fr;gap:35px;padding:32px;border:1px solid var(--line);border-radius:24px;background:var(--panel)}
+    .case .type{color:var(--accent);font-size:.75rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+    .case h3{margin:9px 0 12px}
+    .casegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+    .casegrid div{padding:15px;background:rgba(255,255,255,.035);border-radius:14px}
+    .casegrid strong{display:block;font-size:.75rem;color:#d9e3e8;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em}
+    .lab{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px}
+    .lab-controls,.lab-chart{border:1px solid var(--line);border-radius:24px;background:var(--panel);padding:28px}
+    .range{width:100%}
+    .bars{height:250px;display:flex;align-items:end;gap:8px;margin-top:25px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+    .bar{flex:1;min-width:8px;border-radius:5px 5px 0 0;background:linear-gradient(to top,var(--accent),rgba(114,184,214,.2));height:30%}
+    .arch{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:stretch;margin-top:35px}
+    .arch div{min-height:110px;padding:17px;border:1px solid var(--line);border-radius:16px;background:var(--panel);font-size:.78rem}
+    .arch strong{display:block;color:var(--accent2);margin-bottom:8px;font-size:.75rem}
+    .not{margin-top:20px;padding:20px;border:1px solid rgba(212,166,106,.35);background:rgba(212,166,106,.06);border-radius:18px}
+    .not strong{color:#e5c08f}
+    .work{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .work div{padding:23px 18px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+    .work b{display:block;color:var(--accent);font-size:.75rem;margin-bottom:12px}
+    .money{display:grid;grid-template-columns:1fr .75fr;gap:20px;align-items:stretch}
+    .money-main,.money-side{border:1px solid var(--line);border-radius:26px;padding:36px;background:var(--panel)}
+    .money-main h2{margin:15px 0}
+    .money-side ul{list-style:none;padding:0;margin:0}
+    .money-side li{padding:13px 0;border-top:1px solid var(--line);color:var(--muted)}
+    .money-side li:first-child{border-top:0}
+    .about{display:grid;grid-template-columns:.7fr 1.3fr;gap:70px}
+    .about h2{margin:15px 0 22px}
+    .about p+p{margin-top:18px}
+    .principles{display:grid;gap:12px}
+    .principle{padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
+    .principle b{display:block;margin-bottom:5px;color:#e2edf2}
+    .contact{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px}
+    form{display:grid;gap:13px}
+    .field{display:grid;gap:7px}
+    .field label{font-size:.77rem;color:#9aa8b1}
+    .field input,.field textarea{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.045);color:white;border-radius:13px;padding:12px 13px;outline:0}
+    .field textarea{min-height:145px;resize:vertical}
+    .field input:focus,.field textarea:focus{border-color:var(--accent)}
+    .formstatus{font-size:.82rem;color:var(--accent2);min-height:22px}
+    footer{padding:45px 0;border-top:1px solid var(--line);background:#080d12}
+    .foot{display:flex;justify-content:space-between;gap:30px;align-items:end}
+    .foot p{font-size:.82rem}
+    .footnav{display:flex;gap:18px;color:#8e9ba5;font-size:.8rem}
+    .reveal{opacity:0;transform:translateY(14px);transition:.7s ease}
+    .reveal.show{opacity:1;transform:none}
+    @media(max-width:900px){
+      .links{display:none}.menu{display:block}.navcta{display:none}
+      .hero-grid,.section-head,.demo,.lab,.money,.about,.contact{grid-template-columns:1fr}
+      .hero-side{border-left:0;border-top:1px solid var(--line);padding:25px 0 0}
+      .cards,.services{grid-template-columns:1fr}
+      .steps{grid-template-columns:1fr 1fr}
+      .arch{grid-template-columns:repeat(2,1fr)}
+      .work{grid-template-columns:1fr 1fr}
+      .case{grid-template-columns:1fr}
+    }
+    @media(max-width:560px){
+      .wrap{width:min(calc(100% - 26px),var(--max))}
+      section{padding:82px 0}
+      .hero{padding:85px 0}
+      h1{font-size:clamp(2.65rem,14vw,4rem)}
+      .steps,.demo-result,.casegrid,.work{grid-template-columns:1fr}
+      .arch{grid-template-columns:1fr}
+      .foot{align-items:start;flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap navin">
+    <a class="brand" href="#inicio" aria-label="JR inicio">
+      <span class="mark"><span>JR</span></span>
+      <span>Ricardo Ramírez</span>
+    </a>
+    <nav class="links" aria-label="Navegación principal">
+      <a href="#problema">Problemas</a>
+      <a href="#metodo">Método</a>
+      <a href="#casos">Casos</a>
+      <a href="#laboratorio">Datos</a>
+      <a href="#persona">Ricardo</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+    <a class="navcta" href="#contacto">Cuéntame tu problema</a>
+    <button class="menu" id="menuBtn" aria-label="Abrir menú">☰</button>
+  </div>
+  <div id="mobileNav" style="display:none;border-top:1px solid var(--line);padding:15px 20px">
+    <div class="wrap" style="display:grid;gap:12px">
+      <a href="#problema">Problemas</a><a href="#metodo">Método</a><a href="#casos">Casos</a>
+      <a href="#laboratorio">Datos</a><a href="#persona">Ricardo</a><a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</header>
+
+<main id="inicio">
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal">
+      <span class="eyebrow">JR · Soluciones digitales</span>
+      <h1>Hago que la información <em>deje de depender de una persona.</em></h1>
+      <p class="lead hero-copy">
+        Diseño sistemas para organizaciones que tienen información, procesos y trabajo administrativo,
+        pero todavía dependen demasiado de Excel, correos, WhatsApp o de la memoria de determinadas personas.
+      </p>
+      <div class="tagrow">
+        <span class="tag">Datos</span><span class="tag">Sistemas</span><span class="tag">Automatización</span><span class="tag">Inteligencia de negocio</span>
+      </div>
+      <div class="actions">
+        <a class="btn primary" href="#metodo">Ver cómo trabajo</a>
+        <a class="btn" href="#contacto">Cuéntame tu problema</a>
+      </div>
+      <p class="micro">No desarrollo software por desarrollar software. Diseño sistemas para que las cosas funcionen mejor cuando yo ya no estoy.</p>
+    </div>
+    <aside class="hero-side reveal">
+      <strong>El objetivo no es crear dependencia.</strong>
+      <p>El objetivo es convertir conocimiento disperso en una estructura que otras personas puedan entender, utilizar y continuar.</p>
+    </aside>
+  </div>
+</section>
+
+<section id="problema" class="darkband">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">01 · El problema</span><h2>Quizá tu problema no sea tecnológico.</h2></div>
+      <p class="lead">Muchas organizaciones ya tienen herramientas. Lo que falta es una estructura que conecte personas, procesos, datos y decisiones.</p>
+    </div>
+    <div class="cards">
+      <article class="card reveal"><span class="num">01</span><h3>Información dispersa</h3><p>Los datos viven en hojas de cálculo, archivos, correos, mensajes y sistemas que no hablan entre sí.</p></article>
+      <article class="card reveal"><span class="num">02</span><h3>Procesos dependientes</h3><p>Una persona sabe cómo hacerlo, pero cuando no está, el proceso se vuelve lento, frágil o imposible de continuar.</p></article>
+      <article class="card reveal"><span class="num">03</span><h3>Información sin decisión</h3><p>Se captura muchísimo, pero la organización tarda demasiado en convertir esa información en algo útil.</p></article>
+    </div>
+    <div class="quote reveal">Ahí es donde entro yo: no para añadir otra herramienta, sino para encontrar la estructura que hace que las herramientas tengan sentido.</div>
+  </div>
+</section>
+
+<section id="metodo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">02 · Método</span><h2>Primero entiendo. Después construyo.</h2></div>
+      <p class="lead">La tecnología aparece después de comprender el problema. El proyecto termina cuando el conocimiento deja de estar en mi cabeza y pasa a estar en la organización.</p>
+    </div>
+    <div class="steps">
+      <article class="step reveal"><span class="n">01</span><h3>Diagnóstico</h3><p>Entender qué ocurre hoy, quién participa, qué información existe y dónde se pierde tiempo.</p></article>
+      <article class="step reveal"><span class="n">02</span><h3>Estructura</h3><p>Convertir el proceso real en reglas, datos, responsabilidades, flujos y puntos de decisión.</p></article>
+      <article class="step reveal"><span class="n">03</span><h3>Construcción</h3><p>Crear la solución adecuada: sistema, automatización, tablero, integración o una combinación.</p></article>
+      <article class="step reveal"><span class="n">04</span><h3>Transferencia</h3><p>Documentar, explicar, probar y dejar la operación preparada para continuar sin el creador.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="servicios" class="darkband">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">03 · Soluciones</span><h2>Construyo según el resultado que necesita la organización.</h2></div>
+      <p class="lead">La herramienta no es el producto. Es el medio para conseguir un proceso más claro, información más confiable y decisiones más rápidas.</p>
+    </div>
+    <div class="services">
+      <article class="service reveal"><h3>Sistemas administrativos</h3><p>Digitalización de procesos que todavía dependen de archivos, capturas repetidas o seguimiento manual.</p><ul><li>Captura y validación</li><li>Usuarios y permisos</li><li>Catálogos y trazabilidad</li><li>Flujos de trabajo</li></ul></article>
+      <article class="service reveal"><h3>Datos e inteligencia de negocio</h3><p>Transformar datos operativos en información que pueda ser consultada, comparada y utilizada.</p><ul><li>Modelado de datos</li><li>Indicadores</li><li>Dashboards</li><li>Reportes automatizados</li></ul></article>
+      <article class="service reveal"><h3>Automatización</h3><p>Eliminar tareas repetitivas para que las personas puedan concentrarse en aquello que realmente requiere criterio.</p><ul><li>Integraciones</li><li>Procesamiento automático</li><li>Notificaciones</li><li>Generación de documentos</li></ul></article>
+      <article class="service reveal"><h3>Sistemas personalizados</h3><p>Cuando el proceso es suficientemente particular como para que una solución genérica no resuelva el problema.</p><ul><li>Aplicaciones web</li><li>Bases de datos</li><li>APIs</li><li>Arquitecturas híbridas</li></ul></article>
+    </div>
+    <div class="toolkit reveal">
+      <span class="tool">JavaScript</span><span class="tool">HTML / CSS</span><span class="tool">Supabase</span><span class="tool">PostgreSQL</span><span class="tool">Google Apps Script</span><span class="tool">BigQuery</span><span class="tool">APIs</span><span class="tool">GitHub</span>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">04 · Demostración</span><h2>Mira cómo piensa un sistema.</h2></div>
+      <p class="lead">Una captura puede convertirse en estructura, indicadores y decisiones. Esta pequeña demostración utiliza datos ficticios para mostrar el principio.</p>
+    </div>
+    <div class="demo">
+      <div class="demo-panel reveal">
+        <label for="demoInput">Introduce un volumen</label>
+        <input id="demoInput" type="number" min="1" max="99999" value="120">
+        <div class="actions"><button class="btn primary" id="demoBtn">Procesar</button></div>
+        <p class="demo-note">No se guarda información. Es una demostración local del flujo captura → estructura → información.</p>
+      </div>
+      <div class="demo-panel reveal">
+        <span class="eyebrow">Resultado</span>
+        <div class="demo-result">
+          <div class="metric"><b id="m1">120</b><span>Registros recibidos</span></div>
+          <div class="metric"><b id="m2">108</b><span>Registros válidos</span></div>
+          <div class="metric"><b id="m3">90%</b><span>Calidad inicial</span></div>
+        </div>
+        <div class="quote" style="margin-top:18px">Capturar una vez. Estructurar una vez. Utilizar muchas veces.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="casos" class="darkband">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">05 · Casos</span><h2>La tecnología se entiende mejor cuando resuelve algo real.</h2></div>
+      <p class="lead">Estos casos representan líneas de trabajo desarrolladas alrededor de procesos administrativos, datos y plataformas digitales.</p>
+    </div>
+    <div class="cases">
+      <article class="case reveal">
+        <div><span class="type">Salud · Información</span><h3>Cuando los datos existen, pero todavía no trabajan.</h3><p>Un entorno hospitalario con información operativa que necesitaba estructura, consulta e indicadores.</p></div>
+        <div class="casegrid"><div><strong>Problema</strong><p>Procesos y fuentes de información distribuidos.</p></div><div><strong>Intervención</strong><p>Estructuración de datos, herramientas de captura y visualización.</p></div><div><strong>Principio</strong><p>La información debe poder continuar aunque cambie la persona que la administra.</p></div></div>
+      </article>
+      <article class="case reveal">
+        <div><span class="type">Educación · Operación</span><h3>Convertir un procedimiento en un sistema repetible.</h3><p>Procesos donde el conocimiento estaba principalmente en las personas que los ejecutaban.</p></div>
+        <div class="casegrid"><div><strong>Problema</strong><p>Seguimiento manual y conocimiento difícil de transferir.</p></div><div><strong>Intervención</strong><p>Documentación, estructura de datos y automatización progresiva.</p></div><div><strong>Principio</strong><p>Documentar no es burocracia: es conservar capacidad operativa.</p></div></div>
+      </article>
+      <article class="case reveal">
+        <div><span class="type">El Barrio · Plataforma</span><h3>Una idea local convertida en infraestructura digital.</h3><p>Una plataforma para conectar información, personas y servicios dentro de una comunidad.</p></div>
+        <div class="casegrid"><div><strong>Problema</strong><p>Información local dispersa y difícil de encontrar.</p></div><div><strong>Intervención</strong><p>Diseño de plataforma, datos, usuarios, publicaciones y notificaciones.</p></div><div><strong>Principio</strong><p>Una plataforma útil empieza por entender el comportamiento real de las personas.</p></div></div>
+      </article>
+    </div>
+    <div class="quote reveal">No muestro proyectos para presumir tecnología. Los muestro para que puedas comprobar cómo pienso.</div>
+  </div>
+</section>
+
+<section id="laboratorio">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">06 · Laboratorio</span><h2>Los datos también sirven para hacer preguntas.</h2></div>
+      <p class="lead">Este laboratorio genera un escenario simulado. No representa tráfico real ni estadísticas de visitantes. Su función es mostrar cómo puede pensarse una situación antes de conectar datos reales.</p>
+    </div>
+    <div class="lab">
+      <div class="lab-controls reveal">
+        <h3>Escenario simulado</h3>
+        <p style="margin-top:10px">Modifica la intensidad y observa cómo cambia la serie.</p>
+        <label style="display:block;margin-top:28px;color:#9eabb4;font-size:.78rem" for="intensity">Intensidad</label>
+        <input class="range" id="intensity" type="range" min="10" max="100" value="55">
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:.8rem;color:#8b99a2"><span>10</span><b id="intensityValue">55</b><span>100</span></div>
+        <div class="not"><strong>Dato importante</strong><p style="margin-top:5px">Una visualización convincente no sustituye a una fuente confiable. Primero se define qué significa cada dato.</p></div>
+      </div>
+      <div class="lab-chart reveal">
+        <span class="eyebrow">Serie de demostración</span>
+        <div class="bars" id="bars"></div>
+        <p class="demo-note">Datos generados localmente para demostración. No son métricas reales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="arquitectura" class="darkband">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">07 · Arquitectura</span><h2>La tecnología está detrás de la experiencia.</h2></div>
+      <p class="lead">Cuando el problema está bien entendido, la arquitectura se vuelve una consecuencia. Personas, procesos y datos deben formar una misma estructura.</p>
+    </div>
+    <div class="arch reveal">
+      <div><strong>01 · PERSONAS</strong>Quién utiliza y mantiene el sistema.</div>
+      <div><strong>02 · INTERFAZ</strong>Cómo interactúan las personas.</div>
+      <div><strong>03 · PROCESOS</strong>Qué debe ocurrir y bajo qué reglas.</div>
+      <div><strong>04 · DATOS</strong>Qué información existe y cómo se relaciona.</div>
+      <div><strong>05 · AUTOMATIZACIÓN</strong>Qué puede ocurrir sin intervención manual.</div>
+      <div><strong>06 · INDICADORES</strong>Qué necesita saber la organización.</div>
+      <div><strong>07 · DECISIONES</strong>Qué acciones permite tomar la información.</div>
+    </div>
+  </div>
+</section>
+
+<section id="criterio">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">08 · Criterio</span><h2>No todo necesita una aplicación.</h2></div>
+      <p class="lead">A veces la solución correcta es rediseñar un proceso. Otras veces basta con ordenar los datos, automatizar una tarea o crear un indicador.</p>
+    </div>
+    <div class="not reveal"><strong>Primero encuentro la solución adecuada. Después decido qué tecnología utilizar.</strong><p style="margin-top:8px">Si una hoja bien diseñada resuelve el problema, no necesita convertirse en una plataforma de 40 pantallas. Si el proceso exige trazabilidad, usuarios y reglas, entonces sí construimos el sistema.</p></div>
+  </div>
+</section>
+
+<section id="trabajo" class="darkband">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">09 · Colaboración</span><h2>Una conversación antes de una cotización.</h2></div>
+      <p class="lead">No necesitas llegar con una solución técnica. Necesitas poder explicar qué está pasando y qué te gustaría que sucediera.</p>
+    </div>
+    <div class="work">
+      <div class="reveal"><b>01</b>Me cuentas el problema.</div>
+      <div class="reveal"><b>02</b>Revisamos el proceso.</div>
+      <div class="reveal"><b>03</b>Propongo una solución.</div>
+      <div class="reveal"><b>04</b>Presento alcance, tiempos y costo.</div>
+      <div class="reveal"><b>05</b>Construimos por etapas y validamos.</div>
+    </div>
+  </div>
+</section>
+
+<section id="inversion">
+  <div class="wrap money">
+    <div class="money-main reveal">
+      <span class="eyebrow">10 · Inversión</span>
+      <h2>La primera conversación no tiene costo.</h2>
+      <p class="lead">Primero necesitamos saber si existe un problema que tenga sentido resolver juntos. Si lo tiene, recibirás una propuesta clara antes de comenzar.</p>
+      <div class="actions"><a class="btn primary" href="#contacto">Explorar una solución</a></div>
+    </div>
+    <div class="money-side reveal">
+      <ul>
+        <li><strong>Alcance</strong><br>Qué se va a resolver.</li>
+        <li><strong>Tiempo</strong><br>Qué etapas tendrá el trabajo.</li>
+        <li><strong>Costo</strong><br>Qué inversión requiere antes de iniciar.</li>
+        <li><strong>Transferencia</strong><br>Qué quedará documentado y operativo.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="persona" class="darkband">
+  <div class="wrap about">
+    <div class="reveal">
+      <span class="eyebrow">11 · La persona</span>
+      <h2>Soy Ricardo.</h2>
+      <p class="lead">Me gusta entender cómo funcionan las cosas.</p>
+    </div>
+    <div class="reveal">
+      <p>Mi formación combina administración financiera y sistemas, con años de trabajo alrededor de procesos administrativos, información, datos y herramientas digitales.</p>
+      <p>Con el tiempo descubrí que mi interés no estaba solamente en programar. Estaba en entender por qué un proceso funciona de una determinada manera y qué estructura podría hacerlo más sencillo, medible y sostenible.</p>
+      <p>Muchas organizaciones no necesitan más información. Necesitan que la información que ya tienen pueda trabajar para ellas.</p>
+      <p><strong style="color:#e8f0f4">Mi objetivo no es que dependas de mí. Es que después de trabajar conmigo dependas menos de cualquiera.</strong></p>
+    </div>
+  </div>
+</section>
+
+<section id="filosofia">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div><span class="eyebrow">12 · Una idea guía</span><h2>El conocimiento que sólo vive en una persona es un riesgo.</h2></div>
+      <p class="lead">La infraestructura empieza cuando una organización puede conservar y reutilizar lo que antes sólo sabía alguien.</p>
+    </div>
+    <div class="principles">
+      <div class="principle reveal"><b>Documentarlo</b><p>Conservar el conocimiento para que no desaparezca con una persona.</p></div>
+      <div class="principle reveal"><b>Estructurarlo</b><p>Convertir conocimiento disperso en algo que otros puedan utilizar.</p></div>
+      <div class="principle reveal"><b>Automatizarlo</b><p>Hacer sostenible aquello que no necesita criterio humano en cada repetición.</p></div>
+      <div class="principle reveal"><b>Compartirlo</b><p>Multiplicar la capacidad de la organización en lugar de concentrarla.</p></div>
+    </div>
+    <div class="quote reveal">El mejor sistema que puedo construir es uno que funciona correctamente incluso cuando su creador ya no está en la habitación.</div>
+  </div>
+</section>
+
+<section id="contacto" class="darkband">
+  <div class="wrap contact">
+    <div class="reveal">
+      <span class="eyebrow">13 · Contacto</span>
+      <h2 style="margin:16px 0 20px">Cuéntame qué proceso te está quitando tiempo.</h2>
+      <p class="lead">No necesitas saber qué tecnología necesitas. Para eso estoy yo.</p>
+      <div class="quote">Una conversación puede empezar con algo tan sencillo como: “Actualmente lo hacemos así, pero ya no está funcionando.”</div>
+    </div>
+    <div class="reveal">
+      <form id="contactForm">
+        <div class="field"><label for="name">Nombre</label><input id="name" required autocomplete="name"></div>
+        <div class="field"><label for="org">Organización</label><input id="org" autocomplete="organization"></div>
+        <div class="field"><label for="process">¿Qué proceso quieres mejorar?</label><textarea id="process" required></textarea></div>
+        <div class="field"><label for="current">¿Cómo lo hacen actualmente?</label><textarea id="current"></textarea></div>
+        <div class="field"><label for="desired">¿Qué te gustaría que sucediera en su lugar?</label><textarea id="desired"></textarea></div>
+        <div class="field"><label for="contact">Correo o medio de contacto</label><input id="contact" required></div>
+        <button class="btn primary" type="submit">Quiero explorar una solución</button>
+        <div class="formstatus" id="formStatus" aria-live="polite"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="brand"><span class="mark"><span>JR</span></span><span>Ricardo Ramírez</span></div>
+      <p style="margin-top:12px">Soluciones digitales para organizaciones que quieren trabajar mejor.</p>
+      <p style="margin-top:4px">Datos · Sistemas · Automatización · Inteligencia de negocio</p>
+    </div>
+    <div class="footnav"><a href="#inicio">Inicio</a><a href="#metodo">Método</a><a href="#contacto">Contacto</a></div>
+  </div>
+</footer>
+
+<script>
+  const menuBtn=document.getElementById('menuBtn');
+  const mobileNav=document.getElementById('mobileNav');
+  menuBtn?.addEventListener('click',()=>{
+    mobileNav.style.display=mobileNav.style.display==='none'?'block':'none';
+  });
+  mobileNav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>mobileNav.style.display='none'));
+
+  const revealObserver=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')});
+  },{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>revealObserver.observe(el));
+
+  const input=document.getElementById('demoInput');
+  const demoBtn=document.getElementById('demoBtn');
+  function processDemo(){
+    const n=Math.max(1,Math.min(99999,Number(input.value)||1));
+    const quality=Math.round(84+Math.random()*12);
+    document.getElementById('m1').textContent=n.toLocaleString('es-MX');
+    document.getElementById('m2').textContent=Math.round(n*quality/100).toLocaleString('es-MX');
+    document.getElementById('m3').textContent=quality+'%';
+  }
+  demoBtn?.addEventListener('click',processDemo);
+
+  const intensity=document.getElementById('intensity');
+  const intensityValue=document.getElementById('intensityValue');
+  const bars=document.getElementById('bars');
+  function drawBars(){
+    const v=Number(intensity.value);
+    intensityValue.textContent=v;
+    bars.innerHTML='';
+    for(let i=0;i<24;i++){
+      const b=document.createElement('div');
+      b.className='bar';
+      const wave=35+Math.sin(i*.72)*18;
+      const noise=Math.random()*25;
+      b.style.height=Math.max(8,Math.min(98,(wave+noise)*v/65))+'%';
+      bars.appendChild(b);
+    }
+  }
+  intensity?.addEventListener('input',drawBars);
+  drawBars();
+
+  document.getElementById('contactForm')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const status=document.getElementById('formStatus');
+    status.textContent='Formulario preparado. En una siguiente etapa podemos conectarlo al canal de contacto que prefieras.';
+  });
+</script>
+</body>
+</html>
