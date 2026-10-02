@@ -329,7 +329,7 @@
     </div>
     <div class="cases">
       <article class="case reveal">
-        <div><span class="type">Salud · Información</span><h3>Cuando los datos existen, pero todavía no trabajan.</h3><p>Un entorno hospitalario con información operativa que necesitaba estructura, consulta e indicadores.</p></div>
+        <div><span class="type">Salud · Información</span><h3>Cuando los datos existen, pero todavía no trabajan.</h3><p>Un entorno hospitalario con información operativa que necesitaba estructura, consulta e indicadores.</p><div class="actions"><a class="btn" href="https://estadisticas-flax.vercel.app/indicadores/inf25.html" target="_blank" rel="noopener">Ver indicadores</a><a class="btn" href="https://estadisticas-flax.vercel.app/guias.html" target="_blank" rel="noopener">Ver Cartillas</a></div></div>
         <div class="casegrid"><div><strong>Problema</strong><p>Procesos y fuentes de información distribuidos.</p></div><div><strong>Intervención</strong><p>Estructuración de datos, herramientas de captura y visualización.</p></div><div><strong>Principio</strong><p>La información debe poder continuar aunque cambie la persona que la administra.</p></div></div>
       </article>
       <article class="case reveal">
@@ -337,7 +337,7 @@
         <div class="casegrid"><div><strong>Problema</strong><p>Seguimiento manual y conocimiento difícil de transferir.</p></div><div><strong>Intervención</strong><p>Documentación, estructura de datos y automatización progresiva.</p></div><div><strong>Principio</strong><p>Documentar no es burocracia: es conservar capacidad operativa.</p></div></div>
       </article>
       <article class="case reveal">
-        <div><span class="type">El Barrio · Plataforma</span><h3>Una idea local convertida en infraestructura digital.</h3><p>Una plataforma para conectar información, personas y servicios dentro de una comunidad.</p></div>
+        <div><span class="type">El Barrio · Plataforma</span><h3>Una idea local convertida en infraestructura digital.</h3><p>Una plataforma para conectar información, personas y servicios dentro de una comunidad.</p><div class="actions"><a class="btn" href="https://elbarrio.me" target="_blank" rel="noopener">Ver El Barrio</a></div></div>
         <div class="casegrid"><div><strong>Problema</strong><p>Información local dispersa y difícil de encontrar.</p></div><div><strong>Intervención</strong><p>Diseño de plataforma, datos, usuarios, publicaciones y notificaciones.</p></div><div><strong>Principio</strong><p>Una plataforma útil empieza por entender el comportamiento real de las personas.</p></div></div>
       </article>
     </div>
@@ -543,10 +543,52 @@
   intensity?.addEventListener('input',drawBars);
   drawBars();
 
-  document.getElementById('contactForm')?.addEventListener('submit',e=>{
+  const CONTACT_SCRIPT_URL='https://script.google.com/macros/s/AKfycbw-YmdVdh_9ixKyqDJhMc56eNoogR4JhOzsAdNwIlQ1ZSUS_P9WpvDqH2wtlNlZFybJ/exec';
+  document.getElementById('contactForm')?.addEventListener('submit',async e=>{
     e.preventDefault();
+    const form=e.currentTarget;
     const status=document.getElementById('formStatus');
-    status.textContent='Formulario preparado. En una siguiente etapa podemos conectarlo al canal de contacto que prefieras.';
+    const button=form.querySelector('button[type="submit"]');
+    status.textContent='Enviando mensaje...';
+    button.disabled=true;
+    try{
+      const nombre=document.getElementById('name').value.trim();
+      const institucion=document.getElementById('org').value.trim();
+      const proceso=document.getElementById('process').value.trim();
+      const actual=document.getElementById('current').value.trim();
+      const deseado=document.getElementById('desired').value.trim();
+      const contacto=document.getElementById('contact').value.trim();
+      if(!nombre||!proceso||!contacto) throw new Error('Completa nombre, proceso y medio de contacto.');
+      const mensaje=[
+        'PROCESO QUE QUIERE MEJORAR:',proceso,
+        '',
+        'COMO LO HACE ACTUALMENTE:',actual||'No indicado',
+        '',
+        'RESULTADO DESEADO:',deseado||'No indicado'
+      ].join('\\n');
+      const params=new URLSearchParams({
+        nombre,
+        email:contacto,
+        institucion,
+        necesidad:proceso,
+        mensaje
+      });
+      const response=await fetch(CONTACT_SCRIPT_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:params.toString()
+      });
+      if(!response.ok) throw new Error('El servidor no respondió correctamente.');
+      const result=await response.json();
+      if(!result.success) throw new Error(result.error||'No fue posible registrar el mensaje.');
+      status.textContent='Mensaje enviado correctamente. Gracias por escribirme.';
+      form.reset();
+    }catch(error){
+      console.error('Error al enviar contacto:',error);
+      status.textContent=error.message||'No fue posible enviar el mensaje. Inténtalo nuevamente.';
+    }finally{
+      button.disabled=false;
+    }
   });
 </script>
 </body>
