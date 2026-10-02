@@ -1,0 +1,2610 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Dashboard económico en vivo con datos del Banco de México: dólar, inflación, tasas, CETES, noticias y recomendaciones financieras actualizadas.">
+    <meta name="keywords" content="dólar hoy, inflación México, CETES, Banxico, tipo de cambio, economía México">
+    <title>Jerónimo Ricardo Ramírez Torres| Soluciones Digitales Premium</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/jeronimoricardo/favicon-32x32.png">
+    <!--     <link rel="manifest" href="/site.webmanifest"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-blue: #2196f3;
+            --primary-green: #4caf50;
+            --primary-orange: #ff6f61;
+            --primary-yellow: #ffcc00;
+            --dark-bg: #0f172a;
+            --light-bg: #f8fafc;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--light-bg);
+            color: #333;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #677bed, #0672ba);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: var(--transition);
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        nav a:hover {
+            color: white;
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero {
+            padding: 12rem 2rem 8rem;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* 🔑 clave */
+            background:
+                radial-gradient(circle at 20% 80%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(76, 175, 80, 0.1) 0%, transparent 50%);
+        }
+
+        .hero h2 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #ffcc00, #ff6f61, #2196f3, #4caf50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: white;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+
+        /* === CONTROL BASE DE MENÚS === */
+        .desktop-nav {
+            display: flex;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(33, 150, 243, 0.4);
+        }
+
+        /* Grid Container */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 3.5rem;
+            color: var(--dark-bg);
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-green));
+            border-radius: 2px;
+        }
+
+        span {
+            color: var(--primary-green);
+            font-weight: 300;
+        }
+
+        /* Tile Grid */
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            /*             grid-auto-rows: 280px; */
+            grid-auto-rows: minmax(280px, auto);
+            gap: 1.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .tile {
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            /* justify-content: center; */
+            justify-content: flex-start;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .tile:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            z-index: -1;
+        }
+
+        .tile-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.2rem;
+            padding: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .tile h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .tile p {
+            color: #475569;
+            font-size: 1.2rem;
+            padding: 1rem;
+        }
+
+        /* Tile Sizes */
+        .tile-small {
+            grid-column: span 4;
+        }
+
+        .tile-medium {
+            grid-column: span 6;
+        }
+
+        .tile-large {
+            grid-column: span 8;
+        }
+
+        .tile-xlarge {
+            grid-column: span 12;
+        }
+
+        /* Tile Colors */
+        .tile-blue {
+            /*             border-top: 5px solid var(--primary-blue); */
+        }
+
+        .tile-blue .tile-icon {
+            color: var(--primary-blue);
+        }
+
+        .tile-green {
+            /*             border-top: 5px solid var(--primary-green);
+ */
+        }
+
+        .tile-green .tile-icon {
+            color: var(--primary-green);
+        }
+
+        .tile-orange {
+            /*             border-top: 5px solid var(--primary-orange);
+ */
+        }
+
+        .tile-orange .tile-icon {
+            color: var(--primary-orange);
+        }
+
+        .tile-yellow {
+            /*             border-top: 5px solid var(--primary-yellow);
+ */
+        }
+
+        .tile-yellow .tile-icon {
+            color: var(--primary-yellow);
+        }
+
+        .tile-purple {
+            /*             border-top: 5px solid #9c27b0;
+ */
+        }
+
+        .tile-purple .tile-icon {
+            color: #9c27b0;
+        }
+
+        /* Architecture Section */
+        .architecture-section {
+            background-color: #f1f5f9;
+            padding: 6rem 0;
+            margin: 4rem 0;
+        }
+
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .architecture-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .architecture-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .architecture-card h4 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        /* Pitch Section */
+        .pitch-section {
+            padding: 6rem 0;
+        }
+
+        .pitch-card {
+            background: linear-gradient(135deg, var(--dark-bg), #1e293b);
+            color: white;
+            border-radius: 20px;
+            padding: 3.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            margin-bottom: 4rem;
+        }
+
+        .pitch-card h3 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            background: linear-gradient(90deg, #ffcc00, #4caf50);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pitch-card p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: #e2e8f0;
+        }
+
+        .pitch-card ul {
+            margin-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .pitch-card li {
+            margin-bottom: 0.8rem;
+            color: #e2e8f0;
+        }
+
+        .highlight {
+            background: linear-gradient(90deg, rgba(255, 204, 0, 0.2), rgba(33, 150, 243, 0.2));
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Contact Form */
+        .contact-section {
+            padding: 6rem 0;
+            background-color: #f8fafc;
+        }
+
+        .contact-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .contact-info {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .contact-info h4 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--dark-bg);
+        }
+
+        .contact-info p {
+            margin-bottom: 1.5rem;
+            color: #475569;
+        }
+
+        .contact-details {
+            margin-top: 2rem;
+        }
+
+        .contact-details div {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .contact-details i {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+
+        input,
+        textarea {
+            padding: 1rem;
+            border: 1px solid white;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        #status {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--dark-bg), #1e293b);
+            color: white;
+            padding: 4rem 0 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, #ffcc00, #2196f3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-tagline {
+            color: white;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            margin-top: 3rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+
+            .tile-small,
+            .tile-medium,
+            .tile-large,
+            .tile-xlarge {
+                grid-column: span 6;
+            }
+
+            .hero h2 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+
+            /* Ocultar menú desktop */
+            .desktop-nav {
+                display: none;
+            }
+
+            /* Mostrar botón hamburguesa */
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            /* Menú móvil */
+            .mobile-menu {
+                display: none;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                width: 100%;
+                background-color: rgba(15, 23, 42, 0.98);
+                padding: 2rem;
+                z-index: 999;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+
+            .mobile-menu.active {
+                display: block;
+            }
+        }
+
+
+        .mobile-menu a {
+            display: block;
+            color: white;
+            /* ← AQUÍ ESTÁ CAMBIADO */
+            text-decoration: none;
+            padding: 1rem 0;
+            font-size: 1.2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .mobile-menu a:hover {
+            color: white !important;
+            padding-left: 1rem;
+            text-decoration: none !important;
+        }
+
+        .hero {
+            padding: 10rem 1.5rem 6rem;
+        }
+
+        .hero h2 {
+            font-size: 2.4rem;
+        }
+
+        @media (max-width: 768px) {
+            #demo.demo-visible {
+                padding-top: 4rem !important;
+                padding-bottom: 4rem !important;
+                margin-top: 2rem !important;
+                margin-bottom: 2rem !important;
+            }
+
+            #demo>.container {
+                padding: 0 1rem !important;
+            }
+
+            .tiles-grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            .tile-small,
+            .tile-medium,
+            .tile-large,
+            .tile-xlarge {
+                grid-column: span 12 !important;
+            }
+
+            .logo {
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+            }
+
+            .logo-text {
+                margin-top: 0.5rem;
+                font-size: 1rem;
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 1rem 1.5rem;
+            }
+
+            .hero {
+                padding: 9rem 1rem 5rem;
+            }
+
+            .hero h2 {
+                font-size: 1.8rem;
+            }
+
+            .cta-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+            }
+
+            .tile {
+                padding: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* REGLAS ESPECÍFICAS PARA FORZAR EL COLOR BLANCO */
+        #mobileMenu a {
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        #mobileMenu a:hover,
+        #mobileMenu a:focus,
+        #mobileMenu a:active {
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        /* Asegurar que el menú móvil herede el color blanco */
+        .mobile-menu a,
+        .mobile-menu a:link,
+        .mobile-menu a:visited,
+        .mobile-menu a:hover,
+        .mobile-menu a:active {
+            color: white !important;
+            text-decoration: none !important;
+        }
+
+        /* ========== ESTILOS PARA DEMO OCULTO/ANIMADO ========== */
+        #demo {
+            opacity: 0;
+            visibility: hidden;
+            max-height: 0;
+            overflow: hidden;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* padding: 6rem 1.2rem;
+            background-color: #3EE771;
+            border-radius: 20px;
+            border: 1px solid #d1fae5;
+            background-clip: padding-box, border-box;
+            background-origin: border-box;
+            background-image: linear-gradient(white, white), linear-gradient(135deg, #4ade80, #22c55e, #16a34a);
+            position: relative; */
+        }
+
+        #demo.demo-visible {
+            opacity: 1;
+            visibility: visible;
+            max-height: 5000px;
+            transform: translateY(0);
+            padding-top: 6rem !important;
+            padding-bottom: 6rem !important;
+            margin-top: 4rem !important;
+            margin-bottom: 4rem !important;
+        }
+
+        /* Asegurar que el contenedor interno mantenga su estructura */
+        #demo>.container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+        }
+
+        #demo.demo-visible>.container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Efecto de entrada para los elementos internos */
+        #demo.demo-visible .contact-container,
+        #demo.demo-visible .section-title,
+        #demo.demo-visible .hero-subtitle {
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        #demo.demo-visible .contact-info {
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.7s;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Resaltar enlace activo del menú */
+        nav a.active,
+        .mobile-menu a.active {
+            color: #4cc9f0 !important;
+        }
+
+        nav a.active::after,
+        .mobile-menu a.active::after {
+            width: 100% !important;
+            background: linear-gradient(90deg, #4cc9f0, #4361ee) !important;
+        }
+
+        /* Optimización para dispositivos táctiles */
+        @media (hover: none) and (pointer: coarse) {
+            #demo {
+                transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+        }
+
+        /* Prevenir parpadeo durante la transición */
+        #demo * {
+            will-change: transform, opacity;
+        }
+    </style>
+    <style>
+        .opiniones-section {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #f9fafc;
+        }
+
+        .opiniones-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .opiniones-header h2 {
+            font-size: 2.5rem;
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .opiniones-header p {
+            color: #718096;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .opiniones-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .opinion-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            /* border-left: 5px solid #4f46e5; */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .opinion-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .opinion-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            /* background: linear-gradient(to right, #4f46e5, #3b82f6); */
+        }
+
+        .cliente-nombre {
+            font-size: 1.4rem;
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-weight: 600;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .cliente-descripcion {
+            color: #4a5568;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .resultados-container {
+            background-color: #f7fafc;
+            border-radius: 8px;
+            padding: 18px;
+            margin-top: 10px;
+            /* border-left: 4px solid #c7d2fe; */
+        }
+
+        .resultado-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .resultado-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .check-icon {
+            color: #10b981;
+            margin-right: 10px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .sector-tag {
+            display: inline-block;
+            background-color: #e0e7ff;
+            color: #4f46e5;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 15px;
+            align-self: flex-start;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .opiniones-container {
+                grid-template-columns: 1fr;
+            }
+
+            .opiniones-header h2 {
+                font-size: 2rem;
+            }
+
+            .opinion-card {
+                padding: 25px;
+            }
+        }
+    </style>
+    <style>
+        /* SOLUCIÓN PARA EL ESPACIO BLANCO A LA DERECHA */
+        html,
+        body {
+            overflow-x: hidden !important;
+            max-width: 100vw !important;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 16px !important;
+                margin: 0 auto !important;
+            }
+
+            /* Asegura que las secciones ocupen todo el ancho */
+            section[id] {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Ajustes específicos para la cuadrícula de servicios */
+            .tiles-grid {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .tile {
+                width: 100% !important;
+                margin: 1rem 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a href="https://jeronimoricardo.vercel.app/"
+            style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+            <div class="logo">
+                <div class="logo-icon">JR</div>
+                <div class="logo-text">Jerónimo Ricardo Ramírez Torres</div>
+            </div>
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="#analytics-demo">Analíticas</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#arquitectura">Arquitectura</a>
+            <a href="#demo">Demo</a>
+            <a href="#casos">Casos de Éxito</a>
+            <a href="#contacto">Contacto</a>
+            <a href="https://jeronimoricardo.vercel.app/finanzas.html">Noticias Financieras</a>
+        </nav>
+
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#analytics-demo">Analíticas</a>
+            <a href="#servicios">Servicios</a>
+            <a href="#arquitectura">Arquitectura</a>
+            <a href="#demo">Demo</a>
+            <a href="#casos">Casos de Éxito</a>
+            <a href="#contacto">Contacto</a>
+            <a href="https://jeronimoricardo.vercel.app/finanzas.html">Noticias Financieras</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2><span class="hero-gradient">Soluciones Digitales Premium</span> para la Transformación Institucional</h2>
+        <p class="hero-subtitle">Conecto procesos, simplifico operaciones y entrego resultados con elegancia, precisión
+            y
+            eficiencia comprobada.</p>
+        <!-- Opción temporal -->
+        <div style="margin: 3rem 0;">
+            <a href="#demo" class="cta-button" style="display: inline-block;">Probar Demo</a>
+        </div>
+    </section>
+
+    <section id="analytics-demo" class="container" style="padding: 4rem 0; margin: 2rem auto; max-width: 1200px;">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h2 class="section-title">Transparencia en Tiempo Real</h2>
+            <p style="max-width: 700px; margin: 0 auto 1rem; color: #475569; font-size: 1.1rem;">
+                Cada sistema que desarrollo incluye panel de analíticas integrado. Así ves exactamente qué pasa en tu
+                institución.
+            </p>
+            <p style="color: #64748b; font-size: 0.95rem;">
+                <i class="fas fa-shield-alt"></i> Datos anónimos y seguros | <i class="fas fa-sync-alt"></i>
+                Actualización automática
+            </p>
+        </div>
+
+        <div class="contact-container" style="max-width: 1200px; margin: 0 auto;">
+            <!-- Columna 1: Métricas Principales -->
+            <div class="contact-info">
+                <h4><i class="fas fa-chart-line"></i> Dashboard de Visitas</h4>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                    Este panel muestra métricas reales de <strong>este sitio web</strong>. Así funcionarían tus
+                    sistemas.
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #3b82f6;" id="visitors-today">0</div>
+                        <div style="color: #64748b; font-size: 0.85rem;">Visitas Hoy</div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 1rem; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 1.8rem; font-weight: 800; color: #10b981;" id="pageviews-total">0</div>
+                        <div style="color: #64748b; font-size: 0.85rem;">Páginas Vistas</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem;">
+                    <h5 style="color: #475569; margin-bottom: 1rem; font-size: 1rem;">
+                        <i class="fas fa-map-marker-alt"></i> Ubicaciones (Top 3)
+                    </h5>
+                    <div id="locations-list" style="color: #64748b;">
+                        <p style="text-align: center; padding: 1rem;">Cargando datos...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna 2: Dispositivos y Comportamiento -->
+            <div class="contact-info">
+                <h4><i class="fas fa-desktop"></i> Dispositivos & Comportamiento</h4>
+
+                <div style="margin: 1.5rem 0;">
+                    <h5 style="color: #475569; margin-bottom: 0.75rem; font-size: 1rem;">
+                        <i class="fas fa-mobile-alt"></i> Tipos de Dispositivo
+                    </h5>
+                    <div id="devices-chart" style="margin-bottom: 2rem;">
+                        <p style="color: #94a3b8; text-align: center;">Cargando...</p>
+                    </div>
+                </div>
+
+                <div style="margin: 1.5rem 0;">
+                    <h5 style="color: #475569; margin-bottom: 0.75rem; font-size: 1rem;">
+                        <i class="fas fa-clock"></i> Interacción
+                    </h5>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div id="engagement-bar"
+                                    style="height: 100%; width: 65%; background: linear-gradient(90deg, #10b981, #3b82f6); border-radius: 4px;">
+                                </div>
+                            </div>
+                        </div>
+                        <div style="font-weight: 600; color: #475569;" id="engagement-percent">65%</div>
+                    </div>
+                    <p style="color: #64748b; font-size: 0.85rem;">
+                        <i class="fas fa-info-circle"></i> Porcentaje de usuarios que interactúan con formularios
+                    </p>
+                </div>
+
+                <div style="background: #f0f9ff; padding: 1rem; border-radius: 10px; margin-top: 2rem;">
+                    <p style="margin: 0; color: #0366d6; font-size: 0.9rem;">
+                        <i class="fas fa-lightbulb"></i> <strong>Estos datos serían de TU institución:</strong>
+                        visitas por departamento, formularios completados, tiempo promedio por proceso.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explicación técnica -->
+        <div
+            style="max-width: 800px; margin: 3rem auto 0; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                <div
+                    style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h5 style="margin: 0; color: var(--dark-bg);">¿Cómo funciona este panel?</h5>
+            </div>
+            <ol style="margin: 0; padding-left: 1.2rem; color: #475569;">
+                <li>Google Analytics 4 captura datos anónimos</li>
+                <li>Google Apps Script procesa y formatea la información</li>
+                <li>Frontend muestra visualizaciones en tiempo real</li>
+                <li>Todo se actualiza automáticamente cada hora</li>
+            </ol>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;"></div>
+            <div style="flex: 1; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <div style="color: #10b981; font-weight: 600;">Para Tú Institución</div>
+                <div style="font-size: 0.9rem; color: #64748b;">Dashboard personalizado con KPIs específicos</div>
+            </div>
+            <div style="flex: 1; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <div style="color: #f59e0b; font-weight: 600;">Acceso Controlado</div>
+                <div style="font-size: 0.9rem; color: #64748b;">Solo personal autorizado puede ver los datos</div>
+            </div>
+            <div style="flex: 1; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                <div style="color: #ef4444; font-weight: 600;">Alertas Inteligentes</div>
+                <div style="font-size: 0.9rem; color: #64748b;">Notificaciones automáticas de eventos importantes
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <section id="servicios" class="container">
+        <h2 class="section-title">Servicios Especializados</h2>
+
+        <div class="tiles-grid">
+            <!-- Tile 1 -->
+            <div class="tile tile-medium tile-blue">
+                <div class="tile-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h3>Sistemas Hospitalarios en Tiempo Real</h3>
+                <p>Plataformas de control clínico y estadístico: defunciones, nacimientos, egresos y urgencias. Conecta
+                    departamentos y asegura información confiable para la toma de decisiones estratégicas.</p>
+            </div>
+
+            <!-- Tile 2 -->
+            <div class="tile tile-small tile-green">
+                <div class="tile-icon">
+                    <i class="fas fa-university"></i>
+                </div>
+                <h3>Plataformas Académicas</h3>
+                <p>Desarrollo web especializado para instituciones educativas con temarios interconectados, documentos
+                    accesibles y herramientas interactivas de aprendizaje.</p>
+            </div>
+
+            <!-- Tile 3 -->
+            <div class="tile tile-small tile-orange">
+                <div class="tile-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <h3>Administración Gubernamental</h3>
+                <p>Soluciones digitales para gobiernos locales: formularios inteligentes, trazabilidad completa y
+                    eliminación de burocracia mediante automatización.</p>
+            </div>
+
+            <!-- Tile 4 -->
+            <div class="tile tile-large tile-purple">
+                <div class="tile-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Dashboards y Paneles de Control</h3>
+                <p>Visualización de datos en tiempo real con métricas clave, indicadores de desempeño y reportes
+                    automatizados para la gestión informada de cualquier institución.</p>
+            </div>
+
+            <!-- Tile 5 -->
+            <div class="tile tile-medium tile-yellow">
+                <div class="tile-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>Migración y Centralización de Datos</h3>
+                <p>Integración de sistemas fragmentados en una plataforma unificada, con historial completo y
+                    accesibilidad controlada según roles y responsabilidades.</p>
+            </div>
+
+            <!-- Tile 6 -->
+            <div class="tile tile-small tile-blue">
+                <div class="tile-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Aplicaciones Móviles</h3>
+                <p>Extensión de funcionalidades a dispositivos móviles con interfaces intuitivas, notificaciones push y
+                    acceso offline para trabajo en campo.</p>
+            </div>
+
+            <!-- Tile 7 -->
+            <div class="tile tile-xlarge tile-green">
+                <div class="tile-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Automatización de Procesos Institucionales</h3>
+                <p>Reducción de trabajo manual mediante flujos automatizados, triggers inteligentes y alertas
+                    programadas que optimizan el uso de recursos humanos y técnicos.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="arquitectura" class="architecture-section">
+        <div class="container">
+            <h2 class="section-title">Arquitectura Híbrida Premium</h2>
+            <p class="hero-subtitle" style="color: #475569; text-align: center; max-width: 900px; margin: 0 auto 3rem;">
+                Una combinación estratégica de tecnologías modernas para maximizar eficiencia y minimizar costos</p>
+
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><i class="fab fa-github" style="color: #333;"></i> Frontend en GitHub Pages</h4>
+                    <p>Despliegue gratuito y rápido con control de versiones, integración continua y diseño moderno con
+                        glassmorphism y animaciones fluidas.</p>
+                    <ul style="margin-top: 1rem; padding-left: 1.2rem;">
+                        <li>Cero costos de hosting</li>
+                        <li>Actualizaciones instantáneas</li>
+                        <li>Máxima seguridad y disponibilidad</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card">
+                    <h4><i class="fas fa-bridge" style="color: #34a853;"></i> Google Apps Script como Puente</h4>
+                    <p>API personalizada, autenticación ligera y automatización de procesos que conectan el frontend con
+                        bases de datos y servicios en la nube.</p>
+                    <ul style="margin-top: 1rem; padding-left: 1.2rem;">
+                        <li>Integración con servicios Google</li>
+                        <li>Automatización sin servidores</li>
+                        <li>Escalabilidad automática</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card">
+                    <h4><i class="fas fa-table" style="color: #0f9d58;"></i> Google Sheets como Base Operativa</h4>
+                    <p>Interfaz editable familiar, control granular de permisos y triggers automáticos para operaciones
+                        en tiempo real con trazabilidad completa.</p>
+                    <ul style="margin-top: 1rem; padding-left: 1.2rem;">
+                        <li>Interfaz intuitiva para usuarios</li>
+                        <li>Colaboración en tiempo real</li>
+                        <li>Historial de cambios detallado</li>
+                    </ul>
+                </div>
+
+                <div class="architecture-card">
+                    <h4><i class="fas fa-chart-bar" style="color: #4285f4;"></i> BigQuery como Motor Analítico</h4>
+                    <p>Consultas avanzadas sobre millones de registros, escalabilidad real y dashboards conectados para
+                        inteligencia de negocio en tiempo real.</p>
+                    <ul style="margin-top: 1rem; padding-left: 1.2rem;">
+                        <li>Análisis de datos a gran escala</li>
+                        <li>Consultas SQL complejas</li>
+                        <li>Integración con herramientas BI</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="demo" class="container">
+        <h2 class="section-title">Demo Interactiva: Sistema de Gestión</h2>
+        <p style="text-align: center; max-width: 800px; margin: 0 auto 3rem; color: #475569; font-size: 1.1rem;">
+            Experimenta cómo funciona mi arquitectura. Ingresa datos ficticios y observa cómo se procesan en tiempo
+            real.
+        </p>
+
+        <div class="contact-container" style="max-width: 1200px;">
+            <!-- Formulario de Demo -->
+            <div class="contact-info">
+                <h4>Ingresar Registro de Prueba</h4>
+                <p>Simula el ingreso de datos como en un sistema real. Los datos se guardarán en Google Sheets y
+                    aparecerán en el dashboard.</p>
+
+                <form id="demo-form" style="margin-top: 2rem;">
+                    <div class="form-group">
+                        <label for="demo-nombre">Nombre del Responsable *</label>
+                        <input type="text" id="demo-nombre" name="nombre" placeholder="Ej: Dr. Juan Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="demo-departamento">Departamento/Área *</label>
+                        <select id="demo-departamento" name="departamento" required
+                            style="padding: 1rem; border-radius: 10px; border: 1px solid #cbd5e1;">
+                            <option value="">Selecciona un departamento</option>
+                            <option value="Urgencias">Urgencias</option>
+                            <option value="Pediatría">Pediatría</option>
+                            <option value="Cirugía">Cirugía</option>
+                            <option value="Laboratorio">Laboratorio</option>
+                            <option value="Administración">Administración</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="demo-cantidad">Cantidad (ej: pacientes, insumos)</label>
+                        <input type="number" id="demo-cantidad" name="cantidad" placeholder="Ej: 15" min="1" max="1000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="demo-tipo">Tipo de Registro *</label>
+                        <select id="demo-tipo" name="tipo" required
+                            style="padding: 1rem; border-radius: 10px; border: 1px solid #cbd5e1;">
+                            <option value="">Selecciona un tipo</option>
+                            <option value="Ingreso">Ingreso</option>
+                            <option value="Egreso">Egreso</option>
+                            <option value="Consulta">Consulta</option>
+                            <option value="Procedimiento">Procedimiento</option>
+                            <option value="Reporte">Reporte</option>
+                        </select>
+                    </div>
+
+                    <div style="background-color: #e8f4fd; padding: 1rem; border-radius: 10px; margin: 1.5rem 0;">
+                        <p style="margin: 0; color: #0366d6; font-size: 0.9rem;">
+                            <i class="fas fa-info-circle"></i> Estos datos se guardarán en Google Sheets y podrás verlos
+                            actualizarse en tiempo real abajo.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="cta-button"
+                        style="width: 100%; background: linear-gradient(90deg, var(--primary-orange), var(--primary-yellow));">
+                        <i class="fas fa-paper-plane"></i> Guardar Registro de Prueba
+                    </button>
+                </form>
+                <p id="demo-status"
+                    style="margin-top: 1.5rem; border-radius: 6px; padding: 0.5rem; text-transform: uppercase; text-align: center; font-weight: 400;">
+                </p>
+            </div>
+
+            <!-- Dashboard en Tiempo Real -->
+            <div class="contact-info">
+                <h4>Dashboard en Tiempo Real</h4>
+                <p>Visualización inmediata de los datos ingresados. Actualización automática cada 10 segundos.</p>
+
+                <div id="dashboard" style="margin-top: 2rem;">
+                    <!-- Estadísticas Principales -->
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                        <div
+                            style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; color: var(--primary-blue);"
+                                id="total-registros">0</div>
+                            <div style="color: #64748b; font-size: 0.9rem;">Registros Totales</div>
+                        </div>
+                        <div
+                            style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 800; color: var(--primary-green);"
+                                id="cantidad-total">0</div>
+                            <div style="color: #64748b; font-size: 0.9rem;">Cantidad Acumulada</div>
+                        </div>
+                    </div>
+
+                    <!-- Distribución por Departamento -->
+                    <div
+                        style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 1.5rem;">
+                        <h5 style="margin-bottom: 1rem; color: var(--dark-bg);"><i class="fas fa-chart-pie"></i>
+                            Distribución por Departamento</h5>
+                        <div id="chart-departamentos" style="min-height: 200px;">
+                            <p style="color: #94a3b8; text-align: center; padding: 2rem;">No hay datos aún. Ingresa el
+                                primer registro.</p>
+                        </div>
+                    </div>
+
+                    <!-- Últimos Registros -->
+                    <div
+                        style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                        <h5 style="margin-bottom: 1rem; color: var(--dark-bg);"><i class="fas fa-history"></i> Últimos
+                            Registros</h5>
+                        <div id="ultimos-registros" style="max-height: 300px; overflow-y: auto;">
+                            <p style="color: #94a3b8; text-align: center; padding: 2rem;">No hay registros aún. Sé el
+                                primero en ingresar datos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Controles -->
+                    <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                        <button id="refresh-btn" class="cta-button"
+                            style="padding: 0.8rem 1.5rem; background: linear-gradient(90deg, #6b7280, #9ca3af);">
+                            <i class="fas fa-sync-alt"></i> Actualizar Datos
+                        </button>
+                        <button id="clear-demo-btn" class="cta-button"
+                            style="padding: 0.8rem 1.5rem; background: linear-gradient(90deg, #ef4444, #f87171);">
+                            <i class="fas fa-trash-alt"></i> Limpiar Demo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explicación Arquitectura -->
+        <div
+            style="max-width: 800px; margin: 4rem auto 0; padding: 2rem; background: white; border-radius: 16px; box-shadow: var(--card-shadow);">
+            <h4 style="color: var(--dark-bg); margin-bottom: 1rem;"><i class="fas fa-cogs"></i> ¿Cómo funciona esta
+                demo?</h4>
+            <p>Esta demostración muestra la arquitectura híbrida que utilizo:</p>
+            <ol style="margin-top: 1rem; padding-left: 1.5rem; color: #475569;">
+                <li><strong>Frontend (GitHub Pages):</strong> Interfaz web responsiva que estás viendo ahora.</li>
+                <li><strong>API (Google Apps Script):</strong> Procesa los datos y los guarda en Google Sheets.</li>
+                <li><strong>Base de Datos (Google Sheets):</strong> Almacena todos los registros de forma estructurada.
+                </li>
+                <li><strong>Dashboard en Tiempo Real:</strong> Visualización instantánea de los datos procesados.</li>
+            </ol>
+            <p style="margin-top: 1rem; font-style: italic; color: #64748b;">
+                <i class="fas fa-lightbulb"></i> Esto es exactamente cómo funcionarían tus sistemas institucionales,
+                pero a escala real.
+            </p>
+        </div>
+    </section>
+
+    <section id="casos" class="container pitch-section">
+        <h2 class="section-title">Casos de Éxito</h2>
+
+        <div class="pitch-card">
+            <h3>Del Caos al Control: La Transformación Digital Institucional</h3>
+
+            <p>Las instituciones hoy enfrentan un dilema crítico: sistemas fragmentados que no se comunican, costos de
+                infraestructura elevados y procesos que se estancan en la burocracia. <span class="highlight">Mi
+                    solución rompe este paradigma</span>.</p>
+
+            <p>Con un <span class="highlight">frontend moderno alojado en GitHub Pages</span>, entrego interfaces
+                visuales limpias, responsivas y atractivas, <strong>sin costos de hosting ni dominios</strong>. Esto
+                significa actualizaciones inmediatas con control de versiones y despliegue automático.</p>
+
+            <p>En el backend, aprovecho la potencia de <span class="highlight">Google Sheets y Google Drive</span> como
+                base operativa editable y transparente, donde cualquier colaborador puede ver y modificar datos con
+                seguridad y trazabilidad. Cuando la institución necesita escalar, conecto todo con <span
+                    class="highlight">BigQuery</span>, capaz de procesar millones de registros en segundos.</p>
+
+            <p>El puente entre ambos mundos es <span class="highlight">Google Apps Script</span>, que me permite crear
+                APIs personalizadas, automatizar procesos, validar datos y disparar alertas. Con esta arquitectura
+                híbrida, las instituciones obtienen un sistema <strong>ágil, escalable y económico</strong>.</p>
+
+            <h4 style="color: #ffcc00; margin-top: 2rem;"> Los siguientes casos de éxito demuestran exactamente de lo
+                que te hablo:</h4>
+
+            <p style="margin-top: 2rem; font-size: 1.2rem; font-weight: 600;">En resumen: <span class="highlight">del
+                    caos al control, del papel al pixel, de lo costoso a lo eficiente</span>. Mi stack convierte la
+                digitalización institucional en una experiencia premium, accesible y memorable.</p>
+            <div class="opiniones-container">
+                <div class="opinion-card">
+                    <div class="cliente-nombre">Hospital Regional Puerto Vallarta</div>
+                    <div class="cliente-descripcion">Implementación de sistema de reportes clínicos y paneles de control
+                        en
+                        tiempo real para mejorar la toma de decisiones basada en datos confiables. Mi iniciativa como
+                        Jefe de Estadísticas y Archivo Clínico</div>
+                    <div class="resultados-container">
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Reducción del <strong>40%</strong> en tiempo de reportes clínicos</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Paneles de control en tiempo real para decisiones basadas en datos confiables</span>
+                        </div>
+                    </div>
+                    <span class="sector-tag">Sector Salud</span>
+                </div>
+
+                <div class="opinion-card">
+                    <div class="cliente-nombre">Universidad Regional de los Altos</div>
+                    <div class="cliente-descripcion">Desarrollo de plataforma académica para las materias que yo imparto
+                        en
+                        el
+                        Campus Bahía de Banderas, mejorando la experiencia educativa.</div>
+                    <div class="resultados-container">
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Aumento del <strong>25%</strong> en engagement estudiantil</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Reducción del <strong>60%</strong> en carga administrativa</span>
+                        </div>
+                    </div>
+                    <span class="sector-tag">Educación</span>
+                </div>
+
+                <div class="opinion-card">
+                    <div class="cliente-nombre">Dra. Magdalena RSVIII - Programa Cartillas Nacionales de Salud</div>
+                    <div class="cliente-descripcion">Plataforma de salud regional para el programa de Cartillas
+                        Nacionales
+                        de Salud con censo por unidad médica.</div>
+                    <div class="resultados-container">
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Reducción sostenida del <strong>60%</strong> en carga administrativa desde 2021</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span><strong>100%</strong> de eficiencia en el conteo de Cartillas Nacionales</span>
+                        </div>
+                    </div>
+                    <span class="sector-tag">Sector Salud Pública</span>
+                </div>
+
+                <div class="opinion-card">
+                    <div class="cliente-nombre">Mtra. Shalom - Encuestas de salud mental</div>
+                    <div class="cliente-descripcion">Plataforma para detección de niveles de ansiedad y depresión en
+                        alumnos
+                        de secundaria y bachillerato, con enfoque en accesibilidad.</div>
+                    <div class="resultados-container">
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Acceso sencillo y sistema gamificable</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Respuestas satisfactorias de <strong>más de 200 jóvenes</strong> en un mes</span>
+                        </div>
+                    </div>
+                    <span class="sector-tag">Salud Mental / Educación</span>
+                </div>
+
+                <div class="opinion-card">
+                    <div class="cliente-nombre">Nutrióloga De Niz</div>
+                    <div class="cliente-descripcion">Landing page personalizada para promover acceso a un estilo de vida
+                        saludable bajo la compañía personalizada de la Lic. Mimi.</div>
+                    <div class="resultados-container">
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Diseño atractivo y funcional para conversión de clientes</span>
+                        </div>
+                        <div class="resultado-item">
+                            <span class="check-icon">✓</span>
+                            <span>Presencia digital profesional para servicios de nutrición personalizada</span>
+                        </div>
+                    </div>
+                    <span class="sector-tag">Bienestar & Nutrición</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <section id="contacto" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">¿Listo para Transformar tu Institución?</h2>
+
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h4>Conversemos sobre tu Proyecto</h4>
+                    <p>¿Quieres llevar tu institución al siguiente nivel digital? Escríbeme y conversemos sobre cómo
+                        podemos optimizar tus procesos con soluciones tecnológicas a medida.</p>
+
+                    <div class="contact-details">
+                        <div>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Soluciones disponibles para toda Latinoamérica</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-clock"></i>
+                            <span>Respuesta en menos de 24 horas hábiles</span>
+                        </div>
+                        <div>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Primera consulta sin costo</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 2.5rem;">
+                        <h4>Ventajas Clave</h4>
+                        <ul style="margin-top: 1rem;">
+                            <li>Implementación en 2-4 semanas</li>
+                            <li>Costos hasta 70% menores que soluciones tradicionales</li>
+                            <li>Soporte continuo y capacitación incluida</li>
+                            <li>Arquitectura escalable según tus necesidades</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="nombre">Nombre Completo *</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Correo Electrónico *</label>
+                            <input type="email" id="email" name="email" placeholder="Tu correo" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="institucion">Institución/Organización *</label>
+                            <input type="text" id="institucion" name="institucion"
+                                placeholder="Nombre de su institución" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="necesidad">¿Qué necesitas administrar/digitalizar?</label>
+                            <textarea id="necesidad" name="necesidad" rows="3"
+                                placeholder="Ej: Procesos hospitalarios, plataforma académica, gestión municipal..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mensaje">Mensaje Detallado *</label>
+                            <textarea id="mensaje" name="mensaje" rows="5"
+                                placeholder="Describe tu proyecto, necesidades específicas y cualquier requisito importante..."
+                                required></textarea>
+                        </div>
+
+                        <button type="submit" class="cta-button" style="width: 100%;">Solicitar Propuesta
+                            Personalizada</button>
+                    </form>
+                    <p id="status"></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">Jerónimo Ricardo Ramírez Torres</div>
+            <p class="footer-tagline">Soluciones Digitales Premium para la Transformación Institucional. Conecto
+                procesos, simplifico operaciones y entrego resultados.</p>
+
+            <div style="margin: 3rem 0;">
+                <a href="#demo" class="cta-button" style="display: inline-block;">Probar Demo</a>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© <span id="year">2023</span> Jerónimo Ricardo Ramírez Torres - Soluciones Digitales Premium. Todos
+                    los derechos reservados.</p>
+                <p style="margin-top: 0.5rem;">Transformando instituciones con tecnología elegante, eficiente y
+                    accesible.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ========== CONFIGURACIÓN GLOBAL ==========
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-YmdVdh_9ixKyqDJhMc56eNoogR4JhOzsAdNwIlQ1ZSUS_P9WpvDqH2wtlNlZFybJ/exec";
+
+        console.log(" URL de GAS configurada:", SCRIPT_URL);
+
+        // ========== CÓDIGO ORIGINAL ==========
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            mobileMenuBtn.innerHTML = mobileMenu.classList.contains('active')
+                ? '<i class="fas fa-times"></i>'
+                : '<i class="fas fa-bars"></i>';
+        });
+
+        const mobileLinks = document.querySelectorAll('.mobile-menu a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            });
+        });
+
+        // ========== FORMULARIO DE CONTACTO CORREGIDO ==========
+        const form = document.getElementById("contact-form");
+        const status = document.getElementById("status");
+
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // Mostrar estado
+                status.textContent = "⏳ Enviando mensaje...";
+                status.className = "";
+
+                // Deshabilitar botón
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
+
+                try {
+                    // Obtener datos del formulario
+                    const nombre = document.getElementById('nombre').value.trim();
+                    const email = document.getElementById('email').value.trim();
+                    const institucion = document.getElementById('institucion').value.trim();
+                    const necesidad = document.getElementById('necesidad').value;
+                    const mensaje = document.getElementById('mensaje').value.trim();
+
+                    // Validaciones básicas
+                    if (!nombre || !email || !mensaje) {
+                        throw new Error('Por favor completa los campos requeridos');
+                    }
+
+                    // Validar email
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        throw new Error('Por favor ingresa un email válido');
+                    }
+
+                    console.log("📤 Enviando formulario de contacto:", { nombre, email, institucion, necesidad, mensaje });
+
+                    // Preparar datos para enviar
+                    const params = new URLSearchParams();
+                    params.append('nombre', nombre);
+                    params.append('email', email);
+                    params.append('institucion', institucion || '');
+                    params.append('necesidad', necesidad || '');
+                    params.append('mensaje', mensaje);
+
+
+                    // Enviar a GAS
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error del servidor: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log(" Respuesta de GAS:", result);
+
+                    if (result.success) {
+                        console.log("📊 Respuesta CRUDA de GAS:", result);
+                        console.log(" Success:", result.success);
+                        console.log("❌ Error:", result.error);
+                        console.log("📝 Message:", result.message);
+
+                        // Éxito
+                        status.textContent = " ¡Mensaje enviado con éxito! Te contactaré en menos de 24 horas.";
+                        status.className = "success";
+
+                        // Resetear formulario
+                        form.reset();
+
+                    } else {
+                        throw new Error(result.error || 'Error al procesar el formulario');
+                    }
+
+                } catch (error) {
+                    console.error("❌ Error COMPLETO en formulario de contacto:", error);
+                    console.error("📊 Tipo de error:", typeof error);
+                    console.error("🔍 Mensaje:", error.message);
+                    console.error("📋 Stack:", error.stack);
+
+                    // Mostrar mensaje de error apropiado
+                    if (error.message.includes('email')) {
+                        status.textContent = "⚠️ Por favor ingresa un email válido";
+                    } else if (error.message.includes('completa')) {
+                        status.textContent = "⚠️ Por favor completa los campos requeridos (*)";
+                    } else if (error.message.includes('Error al procesar')) {
+                        status.textContent = "❌ Error del servidor. Intenta nuevamente.";
+                    } else {
+                        status.textContent = "❌ Error: " + error.message;
+                    }
+                    status.className = "error";
+
+                } finally {
+                    // Rehabilitar botón
+                    if (submitBtn) {
+                        setTimeout(() => {
+                            submitBtn.disabled = false;
+                        }, 2000);
+                    }
+                }
+            });
+        }
+
+        // Función opcional para enviar notificación por email
+        async function sendEmailNotification(data) {
+            // Esto es opcional - puedes usar un servicio como EmailJS o simplemente confiar en GAS
+            console.log("📧 Datos para notificación:", data);
+            return Promise.resolve();
+        }
+
+        // Smooth scrolling for anchor links
+        // ========== CONTROL DE VISIBILIDAD DE DEMO ==========
+        let demoSection = document.getElementById('demo');
+        let isDemoVisible = false;
+
+        // Función para mostrar/ocultar demo con transición
+        function toggleDemoSection(show = true, scrollTo = true) {
+            if (!demoSection) return;
+
+            isDemoVisible = show;
+
+            if (show) {
+                // Mostrar demo
+                demoSection.classList.add('demo-visible');
+
+                // Marcar enlaces activos
+                document.querySelectorAll('a[href="#demo"]').forEach(link => {
+                    link.classList.add('active');
+                });
+
+                // Remover activo de otros enlaces
+                document.querySelectorAll('nav a, .mobile-menu a').forEach(link => {
+                    if (link.getAttribute('href') !== '#demo') {
+                        link.classList.remove('active');
+                    }
+                });
+
+                // Scroll suave a la sección
+                if (scrollTo) {
+                    setTimeout(() => {
+                        window.scrollTo({
+                            top: demoSection.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }, 100);
+                }
+
+                // Inicializar demo si es necesario
+                if (typeof loadDashboardData === 'function') {
+                    setTimeout(loadDashboardData, 300);
+                }
+            } else {
+                // Ocultar demo
+                demoSection.classList.remove('demo-visible');
+
+                // Remover activo
+                document.querySelectorAll('a[href="#demo"]').forEach(link => {
+                    link.classList.remove('active');
+                });
+            }
+        }
+
+        // Ocultar demo inicialmente (solo si no hay hash #demo en URL)
+        if (!window.location.hash.includes('#demo')) {
+            setTimeout(() => {
+                demoSection.style.transition = 'none';
+                demoSection.classList.remove('demo-visible');
+                setTimeout(() => {
+                    demoSection.style.transition = '';
+                }, 10);
+            }, 100);
+        }
+
+        // Modificar el smooth scrolling para manejar la sección demo
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href');
+
+                if (targetId === '#demo') {
+                    e.preventDefault();
+
+                    // Si la demo ya está visible, solo hacer scroll
+                    if (isDemoVisible) {
+                        window.scrollTo({
+                            top: demoSection.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                        return;
+                    }
+
+                    // Mostrar demo
+                    toggleDemoSection(true);
+
+                    // Cerrar menú móvil si está abierto
+                    if (mobileMenu && mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
+                        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                } else {
+                    // Para otras secciones, ocultar demo
+                    if (isDemoVisible && targetId !== '#') {
+                        toggleDemoSection(false, false);
+                    }
+
+                    // Comportamiento normal de scroll
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement && targetId !== '#') {
+                        e.preventDefault();
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Mostrar demo si la URL contiene #demo
+        if (window.location.hash === '#demo') {
+            setTimeout(() => {
+                toggleDemoSection(true, false);
+            }, 500);
+        }
+
+        // También mostrar demo al hacer click en los botones CTA
+        document.querySelectorAll('.cta-button[href="#demo"]').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                toggleDemoSection(true);
+            });
+        });
+
+        // Monitorear cambios en el hash de la URL
+        window.addEventListener('hashchange', function () {
+            if (window.location.hash === '#demo' && !isDemoVisible) {
+                toggleDemoSection(true, false);
+            } else if (window.location.hash !== '#demo' && isDemoVisible) {
+                toggleDemoSection(false, false);
+            }
+        });
+
+        // Ocultar demo al hacer scroll a otras secciones
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', function () {
+            if (!isDemoVisible) return;
+
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            const demoRect = demoSection.getBoundingClientRect();
+
+            // Si se scrollea fuera de la sección demo, ocultarla
+            if (demoRect.top > window.innerHeight || demoRect.bottom < 0) {
+                // Solo ocultar si estamos scrolleando hacia abajo y pasamos la sección
+                if (currentScroll > lastScrollTop && currentScroll > demoSection.offsetTop + demoSection.offsetHeight) {
+                    toggleDemoSection(false, false);
+                }
+            }
+
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(15, 23, 42, 0.98)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
+            } else {
+                header.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        // ========== DEMO INTERACTIVA ==========
+        const demoForm = document.getElementById('demo-form');
+
+        if (demoForm && demoSection) {
+            console.log("Sección de demo detectada, inicializando...");
+
+            const demoStatus = document.getElementById('demo-status');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const clearDemoBtn = document.getElementById('clear-demo-btn');
+            const demoSubmitBtn = demoForm.querySelector('button[type="submit"]');
+
+            // Variable para controlar si estamos usando datos reales
+            let usandoDatosReales = false;
+            let registrosReales = [];
+            let registrosLocales = [];
+
+            // ========== FUNCIÓN PARA OBTENER DATOS DE GAS ==========
+            async function fetchDataFromGAS() {
+                console.log("📡 Conectando a GAS...");
+
+                try {
+                    const response = await fetch(SCRIPT_URL + '?action=obtener_registros&timestamp=' + Date.now());
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log(" Respuesta de GAS:", data);
+                    return data;
+                } catch (error) {
+                    console.error("❌ Error conectando a GAS:", error);
+                    throw error;
+                }
+            }
+
+            // ========== FUNCIÓN PARA GUARDAR EN GAS ==========
+            async function saveToGAS(datos) {
+                console.log("💾 Enviando a GAS (demo):", datos);
+
+                try {
+                    const params = new URLSearchParams();
+                    params.append('action', 'guardar_registro');
+                    params.append('nombre', datos.nombre);
+                    params.append('departamento', datos.departamento);
+                    params.append('cantidad', datos.cantidad.toString());
+                    params.append('tipo', datos.tipo);
+                    params.append('ip', 'web-' + Date.now());
+
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: params.toString()
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log("🔍 DEBUG - Respuesta CRUDA de GAS:");
+                    console.log("  Status:", response.status);
+                    console.log("  OK:", response.ok);
+                    console.log("  Result object:", result);
+                    console.log("  ¿Tiene success?:", result.hasOwnProperty('success'));
+                    console.log("  Success value:", result.success);
+                    console.log("  Error:", result.error);
+                    console.log("  Message:", result.message);
+
+                    // Si success es false, mostrar el error real
+                    if (result.success === false) {
+                        console.error("❌ ERROR DE GAS:", result.error || "Error sin mensaje");
+                        throw new Error(result.error || "Error del servidor");
+                    }
+                    console.log(" Guardado en GAS:", result);
+                    return result;
+                } catch (error) {
+                    console.error("❌ Error guardando en GAS:", error);
+                    throw error;
+                }
+            }
+
+            // ========== CARGAR DATOS ==========
+            async function loadDashboardData() {
+                console.log("🔄 Cargando datos...");
+
+                demoStatus.textContent = "⏳ Actualizando...";
+                demoStatus.className = "";
+
+                if (refreshBtn) {
+                    refreshBtn.disabled = true;
+                    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                }
+
+                try {
+                    // Intentar cargar datos REALES de GAS
+                    const gasData = await fetchDataFromGAS();
+
+                    if (gasData.registros && gasData.registros.length > 0) {
+                        // ¡TENEMOS DATOS REALES!
+                        registrosReales = gasData.registros;
+                        usandoDatosReales = true;
+
+                        console.log(` ${gasData.registros.length} registros reales cargados`);
+                        updateDashboard(registrosReales, true);
+
+                        demoStatus.textContent = ` ${gasData.registros.length} registros reales cargados`;
+                        demoStatus.className = "success";
+
+                    } else {
+                        // No hay datos reales, cargar locales
+                        console.log("ℹ️ No hay datos reales, cargando locales");
+                        loadLocalData();
+                    }
+
+                } catch (error) {
+                    console.log("⚠️ Error cargando datos reales, usando locales");
+                    loadLocalData();
+                } finally {
+                    if (refreshBtn) {
+                        refreshBtn.disabled = false;
+                        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar';
+                    }
+                }
+            }
+
+            // ========== CARGAR DATOS LOCALES ==========
+            function loadLocalData() {
+                const stored = localStorage.getItem('demo_registros_locales');
+                if (stored) {
+                    registrosLocales = JSON.parse(stored);
+                }
+
+                // Combinar con datos de ejemplo si hay pocos
+                if (registrosLocales.length === 0) {
+                    registrosLocales = getSampleData();
+                }
+
+                usandoDatosReales = false;
+                updateDashboard(registrosLocales, false);
+
+                demoStatus.textContent = `📱 ${registrosLocales.length} registros locales`;
+                demoStatus.className = "";
+            }
+
+            // ========== GUARDAR DATOS LOCALES ==========
+            function saveLocalData(registro) {
+                registro.id = Date.now();
+                registro.fecha = new Date().toISOString();
+                registro.local = true;
+
+                registrosLocales.unshift(registro); // Agregar al inicio
+
+                // Limitar a 100 registros
+                if (registrosLocales.length > 100) {
+                    registrosLocales = registrosLocales.slice(0, 100);
+                }
+
+                localStorage.setItem('demo_registros_locales', JSON.stringify(registrosLocales));
+                console.log("💾 Guardado local. Total:", registrosLocales.length);
+
+                return registro;
+            }
+
+            // ========== SUBMIT DEL FORMULARIO DEMO ==========
+            demoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const nombre = document.getElementById('demo-nombre').value.trim();
+                const departamento = document.getElementById('demo-departamento').value;
+                const cantidad = document.getElementById('demo-cantidad').value || "1";
+                const tipo = document.getElementById('demo-tipo').value;
+
+                if (!nombre) {
+                    demoStatus.textContent = "⚠️ Ingresa tu nombre";
+                    demoStatus.className = "error";
+                    return;
+                }
+
+                const registro = {
+                    nombre: nombre,
+                    departamento: departamento,
+                    cantidad: parseInt(cantidad) || 1,
+                    tipo: tipo
+                };
+
+                demoStatus.textContent = "⏳ Guardando...";
+                demoStatus.className = "";
+
+                if (demoSubmitBtn) demoSubmitBtn.disabled = true;
+
+                try {
+                    // PRIMERO intentar guardar en GAS
+                    const resultadoGAS = await saveToGAS(registro);
+
+                    // Éxito en GAS
+                    demoStatus.textContent = ` ${resultadoGAS.message || 'Guardado en la nube!'}`;
+                    demoStatus.className = "success";
+
+                    // También guardar localmente como respaldo
+                    saveLocalData(registro);
+
+                    // Recargar datos para incluir el nuevo registro
+                    setTimeout(() => loadDashboardData(), 1500);
+
+                } catch (error) {
+                    // Falló GAS, guardar solo localmente
+                    console.log("📱 Guardando localmente:", error.message);
+
+                    const registroLocal = saveLocalData(registro);
+                    updateDashboard(usandoDatosReales ? registrosReales : registrosLocales, usandoDatosReales);
+
+                    demoStatus.textContent = "📱 Guardado localmente (sin conexión a la nube)";
+                    demoStatus.className = "warning";
+
+                } finally {
+                    demoForm.reset();
+                    if (demoSubmitBtn) demoSubmitBtn.disabled = false;
+                }
+            });
+
+            // ========== ACTUALIZAR DASHBOARD ==========
+            function updateDashboard(registros, sonReales) {
+                const totalRegistros = registros.length;
+
+                let cantidadTotal = 0;
+                let porDepartamento = {};
+
+                registros.forEach(registro => {
+                    if (registro.cantidad) {
+                        cantidadTotal += parseInt(registro.cantidad) || 0;
+                    }
+
+                    const depto = registro.departamento || "General";
+                    porDepartamento[depto] = (porDepartamento[depto] || 0) + 1;
+                });
+
+                // 1. Actualizar contadores
+                document.getElementById('total-registros').textContent = totalRegistros;
+                document.getElementById('cantidad-total').textContent = cantidadTotal;
+
+                // 2. Actualizar indicador de fuente
+                const fuenteElement = document.getElementById('data-source');
+                if (fuenteElement) {
+                    fuenteElement.textContent = sonReales ? 'Datos en tiempo real' : 'Datos de demostración';
+                    fuenteElement.style.color = sonReales ? '#10b981' : '#f59e0b';
+                }
+
+                // 3. Actualizar gráfico
+                const chartContainer = document.getElementById('chart-departamentos');
+                if (Object.keys(porDepartamento).length > 0) {
+                    let chartHTML = '<div style="display: flex; flex-direction: column; gap: 0.5rem;">';
+
+                    Object.entries(porDepartamento).forEach(([depto, count]) => {
+                        const percentage = totalRegistros > 0 ? Math.round((count / totalRegistros) * 100) : 0;
+                        const color = getDepartmentColor(depto);
+
+                        chartHTML += `
+                    <div style="margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                            <span style="font-weight: 600; color: #334155;">${depto}</span>
+                            <span style="color: #64748b;">${count} (${percentage}%)</span>
+                        </div>
+                        <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                            <div style="height: 100%; width: ${percentage}%; background: ${color}; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    `;
+                    });
+
+                    chartHTML += '</div>';
+                    chartContainer.innerHTML = chartHTML;
+                } else {
+                    chartContainer.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No hay datos aún.</p>';
+                }
+
+                // 4. Actualizar últimos registros
+                updateLastRegistros(registros, sonReales);
+            }
+
+            function updateLastRegistros(registros, sonReales) {
+                const container = document.getElementById('ultimos-registros');
+
+                if (!registros || registros.length === 0) {
+                    container.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No hay registros aún.</p>';
+                    return;
+                }
+
+                const sortedRegistros = [...registros]
+                    .sort((a, b) => new Date(b.fecha || b.timestamp) - new Date(a.fecha || a.timestamp))
+                    .slice(0, 50);
+
+                let html = '<div style="display: flex; flex-direction: column; gap: 0.75rem;">';
+
+                sortedRegistros.forEach(reg => {
+                    let fechaTexto = "Ahora";
+                    let borderColor = reg.local ? '#f59e0b' : (sonReales ? '#3b82f6' : '#10b981');
+
+                    try {
+                        const fecha = reg.fecha ? new Date(reg.fecha) : new Date();
+                        const ahora = new Date();
+                        const diferenciaHoras = (ahora - fecha) / (1000 * 60 * 60);
+
+                        if (diferenciaHoras < 24) {
+                            if (diferenciaHoras < 1) {
+                                fechaTexto = "Hace " + Math.round(diferenciaHoras * 60) + " min";
+                            } else {
+                                fechaTexto = "Hoy " + fecha.toLocaleTimeString('es-MX', {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+                        } else {
+                            fechaTexto = fecha.toLocaleDateString('es-MX', {
+                                day: '2-digit',
+                                month: 'short'
+                            });
+                        }
+                    } catch (e) {
+                        fechaTexto = "Reciente";
+                    }
+
+                    html += `
+                <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-weight: 600; color: var(--dark-bg);">
+                                ${reg.nombre || "Usuario"}
+                                ${reg.local ? '<span style="color: #f59e0b; font-size: 0.8em; margin-left: 0.5em;">(local)</span>' : ''}
+                                ${sonReales && !reg.local ? '<span style="color: #3b82f6; font-size: 0.8em; margin-left: 0.5em;">(nube)</span>' : ''}
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.25rem; font-size: 0.85rem; color: #64748b;">
+                                <span><i class="fas fa-building"></i> ${reg.departamento || "General"}</span>
+                                <span><i class="fas fa-tag"></i> ${reg.tipo || "Registro"}</span>
+                                ${reg.cantidad ? `<span><i class="fas fa-hashtag"></i> ${reg.cantidad}</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #94a3b8; white-space: nowrap;">${fechaTexto}</div>
+                    </div>
+                </div>
+                `;
+                });
+
+                html += '</div>';
+                container.innerHTML = html;
+            }
+
+            function getDepartmentColor(depto) {
+                const colors = {
+                    'Urgencias': '#ef4444',
+                    'Pediatría': '#3b82f6',
+                    'Cirugía': '#8b5cf6',
+                    'Laboratorio': '#10b981',
+                    'Administración': '#f59e0b',
+                    'General': '#94a3b8'
+                };
+                return colors[depto] || '#3b82f6';
+            }
+
+            function getSampleData() {
+                return [
+                    {
+                        id: 1,
+                        nombre: "Dr. Juan Pérez",
+                        departamento: "Urgencias",
+                        tipo: "Ingreso",
+                        cantidad: 5,
+                        fecha: new Date(Date.now() - 3600000).toISOString(),
+                        local: false
+                    },
+                    {
+                        id: 2,
+                        nombre: "Dra. Ana García",
+                        departamento: "Pediatría",
+                        tipo: "Consulta",
+                        cantidad: 3,
+                        fecha: new Date(Date.now() - 7200000).toISOString(),
+                        local: false
+                    },
+                    {
+                        id: 3,
+                        nombre: "Lic. Carlos López",
+                        departamento: "Administración",
+                        tipo: "Alta",
+                        cantidad: 2,
+                        fecha: new Date(Date.now() - 10800000).toISOString(),
+                        local: false
+                    }
+                ];
+            }
+
+            // ========== BOTONES ==========
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    loadDashboardData();
+                });
+            }
+
+            if (clearDemoBtn) {
+                clearDemoBtn.addEventListener('click', () => {
+                    if (confirm("¿Limpiar todos los datos locales?\n\nLos datos en la nube NO se verán afectados.")) {
+                        localStorage.removeItem('demo_registros_locales');
+                        registrosLocales = getSampleData();
+                        updateDashboard(registrosLocales, false);
+                        demoStatus.textContent = " Datos locales reiniciados";
+                        demoStatus.className = "success";
+                    }
+                });
+            }
+
+            // ========== INICIALIZAR ==========
+            // Cargar datos inmediatamente
+            loadDashboardData();
+
+            // Actualizar cada 30 segundos
+            setInterval(loadDashboardData, 30000);
+
+            console.log(" Demo lista - Conexión GAS verificada");
+
+        } else {
+            console.log("ℹ️ No se encontró sección de demo");
+        }
+
+        // ========== VERIFICAR GAS ==========
+        console.log("🔍 Probando conexión GAS...");
+        fetch(SCRIPT_URL + '?action=test')
+            .then(response => response.json())
+            .then(data => {
+                console.log(" GAS funcionando:", data);
+            })
+            .catch(error => {
+                console.log("⚠️ GAS no responde, usando modo local:", error.message);
+            });
+    </script>
+
+    <script>
+        // ========== DASHBOARD ANALÍTICAS EN VIVO ==========
+        function initAnalyticsDashboard() {
+            console.log("📊 Inicializando dashboard de analíticas...");
+
+            // Datos simulados (luego conectarás a GA4 real)
+            const simulateAnalyticsData = () => {
+                // Números base que crecen orgánicamente
+                const baseVisitors = 42;
+                const basePageviews = 187;
+
+                // Incremento basado en hora del día
+                const hour = new Date().getHours();
+                const hourMultiplier = hour >= 9 && hour <= 17 ? 1.5 : 1.0;
+
+                // Datos "reales" simulados
+                const todayVisitors = Math.floor(baseVisitors + (Math.random() * 10 * hourMultiplier));
+                const totalPageviews = Math.floor(basePageviews + (Math.random() * 50));
+
+                // Ubicaciones simuladas (basadas en tu audiencia probable)
+                const locations = [
+                    { country: "México", city: "Guadalajara", count: Math.floor(todayVisitors * 0.4) },
+                    { country: "México", city: "Puerto Vallarta", count: Math.floor(todayVisitors * 0.25) },
+                    { country: "México", city: "CDMX", count: Math.floor(todayVisitors * 0.15) },
+                    { country: "Colombia", city: "Bogotá", count: Math.floor(todayVisitors * 0.1) },
+                    { country: "Perú", city: "Lima", count: Math.floor(todayVisitors * 0.05) }
+                ].sort((a, b) => b.count - a.count).slice(0, 3);
+
+                // Dispositivos
+                const devices = [
+                    { type: "Desktop", percent: 65, color: "#3b82f6" },
+                    { type: "Mobile", percent: 30, color: "#10b981" },
+                    { type: "Tablet", percent: 5, color: "#8b5cf6" }
+                ];
+
+                // Engagement (interacción con formularios)
+                const engagement = 65 + Math.floor(Math.random() * 15);
+
+                return {
+                    todayVisitors,
+                    totalPageviews,
+                    locations,
+                    devices,
+                    engagement
+                };
+            };
+
+            // Actualizar UI con datos
+            function updateDashboard(data) {
+                // Métricas principales
+                document.getElementById('visitors-today').textContent = data.todayVisitors.toLocaleString();
+                document.getElementById('pageviews-total').textContent = data.totalPageviews.toLocaleString();
+
+                // Ubicaciones
+                const locationsHtml = data.locations.map(loc => `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
+                <div>
+                    <div style="font-weight: 600; color: #334155;">${loc.city}, ${loc.country}</div>
+                    <div style="font-size: 0.8rem; color: #64748b;">${loc.count} visitas</div>
+                </div>
+                <div style="width: 8px; height: 8px; background-color: #3b82f6; border-radius: 50%;"></div>
+            </div>
+        `).join('');
+
+                document.getElementById('locations-list').innerHTML = locationsHtml ||
+                    '<p style="color: #94a3b8; text-align: center;">No hay datos suficientes aún</p>';
+
+                // Dispositivos
+                const devicesHtml = data.devices.map(device => `
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                    <span style="font-weight: 600; color: #334155;">
+                        <i class="fas fa-${device.type === 'Desktop' ? 'desktop' : device.type === 'Mobile' ? 'mobile-alt' : 'tablet-alt'}"></i>
+                        ${device.type}
+                    </span>
+                    <span style="color: #64748b;">${device.percent}%</span>
+                </div>
+                <div style="height: 8px; background-color: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                    <div style="height: 100%; width: ${device.percent}%; background: ${device.color}; border-radius: 4px;"></div>
+                </div>
+            </div>
+        `).join('');
+
+                document.getElementById('devices-chart').innerHTML = devicesHtml;
+
+                // Engagement
+                document.getElementById('engagement-bar').style.width = `${data.engagement}%`;
+                document.getElementById('engagement-percent').textContent = `${data.engagement}%`;
+
+                // Actualizar timestamp
+                const timeEl = document.getElementById('last-updated');
+                if (timeEl) {
+                    timeEl.textContent = new Date().toLocaleTimeString('es-MX', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
+            }
+
+            // Inicializar datos
+            const analyticsData = simulateAnalyticsData();
+            updateDashboard(analyticsData);
+
+            // Actualizar cada minuto (simulación)
+            setInterval(() => {
+                const newData = simulateAnalyticsData();
+                updateDashboard(newData);
+
+                // Efecto visual sutil de actualización
+                const counters = document.querySelectorAll('#visitors-today, #pageviews-total');
+                counters.forEach(counter => {
+                    counter.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        counter.style.transform = 'scale(1)';
+                    }, 200);
+                });
+
+                console.log("📊 Dashboard actualizado:", new Date().toLocaleTimeString());
+            }, 60000); // Cada minuto
+
+            // Opcional: Conectar a Google Analytics real (más adelante)
+            function connectToRealGA() {
+                console.log("🔗 Conectando a Google Analytics real...");
+                // Aquí iría la conexión a GA4 Data API
+            }
+
+            return {
+                simulateAnalyticsData,
+                updateDashboard,
+                connectToRealGA
+            };
+        }
+
+        // Inicializar cuando la página cargue
+        document.addEventListener('DOMContentLoaded', function () {
+            // Iniciar dashboard
+            initAnalyticsDashboard();
+
+            // Smooth scroll para la nueva sección
+            document.querySelectorAll('a[href="#analytics-demo"]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = document.getElementById('analytics-demo');
+                    if (section) {
+                        window.scrollTo({
+                            top: section.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>
