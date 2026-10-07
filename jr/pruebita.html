@@ -6,111 +6,94 @@
 <meta name="theme-color" content="#23443f">
 <title>El Barrio · Atmósfera</title>
 <style>
-:root{
-  --ink:#26312f;--muted:#68736f;--paper:rgba(255,255,255,.72);
-  --line:rgba(38,49,47,.13);--accent:#557c68;
-  --bg1:#eef3e8;--bg2:#e5eee9;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
- margin:0;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
- min-height:100vh;background:linear-gradient(135deg,var(--bg1),var(--bg2));
- transition:background 2.2s ease,color 1.2s ease;
-}
-body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.20;
- background-image:radial-gradient(rgba(38,49,47,.08) .7px,transparent .7px);
- background-size:13px 13px}
-body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:0;
- background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.42),transparent 60%);
- transition:opacity 2s ease}
-body.rain:after{opacity:.22}
-.wrap{width:min(calc(100% - 30px),900px);margin:auto}
-header{position:sticky;top:0;z-index:5;background:rgba(238,241,233,.70);
- backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.brand{font-weight:800;letter-spacing:-.03em}.brand small{display:block;font-weight:500;color:var(--muted);font-size:.68rem;letter-spacing:.04em}
-.status{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:breathe 3.5s ease-in-out infinite}
+:root{--ink:#26312f;--muted:#68736f;--paper:rgba(255,255,255,.72);--line:rgba(38,49,47,.13);--accent:#557c68;--bg1:#eef3e8;--bg2:#e5eee9}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;background:linear-gradient(135deg,var(--bg1),var(--bg2));transition:background 2.2s ease,color 1.2s ease}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.20;background-image:radial-gradient(rgba(38,49,47,.08) .7px,transparent .7px);background-size:13px 13px}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,.42),transparent 60%);transition:opacity 2s ease}
+body.rain:after{opacity:.22}.wrap{width:min(calc(100% - 30px),900px);margin:auto}
+header{position:sticky;top:0;z-index:5;background:rgba(238,241,233,.70);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:800;letter-spacing:-.03em}.brand small{display:block;font-weight:500;color:var(--muted);font-size:.68rem;letter-spacing:.04em}
+.status{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:breathe 3.5s ease-in-out infinite}
 @keyframes breathe{50%{transform:scale(.72);opacity:.55}}
-main{padding:70px 0 100px}.hero{min-height:70vh;display:flex;align-items:center}
-.kicker{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
-h1{font-size:clamp(3rem,10vw,7rem);line-height:.92;letter-spacing:-.075em;margin:18px 0 25px;max-width:800px}
-h1 span{color:#6f8177}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:var(--muted);max-width:650px}
-.place{margin-top:40px;padding:18px 20px;border:1px solid var(--line);border-radius:20px;background:var(--paper);
- box-shadow:0 18px 50px rgba(38,49,47,.10);display:flex;justify-content:space-between;gap:20px;align-items:center}
-.place strong{display:block}.place small{color:var(--muted)}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:0 18px 50px rgba(38,49,47,.10)}
-.card b{font-size:.72rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}.card h2{font-size:1.15rem;margin:12px 0 7px}.card p{margin:0;color:var(--muted);font-size:.9rem}
-section{padding:80px 0}.section-label{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
-.atmos{margin-top:35px;display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.55);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:.75rem}
-.footnote{margin-top:35px;color:var(--muted);font-size:.8rem;max-width:620px}
-footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.75rem}
+main{padding:70px 0 100px}.hero{min-height:70vh;display:flex;align-items:center}.kicker{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(3rem,10vw,7rem);line-height:.92;letter-spacing:-.075em;margin:18px 0 25px;max-width:800px}h1 span{color:#6f8177}.lead{font-size:clamp(1.05rem,2vw,1.3rem);color:var(--muted);max-width:650px}
+.place{margin-top:40px;padding:18px 20px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:0 18px 50px rgba(38,49,47,.10);display:flex;justify-content:space-between;gap:20px;align-items:center}.place strong{display:block}.place small{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{padding:24px;border:1px solid var(--line);border-radius:20px;background:var(--paper);box-shadow:0 18px 50px rgba(38,49,47,.10)}.card b{font-size:.72rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}.card h2{font-size:1.15rem;margin:12px 0 7px}.card p{margin:0;color:var(--muted);font-size:.9rem}
+section{padding:80px 0}.section-label{font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}.atmos{margin-top:35px;display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid var(--line);background:rgba(255,255,255,.55);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:.75rem}
+.demo{margin-top:18px;font-size:.72rem;color:var(--muted);opacity:.75}.footnote{margin-top:35px;color:var(--muted);font-size:.8rem;max-width:620px}footer{padding:30px 0;border-top:1px solid var(--line);color:var(--muted);font-size:.75rem}
 @media(max-width:700px){.cards{grid-template-columns:1fr}.place{align-items:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
-<header><div class="wrap nav">
- <div class="brand">El Barrio<small>un lugar para lo que pasa cerca</small></div>
- <div class="status"><span class="dot"></span><span id="mood">El barrio está despierto</span></div>
-</div></header>
+<header><div class="wrap nav"><div class="brand">El Barrio<small>un lugar para lo que pasa cerca</small></div><div class="status"><span class="dot"></span><span id="mood">El barrio está despierto</span></div></div></header>
 <main>
 <section class="hero"><div class="wrap">
- <div class="kicker">Muestra de atmósfera</div>
- <h1>Aquí pasan<br><span>cosas.</span></h1>
- <p class="lead">La información permanece. El ambiente escucha un poco el momento: hora, clima, estación y aquello que culturalmente está pasando cerca.</p>
- <div class="place"><div><strong id="atmoTitle">El Barrio ahora</strong><small id="atmoText">Preparando el ambiente...</small></div>
- <div class="status"><span class="dot"></span><span id="clock"></span></div></div>
- <div class="atmos"><span class="chip" id="weatherChip">clima</span><span class="chip" id="seasonChip">estación</span><span class="chip" id="festChip">sin celebración destacada</span></div>
+<div class="kicker">Muestra de atmósfera</div><h1>Aquí pasan<br><span>cosas.</span></h1>
+<p class="lead">La información permanece. El ambiente escucha el momento: hora, clima, estación y aquello que culturalmente está pasando cerca.</p>
+<div class="place"><div><strong id="atmoTitle">El Barrio ahora</strong><small id="atmoText">Preparando el ambiente...</small></div><div class="status"><span class="dot"></span><span id="clock"></span></div></div>
+<div class="atmos"><span class="chip" id="weatherChip">clima</span><span class="chip" id="seasonChip">estación</span><span class="chip" id="festChip">sin celebración destacada</span></div>
+<div class="demo" id="demoLabel"></div>
 </div></section>
-<section><div class="wrap">
- <div class="section-label">Lo que estamos probando</div>
- <div class="cards">
-  <article class="card"><b>Situación</b><h2>El contenido permanece.</h2><p>Avisos, negocios, personas y lugares siguen siendo fáciles de encontrar.</p></article>
-  <article class="card"><b>Ambiente</b><h2>El Barrio cambia.</h2><p>La luz, temperatura visual y pequeños detalles acompañan el contexto sin competir con él.</p></article>
-  <article class="card"><b>Principio</b><h2>La tecnología desaparece.</h2><p>CSS, datos ligeros y transiciones. Nada de WebGL ni efectos que obliguen al teléfono a trabajar de más.</p></article>
- </div>
- <p class="footnote">Esta sigue siendo una probeta. Ahora la atmósfera tiene cuatro entradas: hora, clima simulado, estación y festividad. En producción, el clima podrá venir de un servicio ligero y las festividades de un calendario local.</p>
-</div></section>
-</main>
+<section><div class="wrap"><div class="section-label">Lo que estamos probando</div>
+<div class="cards"><article class="card"><b>Situación</b><h2>El contenido permanece.</h2><p>Avisos, negocios, personas y lugares siguen siendo fáciles de encontrar.</p></article>
+<article class="card"><b>Ambiente</b><h2>El Barrio cambia.</h2><p>La luz, temperatura visual y pequeños detalles acompañan el contexto sin competir con él.</p></article>
+<article class="card"><b>Principio</b><h2>La tecnología desaparece.</h2><p>CSS, datos ligeros y transiciones. Nada de WebGL ni efectos que obliguen al teléfono a trabajar de más.</p></article></div>
+<p class="footnote">Modo demostración: la atmósfera cambia cada minuto para que puedas percibir el lenguaje visual. En producción, el ritmo dependerá del contexto real y no necesitará anunciarse.</p>
+</div></section></main>
 <footer><div class="wrap">El Barrio · situación → persona → acción</div></footer>
 <script>
-const root=document.documentElement, body=document.body;
-const title=document.getElementById('atmoTitle'), text=document.getElementById('atmoText');
-const mood=document.getElementById('mood'), clock=document.getElementById('clock');
-const weatherChip=document.getElementById('weatherChip'), seasonChip=document.getElementById('seasonChip'), festChip=document.getElementById('festChip');
+const root=document.documentElement,body=document.body,title=document.getElementById('atmoTitle'),text=document.getElementById('atmoText'),mood=document.getElementById('mood'),clock=document.getElementById('clock'),weatherChip=document.getElementById('weatherChip'),seasonChip=document.getElementById('seasonChip'),festChip=document.getElementById('festChip'),demoLabel=document.getElementById('demoLabel');
 
-function getSeason(m){return m<=1||m===11?'Invierno':m<=4?'Primavera':m<=7?'Verano':'Otoño'}
-function getWeather(hour){
- // Demo perceptual: no consulta internet ni consume API.
- const options=[
-  ['Cielo claro','clear'],['Nubes altas','cloudy'],['Lluvia cercana','rain']
- ];
- return options[Math.floor((new Date().getDate()+hour)%options.length)];
-}
-function festival(m,d){
- if(m===9&&d>=15&&d<=16)return 'Fiestas patrias';
- if(m===9&&d>=25||m===10&&d<=2)return 'Día de Muertos';
- if(m===11&&d>=12&&d<=31)return 'Temporada decembrina';
- if(m===1&&d<=6)return 'Día de Reyes';
- return 'Sin celebración destacada';
-}
-function setAtmosphere(){
- const now=new Date(), hour=now.getHours(), month=now.getMonth(), day=now.getDate();
- const weather=getWeather(hour), season=getSeason(month), fest=festival(month,day);
- let a;
- if(hour>=6&&hour<11)a={title:'Buenos días, vecino.',text:'La mañana entra despacio al Barrio.',bg1:'#eef3e8',bg2:'#e5eee9',accent:'#557c68',mood:'El barrio comienza el día'};
- else if(hour>=11&&hour<18)a={title:'El Barrio está en movimiento.',text:'Luz clara, actividad y cosas que están pasando.',bg1:'#f1eee2',bg2:'#e5ebe4',accent:'#69795c',mood:'El barrio está despierto'};
- else if(hour>=18&&hour<21)a={title:'La tarde cae sobre el Barrio.',text:'El ambiente se vuelve un poco más cálido.',bg1:'#eee7dc',bg2:'#e2e9e5',accent:'#a5744b',mood:'La tarde llegó'};
- else a={title:'Buenas noches, vecino.',text:'Menos ruido. El Barrio sigue aquí.',bg1:'#dfe6e4',bg2:'#d9e1e4',accent:'#55717a',mood:'El barrio está tranquilo'};
- if(weather[1]==='rain'){a.bg1='#e5ece9';a.bg2='#dce5e4';body.classList.add('rain');a.text+=' Se siente humedad en el aire.'}
- else if(weather[1]==='cloudy'){a.bg1='#e9ece8';a.bg2='#e2e8e6'}
+const demo=[
+ {title:'Buenos días, vecino.',text:'La mañana entra despacio al Barrio.',bg1:'#eef3e8',bg2:'#e5eee9',accent:'#557c68',mood:'El barrio comienza el día',weather:'Cielo claro',season:'Primavera',fest:'Sin celebración destacada'},
+ {title:'El Barrio está en movimiento.',text:'Hay luz, ruido y cosas pasando cerca.',bg1:'#f1eee2',bg2:'#e5ebe4',accent:'#69795c',mood:'El barrio está despierto',weather:'Nubes altas',season:'Verano',fest:'Sin celebración destacada'},
+ {title:'La tarde cae sobre el Barrio.',text:'La luz se vuelve un poco más cálida.',bg1:'#eee7dc',bg2:'#e2e9e5',accent:'#a5744b',mood:'La tarde llegó',weather:'Cielo dorado',season:'Otoño',fest:'Sin celebración destacada'},
+ {title:'Lluvia en el Barrio.',text:'La calle cambia de textura y el paso se vuelve más lento.',bg1:'#e1e9e8',bg2:'#d7e1e2',accent:'#55717a',mood:'Está lloviendo cerca',weather:'Lluvia cercana',season:'Otoño',fest:'Sin celebración destacada',rain:true},
+ {title:'Hay algo en el aire.',text:'Una pequeña celebración cambia discretamente el ambiente.',bg1:'#eee4d7',bg2:'#e4ddd7',accent:'#8a644e',mood:'El Barrio está de fiesta',weather:'Noche tranquila',season:'Otoño',fest:'Halloween · 31 de octubre',halloween:true},
+ {title:'Noche tranquila.',text:'Menos ruido. Las casas siguen encendidas.',bg1:'#dfe6e4',bg2:'#d9e1e4',accent:'#55717a',mood:'El barrio está tranquilo',weather:'Cielo despejado',season:'Otoño',fest:'Sin celebración destacada'}
+];
+
+function apply(a){
  root.style.setProperty('--bg1',a.bg1);root.style.setProperty('--bg2',a.bg2);root.style.setProperty('--accent',a.accent);
  title.textContent=a.title;text.textContent=a.text;mood.textContent=a.mood;
- weatherChip.textContent=weather[0];seasonChip.textContent=season;festChip.textContent=fest;
+ weatherChip.textContent=a.weather;seasonChip.textContent=a.season;festChip.textContent=a.fest;
+ body.classList.toggle('rain',!!a.rain);
+ body.classList.toggle('halloween',!!a.halloween);
+ if(a.halloween){
+   document.documentElement.style.setProperty('--accent','#9a5b38');
+   body.style.backgroundImage='radial-gradient(circle at 88% 12%,rgba(110,72,45,.12),transparent 13rem),linear-gradient(135deg,var(--bg1),var(--bg2))';
+ }else{
+   body.style.backgroundImage='';
+ }
 }
-function updateClock(){clock.textContent=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});}
-setAtmosphere();updateClock();setInterval(updateClock,30000);
+
+function realFestival(){
+ const now=new Date(),m=now.getMonth(),d=now.getDate();
+ if(m===9&&d===31)return 'Halloween';
+ if((m===9&&d>=25)|| (m===10&&d<=2))return 'Día de Muertos';
+ if(m===8&&d>=15&&d<=16)return 'Fiestas patrias';
+ if(m===11&&d>=12)return 'Temporada decembrina';
+ if(m===0&&d<=6)return 'Día de Reyes';
+ return '';
+}
+
+function setDemo(){
+ const index=Math.floor(Date.now()/60000)%demo.length;
+ apply(demo[index]);
+ const next=(index+1)%demo.length;
+ demoLabel.textContent='Demostración: escena '+(index+1)+' de '+demo.length+' · cambia cada minuto';
+ // En la fecha real, Halloween/Día de Muertos toma prioridad sobre la escena de prueba.
+ const fest=realFestival();
+ if(fest && !demo[index].halloween){
+   festChip.textContent=fest;
+ }
+}
+
+function updateClock(){clock.textContent=new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setDemo();updateClock();
+setInterval(()=>{setDemo();},1000);
+setInterval(updateClock,1000);
 </script>
 </body>
 </html>
