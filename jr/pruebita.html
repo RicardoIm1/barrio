@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#17333a">
+<title>El Barrio · Atmósfera</title>
+<style>
+:root{
+  --bg:#eef1e9;
+  --ink:#26312f;
+  --muted:#68736f;
+  --paper:rgba(255,255,255,.72);
+  --line:rgba(38,49,47,.13);
+  --accent:#557c68;
+  --warm:#d69b5b;
+  --shadow:0 18px 50px rgba(38,49,47,.10);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 15% 0%,rgba(255,255,255,.85),transparent 28rem),
+    linear-gradient(135deg,#eef1e9,#e4ebe5);
+  min-height:100vh;
+  transition:background 1.8s ease, color 1.2s ease;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;
+  opacity:.24;
+  background-image:
+    radial-gradient(rgba(38,49,47,.08) .7px,transparent .7px);
+  background-size:13px 13px;
+}
+.wrap{width:min(calc(100% - 30px),900px);margin:auto}
+header{
+  position:sticky;top:0;z-index:5;
+  background:rgba(238,241,233,.74);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav{
+  height:64px;display:flex;align-items:center;
+  justify-content:space-between;gap:20px
+}
+.brand{font-weight:800;letter-spacing:-.03em}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:.68rem;letter-spacing:.04em}
+.status{display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--muted)}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);
+  animation:breathe 3.5s ease-in-out infinite;
+}
+@keyframes breathe{
+  50%{transform:scale(.72);opacity:.55}
+}
+main{padding:70px 0 100px}
+.hero{
+  min-height:70vh;display:flex;align-items:center
+}
+.kicker{
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent)
+}
+h1{
+  font-size:clamp(3rem,10vw,7rem);
+  line-height:.92;letter-spacing:-.075em;
+  margin:18px 0 25px;max-width:800px
+}
+h1 span{color:#6f8177}
+.lead{
+  font-size:clamp(1.05rem,2vw,1.3rem);
+  color:var(--muted);max-width:650px
+}
+.place{
+  margin-top:40px;padding:18px 20px;
+  border:1px solid var(--line);border-radius:20px;
+  background:var(--paper);box-shadow:var(--shadow);
+  display:flex;justify-content:space-between;gap:20px;
+  align-items:center;
+}
+.place strong{display:block}
+.place small{color:var(--muted)}
+.cards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+}
+.card{
+  padding:24px;border:1px solid var(--line);border-radius:20px;
+  background:var(--paper);box-shadow:var(--shadow)
+}
+.card b{font-size:.72rem;color:var(--accent);letter-spacing:.12em;text-transform:uppercase}
+.card h2{font-size:1.15rem;margin:12px 0 7px}
+.card p{margin:0;color:var(--muted);font-size:.9rem}
+section{padding:80px 0}
+.section-label{
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin-bottom:14px
+}
+.footnote{
+  margin-top:35px;color:var(--muted);font-size:.8rem;
+  max-width:620px
+}
+footer{
+  padding:30px 0;border-top:1px solid var(--line);
+  color:var(--muted);font-size:.75rem
+}
+@media(max-width:700px){
+  .cards{grid-template-columns:1fr}
+  .place{align-items:flex-start;flex-direction:column}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <div class="brand">
+      El Barrio
+      <small>un lugar para lo que pasa cerca</small>
+    </div>
+    <div class="status"><span class="dot"></span><span id="mood">El barrio está despierto</span></div>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">Muestra de atmósfera</div>
+    <h1>Aquí pasan<br><span>cosas.</span></h1>
+    <p class="lead">
+      La información es la misma. El ambiente cambia suavemente con el momento del día.
+      Sin espectáculo. Sin WebGL. Sin exigirle al teléfono más de lo necesario.
+    </p>
+
+    <div class="place">
+      <div>
+        <strong id="atmoTitle">El Barrio ahora</strong>
+        <small id="atmoText">Preparando el ambiente...</small>
+      </div>
+      <div class="status"><span class="dot"></span><span id="clock"></span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-label">Lo que estamos probando</div>
+    <div class="cards">
+      <article class="card">
+        <b>Situación</b>
+        <h2>El contenido permanece.</h2>
+        <p>Avisos, negocios, personas y lugares siguen siendo fáciles de encontrar.</p>
+      </article>
+      <article class="card">
+        <b>Ambiente</b>
+        <h2>La interfaz respira.</h2>
+        <p>La hora modifica discretamente luz, temperatura visual y sensación.</p>
+      </article>
+      <article class="card">
+        <b>Principio</b>
+        <h2>La tecnología desaparece.</h2>
+        <p>Todo esto utiliza CSS y una pequeña lógica local. El teléfono no necesita hacer malabares.</p>
+      </article>
+    </div>
+
+    <p class="footnote">
+      Esta no es todavía la interfaz definitiva de El Barrio. Es una pequeña probeta:
+      estamos observando qué ocurre cuando una página deja de tener una apariencia completamente estática
+      y empieza a comportarse como un lugar.
+    </p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">El Barrio · situación → persona → acción</div>
+</footer>
+
+<script>
+const root=document.documentElement;
+const title=document.getElementById('atmoTitle');
+const text=document.getElementById('atmoText');
+const mood=document.getElementById('mood');
+const clock=document.getElementById('clock');
+
+const hour=new Date().getHours();
+
+let atmosphere;
+
+if(hour>=6 && hour<11){
+  atmosphere={
+    title:'Buenos días, vecino.',
+    text:'La mañana entra despacio al Barrio.',
+    bg1:'#eef3e8',bg2:'#e5eee9',accent:'#557c68',
+    mood:'El barrio comienza el día'
+  };
+}else if(hour>=11 && hour<18){
+  atmosphere={
+    title:'El Barrio está en movimiento.',
+    text:'Luz clara, actividad y cosas que están pasando.',
+    bg1:'#f1eee2',bg2:'#e5ebe4',accent:'#69795c',
+    mood:'El barrio está despierto'
+  };
+}else if(hour>=18 && hour<21){
+  atmosphere={
+    title:'La tarde cae sobre el Barrio.',
+    text:'El ambiente se vuelve un poco más cálido.',
+    bg1:'#eee7dc',bg2:'#e2e9e5',accent:'#a5744b',
+    mood:'La tarde llegó'
+  };
+}else{
+  atmosphere={
+    title:'Buenas noches, vecino.',
+    text:'Menos ruido. El Barrio sigue aquí.',
+    bg1:'#dfe6e4',bg2:'#d9e1e4',accent:'#55717a',
+    mood:'El barrio está tranquilo'
+  };
+}
+
+root.style.setProperty('--bg',atmosphere.bg1);
+root.style.setProperty('--accent',atmosphere.accent);
+document.body.style.background=
+  'radial-gradient(circle at 15% 0%,rgba(255,255,255,.85),transparent 28rem),linear-gradient(135deg,'+
+  atmosphere.bg1+','+atmosphere.bg2+')';
+
+title.textContent=atmosphere.title;
+text.textContent=atmosphere.text;
+mood.textContent=atmosphere.mood;
+
+function updateClock(){
+  const now=new Date();
+  clock.textContent=now.toLocaleTimeString('es-MX',{
+    hour:'2-digit',minute:'2-digit'
+  });
+}
+updateClock();
+setInterval(updateClock,30000);
+</script>
+</body>
+</html>
