@@ -65,6 +65,57 @@ function obtenerHost(endpoint: string) {
   }
 }
 
+function obtenerHeadersDiagnostico(error: any): string {
+  const headers =
+    error?.headers ??
+    error?.response?.headers ??
+    null;
+
+  if (!headers) return '';
+
+  const permitidos = [
+    'www-authenticate',
+    'content-type',
+    'content-location',
+    'x-wns-notificationstatus',
+    'x-wns-status',
+    'x-wns-msg-id',
+    'x-wns-debug-trace',
+    'x-request-id',
+    'x-correlation-id',
+  ];
+
+  const resultado: string[] = [];
+
+  try {
+    if (typeof headers.entries === 'function') {
+      for (const [nombre, valor] of headers.entries()) {
+        const clave = String(nombre).toLowerCase();
+
+        if (permitidos.includes(clave)) {
+          resultado.push(
+            `${clave}=${String(valor).slice(0, 300)}`,
+          );
+        }
+      }
+    } else if (typeof headers === 'object') {
+      for (const nombre of permitidos) {
+        const valor = headers[nombre];
+
+        if (valor !== undefined && valor !== null) {
+          resultado.push(
+            `${nombre}=${String(valor).slice(0, 300)}`,
+          );
+        }
+      }
+    }
+  } catch (_) {
+    return '';
+  }
+
+  return resultado.join('; ').slice(0, 1500);
+}
+
 function obtenerPayloadNotificacion(notificacion: any) {
   const tituloPorTipo: Record<string, string> = {
     like: 'A alguien le gustó tu aviso',
@@ -263,12 +314,15 @@ Deno.serve(async (req: Request) => {
       } catch (error: any) {
         const statusCode = obtenerStatusCode(error);
         const mensaje = obtenerMensajeError(error);
+        const headersDiagnostico =
+          obtenerHeadersDiagnostico(error);
 
         console.error('El Barrio Web Push:', {
           subscription_id: suscripcion.id,
           host,
           status_code: statusCode || null,
           message: mensaje || null,
+          response_headers: headersDiagnostico || null,
         });
 
         if (statusCode === 404 || statusCode === 410) {
@@ -289,8 +343,18 @@ Deno.serve(async (req: Request) => {
             desactivados++;
           }
         } else {
+          const detalle =
+            [
+              mensaje || 'sin detalle',
+              headersDiagnostico
+                ? `headers: ${headersDiagnostico}`
+                : '',
+            ]
+              .filter(Boolean)
+              .join(' | ');
+
           errores.push(
-            `${suscripcion.id} [${host}] HTTP ${statusCode || 'desconocido'}: ${mensaje || 'sin detalle'}`,
+            `${suscripcion.id} [${host}] HTTP ${statusCode || 'desconocido'}: ${detalle}`,
           );
         }
       }
