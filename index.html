@@ -153,12 +153,42 @@
 
       async function registrarVista(id) {
         try {
-          const apiKey = localStorage.getItem("api_key");
-          await API.peticion("REGISTRAR_VISTA", { id: id }, apiKey);
+          const resultado = await API.peticion("REGISTRAR_VISTA", { id: id });
+          const vistas = Number(resultado?.vistas ?? resultado?.data?.vistas);
+          if (Number.isFinite(vistas)) {
+            const aviso = allAvisos.find((a) => String(a.id) === String(id));
+            if (aviso) aviso.vistas = vistas;
+            const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
+            const span = card?.querySelector(".stat-item:first-child .stat-value");
+            if (span) span.textContent = vistas;
+          }
         } catch (e) {
           console.warn("Error registrando vista:", e);
         }
       }
+
+      function aplicarVistaPendiente() {
+        try {
+          const raw = localStorage.getItem("elbarrio_vista_actualizada");
+          if (!raw) return;
+          const pendiente = JSON.parse(raw);
+          if (!pendiente?.id || !Number.isFinite(Number(pendiente.vistas))) return;
+
+          const aviso = allAvisos.find((a) => String(a.id) === String(pendiente.id));
+          if (aviso) aviso.vistas = Number(pendiente.vistas);
+
+          const card = document.querySelector(`.aviso-card[data-id="${pendiente.id}"]`);
+          const span = card?.querySelector(".stat-item:first-child .stat-value");
+          if (span) span.textContent = Number(pendiente.vistas);
+
+          localStorage.removeItem("elbarrio_vista_actualizada");
+        } catch (e) {
+          console.warn("No se pudo sincronizar la vista pendiente:", e);
+          localStorage.removeItem("elbarrio_vista_actualizada");
+        }
+      }
+
+      window.addEventListener("pageshow", aplicarVistaPendiente);
 
       async function registrarClickWhatsApp(id) {
         try {
@@ -888,6 +918,7 @@
             await cargarTodosLosVotos();
             avisosCargados = true;
             applyFiltersAndSearch();
+            aplicarVistaPendiente();
           } else {
             if (container)
               container.innerHTML =
