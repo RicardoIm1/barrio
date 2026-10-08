@@ -126,20 +126,7 @@
     <script src="/js/auth.js"></script>
     <script src="/js/app.js"></script>
 
-    <script>
-      // Registrar visita al cargar la página
-      function registrarVisita(pagina) {
-        const userAgent = navigator.userAgent;
-        const referer = document.referrer;
-        const url = `https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec?accion=REGISTRAR_VISITA&pagina=${pagina}&user_agent=${encodeURIComponent(userAgent)}&referer=${encodeURIComponent(referer)}`;
-        fetch(url).catch((e) => console.warn("Error registrando visita:", e));
-      }
 
-      // Llama a la función cuando cargue el DOM
-      document.addEventListener("DOMContentLoaded", () => {
-        registrarVisita("index");
-      });
-    </script>
 
     <script>
       // ========== VARIABLES GLOBALES ==========
