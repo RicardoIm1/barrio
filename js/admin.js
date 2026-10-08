@@ -1272,7 +1272,7 @@ async function cargarUsuariosAdmin() {
               : "❌ Inactivo",
           fechaRegistro = user.created_at || user.fecha_registro || "",
           fechaMostrar = fechaRegistro
-            ? new Date(fechaRegistro).toLocaleDateString("es-MX")
+            ? new Date(fechaRegistro).toLocaleDateString("es-MX", { timeZone: EL_BARRIO_TIME_ZONE })
             : "—";
         return `<tr><td data-label="Email">${email}${fechaRegistro ? `<br><small style="color:#888;">📅 ${fechaMostrar}</small>` : ""}</td><td data-label="Nombre">${nombre}</td><td data-label="Rol"><span class="rol-badge ${rol === "admin" ? "rol-admin" : "rol-usuario"}">${rol}</span></td><td data-label="Estado">${activo}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`;
       })
