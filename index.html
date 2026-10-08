@@ -1233,20 +1233,60 @@
           const registration = await navigator.serviceWorker.register("/sw.js");
           console.log("Service Worker registrado:", registration);
 
-          // Suscripción push nativa
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUInt8Array(
-              "BIFRjw-VpDft10-O6ZJX_0ODl6tEuHM4gR4EvuHfvZz3u7Fo0ypcorNLb2E_rUae8ChaIfjQShrHAe_0r2papBE",
-            ),
-          });
+          // Migración controlada de la suscripción Push al VAPID vigente.
+          // Las suscripciones creadas con el VAPID anterior no pueden reutilizarse
+          // para envíos firmados con el nuevo par VAPID.
+          const VAPID_PUBLIC_KEY =
+            "BDr1vV4sJF485cSxNPBXm6gSX3b7Pfi3c-9ZTTly6-JqvkNNS9uMB9-fM_DjfOVCFlXlLjN5tQYZy_O2NI114_k";
+          const PUSH_VAPID_VERSION = "v2";
 
-          console.log("Suscripción obtenida:", subscription);
+          let subscription =
+            await registration.pushManager.getSubscription();
+
+          const versionMigrada = localStorage.getItem(
+            "elbarrio_push_vapid_version",
+          );
+
+          if (
+            subscription &&
+            versionMigrada !== PUSH_VAPID_VERSION
+          ) {
+            console.log(
+              "Migrando suscripción Push al VAPID vigente...",
+            );
+
+            await subscription.unsubscribe();
+            subscription = null;
+          }
+
+          if (!subscription) {
+            subscription =
+              await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey:
+                  urlBase64ToUInt8Array(
+                    VAPID_PUBLIC_KEY,
+                  ),
+              });
+          }
+
+          console.log(
+            "Suscripción Push vigente:",
+            subscription,
+          );
 
           // Guardar suscripción en el backend
           await guardarSuscripcionEnBackend(subscription, apiKey);
 
-          showToast("Notificaciones activadas correctamente", "success");
+          localStorage.setItem(
+            "elbarrio_push_vapid_version",
+            PUSH_VAPID_VERSION,
+          );
+
+          showToast(
+            "Notificaciones activadas correctamente",
+            "success",
+          );
         } catch (error) {
           console.error("Error:", error);
           showToast("Error al activar notificaciones", "error");
