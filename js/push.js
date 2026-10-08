@@ -9,7 +9,8 @@
   // Clave pública VAPID. La privada NUNCA debe estar en el frontend.
   const VAPID_PUBLIC_KEY =
     "BDr1vV4sJF485cSxNPBXm6gSX3b7Pfi3c-9ZTTly6-JqvkNNS9uMB9-fM_DjfOVCFlXlLjN5tQYZy_O2NI114_k";
-  const SERVICE_WORKER_URL = "/js/service-worker.js";
+  const SERVICE_WORKER_URL = "/sw.js";
+  const PUSH_VAPID_VERSION = "v3";
 
   function base64UrlToUint8Array(base64UrlData) {
     const padding = "=".repeat((4 - (base64UrlData.length % 4)) % 4);
@@ -122,13 +123,31 @@
 
     const registration = await navigator.serviceWorker.register(
       SERVICE_WORKER_URL,
-      { scope: "/js/" },
+      { scope: "/" },
     );
     await esperarServiceWorkerActivo(registration);
-    const subscription = await registration.pushManager.getSubscription();
+    let subscription = await registration.pushManager.getSubscription();
 
-    if (!subscription) return false;
-    return registrarSuscripcion(subscription);
+    const versionMigrada = localStorage.getItem("elbarrio_push_vapid_version");
+
+    if (subscription && versionMigrada !== PUSH_VAPID_VERSION) {
+      console.log("Web Push: migrando suscripción al VAPID vigente...");
+      await subscription.unsubscribe();
+      subscription = null;
+    }
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: base64UrlToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+
+    const guardado = await registrarSuscripcion(subscription);
+    if (guardado) {
+      localStorage.setItem("elbarrio_push_vapid_version", PUSH_VAPID_VERSION);
+    }
+    return guardado;
   }
 
   async function activarPush() {
@@ -160,7 +179,7 @@
 
     const registration = await navigator.serviceWorker.register(
       SERVICE_WORKER_URL,
-      { scope: "/js/" },
+      { scope: "/" },
     );
     await esperarServiceWorkerActivo(registration);
     let subscription = await registration.pushManager.getSubscription();
