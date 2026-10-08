@@ -148,7 +148,7 @@
             accionesBotones = `<button class="btn-tabla btn-aprobar" onclick="UI.procesarAprobacion('${aviso.id}', 'aprobar')">✅ Aprobar</button><button class="btn-tabla btn-rechazar" onclick="UI.procesarAprobacion('${aviso.id}', 'rechazar')">❌ Rechazar</button>`;
           } else accionesBotones = `<span class="texto-bloqueado">Sin acciones</span>`;
         } else accionesBotones = `<span class="texto-bloqueado">Solo lectura</span>`;
-        return `<tr id="fila-aviso-${aviso.id}"><td>${celdaImagen}</td><td><strong>${aviso.titulo || 'Sin título'}</strong><br><small style="color:#888;">${aviso.categoria}</small></td><td>${aviso.contacto || 'No provisto'}</td><td>${new Date(aviso.created_at).toLocaleDateString('es-MX')}</td><td><span class="badge-status ${badgeClase}">${aviso.status || 'pendiente'}</span></td><td><div class="acciones-tabla-flex">${accionesBotones}</div></td></tr>`;
+        return `<tr id="fila-aviso-${aviso.id}"><td>${celdaImagen}</td><td><strong>${aviso.titulo || 'Sin título'}</strong><br><small style="color:#888;">${aviso.categoria}</small></td><td>${aviso.contacto || 'No provisto'}</td><td>${new Date(aviso.created_at).toLocaleDateString('es-MX', { timeZone: 'America/Bahia_Banderas' })}</td><td><span class="badge-status ${badgeClase}">${aviso.status || 'pendiente'}</span></td><td><div class="acciones-tabla-flex">${accionesBotones}</div></td></tr>`;
       }).join('');
     },
 
