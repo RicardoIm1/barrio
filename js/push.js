@@ -12,10 +12,9 @@
 
   const SERVICE_WORKER_URL = "/sw.js";
 
-  // v4 fuerza una sincronización limpia de la suscripción existente.
-  // No se usa como fuente de verdad de la suscripción, solo como marcador
-  // de migración del navegador.
-  const PUSH_VAPID_VERSION = "v4";
+  // v5: una sola migración controlada del navegador.
+  // Obliga a recrear la suscripción con la VAPID vigente.
+  const PUSH_VAPID_VERSION = "v5";
   const PUSH_ENDPOINT_KEY = "elbarrio_push_endpoint_v1";
 
   function base64UrlToUint8Array(base64UrlData) {
@@ -186,16 +185,12 @@
 
     await registrarSuscripcion(subscription, usuario.id);
 
-    // La suscripción que existe en PushManager y se acaba de guardar
-    // es la fuente de verdad local.
     localStorage.setItem(
       "elbarrio_push_vapid_version",
       PUSH_VAPID_VERSION,
     );
     localStorage.setItem(PUSH_ENDPOINT_KEY, subscription.endpoint);
 
-    // Evita que endpoints históricos sigan provocando intentos de envío
-    // innecesarios y errores por credenciales VAPID anteriores.
     await desactivarSuscripcionesAnteriores(
       usuario.id,
       subscription.endpoint,
@@ -282,7 +277,6 @@
         return false;
       }
 
-      // Evita la carrera entre auth.js y push.js durante el arranque.
       for (let intento = 1; intento <= 4; intento++) {
         try {
           return await registrarPush();
