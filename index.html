@@ -124,6 +124,7 @@
 
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
+    <script src="/js/push.js"></script>
     <script src="/js/app.js"></script>
 
 
@@ -1083,53 +1084,7 @@
       </div>
     </div>
 
-    <script>
-      if (localStorage.getItem("cookie_consent") === "aceptadas") {
-        const banner = document.getElementById("cookieBanner");
-        if (banner) banner.style.display = "none";
-      }
-      const aceptarBtn = document.getElementById("aceptarCookies");
-      if (aceptarBtn) {
-        aceptarBtn.addEventListener("click", () => {
-          localStorage.setItem("cookie_consent", "aceptadas");
-          const banner = document.getElementById("cookieBanner");
-          if (banner) banner.style.display = "none";
-        });
-      }
 
-      // Función para enviar notificación de prueba - AHORA EN EL ÁMBITO GLOBAL
-      async function enviarNotificacionPrueba() {
-        const apiKey = localStorage.getItem("api_key");
-        if (!apiKey) {
-          alert("🔐 Inicia sesión primero para probar notificaciones");
-          return;
-        }
-
-        const url =
-          "https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec";
-
-        try {
-          const response = await fetch(
-            `${url}?accion=ENVIAR_PRUEBA_PUSH&api_key=${apiKey}`,
-          );
-          const result = await response.json();
-
-          if (result.success) {
-            alert(
-              "✅ Notificación de prueba enviada. Deberías verla en unos segundos.",
-            );
-          } else {
-            alert(
-              "❌ Error: " +
-                (result.error || "No se pudo enviar la notificación"),
-            );
-          }
-        } catch (error) {
-          console.error("Error:", error);
-          alert("❌ Error de conexión. Revisa tu conexión a internet.");
-        }
-      }
-    </script>
 
     <script>
       function actualizarHeaderPorSesion() {
@@ -1212,128 +1167,6 @@
         <button onclick="enviarComentario()">Enviar</button>
       </div>
     </div>
-
-    <script type="module">
-      
-      // Notificaciones push con Web Push API nativa (SIN Firebase)
-      async function registrarPushNotifications(apiKey) {
-        try {
-          if (!("Notification" in window)) {
-            console.log("Notificaciones no soportadas");
-            return;
-          }
-
-          const permission = await Notification.requestPermission();
-          if (permission !== "granted") {
-            console.log("Permiso denegado");
-            return;
-          }
-
-          // Registrar Service Worker manualmente en /
-          const registration = await navigator.serviceWorker.register("/sw.js");
-          console.log("Service Worker registrado:", registration);
-
-          // Migración controlada de la suscripción Push al VAPID vigente.
-          // Las suscripciones creadas con el VAPID anterior no pueden reutilizarse
-          // para envíos firmados con el nuevo par VAPID.
-          const VAPID_PUBLIC_KEY =
-            "BDr1vV4sJF485cSxNPBXm6gSX3b7Pfi3c-9ZTTly6-JqvkNNS9uMB9-fM_DjfOVCFlXlLjN5tQYZy_O2NI114_k";
-          const PUSH_VAPID_VERSION = "v3";
-
-          let subscription =
-            await registration.pushManager.getSubscription();
-
-          const versionMigrada = localStorage.getItem(
-            "elbarrio_push_vapid_version",
-          );
-
-          if (
-            subscription &&
-            versionMigrada !== PUSH_VAPID_VERSION
-          ) {
-            console.log(
-              "Migrando suscripción Push al VAPID vigente...",
-            );
-
-            await subscription.unsubscribe();
-            subscription = null;
-          }
-
-          if (!subscription) {
-            subscription =
-              await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey:
-                  urlBase64ToUInt8Array(
-                    VAPID_PUBLIC_KEY,
-                  ),
-              });
-          }
-
-          console.log(
-            "Suscripción Push vigente:",
-            subscription,
-          );
-
-          // Guardar suscripción en el backend
-          await guardarSuscripcionEnBackend(subscription, apiKey);
-
-          localStorage.setItem(
-            "elbarrio_push_vapid_version",
-            PUSH_VAPID_VERSION,
-          );
-
-          showToast(
-            "Notificaciones activadas correctamente",
-            "success",
-          );
-        } catch (error) {
-          console.error("Error:", error);
-          showToast("Error al activar notificaciones", "error");
-        }
-      }
-
-      function urlBase64ToUInt8Array(base64String) {
-        const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-        const base64 = (base64String + padding)
-          .replace(/\-/g, "+")
-          .replace(/_/g, "/");
-        const rawData = atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
-        }
-        return outputArray;
-      }
-
-      async function guardarSuscripcionEnBackend(subscription, apiKey) {
-        const url =
-          "https://script.google.com/macros/s/AKfycbx0b0ZObDChZ3u8DF2L9QCiBZrpfdbFiBHUYfIEvJjNzu_gh4uB66syAAlwPLGEJDB1/exec";
-        const response = await fetch(
-          `${url}?accion=REGISTRAR_TOKEN_PUSH&api_key=${apiKey}&token=${JSON.stringify(subscription)}&dispositivo=web`,
-        );
-        return await response.json();
-      }
-
-      function showToast(mensaje, tipo) {
-        const toast = document.getElementById("toast");
-        toast.textContent = mensaje;
-        toast.classList.add("show");
-        setTimeout(() => toast.classList.remove("show"), 3000);
-      }
-
-      // Integrar con login
-      const originalHandleLogin = window.handleLogin;
-      window.handleLogin = async function (email, password) {
-        const result = await originalHandleLogin(email, password);
-        if (result && result.success && result.data && result.data.api_key) {
-          await registrarPushNotifications(result.data.api_key);
-        }
-        return result;
-      };
-
-      window.registrarPushNotifications = registrarPushNotifications;
-    </script>
 
     <!-- Estilos para notificaciones -->
     <style>
