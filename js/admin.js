@@ -3,6 +3,8 @@
 // ==============================================================
 console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
 
+const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
+
 (function inicializarPerfilAdmin() {
   const escapar = (valor) => {
     const div = document.createElement("div");
@@ -16,6 +18,7 @@ console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
     return fecha.toLocaleString("es-MX", {
       dateStyle: "medium",
       timeStyle: "short",
+      timeZone: EL_BARRIO_TIME_ZONE,
     });
   };
   function mostrarPerfil(p) {
@@ -339,28 +342,35 @@ console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
     const e = document.getElementById(id);
     if (e) e.textContent = formatear(v);
   }
+  const EL_BARRIO_DATE_PARTS = new Intl.DateTimeFormat("en-CA", {
+    timeZone: EL_BARRIO_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
   function fechas30() {
-    const r = [],
-      hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
+    const partes = EL_BARRIO_DATE_PARTS.format(new Date()).split("-").map(Number);
+    const hoy = new Date(Date.UTC(partes[0], partes[1] - 1, partes[2]));
+    const r = [];
     for (let i = DIAS - 1; i >= 0; i--) {
       const d = new Date(hoy);
-      d.setDate(hoy.getDate() - i);
+      d.setUTCDate(hoy.getUTCDate() - i);
       r.push(d);
     }
     return r;
   }
+
   function clave(d) {
-    return (
-      d.getFullYear() +
-      "-" +
-      String(d.getMonth() + 1).padStart(2, "0") +
-      "-" +
-      String(d.getDate()).padStart(2, "0")
-    );
+    return EL_BARRIO_DATE_PARTS.format(d);
   }
+
   function etiqueta(d) {
-    return d.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit" });
+    return d.toLocaleDateString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      timeZone: "UTC",
+    });
   }
 
   function canvasSize(canvas) {
@@ -515,6 +525,7 @@ console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
               ? fecha.toLocaleTimeString("es-MX", {
                   hour: "2-digit",
                   minute: "2-digit",
+                  timeZone: EL_BARRIO_TIME_ZONE,
                 })
               : "ahora";
         return `<div class="online-user-item"><div><strong style="color:#eee;">${nombre}</strong>${email ? `<div class="online-user-email">${email}</div>` : ""}</div><span class="online-user-time">● ${tiempo}</span></div>`;
@@ -928,6 +939,7 @@ function renderizarTablaAvisos() {
             year: "numeric",
             hour: "2-digit",
             minute: "2-digit",
+            timeZone: EL_BARRIO_TIME_ZONE,
           });
         } catch (e) {
           fechaFormateada = aviso.created_at;
