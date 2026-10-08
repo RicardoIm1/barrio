@@ -811,24 +811,33 @@
         container.insertAdjacentHTML("beforeend", html);
       }
 
-      // Obtener el nombre real mediante created_by -> usuarios.id -> usuarios.nombre.
-      // Se consulta desde index.html para no modificar la API ni ocultar avisos.
+      // Los nombres de autores no se consultan directamente desde usuarios.
+      // Anónimos no reciben identidad del autor; usuarios autenticados la obtienen
+      // mediante el RPC controlado obtener_nombre_autor.
       async function enriquecerAvisosConUsuarios(avisos) {
         if (!Array.isArray(avisos) || avisos.length === 0) return avisos;
-        const ids = [...new Set(avisos.map((aviso) => aviso?.created_by || aviso?.usuario_id).filter(Boolean).map(String))];
-        if (ids.length === 0) return avisos;
         try {
           const client = await getSupabaseClient();
-          const { data: usuarios, error } = await client.from("usuarios").select("id,nombre").in("id", ids);
-          if (error) throw error;
-          const nombres = new Map((usuarios || []).filter((usuario) => usuario?.id && usuario?.nombre).map((usuario) => [String(usuario.id), String(usuario.nombre).trim()]));
-          avisos.forEach((aviso) => {
-            const autorId = aviso?.created_by || aviso?.usuario_id;
-            const nombre = autorId ? nombres.get(String(autorId)) : "";
-            if (nombre) { aviso.usuario_nombre = nombre; aviso.nombre_autor = nombre; }
-          });
+          const { data: sessionData, error: sessionError } = await client.auth.getSession();
+          if (sessionError || !sessionData?.session?.user?.id) return avisos;
+          const ids = [...new Set(avisos.map(a => a?.created_by || a?.usuario_id).filter(Boolean).map(String))];
+          await Promise.all(ids.map(async (id) => {
+            try {
+              const { data: nombre, error } = await client.rpc('obtener_nombre_autor', { p_usuario_id: id });
+              if (error || !nombre) return;
+              avisos.forEach(aviso => {
+                const autorId = aviso?.created_by || aviso?.usuario_id;
+                if (autorId && String(autorId) === id) {
+                  aviso.usuario_nombre = String(nombre).trim();
+                  aviso.nombre_autor = String(nombre).trim();
+                }
+              });
+            } catch (errorAutor) {
+              console.warn(`No se pudo obtener el autor ${id}:`, errorAutor);
+            }
+          }));
         } catch (error) {
-          console.warn("No se pudieron obtener los nombres reales de los autores:", error);
+          console.warn("No se pudieron obtener los nombres de los autores:", error);
         }
         return avisos;
       }
@@ -1474,45 +1483,7 @@
       });
     </script>
 
-    <script>
-      // ========== ACTUALIZAR VISTAS EN EL INDEX ==========
-      async function actualizarTodasLasVistas() {
-        const cards = document.querySelectorAll(".aviso-card");
-        if (cards.length === 0) return;
-
-        const apiKey = localStorage.getItem("api_key");
-
-        for (const card of cards) {
-          const id = card.getAttribute("data-id");
-          if (!id) continue;
-
-          try {
-            const resultado = await API.peticion(
-              "OBTENER_ESTADISTICAS",
-              { id: id },
-              apiKey,
-            );
-            if (resultado && resultado.success && resultado.data) {
-              const vistasSpan = card.querySelector(".vistas-count");
-              if (vistasSpan) {
-                vistasSpan.textContent = resultado.data.vistas || 0;
-              }
-            }
-          } catch (e) {
-            console.warn(`Error actualizando vistas del aviso ${id}:`, e);
-          }
-        }
-      }
-
-      // Actualizar cada 30 segundos
-      setInterval(() => {
-        if (!document.hidden) {
-          actualizarTodasLasVistas();
-        }
-      }, 30000);
-    </script>
-
-    <script>
+<script>
       // ========== ACTUALIZAR CLICKS DE WHATSAPP EN TIEMPO REAL ==========
       async function actualizarWhatsAppClicksEnTiempoReal() {
         const cards = document.querySelectorAll(".aviso-card");
