@@ -13,7 +13,8 @@ async function obtenerSupabaseClient() {
   if (window.__elBarrioGetSupabaseClient) return await window.__elBarrioGetSupabaseClient();
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
-
+  throw new Error('Cliente Supabase no disponible');
+}
 function instalarEstilosApagadoTV() {
   if (document.getElementById('el-barrio-apagado-tv-styles')) return;
   const style = document.createElement('style');
