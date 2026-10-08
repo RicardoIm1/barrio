@@ -26,6 +26,7 @@ function getUsuarioLocal() {
 }
 
 async function getSupabaseClient() {
+  if (window.__elBarrioGetSupabaseClient) return await window.__elBarrioGetSupabaseClient();
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
 
@@ -149,7 +150,7 @@ async function supabasePeticion(accion, datos = {}) {
     case 'LISTAR_AVISOS_PUBLICOS': {
       let query = client
         .from('avisos')
-        .select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' })
+        .select('*', { count: 'exact' })
         .eq('status', 'activo')
         .order('created_at', { ascending: false });
       if (datos?.categoria && datos.categoria !== 'todos') query = query.eq('categoria', datos.categoria);
