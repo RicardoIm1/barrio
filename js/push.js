@@ -14,7 +14,7 @@
 
   // v5: una sola migración controlada del navegador.
   // Obliga a recrear la suscripción con la VAPID vigente.
-  const PUSH_VAPID_VERSION = "v5";
+  const PUSH_VAPID_VERSION = "v6";
   const PUSH_ENDPOINT_KEY = "elbarrio_push_endpoint_v1";
 
   function base64UrlToUint8Array(base64UrlData) {
