@@ -9,8 +9,14 @@
   // Clave pública VAPID. La privada NUNCA debe estar en el frontend.
   const VAPID_PUBLIC_KEY =
     "BDr1vV4sJF485cSxNPBXm6gSX3b7Pfi3c-9ZTTly6-JqvkNNS9uMB9-fM_DjfOVCFlXlLjN5tQYZy_O2NI114_k";
+
   const SERVICE_WORKER_URL = "/sw.js";
-  const PUSH_VAPID_VERSION = "v3";
+
+  // v4 fuerza una sincronización limpia de la suscripción existente.
+  // No se usa como fuente de verdad de la suscripción, solo como marcador
+  // de migración del navegador.
+  const PUSH_VAPID_VERSION = "v4";
+  const PUSH_ENDPOINT_KEY = "elbarrio_push_endpoint_v1";
 
   function base64UrlToUint8Array(base64UrlData) {
     const padding = "=".repeat((4 - (base64UrlData.length % 4)) % 4);
@@ -60,21 +66,17 @@
   }
 
   async function obtenerUsuarioAutenticado() {
-    try {
-      const client = await obtenerCliente();
-      const { data, error } = await client.auth.getUser();
-      if (error) throw error;
-      return data?.user || null;
-    } catch (error) {
-      console.warn("Web Push: no se pudo obtener el usuario:", error);
-      return null;
-    }
+    const client = await obtenerCliente();
+    const { data, error } = await client.auth.getUser();
+    if (error) throw error;
+    return data?.user || null;
   }
 
-  async function registrarSuscripcion(subscription) {
-    const usuario = await obtenerUsuarioAutenticado();
-    if (!usuario?.id) return false;
+  function bufferABase64(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)));
+  }
 
+  async function registrarSuscripcion(subscription, usuarioId) {
     const keys = subscription.getKey
       ? {
           p256dh: subscription.getKey("p256dh"),
@@ -86,15 +88,13 @@
       throw new Error("La suscripción Web Push no contiene sus claves");
     }
 
-    const toBase64 = (buffer) =>
-      btoa(String.fromCharCode(...new Uint8Array(buffer)));
-
     const client = await obtenerCliente();
+
     const payload = {
-      usuario_id: usuario.id,
+      usuario_id: usuarioId,
       endpoint: subscription.endpoint,
-      p256dh: toBase64(keys.p256dh),
-      auth: toBase64(keys.auth),
+      p256dh: bufferABase64(keys.p256dh),
+      auth: bufferABase64(keys.auth),
       user_agent: navigator.userAgent,
       activo: true,
       updated_at: new Date().toISOString(),
@@ -105,6 +105,111 @@
       .upsert(payload, { onConflict: "usuario_id,endpoint" });
 
     if (error) throw error;
+
+    return true;
+  }
+
+  async function desactivarSuscripcionesAnteriores(usuarioId, endpointActual) {
+    try {
+      const client = await obtenerCliente();
+
+      const { error } = await client
+        .from("push_subscriptions")
+        .update({
+          activo: false,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("usuario_id", usuarioId)
+        .neq("endpoint", endpointActual)
+        .eq("activo", true);
+
+      if (error) {
+        console.warn(
+          "Web Push: no se pudieron desactivar suscripciones anteriores:",
+          error,
+        );
+      }
+    } catch (error) {
+      console.warn(
+        "Web Push: error al limpiar suscripciones anteriores:",
+        error,
+      );
+    }
+  }
+
+  async function sincronizarSuscripcion({ forzarMigracion = false } = {}) {
+    const usuario = await obtenerUsuarioAutenticado();
+
+    if (!usuario?.id) return false;
+
+    const registration = await navigator.serviceWorker.register(
+      SERVICE_WORKER_URL,
+      { scope: "/" },
+    );
+
+    await esperarServiceWorkerActivo(registration);
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    const versionMigrada = localStorage.getItem("elbarrio_push_vapid_version");
+    const endpointRegistrado =
+      localStorage.getItem(PUSH_ENDPOINT_KEY) || "";
+
+    const debeMigrar =
+      forzarMigracion ||
+      versionMigrada !== PUSH_VAPID_VERSION ||
+      (endpointRegistrado &&
+        subscription &&
+        endpointRegistrado !== subscription.endpoint);
+
+    if (subscription && debeMigrar) {
+      console.log("Web Push: migrando suscripción al estado vigente...");
+
+      try {
+        await subscription.unsubscribe();
+      } catch (error) {
+        console.warn(
+          "Web Push: no se pudo cancelar la suscripción anterior:",
+          error,
+        );
+      }
+
+      subscription = null;
+    }
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: base64UrlToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+
+    await registrarSuscripcion(subscription, usuario.id);
+
+    // La suscripción que existe en PushManager y se acaba de guardar
+    // es la fuente de verdad local.
+    localStorage.setItem(
+      "elbarrio_push_vapid_version",
+      PUSH_VAPID_VERSION,
+    );
+    localStorage.setItem(PUSH_ENDPOINT_KEY, subscription.endpoint);
+
+    // Evita que endpoints históricos sigan provocando intentos de envío
+    // innecesarios y errores por credenciales VAPID anteriores.
+    await desactivarSuscripcionesAnteriores(
+      usuario.id,
+      subscription.endpoint,
+    );
+
+    console.log("Web Push: suscripción sincronizada correctamente.", {
+      proveedor:
+        subscription.endpoint.includes("fcm.googleapis.com")
+          ? "FCM"
+          : subscription.endpoint.includes("wns")
+            ? "WNS"
+            : "OTRO",
+    });
+
     return true;
   }
 
@@ -118,36 +223,7 @@
       return false;
     }
 
-    const usuario = await obtenerUsuarioAutenticado();
-    if (!usuario?.id) return false;
-
-    const registration = await navigator.serviceWorker.register(
-      SERVICE_WORKER_URL,
-      { scope: "/" },
-    );
-    await esperarServiceWorkerActivo(registration);
-    let subscription = await registration.pushManager.getSubscription();
-
-    const versionMigrada = localStorage.getItem("elbarrio_push_vapid_version");
-
-    if (subscription && versionMigrada !== PUSH_VAPID_VERSION) {
-      console.log("Web Push: migrando suscripción al VAPID vigente...");
-      await subscription.unsubscribe();
-      subscription = null;
-    }
-
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: base64UrlToUint8Array(VAPID_PUBLIC_KEY),
-      });
-    }
-
-    const guardado = await registrarSuscripcion(subscription);
-    if (guardado) {
-      localStorage.setItem("elbarrio_push_vapid_version", PUSH_VAPID_VERSION);
-    }
-    return guardado;
+    return sincronizarSuscripcion();
   }
 
   async function activarPush() {
@@ -177,35 +253,54 @@
       return false;
     }
 
-    const registration = await navigator.serviceWorker.register(
-      SERVICE_WORKER_URL,
-      { scope: "/" },
-    );
-    await esperarServiceWorkerActivo(registration);
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: base64UrlToUint8Array(VAPID_PUBLIC_KEY),
+    try {
+      const guardado = await sincronizarSuscripcion({
+        forzarMigracion: true,
       });
+
+      if (guardado && typeof showToast === "function")
+        showToast("Notificaciones activadas", 2200);
+
+      actualizarControlPush();
+      return guardado;
+    } catch (error) {
+      console.error("Web Push:", error);
+
+      if (typeof showToast === "function")
+        showToast("No se pudieron activar las notificaciones.", 2500);
+
+      return false;
     }
-
-    const guardado = await registrarSuscripcion(subscription);
-
-    if (guardado && typeof showToast === "function")
-      showToast("🔔 Notificaciones activadas", 2200);
-    actualizarControlPush();
-    return guardado;
   }
 
   async function sincronizarPushSiYaExiste() {
     try {
-      if (!("Notification" in window) || Notification.permission !== "granted")
+      if (
+        !("Notification" in window) ||
+        Notification.permission !== "granted"
+      ) {
         return false;
-      return await registrarPush();
+      }
+
+      // Evita la carrera entre auth.js y push.js durante el arranque.
+      for (let intento = 1; intento <= 4; intento++) {
+        try {
+          return await registrarPush();
+        } catch (error) {
+          if (intento === 4) throw error;
+
+          await new Promise((resolve) =>
+            setTimeout(resolve, intento * 1500),
+          );
+        }
+      }
+
+      return false;
     } catch (error) {
-      console.warn("Web Push: no se pudo sincronizar la suscripción:", error);
+      console.warn(
+        "Web Push: no se pudo sincronizar la suscripción:",
+        error,
+      );
       return false;
     }
   }
@@ -216,6 +311,7 @@
     if (!userArea) return;
 
     let boton = document.getElementById("btn-elbarrio-push");
+
     if (!usuario) {
       if (boton) boton.remove();
       return;
@@ -229,6 +325,7 @@
         "border:0;background:transparent;cursor:pointer;font-size:1.05rem;padding:6px 8px;border-radius:50%;";
       boton.title = "Activar notificaciones";
       boton.setAttribute("aria-label", "Activar notificaciones");
+
       boton.addEventListener("click", () =>
         activarPush().catch((error) => {
           console.error("Web Push:", error);
@@ -236,12 +333,14 @@
             showToast("No se pudieron activar las notificaciones.", 2500);
         }),
       );
+
       userArea.insertBefore(boton, userArea.firstChild);
     }
 
     const activadas =
       typeof Notification !== "undefined" &&
       Notification.permission === "granted";
+
     boton.textContent = activadas ? "🔔" : "🔕";
     boton.title = activadas
       ? "Notificaciones activadas"
@@ -270,7 +369,7 @@
         });
       });
 
-      console.log("🔔 Botón #activar-notificaciones conectado a Web Push");
+      console.log("Botón #activar-notificaciones conectado a Web Push");
     }
 
     setTimeout(actualizarControlPush, 500);
