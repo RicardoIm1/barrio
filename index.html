@@ -541,7 +541,7 @@
             <div class="comentario">
                 <div class="comentario-header">
                     <strong>${escapeHTML(com.usuario_nombre || com.autor || com.usuario_email || "Anónimo")}</strong>
-                    <small>${new Date(com.fecha || com.created_at).toLocaleDateString("es-MX")}</small>
+                    <small>${new Date(com.fecha || com.created_at).toLocaleDateString("es-MX", { timeZone: "America/Bahia_Banderas" })}</small>
                 </div>
                 <div class="comentario-contenido">
                     ${escapeHTML(com.comentario || com.texto || com.contenido)}
@@ -645,6 +645,7 @@
             day: "numeric",
             month: "short",
             year: "numeric",
+            timeZone: "America/Bahia_Banderas",
           });
         } catch (e) {
           return fechaStr;
