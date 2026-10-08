@@ -28,7 +28,7 @@ function getUsuarioLocal() {
 async function getSupabaseClient() {
   if (window.__elBarrioGetSupabaseClient) return await window.__elBarrioGetSupabaseClient();
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
-  if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
+  if (window.__elBarrioSupabaseClientPromise) return await window.__elBarrioSupabaseClientPromise;
 
   if (!window.supabase) {
     if (!window.__elBarrioSupabaseLoadPromise) {
@@ -52,11 +52,23 @@ async function getSupabaseClient() {
   }
 
   if (!window.supabase) throw new Error('Supabase JS no disponible');
-  window.__elBarrioSupabaseClient = window.supabase.createClient(
-    API_SUPABASE_URL,
-    API_SUPABASE_PUBLISHABLE_KEY
-  );
-  return window.__elBarrioSupabaseClient;
+  if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
+  if (window.__elBarrioSupabaseClientPromise) return await window.__elBarrioSupabaseClientPromise;
+
+  window.__elBarrioSupabaseClientPromise = Promise.resolve().then(() => {
+    if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
+    const client = window.supabase.createClient(API_SUPABASE_URL, API_SUPABASE_PUBLISHABLE_KEY);
+    window.__elBarrioSupabaseClient = client;
+    window.supabaseClient = client;
+    return client;
+  });
+
+  try {
+    return await window.__elBarrioSupabaseClientPromise;
+  } catch (error) {
+    window.__elBarrioSupabaseClientPromise = null;
+    throw error;
+  }
 }
 
 function respuestaOK(data = null, extra = {}) {
