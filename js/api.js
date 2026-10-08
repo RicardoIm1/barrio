@@ -87,7 +87,7 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   let query = client
     .from('avisos')
-    .select(`*, usuarios!avisos_created_by_fkey (nombre)`, { count: 'exact' })
+    .select('*', { count: 'exact' })
     .order('created_at', { ascending: false });
 
   if (soloMios) query = query.eq('created_by', usuario.id);
@@ -117,7 +117,7 @@ async function supabasePeticion(accion, datos = {}) {
       if (!id) throw new Error('ID de aviso no proporcionado');
       const { data, error } = await client
         .from('avisos')
-        .select(`*, usuarios!avisos_created_by_fkey (nombre)`)
+        .select('*')
         .eq('id', id)
         .maybeSingle();
       if (error) throw error;
@@ -134,7 +134,18 @@ async function supabasePeticion(accion, datos = {}) {
         console.warn('No se pudieron cargar los acumulados de votos:', errorVotos);
       }
 
-      return respuestaOK({ ...normalizarAviso(data), likes: positivos, dislikes: negativos, votos_positivos: positivos, votos_negativos: negativos });
+      let aviso = normalizarAviso(data);
+      try {
+        const { data: sessionData } = await client.auth.getSession();
+        if (sessionData?.session?.user?.id && aviso?.created_by) {
+          const { data: nombre, error: nombreError } = await client.rpc('obtener_nombre_autor', { p_usuario_id: aviso.created_by });
+          if (!nombreError && nombre) {
+            aviso.nombre_autor = String(nombre).trim();
+            aviso.usuario_nombre = String(nombre).trim();
+          }
+        }
+      } catch (_) {}
+      return respuestaOK({ ...aviso, likes: positivos, dislikes: negativos, votos_positivos: positivos, votos_negativos: negativos });
     }
 
     case 'REGISTRAR_VISTA': {
