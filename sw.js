@@ -1,44 +1,86 @@
-// sw.js - Service Worker para notificaciones push
-self.addEventListener('push', function(event) {
-    let data = {};
-    if (event.data) {
-        try {
-            data = event.data.json();
-        } catch (e) {
-            data = { title: 'Nueva notificación', body: event.data.text() };
-        }
+// ============================================================
+// EL BARRIO · Service Worker para Web Push
+// ============================================================
+
+self.addEventListener("push", function (event) {
+  event.waitUntil((async () => {
+    let datos = {};
+
+    try {
+      datos = event.data ? event.data.json() : {};
+    } catch (_) {
+      try {
+        datos = {
+          descripcion: event.data ? event.data.text() : "",
+        };
+      } catch (_) {
+        datos = {};
+      }
     }
-    
-    const options = {
-        body: data.body || 'Tienes una nueva notificación en BARRIO',
-        icon: '/icon.png',
-        badge: '/badge.png',
-        vibrate: [200, 100, 200],
-        data: {
-            url: data.url || '/index.html'
-        }
+
+    const titulo = datos.titulo || datos.title || "El Barrio";
+    const opciones = {
+      body:
+        datos.descripcion ||
+        datos.mensaje ||
+        datos.body ||
+        "Tienes una nueva notificación",
+      icon: datos.icono || "/icons/logo-elbarrio.png",
+      badge: datos.badge || "/icons/logo-elbarrio.png",
+      vibrate: [200, 100, 200],
+      tag: datos.tag || `el-barrio-${datos.id || Date.now()}`,
+      renotify: true,
+      data: {
+        url:
+          datos.url ||
+          (datos.aviso_id
+            ? `/aviso.html?id=${datos.aviso_id}`
+            : "/index.html"),
+        id: datos.id || null,
+        aviso_id: datos.aviso_id || null,
+        tipo: datos.tipo || null,
+      },
+      actions: [
+        { action: "ver", title: "Ver aviso" },
+        { action: "ignorar", title: "Después" },
+      ],
     };
-    
-    event.waitUntil(
-        self.registration.showNotification(data.title || 'BARRIO', options)
-    );
+
+    await self.registration.showNotification(titulo, opciones);
+  })());
 });
 
-self.addEventListener('notificationclick', function(event) {
-    event.notification.close();
-    const urlToOpen = event.notification.data?.url || '/index.html';
-    
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true })
-            .then(windowClients => {
-                for (let client of windowClients) {
-                    if (client.url.includes(urlToOpen) && 'focus' in client) {
-                        return client.focus();
-                    }
-                }
-                if (clients.openWindow) {
-                    return clients.openWindow(urlToOpen);
-                }
-            })
-    );
+self.addEventListener("notificationclick", function (event) {
+  event.notification.close();
+
+  if (event.action === "ignorar") return;
+
+  event.waitUntil((async () => {
+    const destino = event.notification.data?.url || "/index.html";
+    const ventanas = await clients.matchAll({
+      type: "window",
+      includeUncontrolled: true,
+    });
+
+    for (const ventana of ventanas) {
+      try {
+        const actual = new URL(ventana.location.href);
+        const objetivo = new URL(destino, self.location.origin);
+
+        if (
+          actual.href === objetivo.href ||
+          actual.pathname === objetivo.pathname
+        ) {
+          await ventana.focus();
+          return;
+        }
+      } catch (_) {}
+    }
+
+    if (clients.openWindow) {
+      await clients.openWindow(destino);
+    }
+  })());
 });
+
+self.addEventListener("notificationclose", function () {});
