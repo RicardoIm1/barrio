@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#18232d">
-  <meta name="description" content="JR | Soluciones digitales para organizaciones que quieren trabajar mejor. Sistemas, datos, automatización e inteligencia de negocio.">
+  <meta name="theme-color" content="#eef1ee">
+  <meta name="description" content="Softw-arte | Software que piensa. Interfaces que comunican.">
   <title>Softw-arte | Software que piensa. Interfaces que comunican.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -192,14 +192,85 @@
       .foot{align-items:start;flex-direction:column}
     }
   </style>
+
+  <style id="softwarte-route2-theme">
+    :root{
+      --bg:#eef1ee; --bg2:#e4e9e6; --panel:rgba(255,255,255,.72); --panel2:#fff;
+      --line:rgba(11,17,23,.14); --text:#0b1117; --muted:#657076; --soft:#374247;
+      --accent:#6f9fb0; --accent2:#486f7f; --warm:#c9a06a; --max:1180px;
+      --radius:20px; --shadow:0 18px 45px rgba(11,17,23,.07);
+    }
+    body{background:
+      radial-gradient(circle at 86% 0%,rgba(111,159,176,.12),transparent 28rem),
+      linear-gradient(90deg,rgba(11,17,23,.025) 1px,transparent 1px),
+      linear-gradient(rgba(11,17,23,.018) 1px,transparent 1px),var(--bg);
+      background-size:auto,72px 72px,72px 72px;color:var(--text)}
+    body:before{background:linear-gradient(115deg,transparent 0 48%,rgba(11,17,23,.035) 48.2% 48.35%,transparent 48.5%)}
+    .nav{background:rgba(238,241,238,.86);border-bottom:1px solid var(--line)}
+    .brand{color:var(--text);gap:11px}
+    .mark{width:40px;height:40px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.62);color:var(--text)}
+    .mark svg{width:29px;height:29px}
+    .brandtext{display:grid;line-height:1.05}
+    .brandtext strong{font-family:Manrope;font-size:1rem;letter-spacing:-.04em}
+    .brandtext strong span{color:var(--accent)}
+    .brandtext small{margin-top:4px;font:500 .62rem "DM Sans";letter-spacing:.04em;color:var(--muted)}
+    .links{color:#5d686d}.links a:hover{color:var(--text)}
+    .navcta,.btn{border-color:var(--line);background:rgba(255,255,255,.62);color:var(--text);box-shadow:none;border-radius:12px}
+    .navcta:hover,.btn:hover{background:#fff;box-shadow:0 8px 24px rgba(11,17,23,.07)}
+    .btn.primary{background:var(--text);border-color:var(--text);color:#f7f8f6}
+    .btn.primary:hover{background:#26333a}
+    .menu{color:var(--text)}
+    .eyebrow{color:#48616b}.eyebrow:before{background:var(--accent)}
+    h1,h2,h3{color:var(--text)}
+    .hero h1 em{color:#527e8e}
+    p{color:var(--muted)}
+    .hero-side{border-left-color:var(--line)}
+    .hero-side strong{color:var(--text)}
+    .tag{border-color:var(--line);color:#566269;background:rgba(255,255,255,.35)}
+    .darkband{background:rgba(214,220,217,.38);border-block-color:var(--line)}
+    .card,.service,.demo-panel,.lab-controls,.lab-chart,.case,.money-main,.money-side,.principle,.work div,.arch div{
+      background:rgba(255,255,255,.68);border-color:var(--line);box-shadow:var(--shadow)
+    }
+    .card .num,.case .type,.work b{color:#5e8b9b}
+    .quote{background:rgba(255,255,255,.5);border-left-color:var(--accent);color:#26343a}
+    .step{background:#f7f8f6;color:var(--text)}
+    .step .n{color:rgba(11,17,23,.18)}
+    .service li,.money-side li{border-top-color:var(--line)}
+    .tool{background:rgba(255,255,255,.52);border-color:var(--line);color:#58656b}
+    .demo-panel input,.field input,.field textarea{background:rgba(255,255,255,.72);color:var(--text);border-color:var(--line)}
+    .demo-panel label,.field label{color:#647177}
+    .metric{background:rgba(255,255,255,.5);border-color:var(--line)}
+    .metric span,.demo-note{color:#738087}
+    .bars{border-bottom-color:var(--line)}
+    .bar{background:linear-gradient(to top,var(--accent),rgba(111,159,176,.22))}
+    .arch strong{color:#527e8e}
+    .not{border-color:rgba(201,160,106,.48);background:rgba(201,160,106,.11)}
+    .not strong{color:#8a683b}
+    .about strong{color:var(--text)!important}
+    .principle b{color:var(--text)}
+    .formstatus{color:#527e8e}
+    footer{background:#0b1117;border-top-color:rgba(255,255,255,.12)}
+    footer .brand{color:#f7f8f6}
+    footer .brandtext small{color:#98a7af}
+    footer .mark{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#f7f8f6}
+    footer p{color:#98a7af}
+    footer .footnav{color:#98a7af}
+    @media(max-width:900px){#mobileNav{background:#eef1ee}}
+  </style>
+
 </head>
 <body>
 
 <header class="nav">
   <div class="wrap navin">
-    <a class="brand" href="#inicio" aria-label="JR inicio">
-      <span class="mark"><span>Softw-arte</span></span>
-      <span>Jerónimo Ricardo Ramírez Torres</span>
+    <a class="brand" href="#inicio" aria-label="Softw-arte, inicio">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M23 17V48C23 57 28 62 37 62C46 62 51 57 51 48V31" stroke="currentColor" stroke-width="5.2" stroke-linecap="round"/>
+          <path d="M49 18V62M49 18H57C64 18 68 22 68 28C68 34 64 38 57 38H49M57 38L68 62" stroke="var(--accent)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="brandtext"><strong>Softw<span>-</span>arte</strong><small>Jerónimo Ricardo Ramírez Torres</small></span>
     </a>
     <nav class="links" aria-label="Navegación principal">
       <a href="#problema">Problemas</a>
@@ -490,341 +561,19 @@
 </main>
 
 
-<style id="softwarte-route2-brand">
-  /* SOFTW-ARTE · RUTA 2 · IDENTIDAD VISUAL
-     Capa añadida: no sustituye ni altera los estilos existentes. */
-  .sw2{
-    --sw-ink:#0b1117;
-    --sw-paper:#eef1ee;
-    --sw-paper2:#dfe5e2;
-    --sw-line:rgba(11,17,23,.15);
-    --sw-blue:#6f9fb0;
-    --sw-warm:#c9a06a;
-    --sw-white:#f7f8f6;
-    --sw-muted:#6e777b;
-    position:relative;
-    overflow:hidden;
-    background:var(--sw-paper);
-    color:var(--sw-ink);
-    border-top:1px solid var(--sw-line);
-    border-bottom:1px solid var(--sw-line);
-  }
-  .sw2:before{
-    content:"";
-    position:absolute;
-    width:420px;height:420px;
-    border:1px solid rgba(111,159,176,.24);
-    border-radius:50%;
-    right:-150px;top:-210px;
-  }
-  .sw2 .sw2-wrap{
-    width:min(calc(100% - 40px),1180px);
-    margin:auto;
-    padding:112px 0;
-  }
-  .sw2-kicker{
-    display:flex;align-items:center;gap:10px;
-    font-size:.72rem;font-weight:800;letter-spacing:.16em;
-    text-transform:uppercase;color:#526066;
-  }
-  .sw2-kicker:before{
-    content:"";width:28px;height:1px;background:var(--sw-blue);
-  }
-  .sw2-hero{
-    display:grid;grid-template-columns:1.05fr .95fr;
-    gap:70px;align-items:center;
-  }
-  .sw2-lockup{
-    display:flex;align-items:center;gap:22px;
-    margin:24px 0 28px;
-  }
-  .sw2-symbol{
-    width:82px;height:82px;flex:0 0 82px;
-    display:grid;place-items:center;
-    border:1px solid rgba(11,17,23,.2);
-    border-radius:22px;
-    background:#f7f8f6;
-  }
-  .sw2-symbol svg{width:62px;height:62px}
-  .sw2-wordmark{
-    font-family:Manrope,system-ui,sans-serif;
-    font-size:clamp(2.25rem,5vw,4.65rem);
-    line-height:.92;letter-spacing:-.075em;
-    font-weight:700;
-  }
-  .sw2-wordmark .soft{font-weight:500}
-  .sw2-wordmark .arte{font-weight:800}
-  .sw2-wordmark .hyphen{color:var(--sw-blue);font-weight:500}
-  .sw2-title{
-    font-family:Manrope,system-ui,sans-serif;
-    font-size:clamp(2rem,4vw,3.8rem);
-    line-height:1.03;letter-spacing:-.055em;
-    max-width:720px;margin:0 0 20px;
-  }
-  .sw2-copy{
-    color:#59656a;max-width:680px;
-    font-size:1.08rem;line-height:1.72;
-  }
-  .sw2-signature{
-    margin-top:30px;padding-top:18px;
-    border-top:1px solid var(--sw-line);
-    display:flex;flex-wrap:wrap;gap:8px 20px;
-    align-items:baseline;
-  }
-  .sw2-signature strong{
-    font-family:Manrope;font-size:.8rem;letter-spacing:.1em;
-  }
-  .sw2-signature span{font-size:.82rem;color:var(--sw-muted)}
-  .sw2-board{
-    border:1px solid var(--sw-line);
-    background:rgba(247,248,246,.72);
-    border-radius:30px;padding:30px;
-  }
-  .sw2-board-label{
-    font-size:.68rem;font-weight:800;letter-spacing:.14em;
-    text-transform:uppercase;color:#778287;margin-bottom:22px;
-  }
-  .sw2-dark{
-    min-height:245px;border-radius:22px;
-    background:var(--sw-ink);color:var(--sw-white);
-    padding:28px;display:flex;flex-direction:column;
-    justify-content:space-between;
-  }
-  .sw2-dark .mini{
-    font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;
-    color:#9daeb6;
-  }
-  .sw2-dark .big{
-    font-family:Manrope;font-size:clamp(2rem,4vw,3.25rem);
-    font-weight:700;letter-spacing:-.06em;line-height:.95;
-  }
-  .sw2-dark .big span{color:#8db8c8}
-  .sw2-rule{height:1px;background:rgba(255,255,255,.14)}
-  .sw2-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);
-    gap:12px;margin-top:12px;
-  }
-  .sw2-cell{
-    min-height:105px;border:1px solid var(--sw-line);
-    border-radius:17px;padding:16px;
-    background:rgba(255,255,255,.4);
-  }
-  .sw2-cell small{
-    display:block;color:#778287;font-size:.65rem;
-    text-transform:uppercase;letter-spacing:.1em;margin-bottom:9px;
-  }
-  .sw2-cell b{font-family:Manrope;font-size:.92rem}
-  .sw2-system{
-    margin-top:90px;padding-top:34px;
-    border-top:1px solid var(--sw-line);
-  }
-  .sw2-system-head{
-    display:grid;grid-template-columns:.55fr 1.45fr;
-    gap:50px;margin-bottom:30px;
-  }
-  .sw2-system h3{
-    font-family:Manrope;font-size:2rem;
-    letter-spacing:-.04em;margin:0;
-  }
-  .sw2-system p{color:#667176}
-  .sw2-specs{
-    display:grid;grid-template-columns:repeat(4,1fr);
-    gap:12px;
-  }
-  .sw2-spec{
-    border:1px solid var(--sw-line);border-radius:20px;
-    background:rgba(255,255,255,.34);padding:23px;
-    min-height:190px;
-  }
-  .sw2-spec h4{
-    margin:0 0 16px;font-family:Manrope;
-    font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;
-  }
-  .sw2-type-a{
-    font-family:Manrope;font-size:1.55rem;font-weight:700;
-    letter-spacing:-.055em;
-  }
-  .sw2-type-b{font-family:"DM Sans";font-size:.88rem;color:#667176}
-  .sw2-palette{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
-  .sw2-swatch{height:50px;border-radius:9px;border:1px solid rgba(11,17,23,.1)}
-  .sw2-swatch-name{display:block;margin-top:7px;font-size:.67rem;color:#69757a}
-  .sw2-apps{
-    display:grid;grid-template-columns:1fr 1fr;
-    gap:12px;margin-top:12px;
-  }
-  .sw2-app{
-    min-height:120px;border:1px solid var(--sw-line);
-    border-radius:20px;padding:20px;background:#f7f8f6;
-  }
-  .sw2-app .appbar{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:18px;
-  }
-  .sw2-app .appbrand{font-family:Manrope;font-weight:800;font-size:.88rem;letter-spacing:-.04em}
-  .sw2-app .appmark{width:28px;height:28px;border:1px solid var(--sw-line);border-radius:8px;display:grid;place-items:center}
-  .sw2-app .appmark svg{width:21px;height:21px}
-  .sw2-line{height:7px;width:72%;border-radius:99px;background:#d7deda;margin-bottom:8px}
-  .sw2-line.short{width:44%}
-  .sw2-footer{
-    margin-top:34px;display:flex;justify-content:space-between;
-    gap:20px;align-items:end;padding-top:22px;
-    border-top:1px solid var(--sw-line);
-  }
-  .sw2-footer strong{font-family:Manrope;font-size:.9rem}
-  .sw2-footer span{font-size:.76rem;color:#758086}
-  @media(max-width:900px){
-    .sw2-hero,.sw2-system-head{grid-template-columns:1fr}
-    .sw2-specs{grid-template-columns:1fr 1fr}
-  }
-  @media(max-width:560px){
-    .sw2 .sw2-wrap{width:min(calc(100% - 26px),1180px);padding:82px 0}
-    .sw2-lockup{gap:15px}
-    .sw2-symbol{width:64px;height:64px;flex-basis:64px}
-    .sw2-wordmark{font-size:2.35rem}
-    .sw2-board{padding:17px}
-    .sw2-grid,.sw2-specs,.sw2-apps{grid-template-columns:1fr}
-    .sw2-palette{grid-template-columns:repeat(2,1fr)}
-    .sw2-footer{align-items:flex-start;flex-direction:column}
-  }
-</style>
-
-<section id="identidad-softwarte" class="sw2" aria-label="Identidad visual Softw-arte, Ruta 2">
-  <div class="sw2-wrap">
-    <div class="sw2-hero">
-      <div>
-        <span class="sw2-kicker">Identidad visual · Ruta 2</span>
-
-        <div class="sw2-lockup" aria-label="Softw-arte">
-          <div class="sw2-symbol" aria-hidden="true">
-            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M23 17V48C23 57 28 62 37 62C46 62 51 57 51 48V31" stroke="#0B1117" stroke-width="5.2" stroke-linecap="round"/>
-              <path d="M49 18V62M49 18H57C64 18 68 22 68 28C68 34 64 38 57 38H49M57 38L68 62" stroke="#6F9FB0" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M18 17H28M44 17H54" stroke="#0B1117" stroke-width="3" stroke-linecap="round" opacity=".32"/>
-            </svg>
-          </div>
-          <div class="sw2-wordmark">
-            <span class="soft">Softw</span><span class="hyphen">-</span><span class="arte">arte</span>
-          </div>
-        </div>
-
-        <h2 class="sw2-title">Software que piensa.<br><span style="color:#6f9fb0">Interfaces que comunican.</span></h2>
-        <p class="sw2-copy">
-          La Ruta 2 une dos mundos sin convertirlos en caricatura:
-          <strong>lógica, estructura y datos</strong> con <strong>comunicación, estética y experiencia</strong>.
-          El símbolo JR funciona como firma del autor; Softw-arte es la marca principal.
-        </p>
-
-        <div class="sw2-signature">
-          <strong>JERÓNIMO RAMÍREZ</strong>
-          <span>Arquitecto de Softw-arte</span>
-        </div>
-      </div>
-
-      <div class="sw2-board">
-        <div class="sw2-board-label">Núcleo de marca</div>
-        <div class="sw2-dark">
-          <span class="mini">Softw-arte / JR</span>
-          <div>
-            <div class="big">Pensamiento <span>+</span><br>comunicación.</div>
-          </div>
-          <div class="sw2-rule"></div>
-          <span class="mini">precisión · criterio · claridad</span>
-        </div>
-        <div class="sw2-grid">
-          <div class="sw2-cell"><small>Personalidad</small><b>Intelectual</b></div>
-          <div class="sw2-cell"><small>Carácter</small><b>Contemporáneo</b></div>
-          <div class="sw2-cell"><small>Actitud</small><b>Humana</b></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="sw2-system">
-      <div class="sw2-system-head">
-        <div>
-          <span class="sw2-kicker">Sistema</span>
-          <h3>Una identidad, varias escalas.</h3>
-        </div>
-        <p>
-          El sistema está pensado para funcionar igual de bien en una web, una tarjeta,
-          una firma, un favicon o una pieza física. No depende de efectos para ser reconocible.
-        </p>
-      </div>
-
-      <div class="sw2-specs">
-        <article class="sw2-spec">
-          <h4>Tipografía</h4>
-          <div class="sw2-type-a">Manrope</div>
-          <div class="sw2-type-b">DM Sans · textos de apoyo</div>
-          <p style="margin-top:15px">Geometría limpia, carácter editorial y excelente lectura digital.</p>
-        </article>
-
-        <article class="sw2-spec">
-          <h4>Paleta</h4>
-          <div class="sw2-palette">
-            <div><div class="sw2-swatch" style="background:#0B1117"></div><span class="sw2-swatch-name">#0B1117</span></div>
-            <div><div class="sw2-swatch" style="background:#EEF1EE"></div><span class="sw2-swatch-name">#EEF1EE</span></div>
-            <div><div class="sw2-swatch" style="background:#6F9FB0"></div><span class="sw2-swatch-name">#6F9FB0</span></div>
-            <div><div class="sw2-swatch" style="background:#C9A06A"></div><span class="sw2-swatch-name">#C9A06A</span></div>
-          </div>
-          <p style="margin-top:15px">Sobria en la base, distintiva en el acento.</p>
-        </article>
-
-        <article class="sw2-spec">
-          <h4>Isotipo</h4>
-          <div style="display:flex;align-items:center;gap:18px">
-            <div style="width:72px;height:72px;border:1px solid var(--sw-line);border-radius:18px;display:grid;place-items:center;background:#f7f8f6">
-              <svg viewBox="0 0 80 80" width="54" height="54" fill="none" aria-hidden="true">
-                <path d="M23 17V48C23 57 28 62 37 62C46 62 51 57 51 48V31" stroke="#0B1117" stroke-width="5.2" stroke-linecap="round"/>
-                <path d="M49 18V62M49 18H57C64 18 68 22 68 28C68 34 64 38 57 38H49M57 38L68 62" stroke="#6F9FB0" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <p>JR entrelazado: firma, estructura y creación.</p>
-          </div>
-        </article>
-
-        <article class="sw2-spec">
-          <h4>Regla visual</h4>
-          <p style="font-family:Manrope;font-size:1.15rem;color:#202a2e">Menos ruido.<br>Más intención.</p>
-          <p style="margin-top:13px">Nada de robots, cerebros, circuitos, bombillas ni iconografía tecnológica de catálogo.</p>
-        </article>
-      </div>
-
-      <div class="sw2-apps">
-        <div class="sw2-app">
-          <div class="appbar">
-            <span class="appbrand">Softw-arte</span>
-            <span class="appmark">
-              <svg viewBox="0 0 80 80" fill="none" aria-hidden="true">
-                <path d="M23 17V48C23 57 28 62 37 62C46 62 51 57 51 48V31" stroke="#0B1117" stroke-width="8" stroke-linecap="round"/>
-                <path d="M49 18V62M49 18H57C64 18 68 22 68 28C68 34 64 38 57 38H49M57 38L68 62" stroke="#6F9FB0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </span>
-          </div>
-          <div class="sw2-line"></div><div class="sw2-line short"></div>
-        </div>
-
-        <div class="sw2-app">
-          <div class="appbar">
-            <span class="appbrand">JERÓNIMO RAMÍREZ</span>
-            <span style="font-size:.66rem;color:#758086;letter-spacing:.08em">ARQUITECTO</span>
-          </div>
-          <div class="sw2-line"></div><div class="sw2-line short"></div>
-        </div>
-      </div>
-
-      <div class="sw2-footer">
-        <strong>Softw-arte</strong>
-        <span>Software que piensa. Interfaces que comunican.</span>
-      </div>
-    </div>
-  </div>
-</section>
-
 
 <footer>
   <div class="wrap foot">
     <div>
-      <div class="brand"><span class="mark"><span>JR</span></span><span>Jerónimo Ricardo Ramírez Torres</span></div>
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 80 80" fill="none">
+            <path d="M23 17V48C23 57 28 62 37 62C46 62 51 57 51 48V31" stroke="currentColor" stroke-width="5.2" stroke-linecap="round"/>
+            <path d="M49 18V62M49 18H57C64 18 68 22 68 28C68 34 64 38 57 38H49M57 38L68 62" stroke="var(--accent)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brandtext"><strong>Softw<span>-</span>arte</strong><small>Jerónimo Ricardo Ramírez Torres</small></span>
+      </div>
       <p style="margin-top:12px">Soluciones digitales para organizaciones que quieren trabajar mejor.</p>
       <p style="margin-top:4px">Datos · Sistemas · Automatización · Inteligencia de negocio</p>
     </div>
