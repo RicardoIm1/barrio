@@ -10,39 +10,9 @@ let moderacionIniciada = false;
 let votarAvisoOriginal = null;
 
 async function obtenerSupabaseClient() {
+  if (window.__elBarrioGetSupabaseClient) return await window.__elBarrioGetSupabaseClient();
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
-
-  // Un único cargador compartido evita carreras entre api.js y auth.js.
-  if (!window.__elBarrioSupabaseLoadPromise && !window.supabase) {
-    window.__elBarrioSupabaseLoadPromise = new Promise((resolve, reject) => {
-      const existente = document.querySelector('script[data-el-barrio-supabase-sdk="1"]');
-      if (existente) {
-        existente.addEventListener('load', resolve, { once: true });
-        existente.addEventListener('error', () => reject(new Error('No se pudo cargar Supabase JS')), { once: true });
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-      script.async = true;
-      script.dataset.elBarrioSupabaseSdk = '1';
-      script.onload = resolve;
-      script.onerror = () => reject(new Error('No se pudo cargar Supabase JS'));
-      document.head.appendChild(script);
-    });
-  }
-
-  if (!window.supabase) {
-    await window.__elBarrioSupabaseLoadPromise;
-  }
-
-  if (!window.supabase) throw new Error('Supabase JS no disponible');
-
-  window.__elBarrioSupabaseClient = window.supabase.createClient(EL_BARRIO_SUPABASE_URL, EL_BARRIO_SUPABASE_KEY);
-  console.log('✅ Cliente Supabase creado desde auth.js');
-  return window.__elBarrioSupabaseClient;
-}
 
 function instalarEstilosApagadoTV() {
   if (document.getElementById('el-barrio-apagado-tv-styles')) return;
