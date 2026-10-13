@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://sitemaps.org">
+<urlset xmlns="https://sitemaps.org">
   <url>
-    <loc>http://elbarrio.me</loc>
+    <loc>https://elbarrio.me</loc>
     <priority>1.0</priority>
   </url>
 </urlset>
