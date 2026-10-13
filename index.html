@@ -1087,7 +1087,31 @@
       </div>
     </div>
 
+    <script>
+      // Consentimiento de cookies: recordar la elección y permitir cerrar el aviso.
+      (() => {
+        const banner = document.getElementById("cookieBanner");
+        const aceptar = document.getElementById("aceptarCookies");
+        if (!banner || !aceptar) return;
 
+        try {
+          if (localStorage.getItem("elbarrio_cookie_consent") === "accepted") {
+            banner.style.display = "none";
+          }
+        } catch (error) {
+          console.warn("No se pudo leer el consentimiento de cookies:", error);
+        }
+
+        aceptar.addEventListener("click", () => {
+          try {
+            localStorage.setItem("elbarrio_cookie_consent", "accepted");
+          } catch (error) {
+            console.warn("No se pudo guardar el consentimiento de cookies:", error);
+          }
+          banner.style.display = "none";
+        });
+      })();
+    </script>
 
     <script>
       function actualizarHeaderPorSesion() {
