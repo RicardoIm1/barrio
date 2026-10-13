@@ -92,6 +92,30 @@ function normalizarAvisos(avisos) {
   return (avisos || []).map(normalizarAviso);
 }
 
+async function enriquecerNombresAutores(avisos) {
+  const client = await getSupabaseClient();
+  const ids = [...new Set((avisos || []).map(a => a?.created_by).filter(Boolean))];
+  const nombres = new Map();
+
+  await Promise.all(ids.map(async id => {
+    try {
+      const { data, error } = await client.rpc('obtener_nombre_autor', { p_usuario_id: id });
+      if (!error && data && String(data).trim()) nombres.set(id, String(data).trim());
+    } catch (_) {}
+  }));
+
+  return (avisos || []).map(aviso => {
+    const nombre = nombres.get(aviso.created_by);
+    if (!nombre) return normalizarAviso(aviso);
+    return {
+      ...normalizarAviso(aviso),
+      nombre_autor: nombre,
+      usuario_nombre: nombre,
+      usuarios: { ...(aviso.usuarios || {}), nombre }
+    };
+  });
+}
+
 async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion = null } = {}) {
   const client = await getSupabaseClient();
   const usuario = getUsuarioLocal();
@@ -115,7 +139,7 @@ async function supabaseAvisosList({ soloMios = false, filtros = {}, paginacion =
 
   const { data, error, count } = await query;
   if (error) throw error;
-  const avisos = normalizarAvisos(data);
+  const avisos = await enriquecerNombresAutores(data || []);
   return respuestaOK({ datos: avisos, total: count ?? avisos.length });
 }
 
