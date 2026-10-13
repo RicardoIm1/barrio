@@ -837,7 +837,7 @@
             }
 
             return `
-<div class="aviso-card tarjeta-moderna ${esDestacado ? "aviso-destacado" : ""}" 
+<div class="aviso-card tarjeta-moderna ${esDestacado ? "aviso-destacado" : ""} ${String(aviso.categoria || "").trim().toLowerCase() === "urgente" ? "aviso-urgente" : ""}" 
      data-id="${aviso.id}" 
      onclick="verAviso(this.getAttribute('data-id'))">
      <div class="categoria-badge" style="background: ${getColorCategoria(aviso.categoria)}; color: white;">
@@ -951,27 +951,27 @@
             allAvisos = resultado.datos.filter(
               (a) => a.status === "activo" || a.status === undefined,
             );
+            const esDestacado = (aviso) =>
+              aviso.destacado === true ||
+              aviso.destacado === "TRUE" ||
+              aviso.destacado === "true" ||
+              aviso.destacado === 1 ||
+              aviso.destacado === "1";
+
+            const esUrgente = (aviso) =>
+              String(aviso.categoria || "").trim().toLowerCase() === "urgente";
+
             allAvisos.sort((a, b) => {
-              const destacadoA =
-                a.destacado === true ||
-                a.destacado === "TRUE" ||
-                a.destacado === "true" ||
-                a.destacado === 1 ||
-                a.destacado === "1";
+              // Prioridad: destacados, después urgentes no destacados, después normales.
+              // Un aviso urgente y destacado permanece una sola vez en destacados.
+              const prioridadA = esDestacado(a) ? 0 : esUrgente(a) ? 1 : 2;
+              const prioridadB = esDestacado(b) ? 0 : esUrgente(b) ? 1 : 2;
+              if (prioridadA !== prioridadB) return prioridadA - prioridadB;
 
-              const destacadoB =
-                b.destacado === true ||
-                b.destacado === "TRUE" ||
-                b.destacado === "true" ||
-                b.destacado === 1 ||
-                b.destacado === "1";
-
-              // ⭐ Destacados primero
-              if (destacadoA && !destacadoB) return -1;
-              if (!destacadoA && destacadoB) return 1;
-
-              // Dentro de cada grupo, más reciente primero
-              return new Date(b.created_at) - new Date(a.created_at);
+              // Dentro de cada grupo, el más reciente primero.
+              const fechaA = new Date(a.created_at || 0).getTime() || 0;
+              const fechaB = new Date(b.created_at || 0).getTime() || 0;
+              return fechaB - fechaA;
             });
 
             // 👇 ENRIQUECER CON NOMBRES DE USUARIOS
