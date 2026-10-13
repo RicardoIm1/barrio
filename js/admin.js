@@ -737,9 +737,14 @@ document.addEventListener("DOMContentLoaded", function () {
         fecha_evento: document.getElementById("edit-fecha_evento").value,
         imagen_url: document.getElementById("edit-imagen_url").value,
         video_url: document.getElementById("edit-video_url").value,
-        urgente: document.getElementById("edit-urgente").checked,
-        destacado: document.getElementById("edit-destacado").checked,
       };
+
+      // Solo el administrador puede cambiar las banderas de urgencia y destacado.
+      const usuarioActual = API.getUsuarioActual();
+      if (usuarioActual?.rol === "admin") {
+        datos.urgente = document.getElementById("edit-urgente").checked;
+        datos.destacado = document.getElementById("edit-destacado").checked;
+      }
 
       try {
         const apiKey = localStorage.getItem("api_key");
@@ -900,6 +905,7 @@ function renderizarTablaAvisos() {
   if (!tbody) return;
   const usuario = API.getUsuarioActual();
   const esAdmin = usuario?.rol === "admin";
+  const esUrgente = (valor) => valor === true || valor === "TRUE" || valor === "true" || valor === 1 || valor === "1";
   let avisosFiltrados = [...todosLosAvisos];
   if (filtroStatusActual !== "todos")
     avisosFiltrados = avisosFiltrados.filter(
@@ -956,7 +962,8 @@ function renderizarTablaAvisos() {
             <td data-label="Acciones"><div class="acciones-botones"><button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
                     ${
                       esAdmin
-                        ? `<button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
+                        ? `<button class="accion-btn" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;" onclick="cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">${esUrgente(aviso.urgente) ? "⚠️ Quitar urgente" : "⚠️ Marcar urgente"}</button>
+                        <button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
                         <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>`
                         : ""
                     }</div></td>
@@ -992,6 +999,35 @@ window.cambiarEstadoAviso = async function (id, nuevoStatus) {
       );
   } catch (error) {
     console.error("Error detallado:", error);
+    alert("❌ Error: " + error.message);
+  }
+};
+
+window.cambiarUrgente = async function (id, nuevoValor) {
+  try {
+    const apiKey = localStorage.getItem("api_key");
+    const usuario = API.getUsuarioActual();
+    if (!apiKey || usuario?.rol !== "admin") {
+      alert("Solo administradores pueden activar o desactivar urgente");
+      return;
+    }
+    const accion = nuevoValor ? "marcar como urgente" : "quitar la marca de urgente";
+    if (!confirm(`¿Quieres ${accion} este aviso?`)) return;
+    const resultado = await API.peticion(
+      "ACTUALIZAR",
+      { coleccion: "AVISOS", id, datos: { urgente: nuevoValor } },
+      apiKey,
+    );
+    if (!resultado?.success) throw new Error(resultado?.error || "No se pudo actualizar urgente");
+    const valor = !!nuevoValor;
+    const index = todosLosAvisos.findIndex((a) => a.id == id);
+    if (index !== -1) todosLosAvisos[index].urgente = valor;
+    const indexOriginal = avisosOriginales.findIndex((a) => a.id == id);
+    if (indexOriginal !== -1) avisosOriginales[indexOriginal].urgente = valor;
+    renderizarTablaAvisos();
+    alert(valor ? "⚠️ Aviso marcado como urgente" : "Se quitó la marca de urgente");
+  } catch (error) {
+    console.error("Error cambiando urgente:", error);
     alert("❌ Error: " + error.message);
   }
 };
@@ -1082,12 +1118,16 @@ window.editarAviso = function (id) {
 
   const chkUrgente = document.getElementById("edit-urgente");
   const chkDestacado = document.getElementById("edit-destacado");
+  const usuarioActual = API.getUsuarioActual();
+  const puedeCambiarPromocion = usuarioActual?.rol === "admin";
   if (chkUrgente) {
-    chkUrgente.checked = !!aviso.urgente;
+    chkUrgente.checked = aviso.urgente === true || aviso.urgente === "TRUE" || aviso.urgente === "true" || aviso.urgente === 1 || aviso.urgente === "1";
+    chkUrgente.disabled = !puedeCambiarPromocion;
     console.log(`✅ Checkbox urgente: ${chkUrgente.checked}`);
   } else console.warn("⚠️ Campo edit-urgente no encontrado");
   if (chkDestacado) {
-    chkDestacado.checked = !!aviso.destacado;
+    chkDestacado.checked = aviso.destacado === true || aviso.destacado === "TRUE" || aviso.destacado === "true" || aviso.destacado === 1 || aviso.destacado === "1";
+    chkDestacado.disabled = !puedeCambiarPromocion;
     console.log(`✅ Checkbox destacado: ${chkDestacado.checked}`);
   } else console.warn("⚠️ Campo edit-destacado no encontrado");
 
