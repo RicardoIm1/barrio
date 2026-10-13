@@ -149,6 +149,7 @@
           const collapse = () => contenedorBuscador.classList.remove('activo');
           const search = () => {
             window.currentSearchTerm = buscadorHeader.value;
+            try { currentSearchTerm = buscadorHeader.value; } catch (_) {}
             if (typeof window.applyFiltersAndSearch === 'function') window.applyFiltersAndSearch();
           };
           const accept = () => { collapse(); buscadorHeader.blur(); };
