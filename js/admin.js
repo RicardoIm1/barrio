@@ -1260,8 +1260,8 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       const lista=r.data||[],votosMap=new Map();let positivos=0,negativos=0;
       if(lista.length){
         const vr=await client.from("votos").select("aviso_id,tipo").in("aviso_id",lista.map(function(a){return a.id;}));
-        if(vr.error)throw vr.error;
-        (vr.data||[]).forEach(function(v){const x=votosMap.get(v.aviso_id)||{positivos:0,negativos:0};if(v.tipo==="positivo"){x.positivos++;positivos++;}if(v.tipo==="negativo"){x.negativos++;negativos++;}votosMap.set(v.aviso_id,x);});
+        if(vr.error) console.warn("No se pudieron cargar los votos de este usuario:",vr.error);
+        else (vr.data||[]).forEach(function(v){const x=votosMap.get(v.aviso_id)||{positivos:0,negativos:0};if(v.tipo==="positivo"){x.positivos++;positivos++;}if(v.tipo==="negativo"){x.negativos++;negativos++;}votosMap.set(v.aviso_id,x);});
       }
       const vistas=lista.reduce(function(s,a){return s+num(a.vistas);},0),activos=lista.filter(function(a){return a.status==="activo";}).length;
       [["fu-total",lista.length],["fu-activos",activos],["fu-vistas",vistas],["fu-positivos",positivos],["fu-negativos",negativos],["fu-interacciones",positivos+negativos]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
