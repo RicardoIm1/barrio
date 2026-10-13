@@ -67,29 +67,21 @@
     .buscador-input-header:focus { outline: none; border-color: #f5b042; background: white; box-shadow: 0 0 0 2px rgba(245, 176, 66, 0.2); }
     .buscador-acciones-movil { display: none; }
     @media (max-width: 768px) {
-        .header-buscador {
-            order: 3; display: flex; align-items: center; gap: 6px;
-            flex: 0 1 42%; width: 42%; max-width: none; min-width: 0;
-            margin: 8px 0 0 auto; transition: width 0.22s ease, flex-basis 0.22s ease;
-        }
-        .header-buscador.activo { flex-basis: 60%; width: 60%; }
-        .header-buscador .buscador-input-header { flex: 1 1 auto; width: 100%; padding: 8px 12px; }
-        .buscador-acciones-movil { display: none; align-items: center; gap: 4px; flex: 0 0 auto; }
+        .header-contenido { position: relative; }
+        .header-buscador { position: absolute; z-index: 5; right: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; width: 38%; max-width: none; min-width: 0; margin: 0; flex: none; transition: width .22s ease; }
+        .header-buscador.activo { width: 60%; }
+        .header-buscador .buscador-input-header { display: block; flex: 1 1 0; width: 0; min-width: 0; padding: 8px 8px; font-size: .82rem; }
+        .buscador-acciones-movil { display: none; align-items: center; gap: 3px; flex: 0 0 auto; }
         .header-buscador.activo .buscador-acciones-movil { display: flex; }
-        .buscador-acciones-movil button {
-            width: 30px; height: 34px; border: 1px solid #e5e7eb; border-radius: 50%;
-            background: #fff; color: #2c3e50; font-size: 1.1rem; line-height: 1;
-            cursor: pointer; padding: 0;
-        }
+        .buscador-acciones-movil button { width: 28px; height: 32px; border: 1px solid #e5e7eb; border-radius: 50%; background: #fff; color: #2c3e50; font-size: 1rem; line-height: 1; cursor: pointer; padding: 0; }
         .buscador-acciones-movil #buscador-aceptar { color: #2b7a2b; }
         .buscador-acciones-movil #buscador-cancelar { color: #b42318; }
     }
     @media (max-width: 380px) {
-        .header-buscador { flex-basis: 38%; width: 38%; }
-        .header-buscador.activo { flex-basis: 60%; width: 60%; }
-        .header-buscador.activo .buscador-input-header { padding-left: 8px; padding-right: 8px; }
+        .header-buscador { width: 35%; }
+        .header-buscador.activo { width: 60%; }
         .buscador-acciones-movil { gap: 2px; }
-        .buscador-acciones-movil button { width: 27px; height: 31px; }
+        .buscador-acciones-movil button { width: 26px; height: 30px; }
     }
 </style>
 <script src="/js/push.js"></script>
