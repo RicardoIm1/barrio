@@ -1054,7 +1054,57 @@
         fetch("/common/header.html")
           .then((res) => (res.ok ? res.text() : Promise.reject()))
           .then((html) => {
-            document.getElementById("header-container").innerHTML = html;
+            const headerContainer = document.getElementById("header-container");
+            if (!headerContainer) return;
+            headerContainer.innerHTML = html;
+
+            // El header se inserta con innerHTML: sus scripts internos no se ejecutan.
+            // Por eso el buscador de la página principal se conecta aquí explícitamente.
+            const buscador = headerContainer.querySelector("#buscador-input-header");
+            const contenedorBuscador = buscador?.closest(".header-buscador");
+            if (buscador && contenedorBuscador && !buscador.dataset.searchInit) {
+              buscador.dataset.searchInit = "1";
+
+              const esMovil = () => window.matchMedia("(max-width: 768px)").matches;
+              const contraer = () => contenedorBuscador.classList.remove("activo");
+              const ejecutarBusqueda = () => {
+                currentSearchTerm = buscador.value;
+                window.currentSearchTerm = buscador.value;
+                applyFiltersAndSearch();
+              };
+              const aceptarBusqueda = () => {
+                contraer();
+                buscador.blur();
+              };
+              const cancelarBusqueda = () => {
+                buscador.value = "";
+                ejecutarBusqueda();
+                aceptarBusqueda();
+              };
+
+              buscador.addEventListener("focus", () => {
+                if (esMovil()) contenedorBuscador.classList.add("activo");
+              });
+              buscador.addEventListener("input", ejecutarBusqueda);
+              buscador.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                  event.preventDefault();
+                  aceptarBusqueda();
+                } else if (event.key === "Escape") {
+                  event.preventDefault();
+                  cancelarBusqueda();
+                }
+              });
+              headerContainer.querySelector("#buscador-aceptar")
+                ?.addEventListener("click", aceptarBusqueda);
+              headerContainer.querySelector("#buscador-cancelar")
+                ?.addEventListener("click", cancelarBusqueda);
+
+              document.addEventListener("pointerdown", (event) => {
+                if (esMovil() && !contenedorBuscador.contains(event.target)) contraer();
+              });
+            }
+
             setTimeout(() => {
               if (typeof actualizarHeaderPorSesion === "function")
                 actualizarHeaderPorSesion();
