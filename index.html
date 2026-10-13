@@ -660,9 +660,9 @@
       function normalizarBusqueda(valor) {
         return String(valor ?? "")
           .normalize("NFD")
-          .replace(/[\\u0300-\\u036f]/g, "")
+          .replace(/[\u0300-\u036f]/g, "")
           .toLocaleLowerCase("es-MX")
-          .replace(/\\s+/g, " ")
+          .replace(/\s+/g, " ")
           .trim();
       }
 
@@ -697,12 +697,12 @@
         if (palabras.every((palabra) => textoAviso.includes(palabra))) return true;
 
         // Los teléfonos suelen venir con espacios, guiones o prefijos.
-        const digitosConsulta = consulta.replace(/\\D/g, "");
+        const digitosConsulta = consulta.replace(/\D/g, "");
         if (digitosConsulta.length >= 4) {
           const telefonos = [
             aviso.contacto, aviso.telefono, aviso.celular, aviso.whatsapp,
             aviso.numero_contacto, aviso.contacto_telefono, aviso.phone,
-          ].filter(Boolean).join(" ").replace(/\\D/g, "");
+          ].filter(Boolean).join(" ").replace(/\D/g, "");
           if (telefonos.includes(digitosConsulta)) return true;
         }
         return false;
