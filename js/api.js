@@ -298,6 +298,57 @@ async function supabasePeticion(accion, datos = {}) {
       return respuestaOK(resultado, { tipo: resultado.tipo ?? null, likes: Number(resultado.positivos || 0), dislikes: Number(resultado.negativos || 0) });
     }
 
+    case 'LISTAR_COMENTARIOS': {
+      const avisoId = String(datos?.avisoId || datos?.aviso_id || '').trim();
+      if (!avisoId) throw new Error('ID de aviso no proporcionado para listar comentarios');
+
+      const { data, error } = await client
+        .from('comentarios')
+        .select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at')
+        .eq('aviso_id', avisoId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      const comentarios = (data || []).map(comentario => ({
+        ...comentario,
+        usuario_nombre: comentario.nombre_autor || 'Anónimo',
+        autor: comentario.nombre_autor || 'Anónimo',
+        comentario: comentario.contenido,
+        texto: comentario.contenido,
+        fecha: comentario.created_at
+      }));
+
+      return respuestaOK({ datos: comentarios, total: comentarios.length });
+    }
+
+    case 'AGREGAR_COMENTARIO': {
+      const avisoId = String(datos?.avisoId || datos?.aviso_id || '').trim();
+      const contenido = String(datos?.texto || datos?.contenido || '').trim();
+      if (!avisoId) throw new Error('ID de aviso no proporcionado');
+      if (!contenido) throw new Error('El comentario no puede estar vacío');
+
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      if (sessionError) throw sessionError;
+      const authUserId = sessionData?.session?.user?.id;
+      if (!authUserId) throw new Error('Debes iniciar sesión para comentar');
+
+      const nombreAutor = String(datos?.autor || usuario?.nombre || sessionData.session.user.email || 'Usuario').trim();
+      const { data, error } = await client
+        .from('comentarios')
+        .insert({
+          aviso_id: avisoId,
+          usuario_id: authUserId,
+          nombre_autor: nombreAutor,
+          contenido
+        })
+        .select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at')
+        .single();
+
+      if (error) throw error;
+      return respuestaOK(data);
+    }
+
     case 'ESTADISTICAS_AVANZADAS': {
       const { data: usuarios, error: errorUsuarios } = await client.from('usuarios').select('id, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999);
       if (errorUsuarios) throw errorUsuarios;
