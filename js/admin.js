@@ -1307,147 +1307,121 @@ window.eliminarUsuario = async function (id) {
   }
 };
 
-const CLOUDINARY_CLOUD_NAME = "dwnmdkido",
-  CLOUDINARY_UPLOAD_PRESET = "barrio_uploads";
-async function subirImagenImgBB(file) {
-  const API_KEY_IMGBB = "e62413ac76628956dbce8a7658610d1a",
-    formData = new FormData();
-  formData.append("key", API_KEY_IMGBB);
-  formData.append("image", file);
-  const res = await fetch("https://api.imgbb.com/1/upload", {
-    method: "POST",
-    body: formData,
-  });
-  const data = await res.json();
-  if (data.success) return data.data.url;
-  throw new Error(data.error?.message || "Error subiendo imagen");
-}
-async function subirVideoCloudinary(file) {
-  if (!file.type.startsWith("video/"))
-    throw new Error("El archivo no es un video válido");
-  if (file.size > 25 * 1024 * 1024)
-    throw new Error("El video es demasiado grande. Máximo 25MB");
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`,
-    { method: "POST", body: formData },
-  );
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.error?.message || `Error HTTP ${res.status}`);
-  }
-  const data = await res.json();
-  if (data.secure_url) {
-    console.log("✅ Video subido a Cloudinary:", data.secure_url);
-    return data.secure_url;
-  }
-  throw new Error("No se recibió URL del video");
-}
-const inputMultimedia = document.getElementById("archivo-multimedia"),
-  btnImagen = document.getElementById("btn-seleccionar-imagen"),
-  btnVideo = document.getElementById("btn-seleccionar-video"),
-  vistaPrevia = document.getElementById("vista-previa-multimedia"),
-  campoImagenUrl = document.getElementById("imagen_url"),
-  campoVideoUrl = document.getElementById("video_url");
+// ===== Multimedia: Supabase Storage como único proveedor =====
+const multimediaConfig = {
+  bucket: "media",
+  imagenes: { mime: ["image/jpeg", "image/png", "image/webp"], extensiones: ["jpg", "jpeg", "png", "webp"], maxBytes: 10 * 1024 * 1024 },
+  videos: { mime: ["video/mp4", "video/webm", "video/quicktime"], extensiones: ["mp4", "webm", "mov"], maxBytes: 100 * 1024 * 1024 }
+};
 
-let tipoSeleccionado = "";
-
-if (btnImagen && inputMultimedia) {
-  btnImagen.addEventListener("click", () => {
-    tipoSeleccionado = "imagen";
-    inputMultimedia.accept = "image/*";
-    inputMultimedia.click();
-  });
+async function obtenerClienteMultimedia() {
+  if (typeof window.obtenerSupabaseClient === "function") return await window.obtenerSupabaseClient();
+  const client = window.supabaseClient || window.__elBarrioSupabaseClient;
+  if (client) return client;
+  throw new Error("No está disponible la conexión con Supabase.");
 }
 
-if (btnVideo && inputMultimedia) {
-  btnVideo.addEventListener("click", () => {
-    tipoSeleccionado = "video";
-    inputMultimedia.accept = "video/*";
-    inputMultimedia.click();
-  });
+function nombreArchivoSeguro(nombre) {
+  return String(nombre || "archivo").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]+/g, "_").replace(/^\.+/, "").slice(0, 100) || "archivo";
 }
 
-if (inputMultimedia) {
-  inputMultimedia.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    if (campoImagenUrl) campoImagenUrl.value = "";
-    if (campoVideoUrl) campoVideoUrl.value = "";
-
-    if (vistaPrevia) {
-      vistaPrevia.innerHTML = "<p>🔄 Subiendo archivo... por favor espera</p>";
+async function subirMultimediaSupabase(file, tipo, modo, elementos) {
+  if (!file || elementos.ocupado) return;
+  elementos.ocupado = true;
+  const btn = elementos.boton;
+  const textoOriginal = btn?.textContent;
+  try {
+    const cfg = tipo === "imagen" ? multimediaConfig.imagenes : multimediaConfig.videos;
+    const extension = (file.name.split(".").pop() || "").toLowerCase();
+    if (!cfg.mime.includes(file.type.toLowerCase())) {
+      throw new Error(tipo === "imagen" ? "Formato no permitido. Usa JPG, PNG o WebP." : "Formato no permitido. Usa MP4, WebM o MOV.");
+    }
+    if (!cfg.extensiones.includes(extension)) throw new Error("La extensión del archivo no está permitida.");
+    if (file.size <= 0 || file.size > cfg.maxBytes) {
+      throw new Error(tipo === "imagen" ? "La imagen debe pesar como máximo 10 MB." : "El video debe pesar como máximo 100 MB.");
     }
 
-    const urlLocal = URL.createObjectURL(file);
+    const client = await obtenerClienteMultimedia();
+    const { data: authData, error: authError } = await client.auth.getUser();
+    if (authError) throw authError;
+    const uid = authData?.user?.id;
+    if (!uid) throw new Error("La sesión de Supabase expiró. Inicia sesión nuevamente.");
 
-    if (tipoSeleccionado === "imagen") {
-      if (vistaPrevia) {
-        vistaPrevia.innerHTML = `<img src="${urlLocal}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
-      }
+    const avisoId = modo === "edicion" ? String(document.getElementById("edit-id")?.value || "").trim() : "nuevo";
+    if (modo === "edicion" && !avisoId) throw new Error("No se encontró el ID del aviso que estás editando.");
 
-      try {
-        const urlFinal = await subirImagenImgBB(file);
+    if (btn) { btn.disabled = true; btn.textContent = "Subiendo a Supabase..."; }
+    elementos.vista.innerHTML = "<p>Subiendo archivo a Supabase...</p>";
+    const base = nombreArchivoSeguro(file.name.replace(/\.[^.]+$/, ""));
+    const ruta = `avisos/${uid}/${avisoId}/${Date.now()}-${base}.${extension}`;
 
-        if (campoImagenUrl) campoImagenUrl.value = urlFinal;
+    const { error: uploadError } = await client.storage.from(multimediaConfig.bucket).upload(ruta, file, {
+      cacheControl: "3600", contentType: file.type.toLowerCase(), upsert: false
+    });
+    if (uploadError) throw uploadError;
 
-        if (vistaPrevia) {
-          vistaPrevia.innerHTML +=
-            '<p style="color:green; font-size:12px;">✅ Imagen lista</p>';
-        }
+    const { data: publicData } = client.storage.from(multimediaConfig.bucket).getPublicUrl(ruta);
+    const url = publicData?.publicUrl;
+    if (!url) throw new Error("Supabase no devolvió la URL pública del archivo.");
 
-        if (window.API && API.mostrarExito) {
-          API.mostrarExito("✅ Imagen subida correctamente");
-        }
-      } catch (err) {
-        if (vistaPrevia) {
-          vistaPrevia.innerHTML += `<p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>`;
-        }
+    elementos.campoImagen.value = tipo === "imagen" ? url : "";
+    elementos.campoVideo.value = tipo === "video" ? url : "";
+    elementos.vista.innerHTML = tipo === "imagen"
+      ? `<img src="${url}" alt="Imagen subida" style="max-width:100%;max-height:180px;border-radius:12px;object-fit:contain;"><p style="color:green;font-size:12px;">Imagen subida a Supabase. Guarda el aviso para conservar el enlace.</p>`
+      : `<video src="${url}" controls playsinline style="max-width:100%;max-height:180px;border-radius:12px;"></video><p style="color:green;font-size:12px;">Video subido a Supabase. Guarda el aviso para conservar el enlace.</p>`;
+    if (window.API?.mostrarExito) API.mostrarExito("Archivo subido correctamente a Supabase.");
+    console.log("Multimedia subida a Supabase:", { tipo, ruta });
+  } catch (error) {
+    console.error("Error subiendo multimedia a Supabase:", error);
+    const mensaje = error?.message || String(error);
+    const p = document.createElement("p");
+    p.style.cssText = "color:#b42318;font-size:12px;";
+    p.textContent = "No se pudo subir a Supabase: " + mensaje;
+    elementos.vista?.appendChild(p);
+    if (window.API?.mostrarError) API.mostrarError(mensaje);
+    else alert("No se pudo subir el archivo a Supabase: " + mensaje);
+  } finally {
+    elementos.ocupado = false;
+    if (btn) { btn.disabled = false; btn.textContent = textoOriginal || (tipo === "imagen" ? "Imagen" : "Video"); }
+    if (elementos.input) elementos.input.value = "";
+  }
+}
 
-        if (window.API && API.mostrarError) {
-          API.mostrarError(err.message);
-        }
-      }
-    } else if (tipoSeleccionado === "video") {
-      if (vistaPrevia) {
-        vistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
-        vistaPrevia.innerHTML +=
-          '<p style="color:#666; font-size:12px;">⏳ Subiendo a Cloudinary... puede tomar unos segundos</p>';
-      }
-
-      try {
-        const urlFinal = await subirVideoCloudinary(file);
-
-        if (campoVideoUrl) campoVideoUrl.value = urlFinal;
-
-        if (vistaPrevia) {
-          vistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video><p style="color:green; font-size:12px;">✅ Video listo: <a href="${urlFinal}" target="_blank">ver en Cloudinary</a></p>`;
-        }
-
-        if (window.API && API.mostrarExito) {
-          API.mostrarExito("✅ Video subido correctamente");
-        }
-      } catch (err) {
-        console.error("Error detallado:", err);
-
-        if (vistaPrevia) {
-          vistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video><p style="color:red; font-size:12px;">❌ Error: ${err.message}</p><p style="color:#666; font-size:11px;">Consejo: El video debe ser menor a 25MB</p>`;
-        }
-
-        if (window.API && API.mostrarError) {
-          API.mostrarError("❌ Error: " + err.message);
-        }
-      }
-    }
-
-    setTimeout(() => {
-      inputMultimedia.value = "";
-    }, 1000);
+function conectarControlesMultimedia(config) {
+  const { input, botonImagen, botonVideo, vista, campoImagen, campoVideo, modo } = config;
+  if (!input || !botonImagen || !botonVideo || !vista || !campoImagen || !campoVideo) return;
+  const estado = { ocupado: false, boton: null, vista, campoImagen, campoVideo, input };
+  const seleccionar = (tipo, boton, accept) => event => {
+    event.preventDefault();
+    if (estado.ocupado) return;
+    estado.boton = boton;
+    input.accept = accept;
+    input.dataset.tipoMultimedia = tipo;
+    input.click();
+  };
+  botonImagen.addEventListener("click", seleccionar("imagen", botonImagen, "image/jpeg,image/png,image/webp"));
+  botonVideo.addEventListener("click", seleccionar("video", botonVideo, "video/mp4,video/webm,video/quicktime"));
+  input.addEventListener("change", async () => {
+    const file = input.files?.[0], tipo = input.dataset.tipoMultimedia;
+    if (!file || !tipo) return;
+    campoImagen.value = ""; campoVideo.value = "";
+    await subirMultimediaSupabase(file, tipo, modo, estado);
   });
 }
+
+conectarControlesMultimedia({
+  input: document.getElementById("archivo-multimedia"), botonImagen: document.getElementById("btn-seleccionar-imagen"),
+  botonVideo: document.getElementById("btn-seleccionar-video"), vista: document.getElementById("vista-previa-multimedia"),
+  campoImagen: document.getElementById("imagen_url"), campoVideo: document.getElementById("video_url"), modo: "nuevo"
+});
+conectarControlesMultimedia({
+  input: document.getElementById("edit-archivo-multimedia"), botonImagen: document.getElementById("edit-btn-imagen"),
+  botonVideo: document.getElementById("edit-btn-video"), vista: document.getElementById("edit-vista-previa"),
+  campoImagen: document.getElementById("edit-imagen_url"), campoVideo: document.getElementById("edit-video_url"), modo: "edicion"
+});
+// ===== Fin de multimedia Supabase =====
+
 document.getElementById("form-aviso")?.addEventListener("submit", function () {
   document.getElementById("categoria").value = "varios";
 });
@@ -1706,68 +1680,6 @@ function agregarResultadosDiv() {
     }
   }
 }
-const editInputMultimedia = document.getElementById("edit-archivo-multimedia"),
-  editBtnImagen = document.getElementById("edit-btn-imagen"),
-  editBtnVideo = document.getElementById("edit-btn-video"),
-  editVistaPrevia = document.getElementById("edit-vista-previa"),
-  editCampoImagenUrl = document.getElementById("edit-imagen_url"),
-  editCampoVideoUrl = document.getElementById("edit-video_url");
-let editTipoSeleccionado = "";
-if (editBtnImagen)
-  editBtnImagen.addEventListener("click", () => {
-    editTipoSeleccionado = "imagen";
-    editInputMultimedia.accept = "image/*";
-    editInputMultimedia.click();
-  });
-if (editBtnVideo)
-  editBtnVideo.addEventListener("click", () => {
-    editTipoSeleccionado = "video";
-    editInputMultimedia.accept = "video/*";
-    editInputMultimedia.click();
-  });
-if (editInputMultimedia)
-  editInputMultimedia.addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    editCampoImagenUrl.value = "";
-    editCampoVideoUrl.value = "";
-    editVistaPrevia.innerHTML =
-      "<p>🔄 Subiendo archivo... por favor espera</p>";
-    const urlLocal = URL.createObjectURL(file);
-    if (editTipoSeleccionado === "imagen") {
-      editVistaPrevia.innerHTML = `<img src="${urlLocal}" style="max-width:100%; max-height:180px; border-radius:12px;">`;
-      try {
-        const urlFinal = await subirImagenImgBB(file);
-        editCampoImagenUrl.value = urlFinal;
-        editVistaPrevia.innerHTML +=
-          '<p style="color:green; font-size:12px;">✅ Imagen lista</p>';
-        if (window.API && API.mostrarExito)
-          API.mostrarExito("✅ Imagen subida correctamente");
-      } catch (err) {
-        editVistaPrevia.innerHTML += `<p style="color:red; font-size:12px;">❌ Error: ${err.message}</p>`;
-        if (window.API && API.mostrarError) API.mostrarError(err.message);
-      }
-    } else if (editTipoSeleccionado === "video") {
-      editVistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video>`;
-      editVistaPrevia.innerHTML +=
-        '<p style="color:#666; font-size:12px;">⏳ Subiendo a Cloudinary... puede tomar unos segundos</p>';
-      try {
-        const urlFinal = await subirVideoCloudinary(file);
-        editCampoVideoUrl.value = urlFinal;
-        editVistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video><p style="color:green; font-size:12px;">✅ Video listo: <a href="${urlFinal}" target="_blank">ver en Cloudinary</a></p>`;
-        if (window.API && API.mostrarExito)
-          API.mostrarExito("✅ Video subido correctamente");
-      } catch (err) {
-        console.error("Error detallado:", err);
-        editVistaPrevia.innerHTML = `<video src="${urlLocal}" controls style="max-width:100%; max-height:180px; border-radius:12px;"></video><p style="color:red; font-size:12px;">❌ Error: ${err.message}</p><p style="color:#666; font-size:11px;">Consejo: El video debe ser menor a 25MB</p>`;
-        if (window.API && API.mostrarError)
-          API.mostrarError("❌ Error: " + err.message);
-      }
-    }
-    setTimeout(() => {
-      editInputMultimedia.value = "";
-    }, 1000);
-  });
 (function controlarBuscadorPorPestana() {
   const buscador = document.querySelector(".buscador-universal");
   if (!buscador) return;
