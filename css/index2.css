@@ -199,3 +199,18 @@
     .aviso-autor.autor-visible { filter: none !important; user-select: text; }
     .comment-author { filter: blur(5px) !important; user-select: none; pointer-events: none; }
     .comment-author.autor-visible { filter: none !important; user-select: text; pointer-events: auto; }
+
+
+/* REGLA DE PRODUCTO: DESTACADO es exposición preferente; URGENTE atrae atención inmediata. */
+/* La canica pertenece a URGENTE, nunca a DESTACADO por sí solo. */
+.aviso-card.aviso-destacado:not(.aviso-urgente)::before { content: none !important; animation: none !important; }
+.aviso-card.aviso-urgente::before { content: '●' !important; position: absolute; top: 0; left: -4px; z-index: 5; width: 6px; text-align: center; line-height: 1; font-size: 18px; font-weight: 800; color: #dc3545; animation: canicaSubeYBaja 7s ease-in-out infinite alternate; pointer-events: none; }
+.aviso-card.aviso-urgente:nth-child(6n+1)::before { animation-delay: 0s; animation-duration: 5s; }
+.aviso-card.aviso-urgente:nth-child(6n+2)::before { animation-delay: 0.6s; animation-duration: 6s; }
+.aviso-card.aviso-urgente:nth-child(6n+3)::before { animation-delay: 1.2s; animation-duration: 7s; }
+.aviso-card.aviso-urgente:nth-child(6n+4)::before { animation-delay: 1.8s; animation-duration: 5.5s; }
+.aviso-card.aviso-urgente:nth-child(6n+5)::before { animation-delay: 2.4s; animation-duration: 6.5s; }
+.aviso-card.aviso-urgente:nth-child(6n+6)::before { animation-delay: 3s; animation-duration: 8s; }
+.aviso-card.aviso-urgente:not(.aviso-destacado) { border-left: 6px solid #dc3545 !important; }
+@media (max-width: 768px) { .aviso-card.aviso-urgente::before { font-size: 12px; left: -3px; } }
+@media (max-width: 480px) { .aviso-card.aviso-urgente::before { font-size: 10px; left: -2px; } }
