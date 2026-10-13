@@ -34,7 +34,8 @@
 
             <div class="user-area" id="user-area" style="display: none;">
                 <span class="user-name" id="user-name"></span>
-                <a href="#" id="cerrar-sesion" class="btn-logout">🔒 <span class="btn-text">Cerrar sesión</span></a>
+                <a href="/admin.html" id="panel-link" class="btn-admin" style="display:none" aria-label="Ir al panel" title="Ir al panel">▦ <span class="btn-text">Panel</span></a>
+                <a href="#" id="cerrar-sesion" class="btn-logout" aria-label="Cerrar sesión" title="Cerrar sesión">↪ <span class="btn-text">Cerrar sesión</span></a>
             </div>
         </div>
     </div>
@@ -83,6 +84,61 @@
         .buscador-acciones-movil { gap: 2px; }
         .buscador-acciones-movil button { width: 26px; height: 30px; }
     }
+
+    /* Header adaptable: conserva logo, búsqueda y acciones prioritarias */
+    .header-contenido { min-width: 0; }
+    .header-logo { flex: 0 1 auto; }
+    .logo-texto, .header-acciones, .user-area { min-width: 0; }
+    .btn-admin, .btn-logout, .btn-login { flex: 0 0 auto; }
+    #panel-link { text-decoration: none; }
+    @media (max-width: 900px) {
+        .header-contenido { gap: .65rem; }
+        .header-logo { gap: 8px; }
+        .logo-icon { width: 44px; height: 44px; }
+        .header-slogan { display: none; }
+        .header-buscador { margin-inline: 4px; }
+        .user-name { display: none; }
+        .btn-admin, .btn-logout, .btn-login { padding: .45rem .7rem; }
+    }
+    @media (max-width: 768px) {
+        .header-contenido {
+            display: flex; flex-wrap: wrap; justify-content: space-between;
+            gap: 8px 10px; padding: 10px 12px; min-height: 0;
+        }
+        .header-logo { order: 1; flex: 0 1 auto; max-width: 48%; }
+        .header-acciones { order: 2; margin-left: auto; gap: 6px; }
+        .user-area { gap: 6px; }
+        .header-buscador, body.pagina-index .header-buscador {
+            position: static; order: 3; transform: none; display: flex;
+            flex: 1 0 100%; width: 100%; max-width: none; min-width: 0; margin: 0; gap: 6px;
+        }
+        .header-buscador .buscador-input-header {
+            display: block; flex: 1 1 auto; width: 100%; min-width: 0;
+            padding: 10px 12px; font-size: 16px;
+        }
+        .header-buscador.activo { width: 100%; }
+        .buscador-acciones-movil { display: none; }
+        .header-buscador.activo .buscador-acciones-movil { display: flex; }
+        .buscador-acciones-movil button { width: 34px; height: 36px; }
+        body:not(.pagina-index) .header-buscador { display: none !important; }
+    }
+    @media (max-width: 420px) {
+        .header-contenido { padding: 9px 10px; gap: 8px; }
+        .logo-icon { width: 38px; height: 38px; }
+        .logo-texto h1 { font-size: 1.05rem; }
+        .header-acciones, .user-area { gap: 5px; }
+        .btn-admin, .btn-logout, .btn-login { padding: .42rem .55rem; font-size: .75rem; gap: 4px; }
+        .btn-admin .btn-text, .btn-logout .btn-text { font-size: 0; }
+        .btn-admin .btn-text::after { content: "Panel"; font-size: .75rem; }
+        .btn-logout .btn-text::after { content: "Salir"; font-size: .75rem; }
+    }
+    @media (max-width: 340px) {
+        .header-logo { max-width: 42%; gap: 5px; }
+        .logo-icon { width: 34px; height: 34px; }
+        .logo-texto h1 { font-size: .98rem; }
+        .btn-admin, .btn-logout, .btn-login { padding: .4rem .45rem; }
+    }
+
 </style>
 <script src="/js/push.js"></script>
 <script>
