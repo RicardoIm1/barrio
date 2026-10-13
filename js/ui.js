@@ -106,6 +106,41 @@
         if (!res.ok) throw new Error('Header no encontrado');
         const html = await res.text();
         container.innerHTML = html;
+
+        // Estos scripts se inicializan aquí: los scripts insertados con innerHTML no se ejecutan.
+        const loginLink = container.querySelector('#login-link');
+        const userArea = container.querySelector('#user-area');
+        const userName = container.querySelector('#user-name');
+        const panelLink = container.querySelector('#panel-link');
+        const logoutLink = container.querySelector('#cerrar-sesion');
+        const usuario = usuarioConSesion();
+        if (usuario) {
+          if (loginLink) loginLink.style.display = 'none';
+          if (userArea) userArea.style.display = 'flex';
+          if (userName) userName.textContent = usuario.nombre || usuario.email || 'Usuario';
+          if (panelLink) panelLink.style.display = usuario.rol === 'admin' ? 'inline-flex' : 'none';
+        } else {
+          if (loginLink) loginLink.style.display = 'inline-flex';
+          if (userArea) userArea.style.display = 'none';
+        }
+        if (logoutLink && !logoutLink.dataset.logoutInit) {
+          logoutLink.dataset.logoutInit = '1';
+          logoutLink.addEventListener('click', async (event) => {
+            event.preventDefault();
+            try {
+              let client = window.__elBarrioSupabaseClient || null;
+              if (!client && typeof window.obtenerSupabaseClient === 'function') client = await window.obtenerSupabaseClient();
+              if (client && client.auth && client.auth.signOut) await client.auth.signOut();
+            } catch (error) {
+              console.warn('No se pudo cerrar la sesión de Supabase:', error);
+            } finally {
+              localStorage.removeItem('usuario');
+              localStorage.removeItem('api_key');
+              window.location.href = '/index.html';
+            }
+          });
+        }
+
         const buscadorHeader = container.querySelector('#buscador-input-header');
         const contenedorBuscador = buscadorHeader?.closest('.header-buscador');
         if (buscadorHeader && contenedorBuscador && !buscadorHeader.dataset.mobileSearchInit) {
