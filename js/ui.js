@@ -106,6 +106,30 @@
         if (!res.ok) throw new Error('Header no encontrado');
         const html = await res.text();
         container.innerHTML = html;
+        const buscadorHeader = container.querySelector('#buscador-input-header');
+        const contenedorBuscador = buscadorHeader?.closest('.header-buscador');
+        if (buscadorHeader && contenedorBuscador && !buscadorHeader.dataset.mobileSearchInit) {
+          buscadorHeader.dataset.mobileSearchInit = '1';
+          const mobile = () => window.matchMedia('(max-width: 768px)').matches;
+          const collapse = () => contenedorBuscador.classList.remove('activo');
+          const search = () => {
+            window.currentSearchTerm = buscadorHeader.value;
+            if (typeof window.applyFiltersAndSearch === 'function') window.applyFiltersAndSearch();
+          };
+          const accept = () => { collapse(); buscadorHeader.blur(); };
+          const cancel = () => { buscadorHeader.value = ''; search(); accept(); };
+          buscadorHeader.addEventListener('focus', () => { if (mobile()) contenedorBuscador.classList.add('activo'); });
+          buscadorHeader.addEventListener('input', search);
+          buscadorHeader.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); accept(); }
+            if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+          });
+          container.querySelector('#buscador-aceptar')?.addEventListener('click', accept);
+          container.querySelector('#buscador-cancelar')?.addEventListener('click', cancel);
+          document.addEventListener('pointerdown', e => {
+            if (mobile() && !contenedorBuscador.contains(e.target)) collapse();
+          });
+        }
         const ejecutarHeader = () => {
           if (typeof window._headerActualizarBotones === 'function') window._headerActualizarBotones();
           if (typeof window.actualizarHeaderSesion === 'function') window.actualizarHeaderSesion();
