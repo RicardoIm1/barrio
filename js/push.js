@@ -107,34 +107,6 @@
     return true;
   }
 
-  async function desactivarSuscripcionesAnteriores(usuarioId, endpointActual) {
-    try {
-      const client = await obtenerCliente();
-
-      const { error } = await client
-        .from("push_subscriptions")
-        .update({
-          activo: false,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("usuario_id", usuarioId)
-        .neq("endpoint", endpointActual)
-        .eq("activo", true);
-
-      if (error) {
-        console.warn(
-          "Web Push: no se pudieron desactivar suscripciones anteriores:",
-          error,
-        );
-      }
-    } catch (error) {
-      console.warn(
-        "Web Push: error al limpiar suscripciones anteriores:",
-        error,
-      );
-    }
-  }
-
   async function sincronizarSuscripcion({ forzarMigracion = false } = {}) {
     const usuario = await obtenerUsuarioAutenticado();
 
@@ -189,11 +161,6 @@
       PUSH_VAPID_VERSION,
     );
     localStorage.setItem(PUSH_ENDPOINT_KEY, subscription.endpoint);
-
-    await desactivarSuscripcionesAnteriores(
-      usuario.id,
-      subscription.endpoint,
-    );
 
     console.log("Web Push: suscripción sincronizada correctamente.", {
       proveedor:
