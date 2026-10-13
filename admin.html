@@ -1358,8 +1358,193 @@
     </div>
 
     <style>
+        /* Modal de edición: compacto, elegante y usable en pantallas pequeñas */
+        #modal-editar {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: none !important;
+            margin: 0 !important;
+            padding: clamp(10px, 2.5vh, 24px) !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            background: rgba(12, 24, 38, .72) !important;
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        #modal-editar > div {
+            display: flex !important;
+            flex-direction: column !important;
+            width: min(100%, 700px) !important;
+            max-width: 700px !important;
+            max-height: calc(100dvh - 32px) !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: clamp(16px, 2.5vw, 26px) !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(255,255,255,.72) !important;
+            border-radius: 24px !important;
+            background: linear-gradient(145deg, #ffffff 0%, #f5f8fc 100%) !important;
+            box-shadow: 0 28px 90px rgba(8, 20, 35, .35), 0 2px 10px rgba(255,255,255,.5) inset !important;
+        }
+
+        #modal-editar > div > div:first-child {
+            flex: 0 0 auto;
+            margin-bottom: 12px !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1px solid #e4ebf3 !important;
+        }
+
+        #modal-editar h2 {
+            color: #24384b;
+            letter-spacing: -.035em;
+        }
+
+        #form-editar {
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 2px 5px 4px 1px;
+            scrollbar-width: thin;
+            scrollbar-color: #bdcbd8 transparent;
+        }
+
+        #form-editar > div {
+            margin-bottom: 12px !important;
+        }
+
+        #form-editar label {
+            display: block;
+            margin-bottom: 6px;
+            color: #35495c;
+            font-size: .88rem;
+        }
+
+        #form-editar input:not([type="checkbox"]):not([type="hidden"]),
+        #form-editar textarea {
+            width: 100% !important;
+            max-width: 100%;
+            box-sizing: border-box !important;
+            padding: 11px 13px !important;
+            border: 1px solid #d7e1eb !important;
+            border-radius: 13px !important;
+            background: #fff !important;
+            color: #24384b;
+            font: inherit;
+            outline: none;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+
+        #form-editar input:focus,
+        #form-editar textarea:focus {
+            border-color: #6b8da8 !important;
+            box-shadow: 0 0 0 3px rgba(80, 125, 157, .13);
+        }
+
+        #edit-contenido {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        #edit-vista-previa img,
+        #edit-vista-previa video {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        #form-editar > div:has(> label > input[type="checkbox"]) {
+            gap: 8px !important;
+        }
+
+        #form-editar button[type="submit"],
+        #form-editar button[type="button"] {
+            min-height: 44px;
+            border-radius: 14px !important;
+            transition: transform .16s ease, filter .16s ease;
+        }
+
+        #form-editar button[type="submit"] {
+            background: linear-gradient(135deg, #243f55, #356b78) !important;
+            box-shadow: 0 5px 14px rgba(36, 63, 85, .16);
+        }
+
+        #form-editar button[type="button"]#cancelar-editar {
+            background: #edf1f5 !important;
+            color: #405264 !important;
+        }
+
+        #form-editar button:hover {
+            filter: brightness(1.03);
+            transform: translateY(-1px);
+        }
+
+        #cerrar-modal {
+            flex: 0 0 auto;
+            color: #405264;
+            transition: background .15s ease, transform .15s ease;
+        }
+
+        #cerrar-modal:hover {
+            background: #e4ebf2 !important;
+            transform: rotate(90deg);
+        }
+
         @media (max-width: 600px) {
             #modal-editar {
+                padding: 8px !important;
+                align-items: center !important;
+            }
+
+            #modal-editar > div {
+                width: 100% !important;
+                max-height: calc(100dvh - 16px) !important;
+                padding: 16px 14px !important;
+                border-radius: 20px !important;
+            }
+
+            #modal-editar h2 {
+                font-size: 1.2rem !important;
+            }
+
+            #form-editar > div {
+                margin-bottom: 10px !important;
+            }
+
+            #edit-contenido {
+                min-height: 82px;
+            }
+
+            #edit-vista-previa img,
+            #edit-vista-previa video {
+                max-height: 110px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            #modal-editar > div {
+                max-height: calc(100dvh - 16px) !important;
+            }
+
+            #modal-editar > div > div:first-child {
+                margin-bottom: 8px !important;
+                padding-bottom: 8px !important;
+            }
+
+            #form-editar > div {
+                margin-bottom: 8px !important;
+            }
+        }
+    </style>
+
+
                 padding: 8px !important;
                 align-items: flex-start !important;
             }
