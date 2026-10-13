@@ -1311,7 +1311,14 @@ window.eliminarUsuario = async function (id) {
 const multimediaConfig = {
   bucket: "media",
   imagenes: { mime: ["image/jpeg", "image/png", "image/webp"], extensiones: ["jpg", "jpeg", "png", "webp"], maxBytes: 10 * 1024 * 1024 },
-  videos: { mime: ["video/mp4", "video/webm", "video/quicktime"], extensiones: ["mp4", "webm", "mov"], maxBytes: 100 * 1024 * 1024 }
+  videos: {
+    mime: ["video/mp4", "video/webm", "video/quicktime"],
+    extensiones: ["mp4", "webm", "mov"],
+    maxBytes: 10 * 1024 * 1024,
+    objetivoBytes: 9 * 1024 * 1024,
+    duracionMaxSegundos: 30,
+    fuenteMaxBytes: 250 * 1024 * 1024
+  }
 };
 
 async function obtenerClienteMultimedia() {
@@ -1326,6 +1333,124 @@ function nombreArchivoSeguro(nombre) {
     .replace(/[^a-zA-Z0-9._-]+/g, "_").replace(/^\.+/, "").slice(0, 100) || "archivo";
 }
 
+async function obtenerDuracionVideo(file) {
+  const url = URL.createObjectURL(file);
+  const video = document.createElement("video");
+  video.preload = "metadata";
+  video.muted = true;
+  video.playsInline = true;
+  try {
+    const duracion = await new Promise((resolve, reject) => {
+      video.onloadedmetadata = () => resolve(video.duration);
+      video.onerror = () => reject(new Error("No se pudo leer el video. Prueba con MP4, WebM o MOV."));
+      video.src = url;
+    });
+    if (!Number.isFinite(duracion) || duracion <= 0) throw new Error("El video no tiene una duración válida.");
+    return duracion;
+  } finally {
+    video.removeAttribute("src");
+    video.load();
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function comprimirVideoEnNavegador(file, elementos) {
+  const cfg = multimediaConfig.videos;
+  if (file.size > cfg.fuenteMaxBytes) throw new Error("El archivo original supera 250 MB. Para evitar bloquear tu navegador, reduce primero el video y vuelve a intentarlo.");
+  const duracion = await obtenerDuracionVideo(file);
+  if (duracion > cfg.duracionMaxSegundos) throw new Error("El video dura " + Math.ceil(duracion) + " segundos. El máximo para El Barrio es 30 segundos; recórtalo y vuelve a intentarlo.");
+  if (file.size <= cfg.objetivoBytes) return file;
+  if (!("MediaRecorder" in window) || !HTMLCanvasElement.prototype.captureStream) {
+    throw new Error("Este navegador no permite comprimir el video automáticamente. Usa Chrome o Edge actualizado, o comprime el video a menos de 9 MB antes de subirlo.");
+  }
+
+  const url = URL.createObjectURL(file);
+  const video = document.createElement("video");
+  video.preload = "auto";
+  video.muted = true;
+  video.playsInline = true;
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d", { alpha: false });
+  if (!ctx) {
+    URL.revokeObjectURL(url);
+    throw new Error("No se pudo iniciar el compresor de video en este navegador.");
+  }
+
+  let raf = 0, canvasStream = null, audioStream = null, recorder = null;
+  try {
+    await new Promise((resolve, reject) => {
+      video.onloadedmetadata = resolve;
+      video.onerror = () => reject(new Error("No se pudo abrir el video para comprimirlo."));
+      video.src = url;
+    });
+
+    const escala = Math.min(1, 1280 / video.videoWidth, 720 / video.videoHeight);
+    canvas.width = Math.max(2, Math.round(video.videoWidth * escala / 2) * 2);
+    canvas.height = Math.max(2, Math.round(video.videoHeight * escala / 2) * 2);
+    canvasStream = canvas.captureStream(24);
+    if (typeof video.captureStream === "function") {
+      audioStream = video.captureStream();
+      audioStream.getAudioTracks().forEach(track => canvasStream.addTrack(track));
+    }
+
+    const tipos = ["video/webm;codecs=vp8,opus", "video/webm;codecs=vp8", "video/webm"];
+    const mimeType = tipos.find(type => MediaRecorder.isTypeSupported(type));
+    if (!mimeType) throw new Error("Este navegador no admite el formato de compresión WebM requerido. Usa Chrome o Edge actualizado.");
+
+    const bitsObjetivo = cfg.objetivoBytes * 8 * 0.88;
+    const tasaTotal = Math.max(220000, Math.min(900000, Math.floor(bitsObjetivo / Math.max(1, duracion))));
+    const tasaAudio = 64000;
+    const tasaVideo = Math.max(150000, tasaTotal - tasaAudio);
+    const partes = [];
+    recorder = new MediaRecorder(canvasStream, { mimeType, videoBitsPerSecond: tasaVideo, audioBitsPerSecond: tasaAudio });
+    const grabacion = new Promise((resolve, reject) => {
+      recorder.ondataavailable = event => { if (event.data && event.data.size) partes.push(event.data); };
+      recorder.onerror = () => reject(new Error("Falló la compresión del video. Intenta con un archivo más corto."));
+      recorder.onstop = () => resolve(new Blob(partes, { type: recorder.mimeType || "video/webm" }));
+    });
+
+    const dibujar = () => {
+      if (video.readyState >= 2) ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      if (!video.ended && !video.paused) raf = requestAnimationFrame(dibujar);
+    };
+    video.currentTime = 0;
+    await video.play();
+    dibujar();
+    recorder.start(500);
+    elementos.vista.innerHTML = "<p>Comprimiendo video en este dispositivo…</p><p style='font-size:12px;opacity:.75'>Máximo 30 segundos · 720p · objetivo menor de 9 MB. No cierres esta ventana.</p>";
+
+    await new Promise((resolve, reject) => {
+      const timeout = window.setTimeout(() => {
+        try { if (recorder && recorder.state !== "inactive") recorder.stop(); } catch (_) {}
+        reject(new Error("La compresión tardó demasiado. Prueba con un video más corto."));
+      }, Math.max(20000, (duracion + 12) * 1000));
+      video.onended = () => {
+        window.clearTimeout(timeout);
+        try { if (recorder && recorder.state !== "inactive") recorder.stop(); } catch (_) {}
+        resolve();
+      };
+      video.onerror = () => {
+        window.clearTimeout(timeout);
+        reject(new Error("Se interrumpió la lectura del video durante la compresión."));
+      };
+    });
+
+    const blob = await grabacion;
+    if (!blob.size) throw new Error("La compresión no produjo un archivo válido.");
+    if (blob.size > cfg.maxBytes) throw new Error("El video sigue pesando más de 10 MB después de comprimirlo. Recórtalo a menos de 30 segundos o reduce la calidad y vuelve a intentarlo.");
+    return new File([blob], nombreArchivoSeguro(file.name.replace(/\.[^.]+$/, "")) + ".webm", { type: "video/webm", lastModified: Date.now() });
+  } finally {
+    if (raf) cancelAnimationFrame(raf);
+    try { video.pause(); } catch (_) {}
+    if (recorder && recorder.state !== "inactive") { try { recorder.stop(); } catch (_) {} }
+    if (canvasStream) canvasStream.getTracks().forEach(track => track.stop());
+    if (audioStream) audioStream.getTracks().forEach(track => track.stop());
+    video.removeAttribute("src");
+    video.load();
+    URL.revokeObjectURL(url);
+  }
+}
+
 async function subirMultimediaSupabase(file, tipo, modo, elementos) {
   if (!file || elementos.ocupado) return;
   elementos.ocupado = true;
@@ -1333,13 +1458,21 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
   const textoOriginal = btn?.textContent;
   try {
     const cfg = tipo === "imagen" ? multimediaConfig.imagenes : multimediaConfig.videos;
-    const extension = (file.name.split(".").pop() || "").toLowerCase();
+    const extensionOriginal = (file.name.split(".").pop() || "").toLowerCase();
     if (!cfg.mime.includes(file.type.toLowerCase())) {
       throw new Error(tipo === "imagen" ? "Formato no permitido. Usa JPG, PNG o WebP." : "Formato no permitido. Usa MP4, WebM o MOV.");
     }
-    if (!cfg.extensiones.includes(extension)) throw new Error("La extensión del archivo no está permitida.");
-    if (file.size <= 0 || file.size > cfg.maxBytes) {
-      throw new Error(tipo === "imagen" ? "La imagen debe pesar como máximo 10 MB." : "El video debe pesar como máximo 100 MB.");
+    if (!cfg.extensiones.includes(extensionOriginal)) throw new Error("La extensión del archivo no está permitida.");
+    if (file.size <= 0) throw new Error("El archivo está vacío o no es válido.");
+    if (tipo === "imagen" && file.size > cfg.maxBytes) throw new Error("La imagen debe pesar como máximo 10 MB.");
+    if (tipo === "video" && file.size > multimediaConfig.videos.fuenteMaxBytes) throw new Error("El archivo original supera 250 MB. Para evitar bloquear tu navegador, reduce primero el video y vuelve a intentarlo.");
+
+    let archivoSubida = file;
+    if (tipo === "video") {
+      if (btn) { btn.disabled = true; btn.textContent = "Preparando video…"; }
+      elementos.vista.innerHTML = "<p>Revisando duración y tamaño del video…</p>";
+      archivoSubida = await comprimirVideoEnNavegador(file, elementos);
+      if (archivoSubida.size > multimediaConfig.videos.maxBytes) throw new Error("El video final no puede superar 10 MB.");
     }
 
     const client = await obtenerClienteMultimedia();
@@ -1351,13 +1484,14 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     const avisoId = modo === "edicion" ? String(document.getElementById("edit-id")?.value || "").trim() : "nuevo";
     if (modo === "edicion" && !avisoId) throw new Error("No se encontró el ID del aviso que estás editando.");
 
-    if (btn) { btn.disabled = true; btn.textContent = "Subiendo a Supabase..."; }
-    elementos.vista.innerHTML = "<p>Subiendo archivo a Supabase...</p>";
+    if (btn) { btn.disabled = true; btn.textContent = "Subiendo a Supabase…"; }
+    elementos.vista.innerHTML = "<p>Subiendo archivo a Supabase…</p>";
+    const extension = tipo === "video" && archivoSubida !== file ? "webm" : extensionOriginal;
     const base = nombreArchivoSeguro(file.name.replace(/\.[^.]+$/, ""));
-    const ruta = `avisos/${uid}/${avisoId}/${Date.now()}-${base}.${extension}`;
+    const ruta = "avisos/" + uid + "/" + avisoId + "/" + Date.now() + "-" + base + "." + extension;
 
-    const { error: uploadError } = await client.storage.from(multimediaConfig.bucket).upload(ruta, file, {
-      cacheControl: "3600", contentType: file.type.toLowerCase(), upsert: false
+    const { error: uploadError } = await client.storage.from(multimediaConfig.bucket).upload(ruta, archivoSubida, {
+      cacheControl: "3600", contentType: archivoSubida.type.toLowerCase(), upsert: false
     });
     if (uploadError) throw uploadError;
 
@@ -1368,10 +1502,10 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     elementos.campoImagen.value = tipo === "imagen" ? url : "";
     elementos.campoVideo.value = tipo === "video" ? url : "";
     elementos.vista.innerHTML = tipo === "imagen"
-      ? `<img src="${url}" alt="Imagen subida" style="max-width:100%;max-height:180px;border-radius:12px;object-fit:contain;"><p style="color:green;font-size:12px;">Imagen subida a Supabase. Guarda el aviso para conservar el enlace.</p>`
-      : `<video src="${url}" controls playsinline style="max-width:100%;max-height:180px;border-radius:12px;"></video><p style="color:green;font-size:12px;">Video subido a Supabase. Guarda el aviso para conservar el enlace.</p>`;
+      ? '<img src="' + url + '" alt="Imagen subida" style="max-width:100%;max-height:180px;border-radius:12px;object-fit:contain;"><p style="color:green;font-size:12px;">Imagen subida a Supabase. Guarda el aviso para conservar el enlace.</p>'
+      : '<video src="' + url + '" controls playsinline style="max-width:100%;max-height:180px;border-radius:12px;"></video><p style="color:green;font-size:12px;">Video preparado y subido a Supabase (' + (archivoSubida.size / 1024 / 1024).toFixed(2) + ' MB). Guarda el aviso para conservar el enlace.</p>';
     if (window.API?.mostrarExito) API.mostrarExito("Archivo subido correctamente a Supabase.");
-    console.log("Multimedia subida a Supabase:", { tipo, ruta });
+    console.log("Multimedia subida a Supabase:", { tipo, ruta, bytes: archivoSubida.size });
   } catch (error) {
     console.error("Error subiendo multimedia a Supabase:", error);
     const mensaje = error?.message || String(error);
@@ -1387,7 +1521,6 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     if (elementos.input) elementos.input.value = "";
   }
 }
-
 function conectarControlesMultimedia(config) {
   const { input, botonImagen, botonVideo, vista, campoImagen, campoVideo, modo } = config;
   if (!input || !botonImagen || !botonVideo || !vista || !campoImagen || !campoVideo) return;
