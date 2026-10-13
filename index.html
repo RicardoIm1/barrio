@@ -656,37 +656,78 @@
         }
       }
 
+      // Normaliza acentos, mayúsculas y espacios para que "Jose" encuentre "José".
+      function normalizarBusqueda(valor) {
+        return String(valor ?? "")
+          .normalize("NFD")
+          .replace(/[\\u0300-\\u036f]/g, "")
+          .toLocaleLowerCase("es-MX")
+          .replace(/\\s+/g, " ")
+          .trim();
+      }
+
       function searchInAviso(aviso, searchTerm) {
-        if (!searchTerm) return true;
-        const term = searchTerm.toLowerCase();
-        return [
+        const consulta = normalizarBusqueda(searchTerm);
+        if (!consulta) return true;
+
+        // Los datos del autor pueden llegar con nombres distintos según el origen.
+        const camposTexto = [
           aviso.titulo,
           aviso.contenido,
           aviso.categoria,
           aviso.ubicacion,
           aviso.contacto,
-        ].some((f) => f && f.toString().toLowerCase().includes(term));
+          aviso.telefono,
+          aviso.celular,
+          aviso.whatsapp,
+          aviso.numero_contacto,
+          aviso.contacto_telefono,
+          aviso.phone,
+          aviso.usuario_nombre,
+          aviso.nombre_autor,
+          aviso.autor,
+          aviso.nombre_usuario,
+          aviso.usuario?.nombre,
+          aviso.usuario?.email,
+        ];
+
+        const textoAviso = normalizarBusqueda(camposTexto.filter(Boolean).join(" "));
+        // Permite buscar varias palabras aunque aparezcan en campos diferentes.
+        const palabras = consulta.split(" ").filter(Boolean);
+        if (palabras.every((palabra) => textoAviso.includes(palabra))) return true;
+
+        // Los teléfonos suelen venir con espacios, guiones o prefijos.
+        const digitosConsulta = consulta.replace(/\\D/g, "");
+        if (digitosConsulta.length >= 4) {
+          const telefonos = [
+            aviso.contacto, aviso.telefono, aviso.celular, aviso.whatsapp,
+            aviso.numero_contacto, aviso.contacto_telefono, aviso.phone,
+          ].filter(Boolean).join(" ").replace(/\\D/g, "");
+          if (telefonos.includes(digitosConsulta)) return true;
+        }
+        return false;
       }
 
       function applyFiltersAndSearch() {
-        let filtered = [...allAvisos];
-        if (currentSearchTerm) {
-          const term = currentSearchTerm.toLowerCase();
-          filtered = filtered.filter(
-            (aviso) =>
-              aviso.titulo?.toLowerCase().includes(term) ||
-              aviso.contenido?.toLowerCase().includes(term) ||
-              aviso.categoria?.toLowerCase().includes(term) ||
-              aviso.ubicacion?.toLowerCase().includes(term),
-          );
-        }
-        filteredAvisos = filtered;
+        const consulta = String(currentSearchTerm ?? "").trim();
+        filteredAvisos = consulta
+          ? allAvisos.filter((aviso) => searchInAviso(aviso, consulta))
+          : [...allAvisos];
+
         renderedCount = 0;
         hasMore = true;
         const container = document.getElementById("avisos-container");
-        if (container) container.innerHTML = "";
+        if (container) {
+          container.innerHTML = "";
+          if (filteredAvisos.length === 0) {
+            container.innerHTML = '<div class="mensaje mensaje-info" role="status">No encontramos avisos que coincidan con tu búsqueda.</div>';
+          }
+        }
         loadMoreAvisos();
       }
+
+      // El buscador del encabezado invoca esta función después de cada cambio.
+      window.applyFiltersAndSearch = applyFiltersAndSearch;
 
       function loadMoreAvisos() {
         if (isLoading || !hasMore) return;
