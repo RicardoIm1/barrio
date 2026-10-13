@@ -1174,6 +1174,119 @@ fetch("/common/footer-admin.html?v=20260903-2")
   .catch(() => console.log("Footer no disponible"));
 console.log("✅ Script de administración cargado - Conectado a API real");
 
+
+// Ficha modal de usuario y estadísticas de sus publicaciones.
+(function instalarFichaUsuarioAdmin() {
+  if (window.__elBarrioFichaUsuarioInstalada) return;
+  window.__elBarrioFichaUsuarioInstalada = true;
+  const esc = function(v) { const n=document.createElement("span"); n.textContent=v==null?"":String(v); return n.innerHTML; };
+  const num = function(v) { const n=Number(v); return Number.isFinite(n)?n:0; };
+  const fmt = function(v) { return num(v).toLocaleString("es-MX"); };
+  const fecha = function(v) {
+    if (!v) return "No disponible";
+    const d=new Date(v);
+    return Number.isNaN(d.getTime())?esc(v):d.toLocaleString("es-MX",{timeZone:"America/Bahia_Banderas",dateStyle:"medium",timeStyle:"short"});
+  };
+  function asegurarModal() {
+    if (document.getElementById("modal-ficha-usuario")) return;
+    const st=document.createElement("style");
+    st.id="estilos-modal-ficha-usuario";
+    st.textContent = '.fila-usuario-detalle{cursor:pointer}.fila-usuario-detalle:focus-visible{outline:2px solid #4a90a4;outline-offset:2px}'+
+      '#modal-ficha-usuario{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;padding:clamp(8px,2vh,22px);box-sizing:border-box;background:rgba(12,24,38,.72);backdrop-filter:blur(10px)}'+
+      '#modal-ficha-usuario .fu-panel{width:min(100%,920px);max-height:calc(100dvh - 24px);overflow:auto;box-sizing:border-box;background:linear-gradient(145deg,#fff,#f4f7fb);color:#263849;border:1px solid #fff;border-radius:22px;box-shadow:0 28px 90px rgba(8,20,35,.35);padding:clamp(16px,2.5vw,28px)}'+
+      '#modal-ficha-usuario .fu-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;background:#fff;border-bottom:1px solid #e2eaf1}'+
+      '#modal-ficha-usuario .fu-head h2{margin:0;font-size:1.4rem;color:#24384b}#modal-ficha-usuario .fu-sub{margin:5px 0 0;color:#657789;font-size:.85rem;overflow-wrap:anywhere}'+
+      '#modal-ficha-usuario .fu-close{border:0;border-radius:50%;width:38px;height:38px;flex:0 0 38px;cursor:pointer;background:#eaf0f5;color:#34495e;font-size:20px}'+
+      '#modal-ficha-usuario .fu-section{margin-top:20px}#modal-ficha-usuario .fu-section h3{margin:0 0 11px;font-size:1rem;color:#2c465c}'+
+      '#modal-ficha-usuario .fu-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}#modal-ficha-usuario .fu-field{min-width:0;padding:11px 12px;border:1px solid #e3eaf1;border-radius:12px;background:#fff}'+
+      '#modal-ficha-usuario .fu-label{display:block;color:#7b8b9a;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}#modal-ficha-usuario .fu-value{display:block;font-size:.88rem;font-weight:600;overflow-wrap:anywhere}'+
+      '#modal-ficha-usuario .fu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#modal-ficha-usuario .fu-stat{padding:14px;border-radius:14px;background:#fff;border:1px solid #e2eaf1}'+
+      '#modal-ficha-usuario .fu-stat span{display:block;font-size:.7rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:5px;font-size:1.45rem;color:#29465d}'+
+      '#modal-ficha-usuario .fu-box{margin-top:12px;padding:14px;border:1px solid #e2eaf1;border-radius:14px;background:#fff}#modal-ficha-usuario .fu-box h4{margin:0 0 10px;font-size:.9rem;color:#344f65}'+
+      '#modal-ficha-usuario .fu-chart{display:block;width:100%;height:170px}#modal-ficha-usuario .fu-table-wrap{overflow-x:auto}#modal-ficha-usuario .fu-table{width:100%;border-collapse:collapse;font-size:.78rem}'+
+      '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
+      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:18px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}}';
+    document.head.appendChild(st);
+    const modal=document.createElement("div"); modal.id="modal-ficha-usuario";
+    modal.innerHTML='<section class="fu-panel" role="dialog" aria-modal="true" aria-labelledby="fu-titulo">'+
+      '<header class="fu-head"><div><h2 id="fu-titulo">Ficha del usuario</h2><p id="fu-subtitulo" class="fu-sub"></p></div><button type="button" class="fu-close" id="fu-cerrar" aria-label="Cerrar ficha">×</button></header>'+
+      '<section class="fu-section"><h3>Datos del usuario</h3><div id="fu-datos" class="fu-fields"><div class="fu-muted">Cargando datos…</div></div></section>'+
+      '<section class="fu-section"><h3>Estadísticas de sus publicaciones</h3><div class="fu-stats">'+
+      '<div class="fu-stat"><span>Publicaciones</span><strong id="fu-total">…</strong></div><div class="fu-stat"><span>Avisos activos</span><strong id="fu-activos">…</strong></div><div class="fu-stat"><span>Vistas totales</span><strong id="fu-vistas">…</strong></div>'+
+      '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
+      '<div class="fu-box"><h4>Publicaciones de los últimos 30 días</h4><canvas id="fu-chart" class="fu-chart"></canvas></div>'+
+      '<div class="fu-box"><h4>Rendimiento por aviso</h4><div class="fu-table-wrap"><table class="fu-table"><thead><tr><th>Aviso</th><th>Estado</th><th class="fu-num">Vistas</th><th class="fu-num">👍</th><th class="fu-num">👎</th><th class="fu-num">Interacciones</th></tr></thead><tbody id="fu-avisos"><tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr></tbody></table></div></div></section></section>';
+    document.body.appendChild(modal);
+    const cerrar=function(){modal.style.display="none";document.body.style.overflow="";};
+    modal.querySelector("#fu-cerrar").addEventListener("click",cerrar);
+    modal.addEventListener("click",function(e){if(e.target===modal)cerrar();});
+    document.addEventListener("keydown",function(e){if(e.key==="Escape"&&modal.style.display==="flex")cerrar();});
+  }
+  function dibujarGrafica(avisos) {
+    const canvas=document.getElementById("fu-chart"); if(!canvas)return;
+    const ratio=window.devicePixelRatio||1, ancho=Math.max(280,Math.floor(canvas.parentElement.clientWidth-28)), alto=170;
+    canvas.width=ancho*ratio;canvas.height=alto*ratio;canvas.style.width="100%";canvas.style.height=alto+"px";
+    const ctx=canvas.getContext("2d");ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,ancho,alto);
+    const hoyTxt=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Bahia_Banderas",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+    const p=hoyTxt.split("-").map(Number),hoy=new Date(Date.UTC(p[0],p[1]-1,p[2])),dias=[];
+    for(let i=29;i>=0;i--){const d=new Date(hoy);d.setUTCDate(hoy.getUTCDate()-i);dias.push(d);}
+    const clave=function(v){const d=new Date(v);if(Number.isNaN(d.getTime()))return "";return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Bahia_Banderas",year:"numeric",month:"2-digit",day:"2-digit"}).format(d);};
+    const conteo=new Map();avisos.forEach(function(a){const k=clave(a.created_at);if(k)conteo.set(k,(conteo.get(k)||0)+1);});
+    const vals=dias.map(function(d){return conteo.get(clave(d))||0;}),max=Math.max(1,...vals),pad={l:32,r:8,t:10,b:28},cw=ancho-pad.l-pad.r,ch=alto-pad.t-pad.b;
+    ctx.font="10px system-ui";ctx.textAlign="right";ctx.textBaseline="middle";
+    for(let i=0;i<=4;i++){const y=pad.t+ch-ch*i/4;ctx.strokeStyle="#e7edf2";ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(ancho-pad.r,y);ctx.stroke();ctx.fillStyle="#728394";ctx.fillText(String(Math.round(max*i/4)),pad.l-5,y);}
+    ctx.strokeStyle="#e5a33b";ctx.lineWidth=2.5;ctx.beginPath();vals.forEach(function(v,i){const x=pad.l+cw*i/(vals.length-1),y=pad.t+ch-(v/max)*ch;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});ctx.stroke();
+    ctx.fillStyle="#e5a33b";vals.forEach(function(v,i){const x=pad.l+cw*i/(vals.length-1),y=pad.t+ch-(v/max)*ch;ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();});
+    ctx.fillStyle="#728394";ctx.textAlign="center";ctx.textBaseline="top";dias.forEach(function(d,i){if(i%5===0||i===dias.length-1)ctx.fillText(d.toLocaleDateString("es-MX",{day:"2-digit",month:"2-digit",timeZone:"UTC"}),pad.l+cw*i/(dias.length-1),alto-pad.b+7);});
+  }
+  async function abrirFicha(id) {
+    asegurarModal();
+    const modal=document.getElementById("modal-ficha-usuario");
+    const usuario=(window.__elBarrioUsuariosAdmin||[]).find(function(u){return String(u.id)===String(id);})||{};
+    document.getElementById("fu-titulo").textContent=usuario.nombre||usuario.email||"Ficha del usuario";
+    document.getElementById("fu-subtitulo").textContent=usuario.email||"Detalle del usuario";
+    const campos=[["Nombre",usuario.nombre],["Correo electrónico",usuario.email],["Teléfono",usuario.telefono],["Dirección",usuario.direccion],["Rol",usuario.rol||"usuario"],
+      ["Estado",usuario.activo===true||String(usuario.activo).toUpperCase()==="TRUE"?"Activo":"Inactivo"],["Categorías",usuario.categorias],
+      ["Registro",fecha(usuario.fecha_registro||usuario.created_at)],["Último acceso",fecha(usuario.ultimo_acceso)],["ID",usuario.id]].filter(function(c){return c[1]!==undefined&&c[1]!==null&&String(c[1]).trim()!=="";});
+    document.getElementById("fu-datos").innerHTML=campos.map(function(c){return '<div class="fu-field"><span class="fu-label">'+esc(c[0])+'</span><span class="fu-value">'+esc(c[1])+'</span></div>';}).join("")||'<div class="fu-muted">No hay datos adicionales disponibles.</div>';
+    ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="…";});
+    document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr>';
+    modal.style.display="flex";document.body.style.overflow="hidden";
+    try {
+      const client=typeof window.getSupabaseClient==="function"?await window.getSupabaseClient():null;
+      if(!client)throw new Error("No está disponible la conexión con Supabase.");
+      const r=await client.from("avisos").select("id,titulo,status,created_at,vistas").eq("created_by",id).neq("status","eliminado").order("created_at",{ascending:false});
+      if(r.error)throw r.error;
+      const lista=r.data||[],votosMap=new Map();let positivos=0,negativos=0;
+      if(lista.length){
+        const vr=await client.from("votos").select("aviso_id,tipo").in("aviso_id",lista.map(function(a){return a.id;}));
+        if(vr.error)throw vr.error;
+        (vr.data||[]).forEach(function(v){const x=votosMap.get(v.aviso_id)||{positivos:0,negativos:0};if(v.tipo==="positivo"){x.positivos++;positivos++;}if(v.tipo==="negativo"){x.negativos++;negativos++;}votosMap.set(v.aviso_id,x);});
+      }
+      const vistas=lista.reduce(function(s,a){return s+num(a.vistas);},0),activos=lista.filter(function(a){return a.status==="activo";}).length;
+      [["fu-total",lista.length],["fu-activos",activos],["fu-vistas",vistas],["fu-positivos",positivos],["fu-negativos",negativos],["fu-interacciones",positivos+negativos]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
+      dibujarGrafica(lista);
+      const tbody=document.getElementById("fu-avisos");
+      if(!lista.length)tbody.innerHTML='<tr><td colspan="6" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
+      else tbody.innerHTML=lista.map(function(a){const v=votosMap.get(a.id)||{positivos:0,negativos:0},s=a.status||"pendiente",label=s==="activo"?"Activo":s==="rechazado"?"Rechazado":s==="pendiente"?"Pendiente":s;
+        return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong></td><td>'+esc(label)+'</td><td class="fu-num">'+fmt(a.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(v.positivos+v.negativos)+'</td></tr>';}).join("");
+    } catch(error) {
+      console.error("No se pudo cargar la ficha estadística del usuario:",error);
+      document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">No se pudieron cargar las estadísticas: '+esc(error.message||error)+'</td></tr>';
+      ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="—";});
+    }
+  }
+  window.verFichaUsuarioAdmin=abrirFicha;
+  function conectarFilas(){
+    const tabla=document.getElementById("tabla-usuarios-cuerpo");if(!tabla||tabla.dataset.fichaUsuarioInit==="1")return;tabla.dataset.fichaUsuarioInit="1";
+    const activar=function(fila){if(fila&&fila.dataset.userId)abrirFicha(fila.dataset.userId);};
+    tabla.addEventListener("click",function(e){if(e.target.closest("button,a,input,select,textarea"))return;activar(e.target.closest("tr.fila-usuario-detalle"));});
+    tabla.addEventListener("keydown",function(e){if(e.key!=="Enter"&&e.key!==" ")return;const fila=e.target.closest("tr.fila-usuario-detalle");if(!fila)return;e.preventDefault();activar(fila);});
+  }
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",conectarFilas,{once:true});else conectarFilas();
+  new MutationObserver(conectarFilas).observe(document.documentElement,{childList:true,subtree:true});
+})();
+
 async function cargarUsuariosAdmin() {
   const tablaUsuarios = document.getElementById("tabla-usuarios-cuerpo");
   if (!tablaUsuarios) return;
@@ -1233,6 +1346,7 @@ async function cargarUsuariosAdmin() {
     else if (respuesta.datos && Array.isArray(respuesta.datos))
       usuarios = respuesta.datos;
     else if (Array.isArray(respuesta.data)) usuarios = respuesta.data;
+    window.__elBarrioUsuariosAdmin = usuarios;
     if (!usuarios || usuarios.length === 0) {
       tablaUsuarios.innerHTML =
         '<td><td colspan="5">📭 No hay usuarios registrados</td></tr>';
@@ -1274,7 +1388,7 @@ async function cargarUsuariosAdmin() {
           fechaMostrar = fechaRegistro
             ? new Date(fechaRegistro).toLocaleDateString("es-MX", { timeZone: EL_BARRIO_TIME_ZONE })
             : "—";
-        return `<tr><td data-label="Email">${email}${fechaRegistro ? `<br><small style="color:#888;">📅 ${fechaMostrar}</small>` : ""}</td><td data-label="Nombre">${nombre}</td><td data-label="Rol"><span class="rol-badge ${rol === "admin" ? "rol-admin" : "rol-usuario"}">${rol}</span></td><td data-label="Estado">${activo}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`;
+        return `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${email}${fechaRegistro ? `<br><small style="color:#888;">📅 ${fechaMostrar}</small>` : ""}</td><td data-label="Nombre">${nombre}</td><td data-label="Rol"><span class="rol-badge ${rol === "admin" ? "rol-admin" : "rol-usuario"}">${rol}</span></td><td data-label="Estado">${activo}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`;
       })
       .join("");
     console.log(
@@ -1676,7 +1790,7 @@ function aplicarBusqueda() {
         tablaUsuarios.innerHTML = usuariosFiltrados
           .map(
             (user) =>
-              `<tr><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
+              `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
           )
           .join("");
       }
@@ -1730,7 +1844,7 @@ async function awaitOriginalCargarUsuarios() {
       tablaUsuarios.innerHTML = usuariosOriginales
         .map(
           (user) =>
-            `<tr><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
+            `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
         )
         .join("");
     }
