@@ -141,6 +141,7 @@
       let allAvisos = [];
       let filteredAvisos = [];
       let renderedCount = 0;
+      let searchRenderVersion = 0;
       let isLoadingAvisos = false;
       let avisosCargados = false;
 
@@ -709,19 +710,30 @@
       }
 
       function applyFiltersAndSearch() {
-        const consulta = String(currentSearchTerm ?? "").trim();
+        // window.currentSearchTerm es la fuente compartida con el header cargado dinámicamente.
+        const consulta = String(window.currentSearchTerm ?? currentSearchTerm ?? "").trim();
+        currentSearchTerm = consulta;
         filteredAvisos = consulta
           ? allAvisos.filter((aviso) => searchInAviso(aviso, consulta))
           : [...allAvisos];
 
+        // Invalida cualquier render pendiente de la consulta anterior para evitar carreras al teclear.
+        searchRenderVersion++;
+        isLoading = false;
         renderedCount = 0;
-        hasMore = true;
+        hasMore = filteredAvisos.length > 0;
         const container = document.getElementById("avisos-container");
-        if (container) {
-          container.innerHTML = "";
-          if (filteredAvisos.length === 0) {
-            container.innerHTML = '<div class="mensaje mensaje-info" role="status">No encontramos avisos que coincidan con tu búsqueda.</div>';
+        const loadingTrigger = document.getElementById("loading-trigger");
+        if (container) container.innerHTML = "";
+        if (loadingTrigger) loadingTrigger.style.display = hasMore ? "block" : "none";
+
+        if (!filteredAvisos.length) {
+          if (container) {
+            container.innerHTML = consulta
+              ? '<div class="mensaje mensaje-info" role="status">No encontramos avisos que coincidan con tu búsqueda.</div>'
+              : '<div class="mensaje mensaje-info" role="status">No hay avisos disponibles.</div>';
           }
+          return;
         }
         loadMoreAvisos();
       }
@@ -732,10 +744,14 @@
       function loadMoreAvisos() {
         if (isLoading || !hasMore) return;
         isLoading = true;
+        const versionDeRender = searchRenderVersion;
         const loadingTrigger = document.getElementById("loading-trigger");
         if (loadingTrigger) loadingTrigger.style.display = "block";
 
         setTimeout(() => {
+          // Si el usuario siguió escribiendo, descarta el resultado de la consulta anterior.
+          if (versionDeRender !== searchRenderVersion) return;
+
           const start = renderedCount;
           const itemsPerLoad = 12;
           const end = Math.min(start + itemsPerLoad, filteredAvisos.length);
@@ -750,7 +766,7 @@
           if (loadingTrigger)
             loadingTrigger.style.display = hasMore ? "block" : "none";
           isLoading = false;
-        }, 100);
+        }, 0);
       }
 
       function appendAvisosToGrid(avisos) {
