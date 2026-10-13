@@ -10,7 +10,11 @@
 
         <div class="header-buscador solo-index">
             <input type="text" id="buscador-input-header" class="buscador-input-header"
-                placeholder="🔍 Buscar avisos...">
+                placeholder="🔍 Buscar avisos..." aria-label="Buscar avisos">
+            <div class="buscador-acciones-movil" aria-label="Acciones de búsqueda">
+                <button type="button" id="buscador-aceptar" aria-label="Aceptar búsqueda" title="Aceptar">✓</button>
+                <button type="button" id="buscador-cancelar" aria-label="Cancelar búsqueda" title="Cancelar">×</button>
+            </div>
         </div>
 
         <div id="reputacion-widget"
@@ -59,9 +63,34 @@
     @media (max-width: 550px) { .notif-panel { width: 280px; right: -20px; } }
     .header-buscador { flex: 1; max-width: 300px; margin: 0 15px; display: none; }
     body.pagina-index .header-buscador { display: block; }
-    .buscador-input-header { width: 100%; padding: 8px 16px; border-radius: 30px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; transition: all 0.2s; }
+    .buscador-input-header { width: 100%; min-width: 0; padding: 8px 16px; border-radius: 30px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; transition: all 0.2s; }
     .buscador-input-header:focus { outline: none; border-color: #f5b042; background: white; box-shadow: 0 0 0 2px rgba(245, 176, 66, 0.2); }
-    @media (max-width: 768px) { .header-buscador { order: 3; max-width: none; width: 100%; margin: 8px 0 0; } }
+    .buscador-acciones-movil { display: none; }
+    @media (max-width: 768px) {
+        .header-buscador {
+            order: 3; display: flex; align-items: center; gap: 6px;
+            flex: 0 1 42%; width: 42%; max-width: none; min-width: 0;
+            margin: 8px 0 0 auto; transition: width 0.22s ease, flex-basis 0.22s ease;
+        }
+        .header-buscador.activo { flex-basis: 60%; width: 60%; }
+        .header-buscador .buscador-input-header { flex: 1 1 auto; width: 100%; padding: 8px 12px; }
+        .buscador-acciones-movil { display: none; align-items: center; gap: 4px; flex: 0 0 auto; }
+        .header-buscador.activo .buscador-acciones-movil { display: flex; }
+        .buscador-acciones-movil button {
+            width: 30px; height: 34px; border: 1px solid #e5e7eb; border-radius: 50%;
+            background: #fff; color: #2c3e50; font-size: 1.1rem; line-height: 1;
+            cursor: pointer; padding: 0;
+        }
+        .buscador-acciones-movil #buscador-aceptar { color: #2b7a2b; }
+        .buscador-acciones-movil #buscador-cancelar { color: #b42318; }
+    }
+    @media (max-width: 380px) {
+        .header-buscador { flex-basis: 38%; width: 38%; }
+        .header-buscador.activo { flex-basis: 60%; width: 60%; }
+        .header-buscador.activo .buscador-input-header { padding-left: 8px; padding-right: 8px; }
+        .buscador-acciones-movil { gap: 2px; }
+        .buscador-acciones-movil button { width: 27px; height: 31px; }
+    }
 </style>
 <script src="/js/push.js"></script>
 <script>
@@ -160,12 +189,47 @@
 <script>
     setTimeout(() => {
         const buscadorHeader = document.getElementById('buscador-input-header');
-        if (buscadorHeader) {
-            buscadorHeader.addEventListener('input', (e) => {
-                currentSearchTerm = e.target.value;
-                applyFiltersAndSearch();
-            });
-        }
+        const contenedorBuscador = buscadorHeader?.closest('.header-buscador');
+        const aceptar = document.getElementById('buscador-aceptar');
+        const cancelar = document.getElementById('buscador-cancelar');
+
+        if (!buscadorHeader || !contenedorBuscador) return;
+
+        const esMovil = () => window.matchMedia('(max-width: 768px)').matches;
+        const contraer = () => contenedorBuscador.classList.remove('activo');
+        const aceptarBusqueda = () => {
+            contraer();
+            buscadorHeader.blur();
+        };
+        const cancelarBusqueda = () => {
+            buscadorHeader.value = '';
+            buscadorHeader.dispatchEvent(new Event('input', { bubbles: true }));
+            contraer();
+            buscadorHeader.blur();
+        };
+
+        buscadorHeader.addEventListener('focus', () => {
+            if (esMovil()) contenedorBuscador.classList.add('activo');
+        });
+        buscadorHeader.addEventListener('input', (e) => {
+            currentSearchTerm = e.target.value;
+            applyFiltersAndSearch();
+        });
+        buscadorHeader.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                aceptarBusqueda();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                cancelarBusqueda();
+            }
+        });
+        aceptar?.addEventListener('click', aceptarBusqueda);
+        cancelar?.addEventListener('click', cancelarBusqueda);
+
+        document.addEventListener('pointerdown', (e) => {
+            if (esMovil() && !contenedorBuscador.contains(e.target)) contraer();
+        });
     }, 500);
 </script>
 <script>
