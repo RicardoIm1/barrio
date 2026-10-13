@@ -8,13 +8,12 @@
 
   // Clave pública VAPID. La privada NUNCA debe estar en el frontend.
   const VAPID_PUBLIC_KEY =
-    "BDr1vV4sJF485cSxNPBXm6gSX3b7Pfi3c-9ZTTly6-JqvkNNS9uMB9-fM_DjfOVCFlXlLjN5tQYZy_O2NI114_k";
+    "BAQSRvXYrby2lYZchAzPMDRggkh8K379cIMsmzhDzzZKf8hZZ2h9-xtxltSZlL5NBXLzsv4ZFEQURVrO8_9y4OA";
 
   const SERVICE_WORKER_URL = "/sw.js";
 
-  // v5: una sola migración controlada del navegador.
-  // Obliga a recrear la suscripción con la VAPID vigente.
-  const PUSH_VAPID_VERSION = "v6";
+  // v7: rotación de pareja VAPID; recrea la suscripción con la nueva clave pública.
+  const PUSH_VAPID_VERSION = "v7";
   const PUSH_ENDPOINT_KEY = "elbarrio_push_endpoint_v1";
 
   function base64UrlToUint8Array(base64UrlData) {
