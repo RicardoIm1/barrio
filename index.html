@@ -1060,6 +1060,17 @@
             const headerContainer = document.getElementById("header-container");
             if (!headerContainer) return;
             headerContainer.innerHTML = html;
+            // En la portada el header se carga directamente desde este archivo,
+            // por lo que inicializamos aquí su atmósfera horaria compartida.
+            const headerAtmosferico = headerContainer.querySelector(".header");
+            if (headerAtmosferico) {
+              const horaLocal = new Date().getHours();
+              const cieloLocal = (horaLocal >= 6 && horaLocal < 9) ? "amanecer"
+                : (horaLocal >= 9 && horaLocal < 17) ? "dia"
+                : (horaLocal >= 17 && horaLocal < 20) ? "atardecer" : "noche";
+              headerAtmosferico.dataset.cielo = cieloLocal;
+            }
+
 
             // El header se inserta con innerHTML: sus scripts internos no se ejecutan.
             // Por eso el buscador de la página principal se conecta aquí explícitamente.
