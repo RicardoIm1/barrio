@@ -276,7 +276,20 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
 
   let html = '';
   
-  avisos.forEach(aviso => {
+  // Regla comunitaria: un aviso con tres votos negativos válidos no se renderiza.
+  // Esta protección visual complementa el estado persistente que debe aplicar el backend.
+  const avisosVisibles = avisos.filter(aviso =>
+    Number(aviso.dislikes ?? aviso.votos_negativos ?? 0) < 3 &&
+    (aviso.status === 'activo' || aviso.status === undefined)
+  );
+
+  if (avisosVisibles.length === 0) {
+    container.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles en esta página.</div>';
+    renderizarPaginacion(pagina, totalPaginas);
+    return;
+  }
+
+  avisosVisibles.forEach(aviso => {
     const fecha = aviso.created_at 
       ? new Date(aviso.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
       : 'Fecha no disponible';
@@ -420,6 +433,15 @@ async function votarDesdeIndice(id, tipo, btnElement) {
       // Reflejamos visualmente el estado de la acción realizada.
       if (likeBtn) likeBtn.classList.toggle('activo', tipo === 'positivo' && likes > 0);
       if (dislikeBtn) dislikeBtn.classList.toggle('activo', tipo === 'negativo' && dislikes > 0);
+
+      // Al alcanzar tres negativos, retiramos la tarjeta de inmediato.
+      if (dislikes >= 3) {
+        card.remove();
+        const contenedor = document.getElementById('avisos-container');
+        if (contenedor && !contenedor.querySelector('.aviso-card')) {
+          contenedor.innerHTML = '<div class="mensaje mensaje-info">📭 No hay avisos disponibles en esta página.</div>';
+        }
+      }
     }
   } catch (error) {
     console.error('Error votando desde el índice:', error);
