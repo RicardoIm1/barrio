@@ -987,9 +987,9 @@ function renderizarTablaAvisos() {
             <td data-label="Acciones"><div class="acciones-botones">
                     ${
                       esAdmin
-                        ? `<button type="button" class="accion-btn" title="Alternar marca de urgente" aria-label="Alternar marca de urgente" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;min-width:30px;padding:5px 8px;" onclick="event.stopPropagation(); cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">❗</button>
-                        <button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="event.stopPropagation(); cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
-                        <button class="accion-btn accion-eliminar" onclick="event.stopPropagation(); eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>`
+                        ? `<button type="button" class="accion-btn accion-icono ${esUrgente(aviso.urgente) ? "accion-activa" : ""}" title="${esUrgente(aviso.urgente) ? "Quitar urgente" : "Marcar urgente"}" aria-label="${esUrgente(aviso.urgente) ? "Quitar urgente" : "Marcar urgente"}" onclick="event.stopPropagation(); cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">❗</button>
+                        <button type="button" class="accion-btn accion-icono ${aviso.destacado ? "accion-activa" : ""}" title="${aviso.destacado ? "Quitar destacado" : "Destacar aviso"}" aria-label="${aviso.destacado ? "Quitar destacado" : "Destacar aviso"}" onclick="event.stopPropagation(); cambiarDestacado('${aviso.id}', ${!aviso.destacado})">⭐</button>
+                        <button type="button" class="accion-btn accion-icono accion-eliminar" title="Eliminar aviso" aria-label="Eliminar aviso" onclick="event.stopPropagation(); eliminarAviso('${aviso.id}')">🗑️</button>`
                         : ""
                     }</div></td>
         </tr>`;
@@ -1451,7 +1451,7 @@ async function cargarUsuariosAdmin() {
           fechaMostrar = fechaRegistro
             ? new Date(fechaRegistro).toLocaleDateString("es-MX", { timeZone: EL_BARRIO_TIME_ZONE })
             : "—";
-        return `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${email}${fechaRegistro ? `<br><small style="color:#888;">📅 ${fechaMostrar}</small>` : ""}</td><td data-label="Nombre">${nombre}</td><td data-label="Rol"><span class="rol-badge ${rol === "admin" ? "rol-admin" : "rol-usuario"}">${rol}</span></td><td data-label="Estado">${activo}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`;
+        return `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${email}${fechaRegistro ? `<br><small style="color:#888;">📅 ${fechaMostrar}</small>` : ""}</td><td data-label="Nombre">${nombre}</td><td data-label="Rol"><span class="rol-badge ${rol === "admin" ? "rol-admin" : "rol-usuario"}">${rol}</span></td><td data-label="Estado">${activo}</td><td data-label="Acciones"><button type="button" class="accion-btn accion-icono accion-eliminar" title="Eliminar usuario" aria-label="Eliminar usuario" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️</button></td></tr>`;
       })
       .join("");
     console.log(
@@ -1852,7 +1852,7 @@ function aplicarBusqueda() {
         tablaUsuarios.innerHTML = usuariosFiltrados
           .map(
             (user) =>
-              `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
+              `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button type="button" class="accion-btn accion-icono accion-eliminar" title="Eliminar usuario" aria-label="Eliminar usuario" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️</button></td></tr>`,
           )
           .join("");
       }
@@ -1906,7 +1906,7 @@ async function awaitOriginalCargarUsuarios() {
       tablaUsuarios.innerHTML = usuariosOriginales
         .map(
           (user) =>
-            `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button class="accion-btn" style="background:#dc3545;color:white;" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️ Eliminar</button></td></tr>`,
+            `<tr class="fila-usuario-detalle" data-user-id="${escapeHtml(user.id || "")}" tabindex="0" role="button" aria-label="Ver ficha de usuario"><td data-label="Email">${escapeHtml(user.email || "")}</td><td data-label="Nombre">${escapeHtml(user.nombre || "")}</td><td data-label="Rol"><span class="rol-badge ${user.rol === "admin" ? "rol-admin" : "rol-usuario"}">${user.rol || "usuario"}</span></td><td data-label="Estado">${user.activo === "TRUE" || user.activo === true ? "✅ Activo" : "❌ Inactivo"}</td><td data-label="Acciones"><button type="button" class="accion-btn accion-icono accion-eliminar" title="Eliminar usuario" aria-label="Eliminar usuario" onclick="event.stopPropagation();eliminarUsuario('${user.id}')">🗑️</button></td></tr>`,
         )
         .join("");
     }
