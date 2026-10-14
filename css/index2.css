@@ -293,8 +293,47 @@
     min-height: 340px;
     box-sizing: border-box;
     padding: 22px;
-    background: transparent;
+    background: transparent !important;
     color: #fff;
+    overflow: visible;
+  }
+
+  /* Mantener visibles los datos, aunque otras reglas intenten ocultarlos. */
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno > *,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno > * {
+    position: relative;
+    z-index: 2;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-header-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-header-moderno,
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-preview-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-preview-moderno,
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-stats-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-stats-moderno {
+    display: flex;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-header-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-header-moderno {
+    flex-direction: column;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-preview-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-preview-moderno {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    line-height: 1.45;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno .card-stats-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno .card-stats-moderno {
+    flex-wrap: wrap;
+    gap: 12px 18px;
   }
 
   .tarjeta-moderna:has(.aviso-imagen) .card-fecha-moderna,
