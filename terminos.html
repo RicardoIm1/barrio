@@ -585,7 +585,7 @@
       titularAsociacion: "Jerónimo Ricardo Ramírez Torres",
       emailContacto: "jeronimoricardo1@gmail.com",
       jurisdiccion: "Puerto Vallarta, Jalisco",
-      fechaVigenciaTexto: "14 de abril de 2026",
+      fechaVigenciaTexto: "13 de octubre de 2026",
       firmaTitularNombre: "Jerónimo Ricardo Ramírez Torres",
       cargoTitular: "Administrador de la Plataforma"
     };
@@ -598,7 +598,12 @@
     setText("coloniaNombre", config.colonia);
     setText("titularNombre", config.titularAsociacion);
     setText("coloniaDef", config.colonia);
-    setText("emailTitularDisplay", config.emailContacto);
+    const emailTitularDisplay = document.getElementById("emailTitularDisplay");
+    if (emailTitularDisplay) {
+      const emailLink = emailTitularDisplay.querySelector("a");
+      if (emailLink) { emailLink.href = "mailto:" + config.emailContacto; emailLink.textContent = config.emailContacto; }
+      else { emailTitularDisplay.textContent = config.emailContacto; }
+    }
     setText("jurisdiccionTexto", config.jurisdiccion);
     setText("fechaVigencia", config.fechaVigenciaTexto);
     setText("firmaTitularNombre", config.firmaTitularNombre);
