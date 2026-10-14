@@ -100,11 +100,25 @@ async function cargarHeader(){
             s.textContent=old.textContent;
             document.body.appendChild(s);
         });
+        await actualizarHeaderUsuario();
 
     }catch(e){
         console.warn('Header:',e);
     }
 }
+async function actualizarHeaderUsuario(){
+ try{
+  const c=await getSharedClient(),r=await c.auth.getUser(),u=r?.data?.user;
+  usuarioAuth=u||null;if(!u)return;
+  let p=null;try{const q=await c.from('usuarios').select('id,email,nombre,rol').eq('id',u.id).maybeSingle();if(!q.error)p=q.data}catch(_){}
+  usuarioActual={...(usuarioActual||{}),...(p||{}),id:u.id,email:p?.email||u.email,nombre:p?.nombre||u.user_metadata?.nombre||u.user_metadata?.name||u.email?.split('@')[0]||'Usuario',rol:p?.rol||u.app_metadata?.rol||'usuario'};
+  try{localStorage.setItem('usuario',JSON.stringify(usuarioActual))}catch(_){}
+  const name=document.getElementById('user-name'),area=document.getElementById('user-area'),login=document.getElementById('login-link');
+  if(name){name.textContent='👋 '+usuarioActual.nombre;name.style.display='inline-flex';name.title=esPropietarioAviso()?'Editar este aviso':(usuarioActual.rol==='admin'?'Abrir panel de administración':'Abrir perfil');name.onclick=function(e){e.preventDefault();if(esPropietarioAviso())abrirEdicionAviso();else if(usuarioActual.rol==='admin')location.href='/admin.html';else location.href='/perfil.html'};name.style.cursor='pointer'}
+  if(area)area.style.display='flex';if(login)login.style.display='none';
+ }catch(e){console.warn('No se pudo sincronizar el usuario del encabezado:',e)}
+}
+function esPropietarioAviso(){return !!(usuarioAuth?.id&&avisoActual?.created_by&&String(usuarioAuth.id)===String(avisoActual.created_by))}
 async function getSharedClient(){if(typeof getSupabaseClient==='function')return await getSupabaseClient();throw Error('Cliente Supabase no disponible')}
 async function obtenerSesionActiva(){try{const c=await getSharedClient();const r=await c.auth.getSession();return !!r?.data?.session?.user}catch(_){return false}}
 async function comentarios(id){const l=document.getElementById('comments-list');if(!l)return;try{const c=await getSharedClient(),r=await c.from('comentarios').select('id,aviso_id,usuario_id,nombre_autor,contenido,created_at').eq('aviso_id',id).order('created_at',{ascending:true});if(r.error)throw r.error;const d=r.data||[];const sesion=await obtenerSesionActiva();l.innerHTML=d.length?d.map(x=>'<div class="comment-item"><div class="comment-author privado'+(sesion?' autor-visible':'')+'">'+esc(x.nombre_autor||'Anónimo')+'</div><div class="comment-text">'+esc(x.contenido||'')+'</div><div class="comment-date">'+esc(fecha(x.created_at))+'</div></div>').join(''):'<div style="text-align:center;color:#888;padding:8px 0">No hay comentarios aún. ¡Sé el primero!</div>';avisoActual.comments_count=d.length;actualizarMetricas()}catch(e){console.error('Comentarios:',e);l.innerHTML='<div style="text-align:center;color:#888;padding:8px 0">No fue posible cargar los comentarios.</div>'}}
