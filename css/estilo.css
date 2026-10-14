@@ -813,3 +813,84 @@ body {
 /* * {
     outline: 1px solid rgba(255, 0, 0, 0.1);
 } */
+
+/* Atmósfera compartida del header: color y cielo horario, sin recursos externos. */
+.header {
+    position: sticky;
+    position: -webkit-sticky;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%);
+    transition: background 700ms ease;
+}
+.header::before,
+.header::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.header::before {
+    z-index: 0;
+    opacity: .9;
+    background-image:
+        radial-gradient(circle at 8% 24%, #fff 0 1px, transparent 1.7px),
+        radial-gradient(circle at 17% 68%, #dceaff 0 1px, transparent 1.8px),
+        radial-gradient(circle at 29% 31%, #fff 0 1.2px, transparent 2px),
+        radial-gradient(circle at 43% 73%, #fff 0 1px, transparent 1.8px),
+        radial-gradient(circle at 54% 22%, #dceaff 0 1px, transparent 1.8px),
+        radial-gradient(circle at 68% 52%, #fff 0 1.2px, transparent 2px),
+        radial-gradient(circle at 78% 19%, #fff 0 1px, transparent 1.8px),
+        radial-gradient(circle at 91% 65%, #dceaff 0 1px, transparent 1.8px);
+    animation: barrio-header-estrellas 5s ease-in-out infinite alternate;
+}
+.header::after {
+    z-index: 0;
+    inset: auto -8% -28px -8%;
+    height: 76px;
+    opacity: .25;
+    background:
+        radial-gradient(ellipse at 16% 65%, #d9e4ef 0 13%, transparent 14%),
+        radial-gradient(ellipse at 25% 50%, #d9e4ef 0 17%, transparent 18%),
+        radial-gradient(ellipse at 35% 70%, #d9e4ef 0 14%, transparent 15%),
+        radial-gradient(ellipse at 71% 62%, #d9e4ef 0 16%, transparent 17%),
+        radial-gradient(ellipse at 82% 48%, #d9e4ef 0 18%, transparent 19%),
+        radial-gradient(ellipse at 91% 70%, #d9e4ef 0 14%, transparent 15%);
+    filter: blur(7px);
+    animation: barrio-header-nubes 46s ease-in-out infinite alternate;
+}
+.header .header-contenido {
+    position: relative;
+    z-index: 1;
+}
+.header[data-cielo="dia"] {
+    background: linear-gradient(180deg, #9fc8e2 0%, #d4e6ed 72%, #edf1ef 100%);
+}
+.header[data-cielo="amanecer"] {
+    background: linear-gradient(180deg, #586d91 0%, #d59b9a 58%, #f4d2ad 100%);
+}
+.header[data-cielo="atardecer"] {
+    background: linear-gradient(180deg, #354567 0%, #a86d83 57%, #f0b98d 100%);
+}
+.header[data-cielo="noche"] {
+    background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%);
+}
+.header[data-cielo="dia"]::before { opacity: .12; }
+.header[data-cielo="amanecer"]::before,
+.header[data-cielo="atardecer"]::before { opacity: .5; }
+.header[data-cielo="noche"]::before { opacity: .95; }
+.header[data-cielo="dia"]::after { opacity: .3; }
+@keyframes barrio-header-estrellas {
+    from { opacity: .55; }
+    to { opacity: 1; }
+}
+@keyframes barrio-header-nubes {
+    from { transform: translateX(-3%); }
+    to { transform: translateX(3%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .header,
+    .header::before,
+    .header::after { animation: none !important; transition: none !important; }
+}
+
