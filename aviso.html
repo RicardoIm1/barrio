@@ -40,12 +40,12 @@
 .mas-avisos-lista{display:grid;gap:10px}
 .mas-aviso-item{display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;align-items:center;padding:11px;border:1px solid var(--border);border-radius:15px;color:inherit;text-decoration:none}
 .mas-aviso-item:hover{background:#f7f9fb;border-color:#cbd5df}
-.mas-aviso-item img,.mas-aviso-item-sin-imagen{width:88px;height:72px;object-fit:cover;border-radius:10px;background:#eef1f4}
+.mas-aviso-item img,.mas-aviso-item video,.mas-aviso-item iframe,.mas-aviso-item-sin-imagen{display:block;width:88px;height:72px;object-fit:cover;border:0;border-radius:10px;background:#eef1f4}.mas-aviso-video{position:relative;width:88px;height:72px;overflow:hidden;border-radius:10px;background:#111}.mas-aviso-video video,.mas-aviso-video iframe{width:100%;height:100%;object-fit:cover;border:0}.mas-aviso-video .mas-aviso-play{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:22px;text-shadow:0 1px 5px #000;pointer-events:none}
 .mas-aviso-item-sin-imagen{display:grid;place-items:center;color:#7b8793;font-size:.75rem}
 .mas-aviso-item strong{display:block;color:var(--primary);line-height:1.3}
 .mas-aviso-item small{display:block;margin-top:5px;color:var(--muted)}
 #mas-avisos-sentinel{text-align:center;padding:16px;color:var(--muted);font-size:.85rem}
-@media(max-width:600px){#editar-aviso-panel{padding:15px}.editar-aviso-grid{grid-template-columns:1fr}.editar-aviso-campo.ancho{grid-column:auto}.mas-avisos{padding:17px}.mas-aviso-item{grid-template-columns:68px minmax(0,1fr);gap:10px;padding:9px}.mas-aviso-item img,.mas-aviso-item-sin-imagen{width:68px;height:62px}.editar-aviso-acciones button{flex:1}}
+@media(max-width:600px){#editar-aviso-panel{padding:15px}.editar-aviso-grid{grid-template-columns:1fr}.editar-aviso-campo.ancho{grid-column:auto}.mas-avisos{padding:17px}.mas-aviso-item{grid-template-columns:68px minmax(0,1fr);gap:10px;padding:9px}.mas-aviso-item img,.mas-aviso-item video,.mas-aviso-item iframe,.mas-aviso-item-sin-imagen{width:68px;height:62px}.mas-aviso-video{width:68px;height:62px}.editar-aviso-acciones button{flex:1}}
 
 </style>
 </head>
@@ -156,10 +156,10 @@ async function cargarMasAvisos(){
  if(masAvisosCargando||masAvisosFin||!avisoActual?.created_by||!masAvisosCursor)return;
  masAvisosCargando=true;const sent=document.getElementById('mas-avisos-sentinel');
  try{
-  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').lt('created_at',masAvisosCursor).order('created_at',{ascending:false}).limit(6);
+  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,video_url,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').lt('created_at',masAvisosCursor).order('created_at',{ascending:false}).limit(6);
   if(r.error)throw r.error;const items=r.data||[],list=document.getElementById('mas-avisos-lista');
   if(!items.length){masAvisosFin=true;if(sent)sent.textContent=list?.children.length?'Ya viste las publicaciones anteriores.':'No hay más avisos publicados por este usuario.';masAvisosObserver?.disconnect();return}
-  for(const x of items){if(String(x.id)===String(AVISO_ID))continue;const link=document.createElement('a');link.className='mas-aviso-item';link.href='/aviso.html?id='+encodeURIComponent(x.id);const im=url(x.imagen_url||x.imagen);link.innerHTML=(im?'<img src="'+esc(im)+'" alt="" loading="lazy" decoding="async">':'<span class="mas-aviso-item-sin-imagen">EL BARRIO</span>')+'<span><strong>'+esc(x.titulo||'Aviso')+'</strong><small>'+esc(fecha(x.created_at))+'</small></span>';list.appendChild(link)}
+  for(const x of items){if(String(x.id)===String(AVISO_ID))continue;const link=document.createElement('a');link.className='mas-aviso-item';link.href='/aviso.html?id='+encodeURIComponent(x.id);const im=url(x.imagen_url||x.imagen),vid=url(x.video_url||x.video);let thumb='';if(vid){const embed=yt(vid);if(embed){const videoId=embed.split('/').pop();thumb='<span class="mas-aviso-video"><iframe src="'+esc(embed)+'?autoplay=1&mute=1&loop=1&playlist='+encodeURIComponent(videoId)+'&playsinline=1&controls=0&modestbranding=1" title="Vista previa del video" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe><span class="mas-aviso-play">▶</span></span>'}else{thumb='<span class="mas-aviso-video"><video autoplay muted loop playsinline preload="metadata"><source src="'+esc(vid)+'" type="video/mp4"></video><span class="mas-aviso-play">▶</span></span>'}}else if(im){thumb='<img src="'+esc(im)+'" alt="" loading="lazy" decoding="async">'}else{thumb='<span class="mas-aviso-item-sin-imagen">EL BARRIO</span>'}link.innerHTML=thumb+'<span><strong>'+esc(x.titulo||'Aviso')+'</strong><small>'+esc(fecha(x.created_at))+'</small></span>';list.appendChild(link)}
   masAvisosCursor=items[items.length-1].created_at;
   if(items.length<6){masAvisosFin=true;if(sent)sent.textContent='No hay más publicaciones anteriores.';masAvisosObserver?.disconnect()}else if(sent)sent.textContent='Desplázate para ver publicaciones más antiguas…';
  }catch(err){console.warn('Más avisos:',err);if(sent)sent.textContent='No se pudieron cargar más avisos. Intenta desplazarte de nuevo.'}
