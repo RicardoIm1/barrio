@@ -5,6 +5,31 @@ console.log("ℹ️ admin.js: controlador embebido de admin.html activo.");
 
 const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
 
+/* Feedback administrativo sin diálogos nativos del navegador. */
+function notificarAdmin(mensaje, tipo) {
+  const texto = String(mensaje ?? "");
+  const clase = tipo || (/error|obligatorio|no se pudo|no disponible|fall[oó]|rechaz/i.test(texto) ? "error" : "success");
+  if (typeof window.elBarrioToast === "function") window.elBarrioToast(texto, clase);
+  else console[clase === "error" ? "error" : "log"]("[El Barrio]", texto);
+}
+function confirmarAdmin(mensaje) {
+  return new Promise((resolve) => {
+    document.getElementById("confirmacion-admin-overlay")?.remove();
+    const overlay = document.createElement("div"); overlay.id = "confirmacion-admin-overlay";
+    overlay.style.cssText = "position:fixed;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,27,39,.48);backdrop-filter:blur(5px);";
+    const dialogo = document.createElement("section"); dialogo.setAttribute("role","alertdialog"); dialogo.setAttribute("aria-modal","true"); dialogo.setAttribute("aria-label","Confirmar acción");
+    dialogo.style.cssText = "width:min(100%,390px);box-sizing:border-box;padding:22px;border:1px solid #e1e8ef;border-radius:18px;background:#fff;color:#263746;box-shadow:0 20px 60px rgba(12,24,38,.25);font:500 14px/1.5 system-ui,sans-serif;";
+    const texto = document.createElement("p"); texto.textContent = mensaje; texto.style.cssText = "margin:0 0 20px;font-size:15px;";
+    const botones = document.createElement("div"); botones.style.cssText = "display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;";
+    let resuelto = false;
+    const finalizar = (valor) => { if (resuelto) return; resuelto = true; document.removeEventListener("keydown", teclaEscape); overlay.remove(); resolve(valor); };
+    const teclaEscape = (evento) => { if (evento.key === "Escape") finalizar(false); };
+    const crearBoton = (etiqueta, confirmar) => { const boton = document.createElement("button"); boton.type = "button"; boton.textContent = etiqueta; boton.style.cssText = "min-height:40px;padding:9px 16px;border:0;border-radius:11px;font:600 13px system-ui;cursor:pointer;background:" + (confirmar ? "#2c3e50;color:#fff;" : "#edf1f5;color:#34495e;"); boton.addEventListener("click", () => finalizar(confirmar)); return boton; };
+    botones.append(crearBoton("Cancelar",false),crearBoton("Confirmar",true)); dialogo.append(texto,botones); overlay.appendChild(dialogo);
+    overlay.addEventListener("click",(evento) => { if (evento.target === overlay) finalizar(false); }); document.addEventListener("keydown",teclaEscape); document.body.appendChild(overlay); botones.querySelector("button:last-child")?.focus();
+  });
+}
+
 (function inicializarPerfilAdmin() {
   const escapar = (valor) => {
     const div = document.createElement("div");
@@ -118,8 +143,8 @@ const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
     const titulo = valor("titulo"),
       contenido = valor("contenido"),
       categoria = valor("categoria") || "varios";
-    if (!titulo) return alert("❌ El título del aviso es obligatorio.");
-    if (!contenido) return alert("❌ La descripción del aviso es obligatoria.");
+    if (!titulo) return notificarAdmin("❌ El título del aviso es obligatorio.");
+    if (!contenido) return notificarAdmin("❌ La descripción del aviso es obligatoria.");
     const datos = {
       titulo,
       contenido,
@@ -152,13 +177,13 @@ const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
           resultado?.error || "Supabase rechazó la creación del aviso.",
         );
       console.log("✅ CREAR AVISO: registro creado:", resultado.data);
-      alert("✅ Aviso publicado correctamente");
+      notificarAdmin("✅ Aviso publicado correctamente");
       const form = document.getElementById("form-aviso");
       if (form) form.reset();
       window.location.reload();
     } catch (error) {
       console.error("❌ CREAR AVISO: error:", error);
-      alert("❌ No se pudo publicar el aviso: " + (error?.message || error));
+      notificarAdmin("❌ No se pudo publicar el aviso: " + (error?.message || error));
     }
   }
   function instalar() {
@@ -197,7 +222,7 @@ const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
             return el ? String(el.value || "").trim() : "";
           },
           id = valor("edit-id");
-        if (!id) return alert("❌ No se encontró el ID del aviso.");
+        if (!id) return notificarAdmin("❌ No se encontró el ID del aviso.");
         const datos = {
           titulo: valor("edit-titulo"),
           contenido: valor("edit-contenido"),
@@ -224,13 +249,13 @@ const EL_BARRIO_TIME_ZONE = "America/Bahia_Banderas";
             throw new Error(
               resultado?.error || "No se pudo actualizar el aviso.",
             );
-          alert("✅ Aviso actualizado correctamente");
+          notificarAdmin("✅ Aviso actualizado correctamente");
           const modal = document.getElementById("modal-editar");
           if (modal) modal.style.display = "none";
           location.reload();
         } catch (error) {
           console.error("❌ ACTUALIZAR AVISO:", error);
-          alert("❌ Error al actualizar: " + (error?.message || error));
+          notificarAdmin("❌ Error al actualizar: " + (error?.message || error));
         }
       },
       true,
@@ -759,14 +784,14 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (resultado && resultado.success) {
-          alert("✅ Aviso actualizado correctamente");
+          notificarAdmin("✅ Aviso actualizado correctamente");
           modal.style.display = "none";
           location.reload();
         } else {
-          alert("❌ Error: " + (resultado.error || "No se pudo actualizar"));
+          notificarAdmin("❌ Error: " + (resultado.error || "No se pudo actualizar"));
         }
       } catch (error) {
-        alert("❌ Error: " + error.message);
+        notificarAdmin("❌ Error: " + error.message);
       }
     };
   }
@@ -977,7 +1002,7 @@ window.cambiarEstadoAviso = async function (id, nuevoStatus) {
     const apiKey = localStorage.getItem("api_key");
     const usuario = API.getUsuarioActual();
     if (!apiKey || usuario?.rol !== "admin") {
-      alert("Solo administradores pueden cambiar el estado");
+      notificarAdmin("Solo administradores pueden cambiar el estado");
       return;
     }
     console.log(`Cambiando aviso ${id} a ${nuevoStatus}`);
@@ -991,15 +1016,15 @@ window.cambiarEstadoAviso = async function (id, nuevoStatus) {
       const index = todosLosAvisos.findIndex((a) => a.id == id);
       if (index !== -1) todosLosAvisos[index].status = nuevoStatus;
       renderizarTablaAvisos();
-      alert(`✅ Estado actualizado a: ${nuevoStatus}`);
+      notificarAdmin(`✅ Estado actualizado a: ${nuevoStatus}`);
     } else
-      alert(
+      notificarAdmin(
         "❌ La API respondió pero no actualizó: " +
           (resultado?.error || "Error desconocido"),
       );
   } catch (error) {
     console.error("Error detallado:", error);
-    alert("❌ Error: " + error.message);
+    notificarAdmin("❌ Error: " + error.message);
   }
 };
 
@@ -1008,11 +1033,11 @@ window.cambiarUrgente = async function (id, nuevoValor) {
     const apiKey = localStorage.getItem("api_key");
     const usuario = API.getUsuarioActual();
     if (!apiKey || usuario?.rol !== "admin") {
-      alert("Solo administradores pueden activar o desactivar urgente");
+      notificarAdmin("Solo administradores pueden activar o desactivar urgente");
       return;
     }
     const accion = nuevoValor ? "marcar como urgente" : "quitar la marca de urgente";
-    if (!confirm(`¿Quieres ${accion} este aviso?`)) return;
+    if (!(await confirmarAdmin(`¿Quieres ${accion} este aviso?`))) return;
     const resultado = await API.peticion(
       "ACTUALIZAR",
       { coleccion: "AVISOS", id, datos: { urgente: nuevoValor } },
@@ -1025,10 +1050,10 @@ window.cambiarUrgente = async function (id, nuevoValor) {
     const indexOriginal = avisosOriginales.findIndex((a) => a.id == id);
     if (indexOriginal !== -1) avisosOriginales[indexOriginal].urgente = valor;
     renderizarTablaAvisos();
-    alert(valor ? "⚠️ Aviso marcado como urgente" : "Se quitó la marca de urgente");
+    notificarAdmin(valor ? "⚠️ Aviso marcado como urgente" : "Se quitó la marca de urgente");
   } catch (error) {
     console.error("Error cambiando urgente:", error);
-    alert("❌ Error: " + error.message);
+    notificarAdmin("❌ Error: " + error.message);
   }
 };
 
@@ -1037,11 +1062,11 @@ window.cambiarDestacado = async function (id, nuevoValor) {
     const apiKey = localStorage.getItem("api_key");
     const usuario = API.getUsuarioActual();
     if (!apiKey || usuario?.rol !== "admin") {
-      alert("Solo administradores pueden destacar avisos");
+      notificarAdmin("Solo administradores pueden destacar avisos");
       return;
     }
     const accion = nuevoValor ? "destacar" : "quitar el destacado";
-    if (!confirm(`¿Quieres ${accion} este aviso?`)) return;
+    if (!(await confirmarAdmin(`¿Quieres ${accion} este aviso?`))) return;
     console.log(`⭐ Cambiando destacado del aviso ${id} a:`, nuevoValor);
     const resultado = await API.peticion(
       "ACTUALIZAR",
@@ -1056,7 +1081,7 @@ window.cambiarDestacado = async function (id, nuevoValor) {
       if (indexOriginal !== -1)
         avisosOriginales[indexOriginal].destacado = nuevoValor;
       renderizarTablaAvisos();
-      alert(
+      notificarAdmin(
         nuevoValor
           ? "⭐ Aviso destacado correctamente"
           : "Aviso retirado de destacados",
@@ -1065,12 +1090,12 @@ window.cambiarDestacado = async function (id, nuevoValor) {
       throw new Error(resultado?.error || "No se pudo actualizar el destacado");
   } catch (error) {
     console.error("Error cambiando destacado:", error);
-    alert("❌ Error: " + error.message);
+    notificarAdmin("❌ Error: " + error.message);
   }
 };
 
 window.eliminarAviso = async function (id) {
-  if (!confirm("¿Eliminar este aviso?")) return;
+  if (!(await confirmarAdmin("¿Eliminar este aviso?"))) return;
   try {
     const apiKey = localStorage.getItem("api_key");
     const resultado = await API.peticion(
@@ -1081,11 +1106,11 @@ window.eliminarAviso = async function (id) {
     if (resultado && resultado.success) {
       todosLosAvisos = todosLosAvisos.filter((a) => a.id != id);
       renderizarTablaAvisos();
-      alert("✅ Aviso eliminado");
+      notificarAdmin("✅ Aviso eliminado");
     } else throw new Error(resultado?.error || "Error al eliminar");
   } catch (error) {
     console.error("Error:", error);
-    alert("❌ Error: " + error.message);
+    notificarAdmin("❌ Error: " + error.message);
   }
 };
 
@@ -1094,7 +1119,7 @@ window.editarAviso = function (id) {
   const aviso = todosLosAvisos.find((a) => a.id == id);
   if (!aviso) {
     console.error("Aviso no encontrado:", id);
-    alert("No se encontró el aviso");
+    notificarAdmin("No se encontró el aviso");
     return;
   }
   console.log("Aviso encontrado:", aviso);
@@ -1158,7 +1183,7 @@ window.editarAviso = function (id) {
     console.log("✅ Modal abierto");
   } else {
     console.error("❌ Modal no encontrado");
-    alert("Error: Modal no encontrado");
+    notificarAdmin("Error: Modal no encontrado");
   }
 };
 
@@ -1441,8 +1466,7 @@ async function cargarUsuariosAdmin() {
 }
 
 window.eliminarUsuario = async function (id) {
-  if (!confirm("⚠️ ¿Desactivar este usuario? Podrá ser reactivado más tarde."))
-    return;
+  if (!(await confirmarAdmin("⚠️ ¿Desactivar este usuario? Podrá ser reactivado más tarde."))) return;
   try {
     const apiKey = localStorage.getItem("api_key"),
       usuario = API.getUsuarioActual(),
@@ -1452,12 +1476,12 @@ window.eliminarUsuario = async function (id) {
         apiKey,
       );
     if (resultado && resultado.success) {
-      alert("✅ Usuario desactivado correctamente");
+      notificarAdmin("✅ Usuario desactivado correctamente");
       await cargarUsuariosAdmin();
     } else throw new Error(resultado?.error || "Error al desactivar usuario");
   } catch (error) {
     console.error("Error:", error);
-    alert("❌ Error: " + error.message);
+    notificarAdmin("❌ Error: " + error.message);
   }
 };
 
@@ -1668,7 +1692,7 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     p.textContent = "No se pudo subir a Supabase: " + mensaje;
     elementos.vista?.appendChild(p);
     if (window.API?.mostrarError) API.mostrarError(mensaje);
-    else alert("No se pudo subir el archivo a Supabase: " + mensaje);
+    else notificarAdmin("No se pudo subir el archivo a Supabase: " + mensaje);
   } finally {
     elementos.ocupado = false;
     if (btn) { btn.disabled = false; btn.textContent = textoOriginal || (tipo === "imagen" ? "Imagen" : "Video"); }
