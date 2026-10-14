@@ -233,3 +233,98 @@
     background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%) !important;
 }
 
+
+
+/* Portada: en pantallas grandes, la multimedia cubre toda la tarjeta como fondo. */
+@media (min-width: 769px) {
+  .tarjeta-moderna:has(.aviso-imagen),
+  .tarjeta-moderna:has(.aviso-video) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+    isolation: isolate;
+    background: #1f2933;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .aviso-imagen,
+  .tarjeta-moderna:has(.aviso-video) .aviso-video {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    border-radius: inherit;
+    object-fit: cover;
+  }
+
+  .tarjeta-moderna:has(.aviso-video) .aviso-video video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen)::after,
+  .tarjeta-moderna:has(.aviso-video)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(9, 18, 28, .16) 0%,
+      rgba(9, 18, 28, .34) 36%,
+      rgba(9, 18, 28, .88) 100%
+    );
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-contenido-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-contenido-moderno {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 340px;
+    box-sizing: border-box;
+    padding: 22px;
+    background: transparent;
+    color: #fff;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-fecha-moderna,
+  .tarjeta-moderna:has(.aviso-video) .card-fecha-moderna {
+    color: rgba(255, 255, 255, .78) !important;
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-titulo-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-titulo-moderno {
+    color: #fff;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, .25);
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-preview-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-preview-moderno {
+    color: rgba(255, 255, 255, .92);
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-stats-moderno,
+  .tarjeta-moderna:has(.aviso-video) .card-stats-moderno {
+    border-top-color: rgba(255, 255, 255, .3);
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .card-stats-moderno .stat-item,
+  .tarjeta-moderna:has(.aviso-video) .card-stats-moderno .stat-item {
+    color: rgba(255, 255, 255, .92);
+  }
+
+  .tarjeta-moderna:has(.aviso-imagen) .categoria-badge,
+  .tarjeta-moderna:has(.aviso-video) .categoria-badge {
+    z-index: 3;
+  }
+}
