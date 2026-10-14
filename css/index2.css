@@ -523,3 +523,51 @@
     z-index: 8 !important;
   }
 }
+
+
+/* Ajuste fino portada: metadatos compactos y métricas en una sola línea. */
+@media (min-width: 769px) {
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-header-moderno,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-header-moderno {
+    gap: 2px !important;
+    margin: 0 0 8px !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-fecha-moderna,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-fecha-moderna {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    line-height: 1.3 !important;
+    letter-spacing: .035em !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: clamp(5px, .8vw, 12px) !important;
+    white-space: nowrap !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno::-webkit-scrollbar,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno .stat-item,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno .stat-item {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+    gap: 4px !important;
+    padding: 3px 6px !important;
+    font-size: clamp(.68rem, .8vw, .78rem) !important;
+  }
+}
