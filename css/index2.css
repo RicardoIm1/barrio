@@ -571,3 +571,52 @@
     font-size: clamp(.68rem, .8vw, .78rem) !important;
   }
 }
+
+
+/* Portada: métricas compactas en una sola línea y WhatsApp en esquina superior derecha. */
+@media (min-width: 769px) {
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 3px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    padding: 7px 0 0 !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno .stat-item,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno .stat-item {
+    display: inline-flex !important;
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    padding: 2px 3px !important;
+    margin: 0 !important;
+    font-size: 0.62rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno .stat-value,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) .card-stats-moderno .stat-value {
+    font-size: 0.62rem !important;
+  }
+
+  .aviso-card.tarjeta-moderna:has(> .aviso-imagen) > .whatsapp-btn,
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) > .whatsapp-btn {
+    top: 12px !important;
+    right: 12px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 30px !important;
+    height: 30px !important;
+    z-index: 9 !important;
+  }
+}
