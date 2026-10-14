@@ -214,3 +214,22 @@
 .aviso-card.aviso-urgente:not(.aviso-destacado) { border-left: 6px solid #dc3545 !important; }
 @media (max-width: 768px) { .aviso-card.aviso-urgente::before { font-size: 12px; left: -3px; } }
 @media (max-width: 480px) { .aviso-card.aviso-urgente::before { font-size: 10px; left: -2px; } }
+
+
+/* La portada tiene reglas de header propias; mantenemos visible la atmósfera compartida. */
+.header {
+    background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%) !important;
+}
+.header[data-cielo="dia"] {
+    background: linear-gradient(180deg, #9fc8e2 0%, #d4e6ed 72%, #edf1ef 100%) !important;
+}
+.header[data-cielo="amanecer"] {
+    background: linear-gradient(180deg, #586d91 0%, #d59b9a 58%, #f4d2ad 100%) !important;
+}
+.header[data-cielo="atardecer"] {
+    background: linear-gradient(180deg, #354567 0%, #a86d83 57%, #f0b98d 100%) !important;
+}
+.header[data-cielo="noche"] {
+    background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%) !important;
+}
+
