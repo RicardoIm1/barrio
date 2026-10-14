@@ -33,85 +33,6 @@
 .aviso-autor.autor-visible{filter:none;user-select:text;pointer-events:auto;opacity:1}
 </style>
 
-  <style>
-    /* Atmósfera estacional y cielo horario: decorativo, ligero y sin dependencias. */
-    body.pagina-index .header {
-      border-bottom: 3px solid var(--atmo-accent, var(--color-dorado));
-    }
-
-    #cielo-atmosferico {
-      position: relative;
-      isolation: isolate;
-      height: clamp(64px, 8vw, 94px);
-      overflow: hidden;
-      background: linear-gradient(180deg, #14233f 0%, #253e60 58%, #526b85 100%);
-      pointer-events: none;
-      contain: layout paint;
-    }
-    #cielo-atmosferico::before,
-    #cielo-atmosferico::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-    #cielo-atmosferico::before {
-      opacity: .9;
-      background-image:
-        radial-gradient(circle at 8% 24%, #fff 0 1px, transparent 1.7px),
-        radial-gradient(circle at 17% 68%, #dceaff 0 1px, transparent 1.8px),
-        radial-gradient(circle at 29% 31%, #fff 0 1.2px, transparent 2px),
-        radial-gradient(circle at 43% 73%, #fff 0 1px, transparent 1.8px),
-        radial-gradient(circle at 54% 22%, #dceaff 0 1px, transparent 1.8px),
-        radial-gradient(circle at 68% 52%, #fff 0 1.2px, transparent 2px),
-        radial-gradient(circle at 78% 19%, #fff 0 1px, transparent 1.8px),
-        radial-gradient(circle at 91% 65%, #dceaff 0 1px, transparent 1.8px);
-      animation: barrio-estrellas 5s ease-in-out infinite alternate;
-    }
-    #cielo-atmosferico::after {
-      inset: auto -12% -38px -12%;
-      height: 86px;
-      opacity: .24;
-      background:
-        radial-gradient(ellipse at 16% 65%, #d9e4ef 0 13%, transparent 14%),
-        radial-gradient(ellipse at 25% 50%, #d9e4ef 0 17%, transparent 18%),
-        radial-gradient(ellipse at 35% 70%, #d9e4ef 0 14%, transparent 15%),
-        radial-gradient(ellipse at 71% 62%, #d9e4ef 0 16%, transparent 17%),
-        radial-gradient(ellipse at 82% 48%, #d9e4ef 0 18%, transparent 19%),
-        radial-gradient(ellipse at 91% 70%, #d9e4ef 0 14%, transparent 15%);
-      filter: blur(7px);
-      animation: barrio-nubes 46s linear infinite alternate;
-    }
-    #cielo-atmosferico[data-cielo="dia"] {
-      background: linear-gradient(180deg, #9fc8e2 0%, #d4e6ed 72%, #edf1ef 100%);
-    }
-    #cielo-atmosferico[data-cielo="amanecer"] {
-      background: linear-gradient(180deg, #586d91 0%, #d59b9a 58%, #f4d2ad 100%);
-    }
-    #cielo-atmosferico[data-cielo="atardecer"] {
-      background: linear-gradient(180deg, #354567 0%, #a86d83 57%, #f0b98d 100%);
-    }
-    #cielo-atmosferico[data-cielo="noche"] {
-      background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%);
-    }
-    #cielo-atmosferico[data-cielo="dia"]::before { opacity: .12; }
-    #cielo-atmosferico[data-cielo="amanecer"]::before,
-    #cielo-atmosferico[data-cielo="atardecer"]::before { opacity: .5; }
-    #cielo-atmosferico[data-cielo="noche"]::before { opacity: .95; }
-    #cielo-atmosferico[data-cielo="dia"]::after { opacity: .3; }
-    @keyframes barrio-estrellas {
-      from { opacity: .55; }
-      to { opacity: 1; }
-    }
-    @keyframes barrio-nubes {
-      from { transform: translateX(-3%); }
-      to { transform: translateX(3%); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      #cielo-atmosferico::before,
-      #cielo-atmosferico::after { animation: none !important; }
-    }
-  </style>
 
 </head>
 
@@ -163,8 +84,6 @@
 
     <div id="header-container"></div>
 
-    <!-- Cielo horario decorativo: no bloquea clics ni carga recursos externos. -->
-    <div id="cielo-atmosferico" data-cielo="noche" aria-hidden="true"></div>
 
     <!-- ========== BANNER HERO + BOTÓN FLOTANTE ========== -->
     <div style="position: relative">
@@ -1565,15 +1484,6 @@
         const ahora = new Date();
         const mes = ahora.getMonth() + 1;
         const dia = ahora.getDate();
-        const hora = ahora.getHours();
-        const cielo = document.getElementById("cielo-atmosferico");
-        if (cielo) {
-          const estado = (hora >= 6 && hora < 9) ? "amanecer"
-            : (hora >= 9 && hora < 17) ? "dia"
-            : (hora >= 17 && hora < 20) ? "atardecer" : "noche";
-          cielo.dataset.cielo = estado;
-          document.body.dataset.cielo = estado;
-        }
         const raiz = document.documentElement;
         const temas = {
           halloween: {
