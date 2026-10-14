@@ -1655,6 +1655,30 @@
     </style>
 
     <style>
+        /* Acciones de tabla: iconos compactos, fondo blanco inactivo y amarillo activo. */
+        .acciones-botones .accion-icono,
+        .tabla-admin .accion-icono {
+            display: inline-flex !important; align-items: center; justify-content: center;
+            width: 30px !important; min-width: 30px !important; height: 30px !important;
+            padding: 0 !important; border: 1px solid #d9e2ea !important; border-radius: 9px !important;
+            background: #fff !important; color: #435466 !important; font-size: 15px !important;
+            line-height: 1 !important; white-space: nowrap !important; cursor: pointer;
+            box-shadow: 0 1px 2px rgba(31,48,65,.06);
+            transition: background .15s ease, border-color .15s ease, transform .15s ease;
+        }
+        .acciones-botones .accion-icono:hover,
+        .tabla-admin .accion-icono:hover { background: #f4f7fa !important; border-color: #aebdca !important; transform: translateY(-1px); }
+        .acciones-botones .accion-icono.accion-activa,
+        .tabla-admin .accion-icono.accion-activa { background: #fff0b3 !important; border-color: #f2cc58 !important; color: #785400 !important; }
+        .acciones-botones .accion-icono.accion-activa:hover,
+        .tabla-admin .accion-icono.accion-activa:hover { background: #ffe58a !important; }
+        .acciones-botones .accion-icono.accion-eliminar:hover,
+        .tabla-admin .accion-icono.accion-eliminar:hover { background: #fff0f0 !important; border-color: #e9aaaa !important; color: #b42318 !important; }
+        @media (max-width: 768px) {
+            .acciones-botones { flex-direction: row !important; justify-content: center; align-items: center !important; gap: 4px !important; }
+            .acciones-botones .accion-icono, .tabla-admin .accion-icono { width: 28px !important; min-width: 28px !important; height: 28px !important; font-size: 14px !important; }
+        }
+
         /* Tablas compactas: filas alternas y columnas que caben en pantalla */
         .admin-tabla-wrapper {
             width: 100%;
@@ -1843,7 +1867,7 @@
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20260903-1"></script>
     <script src="/js/ui.js?v=20260903-1"></script>
-    <script src="/js/admin.js?v=20261013-7"></script>
+    <script src="/js/admin.js?v=20261013-8"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
     <script src="/js/push.js?v=20260908-1"></script>
 
