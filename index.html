@@ -851,7 +851,7 @@
                 <div class="card-header-moderno">
                     <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📅 ${formatearFecha(aviso.created_at)}</div>
                     <div class="card-fecha-moderna" style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">📍 ${aviso.ubicacion || "Jardines PVR"}</div>
-                    <div class="card-fecha-moderna aviso-autor${localStorage.getItem("api_key") ? " autor-visible" : ""}" style="font-size: 0.7rem; color: #94a3b8; text-transform: none;">👤 ${escapeHtml([aviso.usuario_nombre, aviso.nombre_autor, aviso.nombre_usuario, aviso.autor, aviso.usuario?.nombre].find(n => n && !/^usuario$/i.test(String(n).trim())) || "")}</div>
+                    <div class="card-fecha-moderna aviso-autor${localStorage.getItem("api_key") ? " autor-visible" : ""}" style="font-size: 0.7rem; color: #94a3b8; text-transform: none;">👤 ${escapeHtml([aviso.usuario_nombre, aviso.nombre_autor, aviso.nombre_usuario, aviso.autor_nombre, aviso.nombre_completo, aviso.nombre, aviso.publicado_por, aviso.autor, aviso.usuario?.nombre, aviso.usuario?.nombre_completo].find(n => n && !/^(usuario|an[oó]nimo)$/i.test(String(n).trim())) || "")}</div>
                     <h3 class="card-titulo-moderno">${escapeHtml(aviso.titulo)}</h3>
                 </div>
                 <div class="card-preview-moderno">
