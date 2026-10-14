@@ -580,13 +580,15 @@
     display: flex !important;
     flex-wrap: nowrap !important;
     align-items: center !important;
-    justify-content: space-between !important;
-    gap: 3px !important;
-    width: 100% !important;
+    justify-content: flex-start !important;
+    gap: clamp(6px, .7vw, 11px) !important;
+    width: calc(100% - 42px) !important;
+    max-width: calc(100% - 42px) !important;
     min-width: 0 !important;
     overflow: hidden !important;
     white-space: nowrap !important;
     padding: 7px 0 0 !important;
+    margin-right: 42px !important;
   }
 
   .aviso-card.tarjeta-moderna:has(> .aviso-imagen) .card-stats-moderno .stat-item,
