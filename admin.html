@@ -969,6 +969,55 @@
             display: block !important;
         }
 
+        /* Buscador compacto integrado en la fila de navegación del panel */
+        #admin-tabs {
+            align-items: center;
+            gap: 0.45rem;
+            margin-bottom: 16px;
+            padding-bottom: 0.55rem;
+        }
+
+        #admin-tabs .filtro {
+            flex: 0 0 auto;
+            padding: 0.55rem 0.9rem;
+        }
+
+        #admin-tabs .buscador-universal {
+            flex: 0 1 310px;
+            width: min(310px, 42%);
+            min-width: 170px;
+            margin: 0 0 0 auto;
+            padding: 0;
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #admin-tabs .buscador-universal-input {
+            min-width: 0;
+            padding: 0.62rem 2.1rem 0.62rem 2.25rem;
+            border: 1px solid var(--color-borde);
+            border-radius: 12px;
+            background: #fff;
+            font-size: 0.82rem;
+        }
+
+        #admin-tabs .buscador-icon { left: 10px; font-size: 0.95rem; }
+        #admin-tabs .buscador-limpiar { right: 8px; font-size: 1rem; }
+
+        @media (max-width: 560px) {
+            #admin-tabs { gap: 0.4rem; }
+            #admin-tabs .filtro { padding: 0.5rem 0.7rem; }
+            #admin-tabs .buscador-universal {
+                order: 2;
+                flex: 1 0 100%;
+                width: 100%;
+                min-width: 0;
+                margin: 0.25rem 0 0;
+            }
+        }
+
         /* Buscador Universal */
         .buscador-universal {
             background: white;
@@ -1129,19 +1178,19 @@
         <div id="mensaje-container"></div>
 
         <div class="filtros" id="admin-tabs">
-            <button class="filtro activo" data-tab="lista">📋</button>
-            <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;">👥</button>
-            <button class="filtro" data-tab="perfil">👤</button>
-            <button class="filtro" data-tab="nuevo">📝</button>
-        </div>
+            <button class="filtro activo" data-tab="lista" title="Avisos" aria-label="Avisos">📋</button>
+            <button class="filtro" data-tab="usuarios" id="tab-usuarios-btn" style="display: none;" title="Usuarios" aria-label="Usuarios">👥</button>
+            <button class="filtro" data-tab="perfil" title="Perfil" aria-label="Perfil">👤</button>
+            <button class="filtro" data-tab="nuevo" title="Crear aviso" aria-label="Crear aviso">📝</button>
 
-        <!-- Buscador Universal -->
-        <div class="buscador-universal">
-            <div class="buscador-input-wrapper ">
-                <span class="buscador-icon">🔍</span>
-                <input type="text" id="buscadorAdmin" class="buscador-universal-input"
-                    placeholder="Buscar en avisos y usuarios... (título, contenido, email, teléfono, ID)">
-                <button id="limpiarBusqueda" class="buscador-limpiar" style="display: none;">✕</button>
+            <!-- Buscador universal integrado en la misma fila -->
+            <div class="buscador-universal">
+                <div class="buscador-input-wrapper">
+                    <span class="buscador-icon">🔍</span>
+                    <input type="text" id="buscadorAdmin" class="buscador-universal-input"
+                        placeholder="Buscar avisos o usuarios..." aria-label="Buscar avisos o usuarios">
+                    <button id="limpiarBusqueda" class="buscador-limpiar" style="display: none;" type="button" aria-label="Limpiar búsqueda">✕</button>
+                </div>
             </div>
         </div>
 
@@ -1867,7 +1916,7 @@
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20260903-1"></script>
     <script src="/js/ui.js?v=20260903-1"></script>
-    <script src="/js/admin.js?v=20261013-8"></script>
+    <script src="/js/admin.js?v=20261013-9"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
     <script src="/js/push.js?v=20260908-1"></script>
 
