@@ -108,13 +108,25 @@
         .user-area { gap: 6px; }
         .header-buscador, body.pagina-index .header-buscador {
             position: static; order: 3; transform: none; display: flex;
-            flex: 1 0 100%; width: 100%; max-width: none; min-width: 0; margin: 0; gap: 6px;
+            flex: 0 1 72%; width: 72%; max-width: 320px; min-width: 0;
+            margin: 0 0 0 auto; gap: 5px;
         }
         .header-buscador .buscador-input-header {
             display: block; flex: 1 1 auto; width: 100%; min-width: 0;
-            padding: 10px 12px; font-size: 16px;
+            padding: 7px 11px; font-size: 16px;
+            color: #fff; border-color: rgba(255,255,255,.3);
+            background: rgba(255,255,255,.14);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
         }
-        .header-buscador.activo { width: 100%; }
+        .header-buscador .buscador-input-header::placeholder {
+            color: rgba(255,255,255,.78);
+        }
+        .header-buscador .buscador-input-header:focus {
+            background: rgba(255,255,255,.24);
+            border-color: rgba(255,255,255,.58);
+            box-shadow: 0 0 0 2px rgba(255,255,255,.1);
+        }
+        .header-buscador.activo { flex-basis: 86%; width: 86%; max-width: 360px; }
         .buscador-acciones-movil { display: none; }
         .header-buscador.activo .buscador-acciones-movil { display: flex; }
         .buscador-acciones-movil button { width: 34px; height: 36px; }
@@ -122,6 +134,10 @@
     }
     @media (max-width: 420px) {
         .header-contenido { padding: 9px 10px; gap: 8px; }
+        .header-buscador, body.pagina-index .header-buscador {
+            flex-basis: 78%; width: 78%; max-width: 290px;
+        }
+        .header-buscador.activo { flex-basis: 90%; width: 90%; }
         .logo-icon { width: 38px; height: 38px; }
         .logo-texto h1 { font-size: 1.05rem; }
         .header-acciones, .user-area { gap: 5px; }
