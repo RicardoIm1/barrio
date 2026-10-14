@@ -208,47 +208,29 @@ async function supabasePeticion(accion, datos = {}) {
       const { data, error, count } = await query;
       if (error) throw error;
       const avisos = normalizarAvisos(data);
-      // Los votos se calculan desde los registros reales, no desde acumulados potencialmente obsoletos.
+      // Los votos se consultan mediante el RPC de acumulados.
+      // Una lectura directa de "votos" puede devolver [] por RLS sin error y mostrar ceros falsos.
       if (avisos.length) {
         const ids = avisos.map(a => a.id).filter(Boolean);
-        try {
-          const { data: votos, error: errorVotos } = await client
-            .from('votos').select('aviso_id,tipo').in('aviso_id', ids);
-          if (!errorVotos && Array.isArray(votos)) {
-            const conteos = new Map();
-            votos.forEach(voto => {
-              const id = String(voto.aviso_id);
-              const actual = conteos.get(id) || { positivos: 0, negativos: 0 };
-              const tipo = String(voto.tipo || '').toLowerCase();
-              if (tipo === 'positivo' || tipo === 'like') actual.positivos++;
-              if (tipo === 'negativo' || tipo === 'dislike') actual.negativos++;
-              conteos.set(id, actual);
-            });
-            avisos.forEach(aviso => {
-              const conteo = conteos.get(String(aviso.id)) || { positivos: 0, negativos: 0 };
-              aviso.votos_positivos = conteo.positivos;
-              aviso.votos_negativos = conteo.negativos;
-            });
-          } else {
-            // Alternativa con el RPC existente si la tabla no es legible desde la sesión pública.
-            await Promise.all(avisos.map(async aviso => {
-              try {
-                const { data: raw, error: rpcError } = await client.rpc('obtener_votos_aviso', { p_aviso_id: aviso.id });
-                if (rpcError || !raw) return;
-                const conteo = typeof raw === 'string' ? JSON.parse(raw) : raw;
-                aviso.votos_positivos = Number(conteo.positivos || 0);
-                aviso.votos_negativos = Number(conteo.negativos || 0);
-              } catch (_) {}
-            }));
+        await Promise.all(avisos.map(async aviso => {
+          try {
+            const { data: raw, error: rpcError } = await client.rpc('obtener_votos_aviso', { p_aviso_id: aviso.id });
+            if (rpcError) throw rpcError;
+            const conteo = typeof raw === 'string' ? JSON.parse(raw) : (raw || {});
+            aviso.votos_positivos = Number(conteo.positivos ?? 0);
+            aviso.votos_negativos = Number(conteo.negativos ?? 0);
+          } catch (errorVotos) {
+            console.warn('No se pudieron obtener los votos reales del aviso:', aviso.id, errorVotos);
           }
-        } catch (errorVotos) {
-          console.warn('No se pudieron sincronizar los votos de la portada:', errorVotos);
-        }
-        // Si la política permite consultar los IDs de comentarios, obtener el conteo actual por aviso.
+        }));
+
+        // Los comentarios se cuentan desde los registros visibles. Si RLS oculta filas,
+        // ese resultado no debe asumirse automáticamente como un conteo global confiable.
         try {
           const { data: comentarios, error: errorComentarios } = await client
             .from('comentarios').select('aviso_id').in('aviso_id', ids);
-          if (!errorComentarios && Array.isArray(comentarios)) {
+          if (errorComentarios) throw errorComentarios;
+          if (Array.isArray(comentarios)) {
             const conteosComentarios = new Map();
             comentarios.forEach(comentario => {
               const id = String(comentario.aviso_id);
@@ -259,7 +241,7 @@ async function supabasePeticion(accion, datos = {}) {
             });
           }
         } catch (errorComentarios) {
-          console.warn('No se pudieron sincronizar los comentarios de la portada:', errorComentarios);
+          console.warn('No se pudo confirmar el conteo global de comentarios por las políticas de acceso:', errorComentarios);
         }
       }
       return respuestaOK({ datos: avisos, total: count ?? avisos.length });
