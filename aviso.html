@@ -156,7 +156,7 @@ async function cargarMasAvisos(){
  if(masAvisosCargando||masAvisosFin||!avisoActual?.created_by||!masAvisosCursor)return;
  masAvisosCargando=true;const sent=document.getElementById('mas-avisos-sentinel');
  try{
-  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,imagen,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').lt('created_at',masAvisosCursor).order('created_at',{ascending:false}).limit(6);
+  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').lt('created_at',masAvisosCursor).order('created_at',{ascending:false}).limit(6);
   if(r.error)throw r.error;const items=r.data||[],list=document.getElementById('mas-avisos-lista');
   if(!items.length){masAvisosFin=true;if(sent)sent.textContent=list?.children.length?'Ya viste las publicaciones anteriores.':'No hay más avisos publicados por este usuario.';masAvisosObserver?.disconnect();return}
   for(const x of items){if(String(x.id)===String(AVISO_ID))continue;const link=document.createElement('a');link.className='mas-aviso-item';link.href='/aviso.html?id='+encodeURIComponent(x.id);const im=url(x.imagen_url||x.imagen);link.innerHTML=(im?'<img src="'+esc(im)+'" alt="" loading="lazy" decoding="async">':'<span class="mas-aviso-item-sin-imagen">EL BARRIO</span>')+'<span><strong>'+esc(x.titulo||'Aviso')+'</strong><small>'+esc(fecha(x.created_at))+'</small></span>';list.appendChild(link)}
