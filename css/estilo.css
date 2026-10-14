@@ -819,7 +819,6 @@ body {
     position: sticky;
     position: -webkit-sticky;
     isolation: isolate;
-    overflow: hidden;
     background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%);
     transition: background 700ms ease;
 }
