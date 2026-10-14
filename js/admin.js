@@ -1016,11 +1016,20 @@ function renderizarTablaAvisos() {
         aviso.autor_nombre ||
         aviso.created_by_nombre ||
         "Usuario";
-      const vistas = aviso.vistas || 0;
-      const comentarios =
-        aviso.comentarios_count || aviso.total_comentarios || 0;
-      const votosPos = aviso.votos_positivos || aviso.likes || 0;
-      const votosNeg = aviso.votos_negativos || aviso.dislikes || 0;
+      const numeroEstadistica = (valor) => {
+        const n = Number(valor);
+        return Number.isFinite(n) && n >= 0 ? n : 0;
+      };
+      const vistas = numeroEstadistica(aviso.vistas ?? aviso.visitas);
+      const comentarios = numeroEstadistica(
+        aviso.comentarios_count ?? aviso.total_comentarios,
+      );
+      const votosPos = numeroEstadistica(
+        aviso.votos_positivos ?? aviso.likes ?? aviso.puntuacion_positiva,
+      );
+      const votosNeg = numeroEstadistica(
+        aviso.votos_negativos ?? aviso.dislikes ?? aviso.puntuacion_negativa,
+      );
       const totalVotos = votosPos + votosNeg;
       let fechaFormateada = "Sin fecha";
       if (aviso.created_at) {
