@@ -1654,6 +1654,191 @@
         }
     </style>
 
+    <style>
+        /* Tablas compactas: filas alternas y columnas que caben en pantalla */
+        .admin-tabla-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .tabla-admin {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100%;
+            table-layout: fixed !important;
+            border-collapse: collapse !important;
+            border-spacing: 0 !important;
+            font-size: clamp(10px, 0.78vw, 12px) !important;
+        }
+
+        .tabla-admin thead th {
+            padding: 8px 5px !important;
+            font-size: clamp(9px, 0.72vw, 11px) !important;
+            letter-spacing: 0 !important;
+            overflow-wrap: anywhere;
+        }
+
+        .tabla-admin tbody tr,
+        .tabla-admin tbody tr:nth-child(even) {
+            background: transparent !important;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tabla-admin tbody tr td {
+            padding: 7px 5px !important;
+            border-bottom: 1px solid #e3eaf0 !important;
+            overflow-wrap: anywhere;
+            word-break: normal;
+            background: #ffffff;
+        }
+
+        .tabla-admin tbody tr:nth-child(even) td {
+            background: #edf3f7;
+        }
+
+        .tabla-admin tbody tr:hover td {
+            background: #dce8f0 !important;
+        }
+
+        .tabla-admin tbody tr td:first-child,
+        .tabla-admin tbody tr td:last-child {
+            border-radius: 0 !important;
+        }
+
+        .tabla-admin td img {
+            width: 32px;
+            height: 32px;
+            max-width: 100%;
+        }
+
+        .tabla-admin td span[title] {
+            display: inline-flex;
+            flex-wrap: wrap;
+            max-width: 100%;
+            padding: 2px 4px;
+            white-space: normal;
+        }
+
+        .acciones-botones {
+            display: flex;
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+            width: 100%;
+        }
+
+        .acciones-botones button,
+        .tabla-admin .accion-btn {
+            min-width: 0;
+            max-width: 100%;
+            padding: 5px 6px !important;
+            font-size: 10px !important;
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+        }
+
+        /* Avisos: prioriza título y acciones sin perder ninguna columna */
+        #tab-lista .tabla-admin th:nth-child(1),
+        #tab-lista .tabla-admin td:nth-child(1) { width: 7%; }
+        #tab-lista .tabla-admin th:nth-child(2),
+        #tab-lista .tabla-admin td:nth-child(2) { width: 9%; }
+        #tab-lista .tabla-admin th:nth-child(3),
+        #tab-lista .tabla-admin td:nth-child(3) { width: 29%; }
+        #tab-lista .tabla-admin th:nth-child(4),
+        #tab-lista .tabla-admin td:nth-child(4) { width: 19%; }
+        #tab-lista .tabla-admin th:nth-child(5),
+        #tab-lista .tabla-admin td:nth-child(5) { width: 14%; }
+        #tab-lista .tabla-admin th:nth-child(6),
+        #tab-lista .tabla-admin td:nth-child(6) { width: 22%; }
+
+        /* Usuarios: correo y nombre pueden partirse en varias líneas */
+        #tab-usuarios .tabla-admin th:nth-child(1),
+        #tab-usuarios .tabla-admin td:nth-child(1) { width: 29%; }
+        #tab-usuarios .tabla-admin th:nth-child(2),
+        #tab-usuarios .tabla-admin td:nth-child(2) { width: 23%; }
+        #tab-usuarios .tabla-admin th:nth-child(3),
+        #tab-usuarios .tabla-admin td:nth-child(3) { width: 12%; }
+        #tab-usuarios .tabla-admin th:nth-child(4),
+        #tab-usuarios .tabla-admin td:nth-child(4) { width: 13%; }
+        #tab-usuarios .tabla-admin th:nth-child(5),
+        #tab-usuarios .tabla-admin td:nth-child(5) { width: 21%; }
+
+        @media (max-width: 768px) {
+            .admin-tabla-wrapper {
+                overflow-x: hidden !important;
+                max-width: 100%;
+            }
+
+            .tabla-admin {
+                min-width: 0 !important;
+                width: 100% !important;
+                font-size: 10px !important;
+            }
+
+            .tabla-admin thead th {
+                padding: 6px 3px !important;
+                font-size: 9px !important;
+                line-height: 1.2;
+            }
+
+            .tabla-admin tbody tr td {
+                padding: 6px 3px !important;
+                font-size: 10px !important;
+                line-height: 1.25;
+            }
+
+            .tabla-admin td img {
+                width: 25px;
+                height: 25px;
+                border-radius: 5px;
+            }
+
+            .acciones-botones {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 3px !important;
+            }
+
+            .acciones-botones button,
+            .tabla-admin .accion-btn {
+                width: 100%;
+                padding: 4px 3px !important;
+                font-size: 9px !important;
+            }
+
+            .select-estado {
+                max-width: 100%;
+                padding: 4px 2px !important;
+                font-size: 9px !important;
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .tabla-admin thead th {
+                font-size: 8px !important;
+            }
+
+            .tabla-admin tbody tr td {
+                font-size: 9px !important;
+                padding: 5px 2px !important;
+            }
+
+            .tabla-admin td img {
+                width: 21px;
+                height: 21px;
+            }
+
+            .tabla-admin .accion-btn,
+            .acciones-botones button {
+                font-size: 8px !important;
+            }
+        }
+    </style>
+
     <!-- Inclusión de tus archivos JavaScript -->
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20260903-1"></script>
