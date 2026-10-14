@@ -208,6 +208,60 @@ async function supabasePeticion(accion, datos = {}) {
       const { data, error, count } = await query;
       if (error) throw error;
       const avisos = normalizarAvisos(data);
+      // Los votos se calculan desde los registros reales, no desde acumulados potencialmente obsoletos.
+      if (avisos.length) {
+        const ids = avisos.map(a => a.id).filter(Boolean);
+        try {
+          const { data: votos, error: errorVotos } = await client
+            .from('votos').select('aviso_id,tipo').in('aviso_id', ids);
+          if (!errorVotos && Array.isArray(votos)) {
+            const conteos = new Map();
+            votos.forEach(voto => {
+              const id = String(voto.aviso_id);
+              const actual = conteos.get(id) || { positivos: 0, negativos: 0 };
+              const tipo = String(voto.tipo || '').toLowerCase();
+              if (tipo === 'positivo' || tipo === 'like') actual.positivos++;
+              if (tipo === 'negativo' || tipo === 'dislike') actual.negativos++;
+              conteos.set(id, actual);
+            });
+            avisos.forEach(aviso => {
+              const conteo = conteos.get(String(aviso.id)) || { positivos: 0, negativos: 0 };
+              aviso.votos_positivos = conteo.positivos;
+              aviso.votos_negativos = conteo.negativos;
+            });
+          } else {
+            // Alternativa con el RPC existente si la tabla no es legible desde la sesión pública.
+            await Promise.all(avisos.map(async aviso => {
+              try {
+                const { data: raw, error: rpcError } = await client.rpc('obtener_votos_aviso', { p_aviso_id: aviso.id });
+                if (rpcError || !raw) return;
+                const conteo = typeof raw === 'string' ? JSON.parse(raw) : raw;
+                aviso.votos_positivos = Number(conteo.positivos || 0);
+                aviso.votos_negativos = Number(conteo.negativos || 0);
+              } catch (_) {}
+            }));
+          }
+        } catch (errorVotos) {
+          console.warn('No se pudieron sincronizar los votos de la portada:', errorVotos);
+        }
+        // Si la política permite consultar los IDs de comentarios, obtener el conteo actual por aviso.
+        try {
+          const { data: comentarios, error: errorComentarios } = await client
+            .from('comentarios').select('aviso_id').in('aviso_id', ids);
+          if (!errorComentarios && Array.isArray(comentarios)) {
+            const conteosComentarios = new Map();
+            comentarios.forEach(comentario => {
+              const id = String(comentario.aviso_id);
+              conteosComentarios.set(id, (conteosComentarios.get(id) || 0) + 1);
+            });
+            avisos.forEach(aviso => {
+              aviso.comentarios_count = conteosComentarios.get(String(aviso.id)) || 0;
+            });
+          }
+        } catch (errorComentarios) {
+          console.warn('No se pudieron sincronizar los comentarios de la portada:', errorComentarios);
+        }
+      }
       return respuestaOK({ datos: avisos, total: count ?? avisos.length });
     }
 
