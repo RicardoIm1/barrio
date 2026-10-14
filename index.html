@@ -32,6 +32,12 @@
 .aviso-autor{display:inline-block;filter:blur(5px);user-select:none;pointer-events:none;opacity:.78;transform:translateZ(0)}
 .aviso-autor.autor-visible{filter:none;user-select:text;pointer-events:auto;opacity:1}
 </style>
+
+    /* Atmósfera estacional: solo variables de color y un acento en el encabezado. */
+    body.pagina-index .header {
+      border-bottom: 3px solid var(--atmo-accent, var(--color-dorado));
+    }
+
 </head>
 
   <body class="pagina-index">
@@ -1474,5 +1480,72 @@
         }
       });
     </script>
-  </body>
+  
+    <!-- Atmósfera estacional ligera: calendario local del dispositivo, sin red, timers ni dependencias. -->
+    <script>
+      (() => {
+        const ahora = new Date();
+        const mes = ahora.getMonth() + 1;
+        const dia = ahora.getDate();
+        const raiz = document.documentElement;
+        const temas = {
+          halloween: {
+            nombre: "halloween", fondo: "#faf6f1", primario: "#35263f",
+            verde: "#5b3a70", dorado: "#ef8a28", naranja: "#d96c20",
+            acento: "#ef8a28", barra: "#35263f"
+          },
+          muertos: {
+            nombre: "dia-de-muertos", fondo: "#fff8ed", primario: "#4b294f",
+            verde: "#397257", dorado: "#e6a23c", naranja: "#e56b35",
+            acento: "#e56b35", barra: "#4b294f"
+          },
+          navidad: {
+            nombre: "navidad", fondo: "#f6f8f3", primario: "#24483a",
+            verde: "#28704d", dorado: "#c6a34d", naranja: "#a83f3f",
+            acento: "#b7463d", barra: "#24483a"
+          },
+          anioNuevo: {
+            nombre: "anio-nuevo", fondo: "#f5f6fb", primario: "#1c2945",
+            verde: "#315563", dorado: "#c8a85e", naranja: "#c8a85e",
+            acento: "#c8a85e", barra: "#1c2945"
+          },
+          reyes: {
+            nombre: "dia-de-reyes", fondo: "#fbf7ed", primario: "#3b3157",
+            verde: "#47735b", dorado: "#d4a63e", naranja: "#a84a3f",
+            acento: "#d4a63e", barra: "#3b3157"
+          },
+          patrias: {
+            nombre: "fiestas-patrias", fondo: "#f7f8f4", primario: "#254b3c",
+            verde: "#26734d", dorado: "#d0ad62", naranja: "#b94b43",
+            acento: "#26734d", barra: "#254b3c"
+          },
+          base: {
+            nombre: "cotidiana", fondo: "#f5f5f5", primario: "#2c3e50",
+            verde: "#2b7a2b", dorado: "#d4a043", naranja: "#f5b042",
+            acento: "#d4a043", barra: "#2c3e50"
+          }
+        };
+
+        let tema = temas.base;
+        if ((mes === 10 && dia >= 1 && dia <= 30)) tema = temas.halloween;
+        if ((mes === 10 && dia >= 31) || (mes === 11 && dia <= 2)) tema = temas.muertos;
+        if (mes === 12 && dia >= 1 && dia <= 24) tema = temas.navidad;
+        if ((mes === 12 && dia >= 26) || (mes === 1 && dia <= 2)) tema = temas.anioNuevo;
+        if (mes === 1 && dia >= 3 && dia <= 6) tema = temas.reyes;
+        if (mes === 9 && dia >= 10 && dia <= 16) tema = temas.patrias;
+
+        raiz.style.setProperty("--color-fondo", tema.fondo);
+        raiz.style.setProperty("--color-primario", tema.primario);
+        raiz.style.setProperty("--color-verde", tema.verde);
+        raiz.style.setProperty("--color-dorado", tema.dorado);
+        raiz.style.setProperty("--color-naranja", tema.naranja);
+        raiz.style.setProperty("--atmo-accent", tema.acento);
+        document.body.dataset.atmosfera = tema.nombre;
+
+        const metaColor = document.querySelector('meta[name="theme-color"]');
+        if (metaColor) metaColor.setAttribute("content", tema.barra);
+      })();
+    </script>
+
+</body>
 </html>
