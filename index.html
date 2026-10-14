@@ -201,16 +201,17 @@
 
       async function registrarClickWhatsApp(id) {
         try {
-          const apiKey = localStorage.getItem("api_key");
-          await API.peticion("REGISTRAR_CLICK_WHATSAPP", { id: id }, apiKey);
+          // Usar el método que ejecuta el RPC real en Supabase.
+          const resultado = await API.registrarClickWhatsApp(id);
+          if (!resultado?.success) {
+            console.warn("Supabase no confirmó el registro del click de WhatsApp:", resultado?.error);
+            return;
+          }
           const card = document.querySelector(`.aviso-card[data-id="${id}"]`);
-          if (card) {
-            const whatsappStat = card.querySelector(
-              ".whatsapp-stat .stat-value",
-            );
-            if (whatsappStat)
-              whatsappStat.textContent =
-                (parseInt(whatsappStat.textContent) || 0) + 1;
+          const whatsappStat = card?.querySelector(".whatsapp-stat .stat-value");
+          if (whatsappStat) {
+            const actual = Number.parseInt(whatsappStat.textContent, 10) || 0;
+            whatsappStat.textContent = actual + 1;
           }
         } catch (e) {
           console.warn("Error registrando click WhatsApp:", e);
@@ -805,8 +806,9 @@
             const tituloLimpio = limpiarTitulo(aviso.titulo);
             const mensaje = `Hola, me interesa tu aviso "${tituloLimpio}" publicado en El Barrio.`;
 
-            const likes =
-              parseInt(aviso.votos_positivos) || parseInt(aviso.intereses) || 0;
+            const likes = Number.isFinite(Number(aviso.votos_positivos))
+              ? Number(aviso.votos_positivos)
+              : (Number(aviso.intereses) || 0);
             const dislikes = parseInt(aviso.votos_negativos) || 0;
             const comentarios = parseInt(aviso.comentarios_count) || 0;
             const vistas = parseInt(aviso.vistas) || 0;
