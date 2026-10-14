@@ -976,20 +976,20 @@ function renderizarTablaAvisos() {
           fechaFormateada = aviso.created_at;
         }
       }
-      return `<tr data-id="${aviso.id}">
+      return `<tr data-id="${aviso.id}" onclick="editarAviso('${aviso.id}')" title="Haz clic en la fila para editar este aviso">
             <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : "N/A"}..</td>
             <td data-label="Imagen" style="text-align: center;">${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : "📷"}</td>
             <td data-label="Título"><strong>${escapeHTML(aviso.titulo || "Sin título")}</strong><br>
                 <div style="font-size: 0.7rem; margin-top: 5px;"><span title="Vistas">🙉 ${vistas}</span><span style="margin-left: 8px;" title="Comentarios">💬 ${comentarios}</span><span style="margin-left: 8px;" title="Votos positivos">👍 ${votosPos}</span><span style="margin-left: 8px;" title="Votos negativos">👎 ${votosNeg}</span>${totalVotos > 0 ? `<span style="margin-left: 8px;" title="Total de votos">📊 ${totalVotos}</span>` : ""}</div>
                 <small style="display: block; margin-top: 4px;">📢 ${escapeHTML(String(aviso.categoria || aviso.category || "varios").toUpperCase())}</small>${aviso.video_url ? "<small>🎥 Video</small>" : ""}</td>
             <td data-label="Publicó"><strong>👤 ${escapeHTML(nombreAutor)}</strong><br><small>🕒 ${fechaFormateada}</small>${aviso.email ? `<br><small>📧 ${escapeHTML(aviso.email)}</small>` : ""}</td>
-            <td data-label="Estado">${esAdmin ? `<select class="select-estado ${estado}" onchange="cambiarEstadoAviso('${aviso.id}', this.value)"><option value="pendiente" ${estado === "pendiente" ? "selected" : ""}>⏳ Pendiente</option><option value="activo" ${estado === "activo" ? "selected" : ""}>🟢 Activo</option><option value="rechazado" ${estado === "rechazado" ? "selected" : ""}>🔴 Rechazado</option></select>` : `<span class="badge-estado badge-${estado}">${estadoTexto}</span>`}</td>
-            <td data-label="Acciones"><div class="acciones-botones"><button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
+            <td data-label="Estado">${esAdmin ? `<select class="select-estado ${estado}" onclick="event.stopPropagation()" onchange="event.stopPropagation(); cambiarEstadoAviso('${aviso.id}', this.value)"><option value="pendiente" ${estado === "pendiente" ? "selected" : ""}>⏳ Pendiente</option><option value="activo" ${estado === "activo" ? "selected" : ""}>🟢 Activo</option><option value="rechazado" ${estado === "rechazado" ? "selected" : ""}>🔴 Rechazado</option></select>` : `<span class="badge-estado badge-${estado}">${estadoTexto}</span>`}</td>
+            <td data-label="Acciones"><div class="acciones-botones">
                     ${
                       esAdmin
-                        ? `<button type="button" class="accion-btn" title="Alternar marca de urgente" aria-label="Alternar marca de urgente" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;min-width:30px;padding:5px 8px;" onclick="cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">❗</button>
-                        <button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
-                        <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>`
+                        ? `<button type="button" class="accion-btn" title="Alternar marca de urgente" aria-label="Alternar marca de urgente" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;min-width:30px;padding:5px 8px;" onclick="event.stopPropagation(); cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">❗</button>
+                        <button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="event.stopPropagation(); cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
+                        <button class="accion-btn accion-eliminar" onclick="event.stopPropagation(); eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>`
                         : ""
                     }</div></td>
         </tr>`;
@@ -1036,9 +1036,7 @@ window.cambiarUrgente = async function (id, nuevoValor) {
       notificarAdmin("Solo administradores pueden activar o desactivar urgente");
       return;
     }
-    const accion = nuevoValor ? "marcar como urgente" : "quitar la marca de urgente";
-    if (!(await confirmarAdmin(`¿Quieres ${accion} este aviso?`))) return;
-    const resultado = await API.peticion(
+const resultado = await API.peticion(
       "ACTUALIZAR",
       { coleccion: "AVISOS", id, datos: { urgente: nuevoValor } },
       apiKey,
