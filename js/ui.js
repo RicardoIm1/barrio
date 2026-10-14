@@ -111,14 +111,26 @@
         const loginLink = container.querySelector('#login-link');
         const userArea = container.querySelector('#user-area');
         const userName = container.querySelector('#user-name');
-        const panelLink = container.querySelector('#panel-link');
         const logoutLink = container.querySelector('#cerrar-sesion');
         const usuario = usuarioConSesion();
         if (usuario) {
           if (loginLink) loginLink.style.display = 'none';
           if (userArea) userArea.style.display = 'flex';
-          if (userName) userName.textContent = usuario.nombre || usuario.email || 'Usuario';
-          if (panelLink) panelLink.style.display = usuario.rol === 'admin' ? 'inline-flex' : 'none';
+          if (userName) {
+            userName.textContent = '👋 ' + (usuario.nombre || usuario.email || 'Usuario');
+            const esAdmin = usuario.rol === 'admin';
+            userName.classList.toggle('admin-link', esAdmin);
+            userName.title = esAdmin ? 'Abrir panel de administración' : '';
+            userName.setAttribute('role', esAdmin ? 'link' : 'text');
+            userName.setAttribute('tabindex', esAdmin ? '0' : '-1');
+            userName.onclick = esAdmin ? () => { window.location.href = '/admin.html'; } : null;
+            userName.onkeydown = esAdmin ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.location.href = '/admin.html';
+              }
+            } : null;
+          }
         } else {
           if (loginLink) loginLink.style.display = 'inline-flex';
           if (userArea) userArea.style.display = 'none';
@@ -241,7 +253,14 @@
         const usuario = JSON.parse(usuarioStr);
         if (loginLink) loginLink.style.display = 'none';
         if (userArea) userArea.style.display = 'flex';
-        if (userNameSpan) { userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`; userNameSpan.style.cursor = 'pointer'; userNameSpan.onclick = () => { window.location.href = '/admin.html'; }; }
+        if (userNameSpan) {
+          const esAdmin = usuario.rol === 'admin';
+          userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
+          userNameSpan.classList.toggle('admin-link', esAdmin);
+          userNameSpan.style.cursor = esAdmin ? 'pointer' : 'default';
+          userNameSpan.title = esAdmin ? 'Abrir panel de administración' : '';
+          userNameSpan.onclick = esAdmin ? () => { window.location.href = '/admin.html'; } : null;
+        }
         if (cerrarBtn) {
           const nuevoCerrar = cerrarBtn.cloneNode(true);
           cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
