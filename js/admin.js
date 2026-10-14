@@ -987,7 +987,7 @@ function renderizarTablaAvisos() {
             <td data-label="Acciones"><div class="acciones-botones"><button class="accion-btn accion-editar" onclick="editarAviso('${aviso.id}')">✏️ Editar</button>
                     ${
                       esAdmin
-                        ? `<button class="accion-btn" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;" onclick="cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">${esUrgente(aviso.urgente) ? "⚠️ Quitar urgente" : "⚠️ Marcar urgente"}</button>
+                        ? `<button type="button" class="accion-btn" title="Alternar marca de urgente" aria-label="Alternar marca de urgente" style="background:${esUrgente(aviso.urgente) ? "#dc3545" : "#64748b"};color:white;min-width:30px;padding:5px 8px;" onclick="cambiarUrgente('${aviso.id}', ${!esUrgente(aviso.urgente)})">❗</button>
                         <button class="accion-btn" style="background:${aviso.destacado ? "#d97706" : "#64748b"};color:white;" onclick="cambiarDestacado('${aviso.id}', ${!aviso.destacado})">${aviso.destacado ? "⭐ Quitar destacado" : "⭐ Destacar"}</button>
                         <button class="accion-btn accion-eliminar" onclick="eliminarAviso('${aviso.id}')">🗑️ Eliminar</button>`
                         : ""
