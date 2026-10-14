@@ -100,16 +100,16 @@
     }
     @media (max-width: 768px) {
         .header-contenido {
-            display: flex; flex-wrap: wrap; justify-content: space-between;
-            gap: 8px 10px; padding: 10px 12px; min-height: 0;
+            display: flex; flex-wrap: nowrap; justify-content: space-between;
+            gap: 8px; padding: 10px 12px; min-height: 0;
         }
-        .header-logo { order: 1; flex: 0 1 auto; max-width: 48%; }
-        .header-acciones { order: 2; margin-left: auto; gap: 6px; }
+        .header-logo { order: 1; flex: 0 1 auto; max-width: 42%; }
+        .header-acciones { order: 3; margin-left: 0; gap: 6px; flex: 0 0 auto; }
         .user-area { gap: 6px; }
         .header-buscador, body.pagina-index .header-buscador {
-            position: static; order: 3; transform: none; display: flex;
-            flex: 0 1 72%; width: 72%; max-width: 320px; min-width: 0;
-            margin: 0 0 0 auto; gap: 5px;
+            position: static; order: 2; transform: none; display: flex;
+            flex: 1 1 0; width: auto; max-width: 320px; min-width: 0;
+            margin: 0 auto; gap: 5px;
         }
         .header-buscador .buscador-input-header {
             display: block; flex: 1 1 auto; width: 100%; min-width: 0;
@@ -126,7 +126,7 @@
             border-color: rgba(255,255,255,.58);
             box-shadow: 0 0 0 2px rgba(255,255,255,.1);
         }
-        .header-buscador.activo { flex-basis: 86%; width: 86%; max-width: 360px; }
+        .header-buscador.activo { flex: 1 1 0; width: auto; max-width: 360px; }
         .buscador-acciones-movil { display: none; }
         .header-buscador.activo .buscador-acciones-movil { display: flex; }
         .buscador-acciones-movil button { width: 34px; height: 36px; }
@@ -134,10 +134,12 @@
     }
     @media (max-width: 420px) {
         .header-contenido { padding: 9px 10px; gap: 8px; }
+        .header-contenido { gap: 6px; padding-inline: 8px; }
+        .header-logo { max-width: 42%; gap: 5px; }
         .header-buscador, body.pagina-index .header-buscador {
-            flex-basis: 78%; width: 78%; max-width: 290px;
+            flex: 1 1 0; width: auto; max-width: 220px;
         }
-        .header-buscador.activo { flex-basis: 90%; width: 90%; }
+        .header-buscador.activo { flex: 1 1 0; width: auto; max-width: 260px; }
         .logo-icon { width: 38px; height: 38px; }
         .logo-texto h1 { font-size: 1.05rem; }
         .header-acciones, .user-area { gap: 5px; }
