@@ -1,5 +1,10 @@
 # Saludable.mente96 · Propuesta de marketing impreso
 
+## Posicionamiento profesional
+SaludableMente es un consultorio de psicología clínica y educativa para adolescentes a partir de los 12 años y adultos. El documento institucional describe un enfoque cognitivo-conductual, con servicios de evaluación, diagnóstico, orientación e intervención psicológica. Sus diferenciadores declarados son la integración clínica-educativa, la atención personalizada, los objetivos terapéuticos y el seguimiento.
+
+**Mensaje de posicionamiento:** Psicología clínica y educativa con enfoque cognitivo-conductual.
+
 ## Dirección creativa
 **Concepto:** “conoce tu mente · conoce tu ser”
 Sistema editorial brutalista: fondo melocotón #FDD7CB, tipografía carbón, titulares grandes, líneas negras y un acento olivo. Las piezas deben ser legibles a distancia y fáciles de imprimir. Evitar saturarlas con todos los servicios a la vez.
@@ -37,12 +42,12 @@ Añadir QR directo a WhatsApp una vez validada la URL. No imprimir el QR hasta p
 ### Texto propuesto
 **NO TIENES QUE RESOLVERLO TODO HOY.**
 
-A veces, poner en palabras lo que vivimos es un primer paso.
+Atención psicológica para adolescentes desde los 12 años y adultos. Enfoque cognitivo-conductual, con atención clínica y educativa.
 
 **Shalom Mesta**  
 Lic. en Psicología
 
-Psicoterapia individual · Evaluación psicológica · Primeros Auxilios Psicológicos  
+Psicoterapia individual con enfoque cognitivo-conductual · Evaluación psicológica · Primeros Auxilios Psicológicos  
 Orientación vocacional · Estrategias para mejorar el aprendizaje · Hábitos saludables  
 Acompañamiento psicológico en depresión y ansiedad; orientación relacionada con TDAH.
 
@@ -73,7 +78,7 @@ Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz.
 - **Perfil de Google:** completar sólo cuando se verifiquen nombre, categoría, horarios y ubicación.
 
 ## 5. Secuencia de contenido inicial
-1. **Presentación:** “Un espacio para escucharte.” Presentar a Shalom y explicar cómo pedir información.
+1. **Presentación:** “Conoce tu mente · conoce tu ser.” Presentar a Shalom, el consultorio de psicología clínica y educativa, el enfoque cognitivo-conductual y la atención para adolescentes desde los 12 años y adultos.
 2. **Psicoterapia:** “Pedir apoyo también es una decisión.” Explicar en términos generales qué esperar de una primera consulta, sin prometer resultados.
 3. **Orientación vocacional:** “No necesitas tener toda tu vida decidida hoy.” Invitar a consultar el servicio.
 4. **Aprendizaje:** “Estudiar más no siempre significa estudiar mejor.” Compartir una estrategia práctica y prudente.
@@ -94,7 +99,7 @@ Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz.
 - Revisar ortografía y legibilidad a tamaño real.
 - Probar QR y enlaces desde un teléfono ajeno.
 - Solicitar una prueba física antes de imprimir tiraje grande.
-- No añadir precios, horarios, cédula, especialidades ni modalidad hasta que se confirmen.
+- No añadir precios, horarios, cédula, especialidades ni modalidad hasta que se confirmen. Comunicar la atención desde los 12 años y el enfoque cognitivo-conductual conforme al documento del consultorio.
 
 ## Nota
 Esta propuesta es una base de marca y contenido. Los diseños finales de imprenta deberán exportarse con las especificaciones de la imprenta elegida y con el logotipo original integrado.
