@@ -1,7 +1,8 @@
 # Saludable.mente96 · Base de marca
 
 ## Identidad
-- **Nombre de comunicación:** Saludable.mente96
+- **Nombre visible en la tarjeta:** SaludableMente
+- **Nombre de trabajo digital:** Saludable.mente96 (confirmar escritura oficial con Shalom)
 - **Profesional:** Shalom Mesta
 - **Credencial declarada:** Lic. en Psicología
 - **Ubicación:** Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz, Puerto Vallarta, Jalisco
@@ -22,9 +23,11 @@ Un lenguaje humano, claro y sin promesas mágicas. La marca comunica que la pers
 
 ## Dirección visual
 - **Color principal:** melocotón #FDD7CB.
-- **Tinta / contraste:** carbón #191817.
+- **Olivo de marca (aproximado a partir del PDF):** #5D7041.
+- **Tinta / contraste:** carbón verdoso #25271F.
 - **Fondo claro:** marfil #F8F3EF.
-- **Acento opcional:** coral #E96F54.
+- **Acento:** olivo #5D7041.
+- **Marfil:** #F8F3EF.
 - **Titulares:** Manrope ExtraBold o grotesca geométrica equivalente.
 - **Tipografía técnica:** DM Mono.
 - **Recursos:** tipografía grande, composiciones asimétricas, líneas finas, círculos imperfectos, espacio negativo y fotografía documental con luz natural.
@@ -66,7 +69,7 @@ Personas que buscan apoyo psicológico, estudiantes y familias que necesitan ori
 - Evitar imágenes dramáticas o estereotipos sobre salud mental.
 
 ## Datos por confirmar antes de publicar piezas finales
-- Recibir la tarjeta original para reproducir fielmente el logo.
+- Obtener el archivo original del logotipo (SVG/PNG transparente o vector de imprenta) para integrarlo sin reinterpretaciones.
 - Confirmar si “Saludable.mente96” incluye punto y número como escritura oficial.
 - Confirmar horarios, modalidad (presencial/online), edades atendidas y proceso de cita.
 - Confirmar teléfono, dirección y nombre de la clínica.
