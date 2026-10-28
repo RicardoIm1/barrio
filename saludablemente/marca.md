@@ -9,6 +9,17 @@
 - **Contacto:** 322 246 2561
 - **Dominio/perfiles:** por confirmar; no asumir que el nombre está disponible.
 
+## Descripción del consultorio
+SaludableMente es un consultorio de psicología clínica y educativa dirigido a adolescentes a partir de los 12 años y adultos. Su propósito es promover la salud mental y el bienestar integral mediante evaluación, diagnóstico, orientación e intervención psicológica.
+
+El enfoque de trabajo declarado es la terapia cognitivo-conductual, con estrategias basadas en evidencia científica y adaptadas a las necesidades individuales.
+
+## Misión
+Brindar atención psicológica ética, profesional y personalizada, promoviendo el autoconocimiento, el desarrollo de habilidades y estrategias para el bienestar emocional y la calidad de vida.
+
+## Visión
+Consolidarse como un consultorio de referencia por su calidad profesional, calidez humana y compromiso con la salud mental.
+
 ## Idea central
 **Escucharte. Entenderte. Avanzar.**
 
@@ -57,10 +68,10 @@ Escucharte. Entenderte. Avanzar.
 7. Estrategias para mejorar el aprendizaje.
 8. Desarrollo de hábitos saludables.
 
-La redacción final debe corresponder a las competencias, formación y servicios que la profesional efectivamente ofrece. No anunciar especialidades, certificaciones, diagnósticos o tratamientos no confirmados.
+La redacción final debe corresponder a las competencias, formación y servicios que la profesional efectivamente ofrece. El enfoque cognitivo-conductual, el público desde los 12 años y adultos, y la integración clínica-educativa proceden del documento de presentación del consultorio. No anunciar especialidades, certificaciones, diagnósticos o tratamientos no confirmados.
 
 ## Público y tono
-Personas que buscan apoyo psicológico, estudiantes y familias que necesitan orientación sobre aprendizaje o vocación. No segmentar mediante miedo, vergüenza o afirmaciones que atribuyan trastornos al lector.
+Adolescentes a partir de los 12 años y adultos. También estudiantes que buscan fortalecer hábitos de estudio, explorar intereses vocacionales y desarrollar habilidades para el bienestar y el desempeño académico. No segmentar mediante miedo, vergüenza o afirmaciones que atribuyan trastornos al lector.
 
 ## Fotografía
 - Retratos reales de Shalom, con autorización y luz natural.
@@ -71,7 +82,7 @@ Personas que buscan apoyo psicológico, estudiantes y familias que necesitan ori
 ## Datos por confirmar antes de publicar piezas finales
 - Obtener el archivo original del logotipo (SVG/PNG transparente o vector de imprenta) para integrarlo sin reinterpretaciones.
 - Confirmar si “Saludable.mente96” incluye punto y número como escritura oficial.
-- Confirmar horarios, modalidad (presencial/online), edades atendidas y proceso de cita.
+- Confirmar horarios, modalidad (presencial/online) y proceso de cita. La edad mínima declarada en el documento de consultorio es 12 años.
 - Confirmar teléfono, dirección y nombre de la clínica.
 - Confirmar aviso de privacidad y cualquier dato profesional que deba exhibirse.
 - Confirmar disponibilidad de perfiles sociales y URL pública.
