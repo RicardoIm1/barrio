@@ -1,8 +1,8 @@
 # Saludable.mente96 · Propuesta de marketing impreso
 
 ## Dirección creativa
-**Concepto:** “Escucharte. Entenderte. Avanzar.”
-Sistema editorial brutalista: fondo melocotón #FDD7CB, tipografía carbón, titulares grandes, líneas negras y un acento coral. Las piezas deben ser legibles a distancia y fáciles de imprimir. Evitar saturarlas con todos los servicios a la vez.
+**Concepto:** “conoce tu mente · conoce tu ser”
+Sistema editorial brutalista: fondo melocotón #FDD7CB, tipografía carbón, titulares grandes, líneas negras y un acento olivo. Las piezas deben ser legibles a distancia y fáciles de imprimir. Evitar saturarlas con todos los servicios a la vez.
 
 ## 1. Tarjeta de presentación
 **Formato sugerido:** 9 × 5 cm, horizontal, 3 mm de rebase si lo solicita la imprenta, CMYK y 300 dpi.
@@ -14,7 +14,7 @@ Shalom Mesta
 
 Escucharte. Entenderte. Avanzar.
 
-Fondo #FDD7CB, nombre en carbón, monograma/logo en una esquina y mucho espacio negativo.
+Fondo #FDD7CB, nombre en carbón, símbolo humano-botánico en una esquina y mucho espacio negativo.
 
 ### Reverso
 **PSICOLOGÍA**
@@ -88,7 +88,7 @@ Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz.
 - No comprar bases de datos ni enviar mensajes promocionales no solicitados.
 
 ## 7. Control de calidad antes de imprimir
-- Revisar nombre y logo con la tarjeta original.
+- Revisar nombre, lema y logo con la tarjeta original; usar el archivo del símbolo original cuando esté disponible.
 - Verificar teléfono y dirección carácter por carácter.
 - Confirmar que la profesional ofrece cada servicio listado.
 - Revisar ortografía y legibilidad a tamaño real.
