@@ -47,6 +47,10 @@
     <form id="surveyForm">
       <button class="button button-dark reopen-survey" id="reopenSurvey" type="button" hidden>Iniciar / continuar encuesta <span aria-hidden="true">→</span></button>
       <dialog class="question-modal" id="questionModal" aria-label="Pregunta de la encuesta">
+      <div class="modal-topbar">
+        <span class="modal-step-caption">Tu opinión importa</span>
+        <button class="modal-close" id="closeSurvey" type="button" aria-label="Cerrar encuesta">Cerrar <span aria-hidden="true">×</span></button>
+      </div>
       <fieldset>
         <legend><span class="number">01</span> ¿Qué tan familiar te resulta la idea de acudir con un profesional de la psicología?</legend>
         <label class="option"><input type="radio" name="familiaridad" value="Conozco bien cómo funciona"><span>Conozco bien cómo funciona</span></label>
@@ -145,7 +149,7 @@
         <p class="final-copy">Tus respuestas nos ayudarán a presentar la información de una manera más útil y clara.</p>
         <div class="privacy">
           <strong>Tu privacidad importa.</strong>
-          <p>Esta encuesta no solicita nombre, teléfono ni información sobre tu salud. Al continuar, se abrirá WhatsApp con tus respuestas para que decidas si deseas enviarlas. No se envían automáticamente ni se guardan en esta página.</p>
+          <p>Esta encuesta no solicita nombre, teléfono ni información sobre tu salud. Tus respuestas y el avance se guardan únicamente en este dispositivo para que puedas continuar después. Al terminar, se abrirá WhatsApp y tú decides si deseas enviarlas.</p>
           <label class="consent"><input type="checkbox" id="consent" required><span>Entiendo cómo se compartirán mis respuestas y elijo abrir WhatsApp para enviarlas.</span></label>
         </div>
         <button class="button button-dark submit" type="submit">Preparar mis respuestas <span aria-hidden="true">↗</span></button>
@@ -184,11 +188,41 @@
   const percent = document.getElementById('progressPercent');
   const fill = document.getElementById('progressFill');
   const hint = document.getElementById('navHint');
+  const progressKey = 'saludablemente-survey-progress-v1';
   let step = 0;
   const total = questions.length + 1;
 
-  comment.addEventListener('input', () => charCount.textContent = comment.value.length);
+  function saveProgress() {
+    const answers = {};
+    form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+      if (input.checked) {
+        if (!answers[input.name]) answers[input.name] = [];
+        answers[input.name].push(input.value);
+      }
+    });
+    answers.comentario = comment.value;
+    try { localStorage.setItem(progressKey, JSON.stringify({ step, answers })); } catch (_) {}
+  }
+
+  function restoreProgress() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(progressKey) || 'null');
+      if (!saved || !saved.answers) return;
+      form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+        input.checked = (saved.answers[input.name] || []).includes(input.value);
+      });
+      comment.value = typeof saved.answers.comentario === 'string' ? saved.answers.comentario : '';
+      step = Number.isInteger(saved.step) ? Math.max(0, Math.min(questions.length, saved.step)) : 0;
+    } catch (_) {}
+    charCount.textContent = comment.value.length;
+  }
+
+  comment.addEventListener('input', () => { charCount.textContent = comment.value.length; saveProgress(); });
+  form.addEventListener('change', event => {
+    if (event.target.matches('input[type="radio"], input[type="checkbox"]')) saveProgress();
+  });
   questions.forEach((q,i) => { q.classList.add('question-step'); q.hidden = i !== 0; });
+  restoreProgress();
 
   function showStep(direction) {
     questions.forEach((q,i) => {
@@ -212,10 +246,10 @@
   }
 
   prev.addEventListener('click', () => {
-    if (step > 0) { step--; showStep(-1);  }
+    if (step > 0) { step--; saveProgress(); showStep(-1); }
   });
   next.addEventListener('click', () => {
-    if (step < questions.length) { step++; showStep(1); }
+    if (step < questions.length) { step++; saveProgress(); showStep(1); }
   });
 
   document.querySelectorAll('input[name="confianza"]').forEach(input => input.addEventListener('change', () => {
@@ -259,8 +293,22 @@
     if (typeof modal.showModal === 'function') modal.showModal();
     else modal.setAttribute('open', '');
   };
-  reopenSurvey.addEventListener('click', openModal);
-  modal.addEventListener('close', () => { reopenSurvey.hidden = false; });
+  const closeModal = () => {
+    saveProgress();
+    if (typeof modal.close === 'function') modal.close();
+    else {
+      modal.removeAttribute('open');
+      reopenSurvey.hidden = false;
+    }
+  };
+  document.getElementById('closeSurvey').addEventListener('click', closeModal);
+  modal.addEventListener('click', event => {
+    if (event.target === modal) closeModal();
+  });
+  modal.addEventListener('close', () => {
+    saveProgress();
+    reopenSurvey.hidden = false;
+  });
   openModal();
 })();
 </script>
