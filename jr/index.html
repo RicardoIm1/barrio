@@ -307,6 +307,76 @@ footer{background:#07060c;border-top-color:rgba(218,207,255,.10)}footer .brand{c
 @media(max-width:900px){#mobileNav{background:rgba(10,8,16,.97)}}
 </style>
 
+  <style id="accessible-theme-switch">
+/* Contraste accesible y selector de tema día/noche */
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 13px;border:1px solid rgba(218,207,255,.22);border-radius:8px;background:rgba(255,255,255,.07);color:#f3effb;font:600 .82rem/1 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;white-space:nowrap;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+.theme-toggle:hover{transform:translateY(-1px);border-color:#8b6cff;background:rgba(139,108,255,.14)}
+.theme-icon{font-size:1.15rem;line-height:1}
+#mobileNav a{color:var(--text)}
+/* Noche: valores explícitos para asegurar legibilidad en navegación y portada */
+body[data-theme="dark"] .links a{color:#d6d0e2}
+body[data-theme="dark"] .links a:hover,body[data-theme="dark"] #mobileNav a:hover{color:#fff}
+body[data-theme="dark"] .hero{background:transparent}
+body[data-theme="dark"] .hero .lead,body[data-theme="dark"] .hero-copy,body[data-theme="dark"] .hero .micro{color:#d5cede}
+body[data-theme="dark"] .hero-side p{color:#c6bed3}
+body[data-theme="dark"] .hero-side strong{color:#fff}
+body[data-theme="dark"] .theme-toggle{color:#f3effb}
+/* Día: la portada y los controles comparten superficies claras con texto oscuro */
+body[data-theme="light"]{
+ --bg:#f8f9fa;--bg2:#fff;--panel:rgba(255,255,255,.92);--panel2:#fff;
+ --line:#e2e8ee;--text:#2c3e50;--muted:#526273;--soft:#34495e;
+ --accent:#287fb8;--accent2:#216a9b;--warm:#a97823;
+ background:#f8f9fa;color:#2c3e50
+}
+body[data-theme="light"]{background:radial-gradient(700px 420px at 82% -5%,rgba(52,152,219,.09),transparent 68%),linear-gradient(180deg,#f8f9fa,#f3f6f8)}
+body[data-theme="light"]:before{display:none}
+body[data-theme="light"] .nav{background:rgba(248,249,250,.96);border-bottom:1px solid #dce3e8;backdrop-filter:blur(18px)}
+body[data-theme="light"] .brand,body[data-theme="light"] .brandtext strong{color:#2c3e50}
+body[data-theme="light"] .brandtext strong span{color:#287fb8}
+body[data-theme="light"] .brandtext small{color:#627487}
+body[data-theme="light"] .links a,body[data-theme="light"] #mobileNav a{color:#34495e}
+body[data-theme="light"] .links a:hover,body[data-theme="light"] #mobileNav a:hover{color:#17679d}
+body[data-theme="light"] .mark{background:linear-gradient(145deg,#fff,#eaf3f9);border-color:#d4e0e8;box-shadow:0 4px 12px rgba(44,62,80,.08)}
+body[data-theme="light"] .theme-toggle{background:#fff;color:#2c3e50;border-color:#d5dfe7}
+body[data-theme="light"] .theme-toggle:hover{background:#edf6fc;border-color:#3498db}
+body[data-theme="light"] .navcta,body[data-theme="light"] .btn{background:#fff;border-color:#d5dfe7;color:#2c3e50;box-shadow:0 2px 7px rgba(44,62,80,.04)}
+body[data-theme="light"] .navcta:hover,body[data-theme="light"] .btn:hover{background:#f0f7fc;border-color:#3498db}
+body[data-theme="light"] .btn.primary{background:#2c3e50;color:#fff;border-color:#2c3e50}
+body[data-theme="light"] .btn.primary:hover{background:#34495e}
+body[data-theme="light"] .hero{background:linear-gradient(135deg,#fff 0%,#eef5fa 100%);border-bottom:1px solid #e2e8ee}
+body[data-theme="light"] h1,body[data-theme="light"] h2,body[data-theme="light"] h3{color:#2c3e50}
+body[data-theme="light"] p,body[data-theme="light"] .lead,body[data-theme="light"] .hero-copy,body[data-theme="light"] .hero .micro{color:#46596b}
+body[data-theme="light"] .eyebrow{color:#236e9e}
+body[data-theme="light"] .eyebrow:before{background:#3498db}
+body[data-theme="light"] .hero h1 em{color:#216a9b;text-shadow:none}
+body[data-theme="light"] .hero-side{border-color:#d8e3eb}
+body[data-theme="light"] .hero-side strong{color:#2c3e50}
+body[data-theme="light"] .hero-side p{color:#526273}
+body[data-theme="light"] .darkband{background:#eef3f6;border-block-color:#dfe6eb}
+body[data-theme="light"] .card,body[data-theme="light"] .service,body[data-theme="light"] .demo-panel,body[data-theme="light"] .lab-controls,body[data-theme="light"] .lab-chart,body[data-theme="light"] .case,body[data-theme="light"] .money-main,body[data-theme="light"] .money-side,body[data-theme="light"] .principle,body[data-theme="light"] .work div,body[data-theme="light"] .arch div,body[data-theme="light"] .metric,body[data-theme="light"] .demo-result .metric{
+ background:#fff;border-color:#e0e7ec;box-shadow:0 6px 20px rgba(44,62,80,.06);backdrop-filter:none
+}
+body[data-theme="light"] .card .num,body[data-theme="light"] .case .type,body[data-theme="light"] .work b,body[data-theme="light"] .arch strong,body[data-theme="light"] .principle b{color:#286f9d}
+body[data-theme="light"] .tag{background:#f1f6fa;border-color:#dce6ed;color:#34495e}
+body[data-theme="light"] .quote{background:#f1f6fa;border-left-color:#3498db;color:#34495e}
+body[data-theme="light"] .step{background:#fff;color:#2c3e50;border:1px solid #e0e7ec}
+body[data-theme="light"] .step .n{color:#8495a5}
+body[data-theme="light"] .tool{background:#f3f6f8;border-color:#e0e7ec;color:#34495e}
+body[data-theme="light"] .demo-panel label,body[data-theme="light"] .field label{color:#526273}
+body[data-theme="light"] .demo-panel input,body[data-theme="light"] .field input,body[data-theme="light"] .field textarea{background:#fff;color:#2c3e50;border-color:#cbd7e0}
+body[data-theme="light"] .demo-panel input:focus,body[data-theme="light"] .field input:focus,body[data-theme="light"] .field textarea:focus{border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,.13)}
+body[data-theme="light"] .metric span,body[data-theme="light"] .demo-note,body[data-theme="light"] .service ul,body[data-theme="light"] .money-side li,body[data-theme="light"] .footnav{color:#647587}
+body[data-theme="light"] .bar{background:linear-gradient(to top,#3498db,rgba(52,152,219,.25))}
+body[data-theme="light"] .not{border-color:#efd8ad;background:#fff8ed}
+body[data-theme="light"] .not strong{color:#8d5d17}
+body[data-theme="light"] footer{background:#fff;border-top-color:#e0e7ec}
+body[data-theme="light"] footer .brand,body[data-theme="light"] footer .brandtext strong{color:#2c3e50}
+body[data-theme="light"] footer .brandtext small,body[data-theme="light"] footer p,body[data-theme="light"] footer .footnav{color:#647587}
+body[data-theme="light"] footer .mark{background:#edf6fc;border-color:#d4e0e8;color:#2c3e50}
+@media(max-width:900px){.theme-toggle{margin-left:auto}.navin{gap:10px}}
+@media(max-width:560px){.theme-toggle{min-height:38px;padding:7px 10px}.theme-label{font-size:.76rem}}
+
+  </style>
 </head>
 <body>
 
@@ -333,6 +403,7 @@ footer{background:#07060c;border-top-color:rgba(218,207,255,.10)}footer .brand{c
       <a href="#persona">Ricardo</a>
       <a href="#contacto">Contacto</a>
     </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar a modo diurno" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☼</span><span class="theme-label">Modo diurno</span></button>
     <a class="navcta" href="#contacto">Cuéntame tu problema</a>
     <button class="menu" id="menuBtn" aria-label="Abrir menú">☰</button>
   </div>
@@ -729,6 +800,33 @@ footer{background:#07060c;border-top-color:rgba(218,207,255,.10)}footer .brand{c
     }
   });
 </script>
+
+<script>
+(() => {
+  const root = document.body;
+  const toggle = document.getElementById('themeToggle');
+  if (!root || !toggle) return;
+  const applyTheme = theme => {
+    const normalized = theme === 'light' ? 'light' : 'dark';
+    root.dataset.theme = normalized;
+    const light = normalized === 'light';
+    toggle.setAttribute('aria-pressed', String(light));
+    toggle.setAttribute('aria-label', light ? 'Cambiar a modo nocturno' : 'Cambiar a modo diurno');
+    const icon = toggle.querySelector('.theme-icon');
+    const label = toggle.querySelector('.theme-label');
+    if (icon) icon.textContent = light ? '☾' : '☼';
+    if (label) label.textContent = light ? 'Modo nocturno' : 'Modo diurno';
+    try { localStorage.setItem('softwarte-theme', normalized); } catch (_) {}
+  };
+  let saved = 'dark';
+  try { saved = localStorage.getItem('softwarte-theme') || 'dark'; } catch (_) {}
+  applyTheme(saved);
+  toggle.addEventListener('click', () => {
+    applyTheme(root.dataset.theme === 'light' ? 'dark' : 'light');
+  });
+})();
+</script>
+
   <script src="/common/consentimiento.js" defer></script>
 </body>
 </html>
