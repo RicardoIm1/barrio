@@ -35,6 +35,52 @@ td,th{border-bottom-color:#e8edf0}
 .footer{color:#8492a0}
 @media(max-height:760px) and (min-width:761px){.metric,.project,.panel{padding:9px}}
 
+
+/* Proporciones alineadas con El Barrio: contenedor, controles y superficies */
+.shell{width:min(100%,1400px);padding:16px 24px;gap:12px}
+.top{gap:14px;padding-bottom:10px}
+.mark{width:36px;height:36px;border-radius:10px}
+.tools{gap:8px}
+.select,.btn{min-height:36px;padding:8px 14px;border-radius:8px}
+.notice{padding:10px 14px;border-radius:10px}
+.content-section{gap:8px}
+.grid,.projects{gap:12px}
+.metric,.project,.panel{padding:16px;border-radius:12px}
+.metric-top{font-size:12px}
+.metric-icon{width:28px;height:28px;border-radius:8px}
+.metric-value{font-size:clamp(22px,2vw,28px);margin:8px 0 2px}
+.project{padding:14px}
+.project-mark{width:32px;height:32px;border-radius:8px}
+.lower{gap:12px}
+.panel{padding:16px}
+table{font-size:12px}
+td,th{padding:8px}
+.steps{gap:10px 12px}
+.step{grid-template-columns:24px 1fr;gap:8px}
+.num{width:24px;height:24px;border-radius:7px}
+.footer{font-size:11px;padding-top:8px}
+@media(min-width:1200px) and (min-height:800px){
+ .shell{gap:14px}
+ .metric,.project,.panel{padding:16px}
+ .notice{padding:10px 14px}
+ .project-status{margin-top:9px}
+ .sub{margin-bottom:8px}
+}
+@media(max-height:760px) and (min-width:761px){
+ .shell{gap:8px;padding-top:10px;padding-bottom:10px}
+ .metric,.project,.panel{padding:10px}
+ .metric-value{font-size:22px;margin:5px 0 0}
+ .project-status{margin-top:6px}
+ .sub{margin:2px 0 5px}
+}
+@media(max-width:560px){
+ .shell{padding:14px 12px;gap:12px}
+ .grid,.projects{gap:8px}
+ .metric,.project,.panel{padding:12px}
+ .tools{width:100%}
+ .tools .select{flex:1}
+}
+
 </style>
 <style id="softwarte-glass-future">
 :root{
