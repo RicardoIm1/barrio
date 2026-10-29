@@ -399,6 +399,30 @@ html.theme-transition body *::after {
     transition-duration: .01ms !important;
   }
 }
+
+/* Bloque de propósito: separar visualmente el mensaje y asegurar lectura en ambos temas. */
+.hero-side{
+  padding:28px 30px !important;
+  border:1px solid rgba(148,163,184,.28) !important;
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+  box-shadow:0 10px 28px rgba(0,0,0,.08);
+}
+.hero-side strong{margin-bottom:14px !important;line-height:1.3}
+.hero-side p{line-height:1.75;max-width:38ch;color:#c9c3d5}
+body[data-theme="light"] .hero-side{
+  background:#e8eef3 !important;
+  border-color:#cbd8e2 !important;
+  box-shadow:0 8px 22px rgba(44,62,80,.07);
+}
+body[data-theme="light"] .hero-side strong{color:#24394b !important}
+body[data-theme="light"] .hero-side p{color:#405568 !important}
+@media(max-width:900px){
+  .hero-side{padding:24px !important}
+}
+@media(max-width:560px){
+  .hero-side{padding:20px !important;border-radius:14px}
+}
 </style>
 </head>
 <body>
