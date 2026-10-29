@@ -81,6 +81,22 @@ td,th{padding:8px}
  .tools .select{flex:1}
 }
 
+
+/* Historial de contactos: estructura lista, sin exponer datos mientras falta autenticación */
+#contactos .panel{padding:16px}
+.contact-toolbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.contact-toolbar .sub{margin:4px 0 12px}
+.private-status{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid rgba(199,185,255,.22);border-radius:8px;color:#c7b9ff;font-size:11px;line-height:1.4}
+.contact-privacy{padding:12px 14px;margin:0 0 12px;border:1px solid rgba(215,183,122,.24);border-radius:9px;background:rgba(215,183,122,.055)}
+.contact-privacy strong{font-size:12px;color:#d9c7a5}
+.contact-privacy p{margin:4px 0 0;color:#b8aecb;font-size:12px;line-height:1.6;max-width:90ch}
+#contactos table{min-width:760px;white-space:normal}
+#contactos th{white-space:nowrap}
+#contactos td{vertical-align:top;overflow-wrap:anywhere;max-width:240px}
+#contactos .empty-row{text-align:center;color:#a9a1b8;padding:20px 8px}
+.contact-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:#8d82a2;font-size:10px}
+@media(max-width:560px){#contactos .panel{padding:12px}.private-status{width:100%}.contact-privacy{padding:10px}}
+
 </style>
 <style id="softwarte-glass-future">
 :root{
@@ -176,6 +192,15 @@ th{color:#a69abf}
 <article class="metric"><div class="metric-top"><span>Visitas</span><span class="metric-icon">↗</span></div><div class="metric-value">—</div><div class="pending">Esperando fuente de tráfico</div></article><article class="metric"><div class="metric-top"><span>Contactos iniciados</span><span class="metric-icon">✉</span></div><div class="metric-value">—</div><div class="pending">WhatsApp, formularios y correo</div></article><article class="metric"><div class="metric-top"><span>Conversiones confirmadas</span><span class="metric-icon">✓</span></div><div class="metric-value">—</div><div class="pending">Ventas o servicios concretados</div></article><article class="metric"><div class="metric-top"><span>Ingresos confirmados</span><span class="metric-icon">$</span></div><div class="metric-value">—</div><div class="pending">Solo cobros verificados</div></article></div></section>
 <section class="content-section"><div class="section-head"><h2>Proyectos</h2><p>Seguimiento individual con métricas comparables</p></div><div class="projects" aria-label="Proyectos del ecosistema">
 <article class="project"><div class="project-top"><div class="project-mark">EB</div><div><h3>El Barrio</h3><div class="url">elbarrio.me</div></div></div><div class="project-status"><span class="dot"></span>Fuente de datos pendiente</div></article><article class="project"><div class="project-top"><div class="project-mark">SM</div><div><h3>SaludableMente</h3><div class="url">/saludablemente/</div></div></div><div class="project-status"><span class="dot"></span>Fuente de datos pendiente</div></article><article class="project"><div class="project-top"><div class="project-mark">DN</div><div><h3>De Niz</h3><div class="url">/deniz/</div></div></div><div class="project-status"><span class="dot"></span>Fuente de datos pendiente</div></article><article class="project"><div class="project-top"><div class="project-mark">JR</div><div><h3>JR · Soluciones Digitales</h3><div class="url">/jr/</div></div></div><div class="project-status"><span class="dot"></span>Fuente de datos pendiente</div></article></div></section>
+<section class="content-section" id="contactos">
+<div class="section-head"><h2>Contactos de El Barrio</h2><p>Registro permanente recibido desde el formulario de Softw-arte</p></div>
+<div class="panel">
+<div class="contact-toolbar"><div><h3>Respuestas recibidas</h3><p class="sub">Origen previsto: hoja «Respuestas» de Google Sheets. Se conservará el registro histórico.</p></div><span class="private-status"><span class="dot"></span>Consulta desactivada hasta proteger el acceso</span></div>
+<div class="contact-privacy" role="status"><strong>Datos personales protegidos</strong><p>El panel todavía no consulta ni muestra nombres, correos o mensajes. Primero debe activarse el acceso autenticado y restringirse la consulta en Apps Script. Ocultar esta página de buscadores no equivale a protegerla.</p></div>
+<div class="table-wrap"><table aria-label="Contactos recibidos"><thead><tr><th>Fecha</th><th>Nombre</th><th>Correo</th><th>Institución</th><th>Necesidad</th><th>Mensaje</th></tr></thead><tbody id="contactosBody"><tr><td colspan="6" class="empty-row">Pendiente de conexión segura. No se han cargado datos.</td></tr></tbody></table></div>
+<div class="contact-foot"><span id="contactosCount">Historial completo: pendiente de conexión segura</span><span>Fuente prevista: Google Sheets · Respuestas</span></div>
+</div>
+</section>
 <div class="lower"><section class="panel"><h3>Rendimiento por proyecto</h3><p class="sub">Los guiones indican que los datos aún no están disponibles.</p><div class="table-wrap"><table><thead><tr><th>Proyecto</th><th>Visitas</th><th>Contactos</th><th>Conversiones</th><th>Ingresos</th></tr></thead><tbody><tr><td>El Barrio</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>SaludableMente</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>De Niz</td><td>—</td><td>—</td><td>—</td><td>—</td></tr><tr><td>JR</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div></section>
 <section class="panel"><h3>Siguiente fase</h3><p class="sub">Orden de implementación</p><div class="steps"><div class="step"><span class="num">01</span><div><strong>Definir fuentes</strong><p>Elegir analítica de visitas y eventos de cada sitio.</p></div></div><div class="step"><span class="num">02</span><div><strong>Centralizar eventos</strong><p>Registrar proyecto, fecha, origen y tipo de evento con datos mínimos.</p></div></div><div class="step"><span class="num">03</span><div><strong>Validar conversiones e ingresos</strong><p>Distinguir contacto, venta concretada e importe cobrado.</p></div></div><div class="step"><span class="num">04</span><div><strong>Restringir acceso</strong><p>Configurar autenticación y permisos antes de mostrar métricas privadas.</p></div></div></div></section></div>
 <footer class="footer"><span>Panel de negocio · Versión inicial</span><span>Sin datos de muestra · Sin conexión a datos todavía</span></footer></main>
