@@ -254,10 +254,15 @@ document.getElementById("year").textContent = new Date().getFullYear();
   try { saved = localStorage.getItem(key); } catch (_) {}
   applyTheme(saved === "dark");
   document.documentElement.classList.add("theme-ready");
-  button.addEventListener("click", () => {
-    const dark = document.body.dataset.theme !== "dark";
+  const setAndSaveTheme = dark => {
     applyTheme(dark);
     try { localStorage.setItem(key, dark ? "dark" : "light"); } catch (_) {}
+  };
+  button.addEventListener("click", () => setAndSaveTheme(document.body.dataset.theme !== "dark"));
+  window.addEventListener("storage", event => {
+    if (event.key === key && (event.newValue === "dark" || event.newValue === "light")) {
+      applyTheme(event.newValue === "dark");
+    }
   });
 })();
 (() => {
