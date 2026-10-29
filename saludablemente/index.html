@@ -46,8 +46,41 @@ footer{padding:24px 5vw;background:var(--ink);color:var(--paper);display:flex;ju
 .service.reveal{transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1),background-color .25s ease,padding-left .25s ease}
 :where(a,button,[tabindex]):focus-visible{outline:2px solid var(--coral);outline-offset:4px}
 @media(prefers-reduced-motion:reduce){.hero .eyebrow,.hero h1,.hero-copy,.hero-actions,.hero-art{animation:none!important}.reveal-ready .reveal,.service.reveal{opacity:1;transform:none;transition:none!important}.button,.brand-mark,.service,.service-arrow,.instagram-link,.top-cta,.floating{transition:none!important}}
+
+/* Tema nocturno, limitado a esta página */
+.theme-toggle{appearance:none;display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(248,243,239,.56);color:var(--ink);font:10px var(--mono);letter-spacing:.035em;text-transform:uppercase;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color .25s,border-color .25s,transform .2s;flex-shrink:0}
+.theme-toggle:hover{transform:translateY(-1px)}
+.theme-toggle:active{transform:scale(.97)}
+.theme-toggle-track{width:48px;height:28px;position:relative;display:inline-flex;align-items:center;justify-content:space-between;padding:0 6px;border-radius:999px;background:#ded7d0;transition:background-color .3s;flex-shrink:0}
+.theme-icon{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;color:#4a4b40}
+.moon-icon{opacity:.45}
+.theme-toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fffaf5;box-shadow:0 1px 4px #24251f2b;transition:transform .3s cubic-bezier(.2,.8,.2,1),background-color .3s}
+body[data-theme="dark"]{--paper:#171b1b;--ink:#eee9e1;--peach:#292f2d;--coral:#b3c69a;--line:rgba(238,233,225,.2);background:var(--paper);color:var(--ink);color-scheme:dark}
+body[data-theme="dark"] .topbar,body[data-theme="dark"] footer{background:#141717;color:var(--ink);border-color:var(--line)}
+body[data-theme="dark"] .hero,body[data-theme="dark"] .contact{background:#252c2a;color:#f0eae2}
+body[data-theme="dark"] .button{border-color:currentColor}
+body[data-theme="dark"] .button-dark{background:#e8e2d8;color:#202522}
+body[data-theme="dark"] .button-light{color:#f0eae2}
+body[data-theme="dark"] .orbit{border-color:rgba(238,233,225,.4)}
+body[data-theme="dark"] .orbit:before{border-color:rgba(238,233,225,.3)}
+body[data-theme="dark"] .orbit:after{background:#7e9271;mix-blend-mode:normal}
+body[data-theme="dark"] .ticker{background:#101313;color:#e8e2d8}
+body[data-theme="dark"] .service p{color:#c0c5bc}
+body[data-theme="dark"] .service:hover{background-color:rgba(179,198,154,.08)}
+body[data-theme="dark"] .statement{background:#101313;color:#eee9e1}
+body[data-theme="dark"] .statement .eyebrow,body[data-theme="dark"] .statement h2 em{color:#c8d6b8}
+body[data-theme="dark"] .statement-foot{border-color:#444c47}
+body[data-theme="dark"] .contact-card{border-color:rgba(240,234,226,.48)}
+body[data-theme="dark"] .floating{background:#d8e2ce;color:#1b211d;box-shadow:5px 5px 0 #657b5c}
+body[data-theme="dark"] .theme-toggle{background:#252c2a;color:#f0eae2;border-color:rgba(240,234,226,.22)}
+body[data-theme="dark"] .theme-toggle-track{background:#64715d}
+body[data-theme="dark"] .theme-toggle-thumb{transform:translateX(20px);background:#f5e5b8}
+body[data-theme="dark"] .sun-icon{opacity:.45}
+body[data-theme="dark"] .moon-icon{opacity:1;color:#f7e7bb}
+@media(max-width:760px){.topbar{gap:10px;flex-wrap:wrap}.theme-toggle{min-height:48px;padding:6px 10px;gap:8px}.theme-toggle-label{font-size:9px}.topbar>span{font-size:9px}}
+@media(max-width:390px){.theme-toggle-label{display:none}.theme-toggle{padding:6px}.theme-toggle-track{width:48px}}
 </style></head><body>
-<header class="topbar"><a class="brand" href="#inicio" aria-label="Saludable.mente, inicio"><span class="brand-mark"><!-- Logo oficial: /saludablemente/image_f59fd04b.jpeg --><img src="/saludablemente/image_f59fd04b.jpeg" alt="Logotipo SaludableMente"></span><span>SaludableMente<span style="color:var(--coral)">96</span></span></a><span>Psicología · Puerto Vallarta, Jal.</span><a class="top-cta" href="#contacto">Hablemos ↗</a></header>
+<header class="topbar"><a class="brand" href="#inicio" aria-label="Saludable.mente, inicio"><span class="brand-mark"><!-- Logo oficial: /saludablemente/image_f59fd04b.jpeg --><img src="/saludablemente/image_f59fd04b.jpeg" alt="Logotipo SaludableMente"></span><span>SaludableMente<span style="color:var(--coral)">96</span></span></a><span>Psicología · Puerto Vallarta, Jal.</span><button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Activar modo nocturno" title="Cambiar entre modo claro y nocturno"><span class="theme-toggle-track" aria-hidden="true"><svg class="theme-icon sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg><svg class="theme-icon moon-icon" viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"></path></svg><span class="theme-toggle-thumb"></span></span><span class="theme-toggle-label">Modo nocturno</span></button><a class="top-cta" href="#contacto">Hablemos ↗</a></header>
 <main>
 <section class="hero" id="inicio"><div><div class="eyebrow">Psicología con humanidad</div><h1>Escucharte.<span>Entenderte.</span>Avanzar.</h1><p class="hero-copy">Conoce tu mente. Conoce tu ser. Atención psicológica clínica y educativa con enfoque cognitivo-conductual. Un espacio para comprender tus emociones y desarrollar herramientas para la vida cotidiana.</p><div class="hero-actions"><a class="button button-dark" href="https://wa.me/523222462561?text=Hola%2C%20me%20gustar%C3%ADa%20solicitar%20informaci%C3%B3n%20sobre%20psicoterapia." target="_blank" rel="noopener">Solicitar información ↗</a><a class="button button-light" href="#servicios">Conocer servicios ↓</a></div></div>
 <div class="hero-art" aria-label="Elemento gráfico abstracto de identidad"><span class="cross">+</span><div class="orbit"><span class="orbit-word">mente.</span></div><span class="orbit-note">Un paso a la vez.<br>Con respeto por tu proceso.</span></div></section>
@@ -68,6 +101,27 @@ footer{padding:24px 5vw;background:var(--ink);color:var(--paper);display:flex;ju
 </main><footer><span>© <span id="year"></span> SaludableMente</span><span>Shalom Mesta De Niz · Lic. en Psicología</span><a href="#inicio">Volver arriba ↑</a></footer>
 <a class="floating" href="https://wa.me/523222462561?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20los%20servicios%20de%20psicolog%C3%ADa." target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">CONTACTAR ↗</a><script>
 document.getElementById("year").textContent = new Date().getFullYear();
+(() => {
+  const button = document.getElementById("themeToggle");
+  const label = button.querySelector(".theme-toggle-label");
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const key = "saludablemente-theme";
+  const applyTheme = dark => {
+    document.body.dataset.theme = dark ? "dark" : "light";
+    button.setAttribute("aria-checked", String(dark));
+    button.setAttribute("aria-label", dark ? "Activar modo claro" : "Activar modo nocturno");
+    label.textContent = dark ? "Modo claro" : "Modo nocturno";
+    if (themeColor) themeColor.setAttribute("content", dark ? "#171b1b" : "#FDD7CB");
+  };
+  let saved = null;
+  try { saved = localStorage.getItem(key); } catch (_) {}
+  applyTheme(saved === "dark");
+  button.addEventListener("click", () => {
+    const dark = document.body.dataset.theme !== "dark";
+    applyTheme(dark);
+    try { localStorage.setItem(key, dark ? "dark" : "light"); } catch (_) {}
+  });
+})();
 (() => {
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const targets = [
