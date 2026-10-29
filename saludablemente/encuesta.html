@@ -47,16 +47,17 @@
       <p class="section-intro">Responde según lo que te resulte más natural. No necesitas conocer previamente los servicios de psicología.</p>
     </div>
 
-    <div class="step-progress" aria-label="Progreso de la encuesta"><div class="progress-top"><span id="stepLabel">PREGUNTA 01 DE 10</span><span id="progressPercent">9%</span></div><div class="progress-track"><span id="progressFill"></span></div></div>
+    <div class="step-progress" aria-label="Progreso de la encuesta"><div class="progress-top"><span id="stepLabel" aria-live="polite">PREGUNTA 01 DE 10</span><span id="progressPercent">9%</span></div><div class="progress-track" id="progressTrack" role="progressbar" aria-label="Avance de la encuesta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="9" aria-valuetext="Pregunta 1 de 10"><span id="progressFill"></span></div></div>
     <form id="surveyForm">
       <button class="button button-dark reopen-survey" id="reopenSurvey" type="button">Iniciar / continuar encuesta <span aria-hidden="true">→</span></button>
+      <p class="cta-helper">A tu ritmo, sin respuestas obligatorias. Puedes cerrar y continuar después en este dispositivo.</p>
       <dialog class="question-modal" id="questionModal" aria-label="Pregunta de la encuesta">
       <div class="modal-topbar">
         <span class="modal-step-caption">Tu opinión importa</span><span class="save-status" id="saveStatus" role="status" aria-live="polite">El avance se guarda en este dispositivo</span>
         <button class="modal-close" id="closeSurvey" type="button" aria-label="Cerrar encuesta">Cerrar <span aria-hidden="true">×</span></button>
       </div>
       <fieldset>
-        <legend><span class="number">01</span> ¿Qué tan familiar te resulta la idea de acudir con un profesional de la psicología?</legend>
+        <legend tabindex="-1"><span class="number">01</span> ¿Qué tan familiar te resulta la idea de acudir con un profesional de la psicología?</legend>
         <label class="option"><input type="radio" name="familiaridad" value="Conozco bien cómo funciona"><span>Conozco bien cómo funciona</span></label>
         <label class="option"><input type="radio" name="familiaridad" value="Tengo una idea general"><span>Tengo una idea general</span></label>
         <label class="option"><input type="radio" name="familiaridad" value="Tengo dudas sobre el proceso"><span>Tengo dudas sobre el proceso</span></label>
@@ -64,7 +65,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">02</span> ¿Qué información te ayudaría más a conocer un servicio de psicología?</legend>
+        <legend tabindex="-1"><span class="number">02</span> ¿Qué información te ayudaría más a conocer un servicio de psicología?</legend>
         <p class="hint">Puedes seleccionar varias opciones.</p>
         <label class="option"><input type="checkbox" name="informacion" value="Cómo es una primera consulta"><span>Cómo es una primera consulta</span></label>
         <label class="option"><input type="checkbox" name="informacion" value="Precio y duración"><span>Precio y duración de la consulta</span></label>
@@ -75,7 +76,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">03</span> ¿Qué formato te resulta más cómodo para una consulta?</legend>
+        <legend tabindex="-1"><span class="number">03</span> ¿Qué formato te resulta más cómodo para una consulta?</legend>
         <label class="option"><input type="radio" name="modalidad" value="Presencial"><span>Presencial</span></label>
         <label class="option"><input type="radio" name="modalidad" value="En línea"><span>En línea</span></label>
         <label class="option"><input type="radio" name="modalidad" value="Depende de las circunstancias"><span>Depende de las circunstancias</span></label>
@@ -83,7 +84,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">04</span> ¿Qué influye más al elegir un profesional?</legend>
+        <legend tabindex="-1"><span class="number">04</span> ¿Qué influye más al elegir un profesional?</legend>
         <p class="hint">Elige hasta dos opciones.</p>
         <label class="option"><input type="checkbox" name="confianza" value="Formación y experiencia"><span>Formación y experiencia profesional</span></label>
         <label class="option"><input type="checkbox" name="confianza" value="Recomendaciones de alguien de confianza"><span>Recomendación de alguien de confianza</span></label>
@@ -94,7 +95,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">05</span> Para una consulta individual, ¿qué rango de precio por sesión te parecería razonable?</legend>
+        <legend tabindex="-1"><span class="number">05</span> Para una consulta individual, ¿qué rango de precio por sesión te parecería razonable?</legend>
         <p class="hint">Es una pregunta de percepción, no una tarifa anunciada.</p>
         <label class="option"><input type="radio" name="precio" value="Menos de $400 MXN"><span>Menos de $400 MXN</span></label>
         <label class="option"><input type="radio" name="precio" value="$400–$599 MXN"><span>$400–$599 MXN</span></label>
@@ -104,7 +105,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">06</span> ¿Qué te gustaría encontrar en el contenido de SaludableMente?</legend>
+        <legend tabindex="-1"><span class="number">06</span> ¿Qué te gustaría encontrar en el contenido de SaludableMente?</legend>
         <p class="hint">Puedes seleccionar varias opciones.</p>
         <label class="option"><input type="checkbox" name="contenido" value="Explicaciones sencillas de psicología"><span>Explicaciones sencillas de psicología</span></label>
         <label class="option"><input type="checkbox" name="contenido" value="Herramientas para la vida cotidiana"><span>Herramientas para la vida cotidiana</span></label>
@@ -114,7 +115,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">07</span> Si buscaras información, ¿por dónde preferirías empezar?</legend>
+        <legend tabindex="-1"><span class="number">07</span> Si buscaras información, ¿por dónde preferirías empezar?</legend>
         <label class="option"><input type="radio" name="contacto" value="Mensaje por WhatsApp"><span>Mensaje por WhatsApp</span></label>
         <label class="option"><input type="radio" name="contacto" value="Mensaje directo de Instagram"><span>Mensaje directo de Instagram</span></label>
         <label class="option"><input type="radio" name="contacto" value="Página web con información clara"><span>Página web con información clara</span></label>
@@ -122,7 +123,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">08</span> ¿Qué podría dificultar que alguien agendara una consulta?</legend>
+        <legend tabindex="-1"><span class="number">08</span> ¿Qué podría dificultar que alguien agendara una consulta?</legend>
         <p class="hint">Puedes seleccionar varias opciones. No hace falta compartir experiencias personales.</p>
         <label class="option"><input type="checkbox" name="barreras" value="No conocer el precio"><span>No conocer el precio desde el principio</span></label>
         <label class="option"><input type="checkbox" name="barreras" value="No saber qué esperar"><span>No saber qué esperar de la primera consulta</span></label>
@@ -133,7 +134,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">09</span> En general, ¿qué tan probable sería que consultaras información sobre un servicio así?</legend>
+        <legend tabindex="-1"><span class="number">09</span> En general, ¿qué tan probable sería que consultaras información sobre un servicio así?</legend>
         <label class="option"><input type="radio" name="interes" value="Muy probable"><span>Muy probable</span></label>
         <label class="option"><input type="radio" name="interes" value="Algo probable"><span>Algo probable</span></label>
         <label class="option"><input type="radio" name="interes" value="Poco probable"><span>Poco probable</span></label>
@@ -141,7 +142,7 @@
       </fieldset>
 
       <fieldset>
-        <legend><span class="number">10</span> ¿Hay algo que una página de psicología debería explicar mejor?</legend>
+        <legend tabindex="-1"><span class="number">10</span> ¿Hay algo que una página de psicología debería explicar mejor?</legend>
         <label class="sr-only" for="comentario">Comentario opcional</label>
         <textarea id="comentario" name="comentario" rows="4" maxlength="500" placeholder="Comentario opcional. Evita incluir información personal o de salud."></textarea>
         <p class="hint"><span id="charCount">0</span>/500 caracteres</p>
@@ -192,6 +193,7 @@
   const label = document.getElementById('stepLabel');
   const percent = document.getElementById('progressPercent');
   const fill = document.getElementById('progressFill');
+  const progressTrack = document.getElementById('progressTrack');
   const hint = document.getElementById('navHint');
   const saveStatus = document.getElementById('saveStatus');
   const answerSummary = document.getElementById('answerSummary');
@@ -245,11 +247,14 @@
     label.textContent = last ? 'ÚLTIMO PASO' : 'PREGUNTA ' + String(step + 1).padStart(2,'0') + ' DE ' + questions.length;
     percent.textContent = p + '%';
     fill.style.width = p + '%';
+    progressTrack.setAttribute('aria-valuenow', String(p));
+    progressTrack.setAttribute('aria-valuetext', last ? 'Último paso, revisión de respuestas' : 'Pregunta ' + (step + 1) + ' de ' + questions.length);
     prev.disabled = step === 0;
     next.hidden = last;
     next.textContent = step === questions.length - 1 ? 'Terminar encuesta →' : 'Siguiente →';
-    hint.textContent = last ? 'Revisa el aviso de privacidad antes de compartir.' : 'Puedes continuar sin responder esta pregunta.';
+    hint.textContent = last ? 'Revisa el aviso de privacidad antes de compartir.' : 'Esta pregunta es opcional. Puedes continuar sin responder.';
     if (last) { renderAnswerSummary(); finalStep.querySelector('h3').focus({preventScroll:true}); }
+    else { const legend = questions[step].querySelector('legend'); if (legend) legend.focus({preventScroll:true}); }
   }
 
 
@@ -289,10 +294,10 @@
   }
 
   prev.addEventListener('click', () => {
-    if (step > 0) { step--; saveProgress(); showStep(-1); }
+    if (step > 0) { step--; saveProgress(); showStep(-1); modal.scrollTop = 0; }
   });
   next.addEventListener('click', () => {
-    if (step < questions.length) { step++; saveProgress(); showStep(1); }
+    if (step < questions.length) { step++; saveProgress(); showStep(1); modal.scrollTop = 0; }
   });
 
   document.querySelectorAll('input[name="confianza"]').forEach(input => input.addEventListener('change', () => {
