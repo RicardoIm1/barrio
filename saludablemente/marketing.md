@@ -14,7 +14,7 @@ Sistema editorial brutalista: fondo melocotón #FDD7CB, tipografía carbón, tit
 
 ### Frente
 **SALUDABLE.MENTE96**  
-Shalom Mesta  
+Shalom Mesta De Niz  
 **LIC. EN PSICOLOGÍA**
 
 Escucharte. Entenderte. Avanzar.
@@ -27,7 +27,7 @@ Fondo #FDD7CB, nombre en carbón, símbolo humano-botánico en una esquina y muc
 - Evaluación psicológica
 - Orientación vocacional
 - Estrategias de aprendizaje
-- Depresión · Ansiedad · TDAH
+- Depresión · Ansiedad · Orientación relacionada con TDAH
 - Hábitos saludables
 
 **322 246 2561**  
@@ -44,7 +44,7 @@ Añadir QR directo a WhatsApp una vez validada la URL. No imprimir el QR hasta p
 
 Atención psicológica para adolescentes desde los 12 años y adultos. Enfoque cognitivo-conductual, con atención clínica y educativa.
 
-**Shalom Mesta**  
+**Shalom Mesta De Niz**  
 Lic. en Psicología
 
 Psicoterapia individual con enfoque cognitivo-conductual · Evaluación psicológica · Primeros Auxilios Psicológicos  
@@ -62,7 +62,7 @@ Dentro de la Clínica Ad Rehab · Puerto Vallarta, Jalisco
 ## 3. Volante breve para recepción / referidos
 **¿Buscas acompañamiento psicológico?**
 
-Saludable.mente96 · Shalom Mesta, Lic. en Psicología
+Saludable.mente96 · Shalom Mesta De Niz, Lic. en Psicología
 
 Un espacio para escucharte, comprender lo que estás viviendo y explorar herramientas para tu bienestar.
 
@@ -92,7 +92,10 @@ Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz.
 - Medir consultas recibidas por canal con una pregunta voluntaria: “¿Dónde viste la información?”
 - No comprar bases de datos ni enviar mensajes promocionales no solicitados.
 
-## 7. Control de calidad antes de imprimir
+## 7. Integración del logotipo
+La página está preparada para cargar el logo oficial desde `/saludablemente/img/logo.png`. Colocar el archivo en esa ruta y comprobar la carga tanto en la vista local como en la publicación.
+
+## 8. Control de calidad antes de imprimir
 - Revisar nombre, lema y logo con la tarjeta original; usar el archivo del símbolo original cuando esté disponible.
 - Verificar teléfono y dirección carácter por carácter.
 - Confirmar que la profesional ofrece cada servicio listado.
