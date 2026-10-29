@@ -372,3 +372,24 @@ body[data-theme="dark"] .question-modal .option input[type="radio"]:checked{bord
   .modal-close{min-height:42px}
 }
 @media(prefers-reduced-motion:reduce){.modal-close{transition:none!important}}
+
+
+/* Aviso visible desde el inicio sobre el destino de las respuestas */
+.survey-destination-notice{
+  display:flex;align-items:flex-start;gap:14px;
+  max-width:620px;margin:24px 0 18px;padding:17px 18px;
+  border:1px solid color-mix(in srgb,var(--coral) 48%,var(--line));
+  border-radius:14px;background:color-mix(in srgb,var(--coral) 9%,var(--paper));
+  color:var(--ink);
+}
+.destination-icon{
+  display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;
+  border-radius:10px;background:var(--coral);color:#fff;font-size:19px;font-weight:700;
+}
+.survey-destination-notice strong{display:block;font-size:13px;line-height:1.5}
+.survey-destination-notice p{margin:5px 0 0;font-size:12px;line-height:1.65;opacity:.82}
+body[data-theme="dark"] .survey-destination-notice{
+  background:color-mix(in srgb,var(--coral) 12%,var(--paper));
+  border-color:color-mix(in srgb,var(--coral) 45%,var(--line));
+}
+@media(max-width:760px){.survey-destination-notice{margin:20px 0 16px;padding:14px;gap:11px}}
