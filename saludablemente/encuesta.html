@@ -194,7 +194,7 @@
 
   function saveProgress() {
     const answers = {};
-    form.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
+    form.querySelectorAll('input[type="radio"], input[type="checkbox"]:not(#consent)').forEach(input => {
       if (input.checked) {
         if (!answers[input.name]) answers[input.name] = [];
         answers[input.name].push(input.value);
@@ -219,7 +219,7 @@
 
   comment.addEventListener('input', () => { charCount.textContent = comment.value.length; saveProgress(); });
   form.addEventListener('change', event => {
-    if (event.target.matches('input[type="radio"], input[type="checkbox"]')) saveProgress();
+    if (event.target.matches('input[type="radio"], input[type="checkbox"]:not(#consent)')) saveProgress();
   });
   questions.forEach((q,i) => { q.classList.add('question-step'); q.hidden = i !== 0; });
   restoreProgress();
