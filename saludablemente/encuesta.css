@@ -81,8 +81,7 @@ body[data-theme="dark"] .closing .eyebrow{color:var(--peach)}
 .question-step .option{padding:16px 18px}
 .question-step[hidden],.survey-final[hidden],.step-nav [hidden]{display:none!important}
 .enter-forward,.enter-backward{animation:none!important}
-@keyframes questionInForward{from{opacity:0;transform:translate3d(22px,8px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-@keyframes questionInBackward{from{opacity:0;transform:translate3d(-18px,8px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+
 .step-nav{max-width:850px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:16px}
 .nav-button{border:1px solid var(--ink);background:transparent;color:var(--ink);padding:14px 17px;font:11px var(--mono);text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
 .nav-button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
