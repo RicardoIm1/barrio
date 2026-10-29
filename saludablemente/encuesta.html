@@ -52,7 +52,7 @@
       <button class="button button-dark reopen-survey" id="reopenSurvey" type="button" hidden>Iniciar / continuar encuesta <span aria-hidden="true">→</span></button>
       <dialog class="question-modal" id="questionModal" aria-label="Pregunta de la encuesta">
       <div class="modal-topbar">
-        <span class="modal-step-caption">Tu opinión importa</span>
+        <span class="modal-step-caption">Tu opinión importa</span><span class="save-status" id="saveStatus" role="status" aria-live="polite">Avance guardado en este dispositivo</span>
         <button class="modal-close" id="closeSurvey" type="button" aria-label="Cerrar encuesta">Cerrar <span aria-hidden="true">×</span></button>
       </div>
       <fieldset>
@@ -151,6 +151,7 @@
         <p class="eyebrow">Último paso</p>
         <h3 tabindex="-1">Gracias por llegar hasta aquí.</h3>
         <p class="final-copy">Tus respuestas nos ayudarán a presentar la información de una manera más útil y clara.</p>
+        <section class="answer-review" aria-labelledby="reviewTitle"><div class="review-heading"><h4 id="reviewTitle">Revisa tus respuestas</h4><p>Puedes volver a cualquier pregunta para editarla.</p></div><div id="answerSummary"></div></section>
         <div class="privacy">
           <strong>Tu privacidad importa.</strong>
           <p>Esta encuesta no solicita nombre, teléfono ni información sobre tu salud. Tus respuestas y el avance se guardan únicamente en este dispositivo para que puedas continuar después. Al terminar, se abrirá WhatsApp y tú decides si deseas enviarlas.</p>
@@ -192,6 +193,8 @@
   const percent = document.getElementById('progressPercent');
   const fill = document.getElementById('progressFill');
   const hint = document.getElementById('navHint');
+  const saveStatus = document.getElementById('saveStatus');
+  const answerSummary = document.getElementById('answerSummary');
   const progressKey = 'saludablemente-survey-progress-v1';
   let step = 0;
   const total = questions.length + 1;
@@ -205,7 +208,7 @@
       }
     });
     answers.comentario = comment.value;
-    try { localStorage.setItem(progressKey, JSON.stringify({ step, answers })); } catch (_) {}
+    try { localStorage.setItem(progressKey, JSON.stringify({ step, answers })); if (saveStatus) saveStatus.textContent = 'Avance guardado en este dispositivo'; } catch (_) { if (saveStatus) saveStatus.textContent = 'No se pudo guardar en este dispositivo'; }
   }
 
   function restoreProgress() {
@@ -246,7 +249,43 @@
     next.hidden = last;
     next.textContent = step === questions.length - 1 ? 'Terminar encuesta →' : 'Siguiente →';
     hint.textContent = last ? 'Revisa el aviso de privacidad antes de compartir.' : 'Puedes continuar sin responder esta pregunta.';
-    if (last) finalStep.querySelector('h3').focus({preventScroll:true});
+    if (last) { renderAnswerSummary(); finalStep.querySelector('h3').focus({preventScroll:true}); }
+  }
+
+
+  function renderAnswerSummary() {
+    if (!answerSummary) return;
+    answerSummary.replaceChildren();
+    questions.forEach((question, index) => {
+      const legend = question.querySelector('legend');
+      const title = legend ? legend.textContent.replace(/^\s*\d+\s*/, '').trim() : 'Pregunta ' + (index + 1);
+      const chosen = [...question.querySelectorAll('input:checked')].map(input => {
+        const labelEl = input.closest('label');
+        return labelEl ? (labelEl.querySelector('span')?.textContent.trim() || input.value) : input.value;
+      });
+      const value = index === 9 ? (comment.value.trim() || 'Sin comentario') : (chosen.join(', ') || 'Sin respuesta');
+      const row = document.createElement('article');
+      row.className = 'answer-review-row';
+      const copy = document.createElement('div');
+      const questionTitle = document.createElement('strong');
+      questionTitle.textContent = String(index + 1).padStart(2, '0') + '. ' + title;
+      const answer = document.createElement('p');
+      answer.textContent = value;
+      copy.append(questionTitle, answer);
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'review-edit';
+      edit.textContent = 'Editar';
+      edit.setAttribute('aria-label', 'Editar pregunta ' + (index + 1));
+      edit.addEventListener('click', () => {
+        step = index;
+        saveProgress();
+        showStep(-1);
+        modal.scrollTop = 0;
+      });
+      row.append(copy, edit);
+      answerSummary.append(row);
+    });
   }
 
   prev.addEventListener('click', () => {
