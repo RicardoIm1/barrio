@@ -170,3 +170,86 @@ body[data-theme="dark"] .question-modal{background:var(--paper);color:var(--ink)
 /* Punto de regreso si la persona cierra el modal con Escape */
 .reopen-survey{display:flex;width:100%;max-width:850px;margin:0 auto 26px;justify-content:space-between;align-items:center}
 .reopen-survey[hidden]{display:none!important}
+
+
+/* Controles modernos: switches para selecciones múltiples */
+.question-modal .option:has(input[type="checkbox"]){
+  display:flex;
+  flex-direction:row;
+  gap:16px;
+  min-height:62px;
+  align-items:center;
+  justify-content:space-between;
+  border-radius:14px;
+  padding:15px 17px;
+  background:rgba(255,255,255,.34);
+  border-color:rgba(37,39,31,.13);
+}
+.question-modal .option:has(input[type="checkbox"]) span{
+  flex:1;
+}
+.question-modal .option input[type="checkbox"]{
+  appearance:none;
+  -webkit-appearance:none;
+  position:relative;
+  width:46px;
+  height:27px;
+  min-width:46px;
+  margin:0;
+  border:1px solid rgba(37,39,31,.24);
+  border-radius:999px;
+  background:#dedbd4;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.08);
+  cursor:pointer;
+  transition:background-color .2s ease,border-color .2s ease;
+}
+.question-modal .option input[type="checkbox"]::after{
+  content:"";
+  position:absolute;
+  width:19px;
+  height:19px;
+  left:3px;
+  top:3px;
+  border-radius:50%;
+  background:#fffdfa;
+  box-shadow:0 1px 4px rgba(0,0,0,.2);
+  transition:transform .2s cubic-bezier(.2,.8,.2,1);
+}
+.question-modal .option input[type="checkbox"]:checked{
+  background:var(--coral);
+  border-color:var(--coral);
+}
+.question-modal .option input[type="checkbox"]:checked::after{
+  transform:translateX(19px);
+}
+.question-modal .option:has(input[type="checkbox"]:checked){
+  background:color-mix(in srgb,var(--coral) 10%,var(--paper));
+  border-color:color-mix(in srgb,var(--coral) 52%,var(--line));
+}
+.question-modal .option input[type="checkbox"]:focus-visible{
+  outline:2px solid var(--coral);
+  outline-offset:4px;
+}
+body[data-theme="dark"] .question-modal .option:has(input[type="checkbox"]){
+  background:rgba(255,255,255,.025);
+  border-color:var(--line);
+}
+body[data-theme="dark"] .question-modal .option input[type="checkbox"]{
+  background:#454b45;
+  border-color:#697168;
+}
+body[data-theme="dark"] .question-modal .option input[type="checkbox"]:checked{
+  background:var(--coral);
+  border-color:var(--coral);
+}
+body[data-theme="dark"] .question-modal .option:has(input[type="checkbox"]:checked){
+  background:rgba(179,198,154,.11);
+  border-color:var(--coral);
+}
+@media(max-width:760px){
+  .question-modal .option:has(input[type="checkbox"]){min-height:58px;padding:13px 12px;gap:12px;border-radius:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .question-modal .option input[type="checkbox"],
+  .question-modal .option input[type="checkbox"]::after{transition:none}
+}
