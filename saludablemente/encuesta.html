@@ -306,6 +306,7 @@
     }
   };
   document.getElementById('closeSurvey').addEventListener('click', closeModal);
+  reopenSurvey.addEventListener('click', openModal);
   modal.addEventListener('click', event => {
     if (event.target === modal) closeModal();
   });
