@@ -341,3 +341,34 @@ body[data-theme="dark"] .question-modal .option input[type="radio"]:checked{bord
 @media(prefers-reduced-motion:reduce){
   .question-modal .option,.question-modal .option input[type="radio"]::before{transition:none}
 }
+
+
+/* Cabecera del modal y cierre accesible */
+.modal-topbar{
+  position:sticky;
+  top:calc(-1 * clamp(20px,4vw,42px));
+  z-index:5;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin:calc(-1 * clamp(20px,4vw,42px)) calc(-1 * clamp(20px,4vw,42px)) 20px;
+  padding:14px clamp(20px,4vw,42px);
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.modal-step-caption{font:10px var(--mono);letter-spacing:.12em;text-transform:uppercase;opacity:.72}
+.modal-close{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:40px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;
+  background:transparent;color:var(--ink);font:11px var(--mono);text-transform:uppercase;
+  cursor:pointer;flex-shrink:0;
+}
+.modal-close span{font:22px/1 var(--sans)}
+.modal-close:hover{background:var(--ink);color:var(--paper)}
+.modal-close:focus-visible{outline:2px solid var(--coral);outline-offset:3px}
+@media(max-width:760px){
+  .modal-topbar{top:-20px;margin:-20px -16px 16px;padding:12px 16px}
+  .modal-close{min-height:42px}
+}
+@media(prefers-reduced-motion:reduce){.modal-close{transition:none!important}}
