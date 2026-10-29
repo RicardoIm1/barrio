@@ -45,6 +45,7 @@
 
     <div class="step-progress" aria-label="Progreso de la encuesta"><div class="progress-top"><span id="stepLabel">PREGUNTA 01 DE 10</span><span id="progressPercent">9%</span></div><div class="progress-track"><span id="progressFill"></span></div></div>
     <form id="surveyForm">
+      <dialog class="question-modal" id="questionModal" aria-label="Pregunta de la encuesta">
       <fieldset>
         <legend><span class="number">01</span> ¿Qué tan familiar te resulta la idea de acudir con un profesional de la psicología?</legend>
         <label class="option"><input type="radio" name="familiaridad" value="Conozco bien cómo funciona"><span>Conozco bien cómo funciona</span></label>
@@ -154,6 +155,7 @@
         <span class="nav-hint" id="navHint">Puedes continuar sin responder esta pregunta.</span>
         <button class="nav-button next-button" id="nextStep" type="button">Siguiente →</button>
       </nav>
+      </dialog>
     </form>
   </section>
 
@@ -169,6 +171,7 @@
 <script>
 (() => {
   const form = document.getElementById('surveyForm');
+  const modal = document.getElementById('questionModal');
   const comment = document.getElementById('comentario');
   const charCount = document.getElementById('charCount');
   const questions = [...form.querySelectorAll('fieldset')];
@@ -207,7 +210,7 @@
   }
 
   prev.addEventListener('click', () => {
-    if (step > 0) { step--; showStep(-1); document.getElementById('encuesta').scrollIntoView({behavior:'smooth',block:'start'}); }
+    if (step > 0) { step--; showStep(-1);  }
   });
   next.addEventListener('click', () => {
     if (step < questions.length) { step++; showStep(1); document.getElementById('encuesta').scrollIntoView({behavior:'smooth',block:'start'}); }
@@ -241,6 +244,8 @@
     window.open(url, '_blank', 'noopener,noreferrer');
   });
   showStep(1);
+  if (typeof modal.showModal === 'function') modal.showModal();
+  else modal.setAttribute('open', '');
 })();
 </script>
 <script>
