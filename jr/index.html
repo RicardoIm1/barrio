@@ -191,7 +191,50 @@
       .arch{grid-template-columns:1fr}
       .foot{align-items:start;flex-direction:column}
     }
-  </style>
+  
+    /* Lenguaje visual compartido con El Barrio */
+    :root{
+      --bg:#f8f9fa;--bg2:#ffffff;--panel:rgba(255,255,255,.82);--panel2:#ffffff;
+      --line:#e5e9ec;--text:#2c3e50;--muted:#718096;--soft:#34495e;
+      --accent:#3498db;--accent2:#287fb8;--warm:#d4a043;--radius:12px;
+      --shadow:0 8px 24px rgba(44,62,80,.08);
+    }
+    body{background:#f8f9fa;color:#2c3e50;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+    body:before{display:none}
+    h1,h2,h3,h4,strong,b{color:#2c3e50}
+    p{color:#526273}
+    .eyebrow,.case .type,.card .num,.work b{color:#3498db}
+    .nav{background:rgba(248,249,250,.94);border-color:#e5e9ec}
+    .brandtext,.links a,.nav a{color:#34495e}
+    .btn,.tool,.tag{border-radius:8px}
+    .btn{min-height:40px;padding:9px 18px;border:1px solid #dce3e8;background:#fff;color:#2c3e50;font-weight:600;transition:background .18s,border-color .18s,transform .18s}
+    .btn:hover{background:#f0f7fc;border-color:#3498db;transform:translateY(-1px)}
+    .btn.primary{background:#2c3e50;color:#fff;border-color:#2c3e50}
+    .btn.primary:hover{background:#34495e;border-color:#34495e}
+    .hero{background:linear-gradient(135deg,#fff 0%,#f3f7fa 100%)}
+    .hero-side,.card,.service,.demo-panel,.case,.lab-controls,.lab-chart,.money-main,.money-side,.principle,.arch div,.work div,.metric,.demo-result .metric{
+      background:#fff;border:1px solid #e5e9ec;border-radius:12px;box-shadow:0 6px 20px rgba(44,62,80,.055)
+    }
+    .steps{background:#e5e9ec;border:1px solid #e5e9ec;border-radius:12px}
+    .step{background:#fff}
+    .step .n{color:#9aa8b5}
+    .quote{background:#f1f6fa;color:#34495e;border-left-color:#3498db;border-radius:0 10px 10px 0}
+    .tool{background:#f3f6f8;color:#34495e;border-color:#e5e9ec}
+    .demo-panel label,.field label,.metric span,.demo-note,.service ul,.money-side li,.footnav{color:#718096}
+    .demo-panel input,.field input,.field textarea{background:#fff;color:#2c3e50;border-color:#dce3e8;border-radius:8px}
+    .demo-panel input:focus,.field input:focus,.field textarea:focus{border-color:#3498db;box-shadow:0 0 0 3px rgba(52,152,219,.12)}
+    .casegrid div{background:#f5f7f9}
+    .casegrid strong{color:#526273}
+    .arch strong,.principle b{color:#34495e}
+    .not{background:#fff8ed;border-color:#efd8ad;border-radius:12px}
+    .not strong{color:#9a671b}
+    .bars{border-color:#dce3e8}
+    .bar{background:linear-gradient(to top,#3498db,rgba(52,152,219,.25))}
+    footer{background:#fff;border-color:#e5e9ec}
+    .reveal{transition:opacity .45s ease,transform .45s ease}
+    @media(max-width:560px){.btn{min-height:42px}.card,.service,.demo-panel,.case,.lab-controls,.lab-chart,.money-main,.money-side{padding:22px}}
+
+</style>
 
   <style id="softwarte-route2-theme">
 :root{--bg:#09070f;--bg2:#100d1a;--panel:rgba(255,255,255,.045);--panel2:rgba(255,255,255,.075);--line:rgba(218,207,255,.14);--text:#f3effb;--muted:#a9a1b8;--soft:#d9d2e6;--accent:#8b6cff;--accent2:#c7b9ff;--warm:#d7b77a;--max:1180px;--radius:22px;--shadow:0 24px 70px rgba(0,0,0,.42)}
