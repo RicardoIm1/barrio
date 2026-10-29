@@ -42,6 +42,7 @@
       <p class="section-intro">Responde según lo que te resulte más natural. No necesitas conocer previamente los servicios de psicología.</p>
     </div>
 
+    <div class="step-progress" aria-label="Progreso de la encuesta"><div class="progress-top"><span id="stepLabel">PREGUNTA 01 DE 10</span><span id="progressPercent">9%</span></div><div class="progress-track"><span id="progressFill"></span></div></div>
     <form id="surveyForm">
       <fieldset>
         <legend><span class="number">01</span> ¿Qué tan familiar te resulta la idea de acudir con un profesional de la psicología?</legend>
@@ -135,13 +136,23 @@
         <p class="hint"><span id="charCount">0</span>/500 caracteres</p>
       </fieldset>
 
-      <div class="privacy">
-        <strong>Tu privacidad importa.</strong>
-        <p>Esta encuesta no solicita nombre, teléfono ni información sobre tu salud. Al pulsar “Enviar respuestas por WhatsApp”, se abrirá WhatsApp con tus respuestas para que decidas si deseas enviarlas. No se envían automáticamente ni se guardan en esta página.</p>
-        <label class="consent"><input type="checkbox" id="consent" required><span>Entiendo cómo se compartirán mis respuestas y elijo abrir WhatsApp para enviarlas.</span></label>
+      <div class="survey-final" id="surveyFinal" hidden>
+        <p class="eyebrow">Último paso</p>
+        <h3 tabindex="-1">Gracias por llegar hasta aquí.</h3>
+        <p class="final-copy">Tus respuestas nos ayudarán a presentar la información de una manera más útil y clara.</p>
+        <div class="privacy">
+          <strong>Tu privacidad importa.</strong>
+          <p>Esta encuesta no solicita nombre, teléfono ni información sobre tu salud. Al continuar, se abrirá WhatsApp con tus respuestas para que decidas si deseas enviarlas. No se envían automáticamente ni se guardan en esta página.</p>
+          <label class="consent"><input type="checkbox" id="consent" required><span>Entiendo cómo se compartirán mis respuestas y elijo abrir WhatsApp para enviarlas.</span></label>
+        </div>
+        <button class="button button-dark submit" type="submit">Preparar mis respuestas <span aria-hidden="true">↗</span></button>
+        <p class="form-note" id="formNote" role="status" aria-live="polite"></p>
       </div>
-      <button class="button button-dark submit" type="submit">Preparar mis respuestas <span aria-hidden="true">↗</span></button>
-      <p class="form-note" id="formNote" role="status" aria-live="polite"></p>
+      <nav class="step-nav" aria-label="Navegación de la encuesta">
+        <button class="nav-button back-button" id="prevStep" type="button" disabled>← Anterior</button>
+        <span class="nav-hint" id="navHint">Puedes continuar sin responder esta pregunta.</span>
+        <button class="nav-button next-button" id="nextStep" type="button">Siguiente →</button>
+      </nav>
     </form>
   </section>
 
@@ -157,41 +168,67 @@
 <script>
 (() => {
   const form = document.getElementById('surveyForm');
-  const note = document.getElementById('formNote');
   const comment = document.getElementById('comentario');
   const charCount = document.getElementById('charCount');
-  comment.addEventListener('input', () => charCount.textContent = comment.value.length);
+  const questions = [...form.querySelectorAll('fieldset')];
+  const finalStep = document.getElementById('surveyFinal');
+  const prev = document.getElementById('prevStep');
+  const next = document.getElementById('nextStep');
+  const label = document.getElementById('stepLabel');
+  const percent = document.getElementById('progressPercent');
+  const fill = document.getElementById('progressFill');
+  const hint = document.getElementById('navHint');
+  let step = 0;
+  const total = questions.length + 1;
 
-  // Limit checkbox choices for questions where respondents are asked to choose up to two.
-  document.querySelectorAll('input[name="confianza"]').forEach(input => {
-    input.addEventListener('change', () => {
-      const checked = [...document.querySelectorAll('input[name="confianza"]:checked')];
-      if (checked.length > 2) {
-        input.checked = false;
-        note.textContent = 'En la pregunta 04 puedes elegir hasta dos opciones.';
-      } else {
-        note.textContent = '';
-      }
+  comment.addEventListener('input', () => charCount.textContent = comment.value.length);
+  questions.forEach((q,i) => { q.classList.add('question-step'); q.hidden = i !== 0; });
+
+  function showStep(direction) {
+    questions.forEach((q,i) => {
+      q.hidden = i !== step || step === questions.length;
+      q.classList.remove('enter-forward','enter-backward');
+      if (!q.hidden) { void q.offsetWidth; q.classList.add(direction < 0 ? 'enter-backward' : 'enter-forward'); }
     });
+    const last = step === questions.length;
+    finalStep.hidden = !last;
+    finalStep.classList.remove('enter-forward','enter-backward');
+    if (last) { void finalStep.offsetWidth; finalStep.classList.add(direction < 0 ? 'enter-backward' : 'enter-forward'); }
+    const p = Math.round((step + 1) / total * 100);
+    label.textContent = last ? 'ÚLTIMO PASO' : 'PREGUNTA ' + String(step + 1).padStart(2,'0') + ' DE ' + questions.length;
+    percent.textContent = p + '%';
+    fill.style.width = p + '%';
+    prev.disabled = step === 0;
+    next.hidden = last;
+    next.textContent = step === questions.length - 1 ? 'Terminar encuesta →' : 'Siguiente →';
+    hint.textContent = last ? 'Revisa el aviso de privacidad antes de compartir.' : 'Puedes continuar sin responder esta pregunta.';
+    if (last) finalStep.querySelector('h3').focus({preventScroll:true});
+  }
+
+  prev.addEventListener('click', () => {
+    if (step > 0) { step--; showStep(-1); document.getElementById('encuesta').scrollIntoView({behavior:'smooth',block:'start'}); }
   });
+  next.addEventListener('click', () => {
+    if (step < questions.length) { step++; showStep(1); document.getElementById('encuesta').scrollIntoView({behavior:'smooth',block:'start'}); }
+  });
+
+  document.querySelectorAll('input[name="confianza"]').forEach(input => input.addEventListener('change', () => {
+    const selected = document.querySelectorAll('input[name="confianza"]:checked');
+    if (selected.length > 2) { input.checked = false; document.getElementById('formNote').textContent = 'En la pregunta 04 puedes elegir hasta dos opciones.'; }
+  }));
 
   form.addEventListener('submit', event => {
     event.preventDefault();
-    if (!document.getElementById('consent').checked) return;
+    const note = document.getElementById('formNote');
+    if (!document.getElementById('consent').checked) { note.textContent = 'Confirma el aviso de privacidad para continuar.'; return; }
     const labels = {
-      familiaridad:'Familiaridad con la psicología',
-      informacion:'Información más útil',
-      modalidad:'Modalidad preferida',
-      confianza:'Factores de confianza',
-      precio:'Precio percibido por sesión',
-      contenido:'Contenido de interés',
-      contacto:'Canal de contacto preferido',
-      barreras:'Posibles barreras',
-      interes:'Probabilidad de consultar información',
+      familiaridad:'Familiaridad con la psicología', informacion:'Información más útil', modalidad:'Modalidad preferida',
+      confianza:'Factores de confianza', precio:'Precio percibido por sesión', contenido:'Contenido de interés',
+      contacto:'Canal de contacto preferido', barreras:'Posibles barreras', interes:'Probabilidad de consultar información',
       comentario:'Comentario opcional'
     };
-    const lines = ['Encuesta de opinión · SaludableMente', ''];
-    Object.entries(labels).forEach(([name, title]) => {
+    const lines = ['Encuesta de opinión · SaludableMente',''];
+    Object.entries(labels).forEach(([name,title]) => {
       const selected = [...form.querySelectorAll('[name="' + name + '"]:checked')].map(el => el.value);
       const field = form.elements[name];
       const value = selected.length ? selected.join(', ') : (name === 'comentario' ? (field.value.trim() || 'Sin respuesta') : 'Sin respuesta');
@@ -202,6 +239,7 @@
     note.textContent = 'Se abrirá WhatsApp. Revisa las respuestas y pulsa enviar allí si deseas compartirlas.';
     window.open(url, '_blank', 'noopener,noreferrer');
   });
+  showStep(1);
 })();
 </script>
 </body>
