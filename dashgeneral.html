@@ -9,6 +9,32 @@
 @media(max-height:760px) and (min-width:761px){.shell{gap:8px;padding-top:10px;padding-bottom:10px}.top{padding-bottom:8px}.mark{width:34px;height:34px}.notice{padding:7px 11px}.metric,.project,.panel{padding:9px}.metric-value{font-size:22px;margin:5px 0 0}.metric-icon{width:23px;height:23px}.project-mark{width:28px;height:28px}.project-status{margin-top:6px}.sub{margin:2px 0 5px}.steps{gap:6px 10px}td,th{padding-top:5px;padding-bottom:5px}}
 @media(max-width:900px){.grid,.projects{grid-template-columns:repeat(2,minmax(0,1fr))}.lower{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.shell{padding:16px 12px;gap:14px}.grid,.projects{gap:8px}.metric,.project{padding:11px}.metric-value{font-size:22px}.tools{width:100%}.tools .select{flex:1}.notice{align-items:flex-start}.section-head{align-items:flex-start;flex-direction:column;gap:2px}.steps{grid-template-columns:1fr}.lower{gap:8px}}
+
+/* El Barrio UI: superficies claras con cristal discreto y volumen contenido */
+:root{color-scheme:light;--bg:#f8f9fa;--line:#e3e8ec;--text:#2c3e50;--muted:#718096;--gold:#d4a043;--blue:#3498db}
+html,body{background:#f8f9fa;color:#2c3e50;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{background:radial-gradient(ellipse at 15% -10%,rgba(52,152,219,.09),transparent 42%)}
+.shell{width:min(100%,1600px);gap:clamp(10px,1.1vh,16px)}
+.top{border-color:#e3e8ec}
+.mark{border:1px solid #dce5eb;border-radius:10px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(231,240,247,.8));color:#d4a043;box-shadow:0 4px 12px rgba(44,62,80,.08)}
+.eyebrow{color:#b07b22}
+h1,h2,h3,strong{color:#2c3e50}
+.brand p,.section-head p,.metric-top,.pending,.url,.project-status,.sub,.step p{color:#718096}
+.select,.btn{border:1px solid #dce3e8;border-radius:8px;padding:8px 13px;background:rgba(255,255,255,.88);color:#2c3e50;box-shadow:0 2px 7px rgba(44,62,80,.035);backdrop-filter:blur(10px)}
+.btn{min-height:36px;cursor:pointer;font-weight:600;transition:background .18s,border-color .18s,transform .18s}
+.btn:hover{border-color:#3498db;background:#f0f7fc;transform:translateY(-1px)}
+.notice{border:1px solid #efd8ad;background:rgba(255,248,237,.94);border-radius:10px;color:#805c24;box-shadow:0 5px 16px rgba(44,62,80,.04)}
+.notice strong{color:#805c24}
+.metric,.project,.panel{background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(248,250,252,.86));border:1px solid #e3e8ec;border-radius:12px;box-shadow:0 7px 20px rgba(44,62,80,.055);backdrop-filter:blur(12px)}
+.metric-icon{border-radius:8px;background:#edf6fc;color:#3498db}
+.project-mark{border-radius:9px;background:#fdf5e8;color:#a97823}
+.dot{background:#d4a043}
+.num{border-color:#d7e0e6;border-radius:7px;background:#f8fafb;color:#b07b22}
+th{color:#718096}
+td,th{border-bottom-color:#e8edf0}
+.footer{color:#8492a0}
+@media(max-height:760px) and (min-width:761px){.metric,.project,.panel{padding:9px}}
+
 </style>
 <style id="softwarte-glass-future">
 :root{
