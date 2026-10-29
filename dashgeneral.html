@@ -9,7 +9,94 @@
 @media(max-height:760px) and (min-width:761px){.shell{gap:8px;padding-top:10px;padding-bottom:10px}.top{padding-bottom:8px}.mark{width:34px;height:34px}.notice{padding:7px 11px}.metric,.project,.panel{padding:9px}.metric-value{font-size:22px;margin:5px 0 0}.metric-icon{width:23px;height:23px}.project-mark{width:28px;height:28px}.project-status{margin-top:6px}.sub{margin:2px 0 5px}.steps{gap:6px 10px}td,th{padding-top:5px;padding-bottom:5px}}
 @media(max-width:900px){.grid,.projects{grid-template-columns:repeat(2,minmax(0,1fr))}.lower{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.shell{padding:16px 12px;gap:14px}.grid,.projects{gap:8px}.metric,.project{padding:11px}.metric-value{font-size:22px}.tools{width:100%}.tools .select{flex:1}.notice{align-items:flex-start}.section-head{align-items:flex-start;flex-direction:column;gap:2px}.steps{grid-template-columns:1fr}.lower{gap:8px}}
-</style></head>
+</style>
+<style id="softwarte-glass-future">
+:root{
+ --bg:#09070f;--line:rgba(199,185,255,.17);--text:#f3effb;--muted:#a9a1b8;
+ --gold:#c7b9ff;--blue:#a994ff;--violet:#8b6cff;--glass:rgba(24,18,39,.58);
+}
+html{background:#09070f}
+body{
+ isolation:isolate;position:relative;overflow-x:hidden;
+ background:
+  radial-gradient(ellipse at 12% 4%,rgba(116,77,255,.19),transparent 34rem),
+  radial-gradient(ellipse at 87% 15%,rgba(91,147,196,.10),transparent 30rem),
+  radial-gradient(ellipse at 65% 100%,rgba(139,108,255,.09),transparent 35rem),
+  linear-gradient(145deg,#09070f 0%,#0d0a16 48%,#09070f 100%);
+}
+body:before,body:after{content:"";position:fixed;pointer-events:none;z-index:-1;border-radius:50%;filter:blur(2px)}
+body:before{width:46vw;height:46vw;min-width:360px;min-height:360px;left:-18vw;top:10vh;background:radial-gradient(circle,rgba(139,108,255,.10),rgba(139,108,255,0) 68%);animation:ambientDrift 26s ease-in-out infinite alternate}
+body:after{width:38vw;height:38vw;min-width:300px;min-height:300px;right:-15vw;bottom:-14vh;background:radial-gradient(circle,rgba(107,157,218,.09),rgba(107,157,218,0) 70%);animation:ambientDrift 32s ease-in-out infinite alternate-reverse}
+.shell{perspective:1400px}
+.top{border-bottom-color:rgba(199,185,255,.13)}
+.mark{
+ border-color:rgba(180,160,255,.30);
+ background:linear-gradient(145deg,rgba(139,108,255,.22),rgba(255,255,255,.035));
+ color:#c7b9ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 8px 26px rgba(65,37,145,.22);
+}
+.eyebrow{color:#bcaeff}
+.select,.btn{
+ border-color:rgba(199,185,255,.17);
+ background:linear-gradient(145deg,rgba(39,30,59,.76),rgba(16,12,27,.78));
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 5px 18px rgba(0,0,0,.12);
+ backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+.btn{transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .35s,box-shadow .35s,background .35s}
+.btn:hover{transform:translateY(-2px);border-color:rgba(169,148,255,.48);box-shadow:0 10px 28px rgba(75,48,155,.18),inset 0 1px 0 rgba(255,255,255,.12)}
+.notice{
+ position:relative;overflow:hidden;border-color:rgba(215,183,122,.25);
+ background:linear-gradient(115deg,rgba(139,108,255,.10),rgba(29,23,44,.65) 42%,rgba(215,183,122,.055));
+ color:#d7cfe9;box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 34px rgba(0,0,0,.16);
+ backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.notice strong{color:#d6caff}
+.metric,.project,.panel{
+ --edge:rgba(199,185,255,.17);
+ position:relative;isolation:isolate;overflow:hidden;
+ border:1px solid var(--edge);
+ background:linear-gradient(135deg,rgba(255,255,255,.095) 0%,rgba(37,28,57,.72) 24%,rgba(17,13,29,.76) 68%,rgba(255,255,255,.035) 100%);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 1px 0 0 rgba(255,255,255,.035),0 12px 28px rgba(0,0,0,.22),0 2px 5px rgba(0,0,0,.16);
+ backdrop-filter:blur(22px) saturate(135%);-webkit-backdrop-filter:blur(22px) saturate(135%);
+ transform:translateZ(0);transition:transform .55s cubic-bezier(.2,.8,.2,1),border-color .5s,box-shadow .5s,background .5s;
+}
+.metric:before,.project:before,.panel:before{
+ content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;
+ background:linear-gradient(118deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.025) 17%,transparent 38%,transparent 68%,rgba(169,148,255,.055) 100%);
+ opacity:.72;
+}
+.metric:after,.project:after,.panel:after{
+ content:"";position:absolute;top:-65%;left:-55%;width:45%;height:230%;pointer-events:none;
+ background:linear-gradient(90deg,transparent,rgba(255,255,255,.075),rgba(199,185,255,.08),transparent);
+ transform:rotate(18deg) translateX(-220%);opacity:0;
+}
+.metric:hover,.project:hover,.panel:hover{
+ transform:translateY(-3px) rotateX(.35deg);
+ border-color:rgba(169,148,255,.38);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.19),0 20px 44px rgba(0,0,0,.30),0 0 26px rgba(139,108,255,.075);
+}
+.metric:hover:after,.project:hover:after,.panel:hover:after{opacity:1;animation:glassSweep 1.25s ease-out both}
+.metric-top,.project-top,.project-status,.metric-value,.pending,.panel h3,.panel .sub,.table-wrap,.steps{position:relative;z-index:1}
+.metric-icon,.project-mark{
+ border:1px solid rgba(199,185,255,.13);
+ background:linear-gradient(145deg,rgba(139,108,255,.22),rgba(255,255,255,.045));
+ color:#c7b9ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 4px 12px rgba(0,0,0,.13);
+}
+.metric-value{color:#f4f0ff;text-shadow:0 0 22px rgba(169,148,255,.10)}
+.pending,.url,.project-status,.section-head p,.sub{color:#a9a1b8}
+.dot{background:#a994ff;box-shadow:0 0 9px rgba(169,148,255,.55)}
+td,th{border-bottom-color:rgba(199,185,255,.10)}
+th{color:#a69abf}
+.num{border-color:rgba(169,148,255,.32);background:rgba(139,108,255,.08);color:#c7b9ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.footer{color:#817692}
+@keyframes ambientDrift{0%{transform:translate3d(0,0,0) scale(1)}100%{transform:translate3d(5vw,3vh,0) scale(1.12)}}
+@keyframes glassSweep{0%{transform:rotate(18deg) translateX(-220%)}100%{transform:rotate(18deg) translateX(480%)}}
+@media(prefers-reduced-motion:reduce){
+ *,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}
+}
+@media(hover:none){.metric:hover,.project:hover,.panel:hover{transform:none}.metric:hover:after,.project:hover:after,.panel:hover:after{animation:none}}
+</style>
+
+</head>
 <body><main class="shell">
 <header class="top"><div class="brand"><div class="mark">B.</div><div><div class="eyebrow">Centro de mando</div><h1>Panel de negocio</h1><p>Una vista conjunta de tus proyectos digitales</p></div></div><div class="tools"><label for="periodo" class="eyebrow">Periodo</label><select id="periodo" class="select"><option value="30">Últimos 30 días</option><option value="7">Últimos 7 días</option><option value="90">Últimos 90 días</option><option value="month">Mes actual</option></select><button id="actualizar" class="btn">Actualizar vista</button></div></header>
 <section class="notice" role="status"><span aria-hidden="true">◈</span><div><strong>Conexión de métricas pendiente.</strong>No hay cifras inventadas. Falta conectar las fuentes de tráfico, eventos comerciales e ingresos confirmados.</div></section>
