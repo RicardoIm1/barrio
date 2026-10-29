@@ -165,3 +165,8 @@ body[data-theme="dark"] .scroll-thread-fill{background:var(--peach)}
 body[data-theme="dark"] .question-modal{background:var(--paper);color:var(--ink);border-color:var(--line)}
 @media(max-width:760px){.question-modal{width:calc(100vw - 20px);max-height:88dvh;padding:20px 16px}.question-modal .question-step{padding:18px 0;border-top:0}.question-modal .step-nav{grid-template-columns:auto auto;gap:10px}.question-modal .nav-hint{grid-column:1/-1;grid-row:1;text-align:left}}
 @media(prefers-reduced-motion:reduce){.question-modal::backdrop{backdrop-filter:none}}
+
+
+/* Punto de regreso si la persona cierra el modal con Escape */
+.reopen-survey{display:flex;width:100%;max-width:850px;margin:0 auto 26px;justify-content:space-between;align-items:center}
+.reopen-survey[hidden]{display:none!important}
