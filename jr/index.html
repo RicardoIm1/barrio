@@ -376,7 +376,30 @@ body[data-theme="light"] footer .mark{background:#edf6fc;border-color:#d4e0e8;co
 @media(max-width:900px){.theme-toggle{margin-left:auto}.navin{gap:10px}}
 @media(max-width:560px){.theme-toggle{min-height:38px;padding:7px 10px}.theme-label{font-size:.76rem}}
 
-  </style>
+  
+/* Transición pausada entre temas: se aplica a superficies, texto y controles. */
+html.theme-transition body,
+html.theme-transition body *,
+html.theme-transition body *::before,
+html.theme-transition body *::after {
+  transition:
+    background-color 2.8s ease-in-out,
+    background 2.8s ease-in-out,
+    color 2.8s ease-in-out,
+    border-color 2.8s ease-in-out,
+    box-shadow 2.8s ease-in-out,
+    fill 2.8s ease-in-out,
+    stroke 2.8s ease-in-out !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transition body,
+  html.theme-transition body *,
+  html.theme-transition body *::before,
+  html.theme-transition body *::after {
+    transition-duration: .01ms !important;
+  }
+}
+</style>
 </head>
 <body>
 
@@ -805,6 +828,7 @@ body[data-theme="light"] footer .mark{background:#edf6fc;border-color:#d4e0e8;co
 (() => {
   const root = document.body;
   const toggle = document.getElementById('themeToggle');
+  document.documentElement.classList.add('theme-transition');
   if (!root || !toggle) return;
   const applyTheme = theme => {
     const normalized = theme === 'light' ? 'light' : 'dark';
