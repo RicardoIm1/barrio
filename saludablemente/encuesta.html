@@ -213,7 +213,7 @@
     if (step > 0) { step--; showStep(-1);  }
   });
   next.addEventListener('click', () => {
-    if (step < questions.length) { step++; showStep(1); document.getElementById('encuesta').scrollIntoView({behavior:'smooth',block:'start'}); }
+    if (step < questions.length) { step++; showStep(1); }
   });
 
   document.querySelectorAll('input[name="confianza"]').forEach(input => input.addEventListener('change', () => {
