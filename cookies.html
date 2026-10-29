@@ -200,10 +200,8 @@
           </div>
 
           <div class="cookie-tipo">
-            <strong>📊 Análisis (Google Analytics)</strong>
-            <p>Son como <strong>llevar un diario de comidas</strong>. Nos dicen cuántas personas nos visitan, qué avisos
-              son más populares, y cómo mejorar. <strong>Nunca sabemos quién eres tú</strong>, solo números generales.
-            </p>
+            <strong>📊 Analítica (opcional)</strong>
+            <p>Podemos utilizar una herramienta de analítica para medir visitas y mejorar el sitio. <strong>Google Analytics todavía no está instalado</strong>; no se activará hasta completar la revisión del consentimiento. La analítica debe permanecer desactivada si la rechazas.</p>
           </div>
         </div>
       </div>
@@ -257,16 +255,12 @@
       <div class="cookies-card">
         <h2>📝 En resumen (como si fuera una receta)</h2>
         <div style="background: #e8f0fe; padding: 16px; border-radius: 4px; margin: 16px 0;">
-          <p style="margin-bottom: 8px;"><strong>🍪 Ingredientes:</strong> Cookies técnicas + cookies de preferencias +
-            cookies de análisis.</p>
-          <p style="margin-bottom: 8px;"><strong>👩‍🍳 Preparación:</strong> Las activamos cuando entras a la página.
-          </p>
-          <p style="margin-bottom: 8px;"><strong>🍽️ Beneficio:</strong> Una plataforma que te recuerda, que es rápida y
-            que mejora con tu ayuda.</p>
-          <p><strong>⚠️ Efectos secundarios:</strong> Ninguno. No engordan, no causan alergias, no te roban datos.</p>
+          <p style="margin-bottom: 8px;"><strong>Necesarias:</strong> permiten funciones básicas del sitio.</p>
+          <p style="margin-bottom: 8px;"><strong>Analítica:</strong> es opcional y requiere una elección afirmativa antes de activarse.</p>
+          <p style="margin-bottom: 8px;"><strong>Estado actual:</strong> Google Analytics aún no está instalado.</p>
+          <p>La elección de analítica puede cambiarse desde el control «Privacidad» disponible en el sitio.</p>
         </div>
-        <p style="text-align: center;">🍪 <strong>Si sigues navegando, entendemos que aceptas el uso de
-            cookies.</strong> 🍪</p>
+        <p style="text-align: center;"><strong>Seguir navegando no significa aceptar la analítica.</strong> Puedes aceptar o rechazarla desde el panel de privacidad, y cambiar tu elección posteriormente.</p>
       </div>
 
       <!-- Botón para regresar -->
@@ -330,6 +324,7 @@
         .catch(error => console.error('Error cargando el footer:', error));
     }); // ← Cierre correcto del addEventListener
   </script>
+  <script src="/common/consentimiento.js" defer></script>
 </body>
 
 </html>
