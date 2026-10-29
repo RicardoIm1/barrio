@@ -423,6 +423,49 @@ body[data-theme="light"] .hero-side p{color:#405568 !important}
 @media(max-width:560px){
   .hero-side{padding:20px !important;border-radius:14px}
 }
+
+/* Ajuste específico del aside.hero-side dentro del hero principal. */
+.hero-grid > aside.hero-side.reveal{
+  box-sizing:border-box;
+  min-width:0;
+  align-self:stretch;
+  padding:30px !important;
+  border:1px solid rgba(164,150,194,.32) !important;
+  border-radius:18px;
+  background:rgba(28,23,43,.72) !important;
+  color:#f3effa !important;
+}
+.hero-grid > aside.hero-side.reveal strong{
+  display:block;
+  margin:0 0 14px !important;
+  color:#fff !important;
+  font-size:clamp(1.25rem,1.6vw,1.55rem);
+  line-height:1.35;
+}
+.hero-grid > aside.hero-side.reveal p{
+  margin:0;
+  max-width:38ch;
+  color:#ded7eb !important;
+  font-size:.96rem;
+  line-height:1.8;
+}
+body[data-theme="light"] .hero-grid > aside.hero-side.reveal{
+  background:#e6edf2 !important;
+  border-color:#c5d3de !important;
+  color:#2c3e50 !important;
+}
+body[data-theme="light"] .hero-grid > aside.hero-side.reveal strong{
+  color:#24394b !important;
+}
+body[data-theme="light"] .hero-grid > aside.hero-side.reveal p{
+  color:#405568 !important;
+}
+@media(max-width:900px){
+  .hero-grid > aside.hero-side.reveal{padding:24px !important}
+}
+@media(max-width:560px){
+  .hero-grid > aside.hero-side.reveal{padding:20px !important;border-radius:14px}
+}
 </style>
 </head>
 <body>
