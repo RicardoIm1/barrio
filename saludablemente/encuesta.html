@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#FDD7CB">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="/saludablemente/image_f59fd04b.jpeg" type="image/jpeg">
+<link rel="apple-touch-icon" href="/saludablemente/image_f59fd04b.jpeg">
 <meta name="description" content="Ayúdanos a conocer qué información y servicios de psicología son más útiles para las personas de Puerto Vallarta. Encuesta breve de SaludableMente.">
 <meta name="robots" content="noindex,follow">
 <link rel="canonical" href="https://elbarrio.me/saludablemente/encuesta.html">
@@ -14,6 +17,7 @@
 <title>Tu opinión importa · SaludableMente</title>
 </head>
 <body>
+<div class="scroll-thread" aria-hidden="true"><span class="scroll-thread-fill" id="scrollProgress"></span></div>
 <header class="topbar"><a class="brand" href="./" aria-label="Saludable.mente, inicio"><span class="brand-mark"><!-- Logo oficial: /saludablemente/image_f59fd04b.jpeg --><img src="/saludablemente/image_f59fd04b.jpeg" alt="Logotipo SaludableMente"></span><span>SaludableMente<span style="color:var(--coral)">96</span></span></a><span>Psicología · Puerto Vallarta, Jal.</span><button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Activar modo nocturno" title="Cambiar entre modo claro y nocturno"><span class="theme-toggle-track" aria-hidden="true"><svg class="theme-icon sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg><svg class="theme-icon moon-icon" viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"></path></svg><span class="theme-toggle-thumb"></span></span><span class="theme-toggle-label">Modo nocturno</span></button><a class="top-cta" href="https://wa.me/523222462561" target="_blank" rel="noopener noreferrer">Hablemos ↗</a></header>
 
 <main>
@@ -237,6 +241,53 @@
     window.open(url, '_blank', 'noopener,noreferrer');
   });
   showStep(1);
+})();
+</script>
+<script>
+(() => {
+  const button = document.getElementById("themeToggle");
+  const label = button.querySelector(".theme-toggle-label");
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const key = "saludablemente-theme";
+  const applyTheme = dark => {
+    document.body.dataset.theme = dark ? "dark" : "light";
+    button.setAttribute("aria-checked", String(dark));
+    button.setAttribute("aria-label", dark ? "Activar modo claro" : "Activar modo nocturno");
+    label.textContent = dark ? "Modo claro" : "Modo nocturno";
+    if (themeColor) themeColor.setAttribute("content", dark ? "#171b1b" : "#FDD7CB");
+  };
+  let saved = null;
+  try { saved = localStorage.getItem(key); } catch (_) {}
+  applyTheme(saved === "dark");
+  document.documentElement.classList.add("theme-ready");
+  button.addEventListener("click", () => {
+    const dark = document.body.dataset.theme !== "dark";
+    applyTheme(dark);
+    try { localStorage.setItem(key, dark ? "dark" : "light"); } catch (_) {}
+  });
+})();
+(() => {
+  const progress = document.getElementById("scrollProgress");
+  if (!progress) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let scheduled = false;
+  const update = () => {
+    const root = document.documentElement;
+    const max = root.scrollHeight - window.innerHeight;
+    const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    progress.style.transform = "scaleY(" + ratio + ")";
+    scheduled = false;
+  };
+  const requestUpdate = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(update);
+  };
+  window.addEventListener("scroll", requestUpdate, { passive: true });
+  window.addEventListener("resize", requestUpdate, { passive: true });
+  window.addEventListener("load", requestUpdate, { once: true });
+  update();
+  if (reduceMotion) progress.style.willChange = "auto";
 })();
 </script>
 </body>
