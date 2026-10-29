@@ -233,14 +233,22 @@
       contacto:'Canal de contacto preferido', barreras:'Posibles barreras', interes:'Probabilidad de consultar información',
       comentario:'Comentario opcional'
     };
-    const lines = ['Encuesta de opinión · SaludableMente',''];
-    Object.entries(labels).forEach(([name,title]) => {
+    const lines = [
+      '*SALUDABLEMENTE 96*',
+      '*Encuesta de opinión*',
+      '━━━━━━━━━━━━━━━━━━━━',
+      'Respuestas compartidas voluntariamente',
+      ''
+    ];
+    Object.entries(labels).forEach(([name,title], index) => {
       const selected = [...form.querySelectorAll('[name="' + name + '"]:checked')].map(el => el.value);
       const field = form.elements[name];
       const value = selected.length ? selected.join(', ') : (name === 'comentario' ? (field.value.trim() || 'Sin respuesta') : 'Sin respuesta');
-      lines.push(title + ': ' + value);
+      lines.push('*' + String(index + 1).padStart(2, '0') + '. ' + title + '*');
+      lines.push(value);
+      lines.push(''); 
     });
-    lines.push('', 'Respuestas compartidas voluntariamente para investigación de comunicación y servicios.');
+    lines.push('━━━━━━━━━━━━━━━━━━━━', '_Gracias por ayudarnos a mejorar la información y los servicios._');
     const url = 'https://wa.me/523222462561?text=' + encodeURIComponent(lines.join('\n'));
     note.textContent = 'Se abrirá WhatsApp. Revisa las respuestas y pulsa enviar allí si deseas compartirlas.';
     window.open(url, '_blank', 'noopener,noreferrer');
@@ -273,10 +281,15 @@
   try { saved = localStorage.getItem(key); } catch (_) {}
   applyTheme(saved === "dark");
   document.documentElement.classList.add("theme-ready");
-  button.addEventListener("click", () => {
-    const dark = document.body.dataset.theme !== "dark";
+  const setAndSaveTheme = dark => {
     applyTheme(dark);
     try { localStorage.setItem(key, dark ? "dark" : "light"); } catch (_) {}
+  };
+  button.addEventListener("click", () => setAndSaveTheme(document.body.dataset.theme !== "dark"));
+  window.addEventListener("storage", event => {
+    if (event.key === key && (event.newValue === "dark" || event.newValue === "light")) {
+      applyTheme(event.newValue === "dark");
+    }
   });
 })();
 (() => {
