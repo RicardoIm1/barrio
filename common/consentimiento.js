@@ -33,8 +33,12 @@
     }
 
     if (typeof window.gtag === "function") {
-      window.gtag("consent", "update", CONSENT_GRANTED);
       window[GA_DISABLE_KEY] = false;
+      window.gtag("consent", "update", CONSENT_GRANTED);
+      window.gtag("event", "page_view", {
+        page_location: window.location.href,
+        page_title: document.title
+      });
       return;
     }
     if (gaScriptRequested) return;
@@ -42,7 +46,7 @@
     gaScriptRequested = true;
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
-    window.gtag("consent", "default", CONSENT_DENIED);
+    window.gtag("consent", "default", CONSENT_GRANTED);
     window.gtag("js", new Date());
     window.gtag("config", GA_ID, { send_page_view: false });
 
