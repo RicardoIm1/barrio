@@ -79,6 +79,39 @@ body[data-theme="dark"] .sun-icon{opacity:.45}
 body[data-theme="dark"] .moon-icon{opacity:1;color:#f7e7bb}
 @media(max-width:760px){.topbar{gap:10px;flex-wrap:wrap}.theme-toggle{min-height:48px;padding:6px 10px;gap:8px}.theme-toggle-label{font-size:9px}.topbar>span{font-size:9px}}
 @media(max-width:390px){.theme-toggle-label{display:none}.theme-toggle{padding:6px}.theme-toggle-track{width:48px}}
+
+/* Transición de tema: cambios graduales para evitar destellos al alternar */
+@property --paper{syntax:"<color>";inherits:true;initial-value:#f8f3ef}
+@property --ink{syntax:"<color>";inherits:true;initial-value:#25271f}
+@property --peach{syntax:"<color>";inherits:true;initial-value:#FDD7CB}
+@property --coral{syntax:"<color>";inherits:true;initial-value:#5d7041}
+@property --line{syntax:"<color>";inherits:true;initial-value:rgba(25,24,23,.22)}
+html.theme-ready body,
+html.theme-ready body .topbar,
+html.theme-ready body .hero,
+html.theme-ready body .ticker,
+html.theme-ready body section,
+html.theme-ready body .statement,
+html.theme-ready body .contact,
+html.theme-ready body footer,
+html.theme-ready body .service,
+html.theme-ready body .service p,
+html.theme-ready body .button,
+html.theme-ready body .orbit,
+html.theme-ready body .orbit:before,
+html.theme-ready body .orbit:after,
+html.theme-ready body .floating,
+html.theme-ready body .theme-toggle,
+html.theme-ready body .theme-toggle-track,
+html.theme-ready body .theme-toggle-thumb,
+html.theme-ready body .contact-card{
+  transition:background-color .7s ease,color .7s ease,border-color .7s ease,box-shadow .7s ease;
+}
+html.theme-ready body .service{transition:background-color .7s ease,color .7s ease,border-color .7s ease,box-shadow .7s ease,padding-left .25s ease,opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}
+html.theme-ready body .button{transition:background-color .7s ease,color .7s ease,border-color .7s ease,box-shadow .7s ease,transform .22s ease}
+@media(prefers-reduced-motion:reduce){
+  html.theme-ready body,html.theme-ready body *{transition:none!important}
+}
 </style></head><body>
 <header class="topbar"><a class="brand" href="#inicio" aria-label="Saludable.mente, inicio"><span class="brand-mark"><!-- Logo oficial: /saludablemente/image_f59fd04b.jpeg --><img src="/saludablemente/image_f59fd04b.jpeg" alt="Logotipo SaludableMente"></span><span>SaludableMente<span style="color:var(--coral)">96</span></span></a><span>Psicología · Puerto Vallarta, Jal.</span><button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="Activar modo nocturno" title="Cambiar entre modo claro y nocturno"><span class="theme-toggle-track" aria-hidden="true"><svg class="theme-icon sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg><svg class="theme-icon moon-icon" viewBox="0 0 24 24"><path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z"></path></svg><span class="theme-toggle-thumb"></span></span><span class="theme-toggle-label">Modo nocturno</span></button><a class="top-cta" href="#contacto">Hablemos ↗</a></header>
 <main>
@@ -116,6 +149,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
   let saved = null;
   try { saved = localStorage.getItem(key); } catch (_) {}
   applyTheme(saved === "dark");
+  document.documentElement.classList.add("theme-ready");
   button.addEventListener("click", () => {
     const dark = document.body.dataset.theme !== "dark";
     applyTheme(dark);
