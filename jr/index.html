@@ -234,6 +234,55 @@
     .reveal{transition:opacity .45s ease,transform .45s ease}
     @media(max-width:560px){.btn{min-height:42px}.card,.service,.demo-panel,.case,.lab-controls,.lab-chart,.money-main,.money-side{padding:22px}}
 
+
+    /* Ajuste de proporciones basado en los componentes reales de El Barrio */
+    .wrap{width:min(calc(100% - 32px),1200px)}
+    .navin{height:64px;gap:20px}
+    .mark{width:36px;height:36px;border-radius:10px}
+    .links{gap:18px;font-size:.9rem}
+    .navcta,.btn{min-height:40px;padding:8px 16px;border-radius:8px}
+    section{padding:64px 0;scroll-margin-top:64px}
+    .hero{padding:64px 0 56px;min-height:calc(100vh - 64px)}
+    .hero-grid{grid-template-columns:minmax(0,1.25fr) minmax(250px,.55fr);gap:40px}
+    h1{font-size:clamp(2.6rem,5.2vw,4.6rem);letter-spacing:-.05em}
+    h2{font-size:clamp(1.8rem,3.2vw,3rem);letter-spacing:-.035em}
+    .hero h1{margin:18px 0 20px}
+    .hero-copy{font-size:1.05rem}
+    .hero-side{padding-left:24px}
+    .section-head{gap:32px;margin-bottom:32px}
+    .cards,.services,.cases,.demo,.lab{gap:16px}
+    .card,.service,.demo-panel,.lab-controls,.lab-chart{padding:24px}
+    .card{border-radius:20px}
+    .service,.demo-panel,.lab-controls,.lab-chart,.principle,.work div,.arch div{border-radius:12px}
+    .case{padding:24px;gap:24px;border-radius:12px}
+    .metric{padding:16px;border-radius:12px}
+    .steps{border-radius:12px}
+    .step{padding:22px;min-height:190px}
+    .step h3{margin:18px 0 8px}
+    .quote{margin-top:22px;padding:20px 22px}
+    .toolkit{margin-top:20px}
+    .demo-panel input,.field input,.field textarea{padding:10px 12px}
+    .bars{height:210px}
+    .arch{margin-top:24px}
+    .money-main,.money-side{padding:28px;border-radius:12px}
+    .about,.contact{gap:40px}
+    footer{padding:32px 0}
+    @media(max-width:900px){
+      section{padding:52px 0}
+      .hero{min-height:auto;padding:64px 0}
+      .hero-grid{grid-template-columns:1fr;gap:28px}
+      .hero-side{padding:22px 0 0}
+      .section-head{gap:16px;margin-bottom:24px}
+    }
+    @media(max-width:560px){
+      .wrap{width:min(calc(100% - 24px),1200px)}
+      section{padding:42px 0}
+      .hero{padding:48px 0}
+      h1{font-size:clamp(2.3rem,11vw,3.4rem)}
+      .card,.service,.demo-panel,.case,.lab-controls,.lab-chart,.money-main,.money-side{padding:20px}
+      .step{padding:18px;min-height:0}
+    }
+
 </style>
 
   <style id="softwarte-route2-theme">
