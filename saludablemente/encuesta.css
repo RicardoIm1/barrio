@@ -610,3 +610,61 @@ body[data-theme="dark"] .reopen-survey:hover{box-shadow:0 13px 0 rgba(0,0,0,.2),
   .reopen-survey{min-height:68px;padding:19px 18px;margin:8px auto 24px;font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){.reopen-survey{transition:none}}
+
+
+/* Usabilidad: texto de ayuda bajo la acción principal */
+.cta-helper{
+  max-width:620px;
+  margin:12px auto 28px;
+  padding:0 8px;
+  color:color-mix(in srgb,var(--ink) 72%,transparent);
+  font-size:12px;
+  line-height:1.65;
+  text-align:center;
+}
+body[data-theme="dark"] .cta-helper{color:#d4d8d0}
+
+/* Progreso accesible y controles cómodos también en pantallas pequeñas */
+.progress-track[role="progressbar"]{overflow:hidden}
+.progress-track:focus-visible{outline:2px solid var(--coral);outline-offset:4px}
+.question-modal{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.question-modal .option,
+.question-modal .option:has(input[type="checkbox"]){
+  min-height:42px;
+  font-size:13px;
+  line-height:1.4;
+}
+.question-modal .option input[type="radio"]{
+  width:20px;height:20px;min-width:20px;
+}
+.question-modal .option input[type="radio"]::before{width:8px;height:8px}
+.question-modal .option input[type="checkbox"]{
+  width:40px;height:24px;min-width:40px;
+}
+.question-modal .option input[type="checkbox"]::after{
+  width:16px;height:16px;left:3px;top:3px;
+}
+.question-modal .option input[type="checkbox"]:checked::after{transform:translateX(16px)}
+.question-modal .question-step legend:focus{outline:none}
+.question-modal .question-step legend:focus-visible{
+  outline:2px solid var(--coral);
+  outline-offset:5px;
+  border-radius:4px;
+}
+@media(max-width:760px){
+  .cta-helper{font-size:12px;margin:10px auto 22px}
+  .question-modal .option,
+  .question-modal .option:has(input[type="checkbox"]){
+    min-height:44px;
+    padding:9px 10px;
+    font-size:12px;
+  }
+  .question-modal .option input[type="radio"]{width:20px;height:20px;min-width:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .progress-track span{transition:none}
+}
