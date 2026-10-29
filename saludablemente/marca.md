@@ -3,7 +3,7 @@
 ## Identidad
 - **Nombre visible en la tarjeta:** SaludableMente
 - **Nombre de trabajo digital:** Saludable.mente96 (confirmar escritura oficial con Shalom)
-- **Profesional:** Shalom Mesta
+- **Profesional:** Shalom Mesta De Niz
 - **Credencial declarada:** Lic. en Psicología
 - **Ubicación:** Clínica Ad Rehab, C. España 224, Col. Díaz Ordaz, Puerto Vallarta, Jalisco
 - **Contacto:** 322 246 2561
@@ -80,7 +80,7 @@ Adolescentes a partir de los 12 años y adultos. También estudiantes que buscan
 - Evitar imágenes dramáticas o estereotipos sobre salud mental.
 
 ## Datos por confirmar antes de publicar piezas finales
-- Obtener el archivo original del logotipo (SVG/PNG transparente o vector de imprenta) para integrarlo sin reinterpretaciones.
+- Colocar el archivo original del logotipo en `saludablemente/img/logo.png` y verificar que cargue correctamente en la página publicada.
 - Confirmar si “Saludable.mente96” incluye punto y número como escritura oficial.
 - Confirmar horarios, modalidad (presencial/online) y proceso de cita. La edad mínima declarada en el documento de consultorio es 12 años.
 - Confirmar teléfono, dirección y nombre de la clínica.
