@@ -109,3 +109,48 @@ body[data-theme="dark"] .closing .eyebrow{color:var(--peach)}
  .progress-track span{transition:none}
  .enter-forward,.enter-backward{animation:none}
 }
+
+
+/* Header compartido con la página principal de SaludableMente */
+.topbar{gap:18px;flex-wrap:nowrap}
+.brand-mark{width:32px;height:32px;border:0;border-radius:0;overflow:hidden;flex:none;background:transparent}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:contain}
+.brand-mark span{display:none}
+.theme-toggle{appearance:none;display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(248,243,239,.56);color:var(--ink);font:10px var(--mono);letter-spacing:.035em;text-transform:uppercase;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:background-color .25s,border-color .25s,transform .2s;flex-shrink:0}
+.theme-toggle:hover{transform:translateY(-1px)}
+.theme-toggle:active{transform:scale(.97)}
+.theme-toggle-track{width:48px;height:28px;position:relative;display:inline-flex;align-items:center;justify-content:space-between;padding:0 6px;border-radius:999px;background:#ded7d0;transition:background-color .3s;flex-shrink:0}
+.theme-icon{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;color:#4a4b40}
+.moon-icon{opacity:.45}
+.theme-toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fffaf5;box-shadow:0 1px 4px #24251f2b;transition:transform .3s cubic-bezier(.2,.8,.2,1),background-color .3s}
+body[data-theme="dark"]{--paper:#171b1b;--ink:#eee9e1;--peach:#292f2d;--coral:#b3c69a;--line:rgba(238,233,225,.2);background:var(--paper);color:var(--ink);color-scheme:dark}
+body[data-theme="dark"] .topbar,body[data-theme="dark"] footer{background:#141717;color:var(--ink);border-color:var(--line)}
+body[data-theme="dark"] .hero{background:#252c2a;color:#f0eae2}
+body[data-theme="dark"] .ticker,body[data-theme="dark"] .closing,body[data-theme="dark"] footer{background:#101313;color:#e8e2d8}
+body[data-theme="dark"] .option:has(input:checked){background:#343b36;border-color:#c8d6b8;color:#f0eae2}
+body[data-theme="dark"] .option:hover{background:rgba(179,198,154,.08)}
+body[data-theme="dark"] .privacy{background:#292f2d;color:var(--ink)}
+body[data-theme="dark"] .orbit:after{background:#7e9271;mix-blend-mode:normal}
+body[data-theme="dark"] .closing .eyebrow{color:#c8d6b8}
+body[data-theme="dark"] .closing>p:not(.eyebrow){color:#c0c5bc}
+body[data-theme="dark"] .theme-toggle{background:#252c2a;color:#f0eae2;border-color:rgba(240,234,226,.22)}
+body[data-theme="dark"] .theme-toggle-track{background:#64715d}
+body[data-theme="dark"] .theme-toggle-thumb{transform:translateX(20px);background:#f5e5b8}
+body[data-theme="dark"] .sun-icon{opacity:.45}
+body[data-theme="dark"] .moon-icon{opacity:1;color:#f7e7bb}
+@media(max-width:760px){.topbar{gap:10px;flex-wrap:wrap}.theme-toggle{min-height:48px;padding:6px 10px;gap:8px}.theme-toggle-label{font-size:9px}.topbar>span{font-size:9px}}
+@media(max-width:390px){.theme-toggle-label{display:none}.theme-toggle{padding:6px}.theme-toggle-track{width:48px}}
+@property --paper{syntax:"<color>";inherits:true;initial-value:#f8f3ef}
+@property --ink{syntax:"<color>";inherits:true;initial-value:#25271f}
+@property --peach{syntax:"<color>";inherits:true;initial-value:#FDD7CB}
+@property --coral{syntax:"<color>";inherits:true;initial-value:#5d7041}
+@property --line{syntax:"<color>";inherits:true;initial-value:rgba(25,24,23,.22)}
+html.theme-ready body,html.theme-ready body .topbar,html.theme-ready body .hero,html.theme-ready body .ticker,html.theme-ready body section,html.theme-ready body footer,html.theme-ready body .option,html.theme-ready body .privacy,html.theme-ready body .button,html.theme-ready body .orbit,html.theme-ready body .orbit:before,html.theme-ready body .orbit:after,html.theme-ready body .theme-toggle,html.theme-ready body .theme-toggle-track,html.theme-ready body .theme-toggle-thumb{transition:background-color 3.2s cubic-bezier(.22,.61,.36,1),color 3.2s cubic-bezier(.22,.61,.36,1),border-color 3.2s cubic-bezier(.22,.61,.36,1),box-shadow 3.2s cubic-bezier(.22,.61,.36,1)}
+html.theme-ready body .theme-toggle-thumb{transition:transform .85s cubic-bezier(.2,.8,.2,1),background-color 3.2s cubic-bezier(.22,.61,.36,1)}
+html.theme-ready body .theme-icon{transition:opacity 1.8s ease,color 3.2s cubic-bezier(.22,.61,.36,1)}
+.scroll-thread{position:fixed;z-index:30;left:0;top:0;width:3px;height:100vh;height:100dvh;background:rgba(93,112,65,.12);pointer-events:none}
+.scroll-thread-fill{display:block;width:100%;height:100%;background:var(--coral);transform:scaleY(0);transform-origin:top;will-change:transform;opacity:.9;transition:background-color 3.2s cubic-bezier(.22,.61,.36,1)}
+body[data-theme="dark"] .scroll-thread{background:rgba(253,215,203,.14)}
+body[data-theme="dark"] .scroll-thread-fill{background:var(--peach)}
+@media(max-width:760px){.scroll-thread{width:2px}}
+@media(prefers-reduced-motion:reduce){html.theme-ready body,html.theme-ready body *{transition:none!important}.scroll-thread-fill{will-change:auto}}
