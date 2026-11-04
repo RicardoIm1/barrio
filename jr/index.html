@@ -316,7 +316,7 @@ footer{background:#07060c;border-top-color:rgba(218,207,255,.10)}footer .brand{c
 /* Noche: valores explícitos para asegurar legibilidad en navegación y portada */
 body[data-theme="dark"] .links a{color:#d6d0e2}
 body[data-theme="dark"] .links a:hover,body[data-theme="dark"] #mobileNav a:hover{color:#fff}
-body[data-theme="dark"] .hero{background:transparent}
+body[data-theme="dark"] .hero{background:linear-gradient(135deg,rgba(255,255,255,.018) 0%,rgba(255,255,255,.008) 100%)}
 body[data-theme="dark"] .hero .lead,body[data-theme="dark"] .hero-copy,body[data-theme="dark"] .hero .micro{color:#d5cede}
 body[data-theme="dark"] .hero-side p{color:#c6bed3}
 body[data-theme="dark"] .hero-side strong{color:#fff}
@@ -328,8 +328,14 @@ body[data-theme="light"]{
  --accent:#287fb8;--accent2:#216a9b;--warm:#a97823;
  background:#f8f9fa;color:#2c3e50
 }
-body[data-theme="light"]{background:radial-gradient(700px 420px at 82% -5%,rgba(52,152,219,.09),transparent 68%),linear-gradient(180deg,#f8f9fa,#f3f6f8)}
-body[data-theme="light"]:before{display:none}
+body[data-theme="light"]{
+ background:
+  radial-gradient(700px 420px at 82% -5%,rgba(52,152,219,.09),transparent 68%),
+  radial-gradient(620px 460px at 4% 42%,rgba(52,152,219,.035),transparent 70%),
+  radial-gradient(500px 350px at 65% 88%,rgba(52,152,219,.025),transparent 72%),
+  linear-gradient(180deg,#f8f9fa 0%,#f3f6f8 48%,#f8f9fa 100%);
+}
+body[data-theme="light"]:before{opacity:0}
 body[data-theme="light"] .nav{background:rgba(248,249,250,.96);border-bottom:1px solid #dce3e8;backdrop-filter:blur(18px)}
 body[data-theme="light"] .brand,body[data-theme="light"] .brandtext strong{color:#2c3e50}
 body[data-theme="light"] .brandtext strong span{color:#287fb8}
@@ -354,7 +360,7 @@ body[data-theme="light"] .hero-side strong{color:#2c3e50}
 body[data-theme="light"] .hero-side p{color:#526273}
 body[data-theme="light"] .darkband{background:#eef3f6;border-block-color:#dfe6eb}
 body[data-theme="light"] .card,body[data-theme="light"] .service,body[data-theme="light"] .demo-panel,body[data-theme="light"] .lab-controls,body[data-theme="light"] .lab-chart,body[data-theme="light"] .case,body[data-theme="light"] .money-main,body[data-theme="light"] .money-side,body[data-theme="light"] .principle,body[data-theme="light"] .work div,body[data-theme="light"] .arch div,body[data-theme="light"] .metric,body[data-theme="light"] .demo-result .metric{
- background:#fff;border-color:#e0e7ec;box-shadow:0 6px 20px rgba(44,62,80,.06);backdrop-filter:none
+ background:linear-gradient(145deg,#fff 0%,#f8fafc 100%);border-color:#e0e7ec;box-shadow:0 6px 20px rgba(44,62,80,.06);backdrop-filter:none
 }
 body[data-theme="light"] .card .num,body[data-theme="light"] .case .type,body[data-theme="light"] .work b,body[data-theme="light"] .arch strong,body[data-theme="light"] .principle b{color:#286f9d}
 body[data-theme="light"] .tag{background:#f1f6fa;border-color:#dce6ed;color:#34495e}
@@ -384,12 +390,14 @@ html.theme-transition body *::before,
 html.theme-transition body *::after {
   transition:
     background-color 2.8s ease-in-out,
+    background-image 2.8s ease-in-out,
     background 2.8s ease-in-out,
     color 2.8s ease-in-out,
     border-color 2.8s ease-in-out,
     box-shadow 2.8s ease-in-out,
     fill 2.8s ease-in-out,
-    stroke 2.8s ease-in-out !important;
+    stroke 2.8s ease-in-out,
+    opacity 2.8s ease-in-out !important;
 }
 @media (prefers-reduced-motion: reduce) {
   html.theme-transition body,
