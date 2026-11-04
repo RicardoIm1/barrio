@@ -454,6 +454,11 @@ body[data-theme="light"] .hero-grid > article.hero-side p{color:#526273}
 @media(max-width:560px){
   .hero-grid > article.hero-side{padding:22px !important;border-radius:16px}
 }
+
+    /* Logotipo oficial Softw-arte */
+    .brand-logo{display:block;width:clamp(150px,18vw,205px);height:auto;max-height:48px;object-fit:contain;object-position:left center}
+    footer .brand-logo{width:190px;max-height:46px}
+    @media(max-width:560px){.brand-logo{width:158px;max-height:42px}footer .brand-logo{width:170px;max-height:42px}}
 </style>
 </head>
 <body>
@@ -461,17 +466,7 @@ body[data-theme="light"] .hero-grid > article.hero-side p{color:#526273}
 <header class="nav">
   <div class="wrap navin">
     <a class="brand" href="#inicio" aria-label="Softw-arte, inicio">
-      <span class="mark" aria-hidden="true">
-        <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M61 19C55 15 45 14 35 17C25 20 19 26 19 34C19 41 24 45 34 47L47 50C55 52 59 56 59 62C59 70 51 75 40 75C30 75 22 72 18 67"
-        stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M25 62L39 20L54 62" stroke="var(--accent)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M30 49H49" stroke="var(--accent2)" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M19 34H31" stroke="rgba(199,185,255,.72)" stroke-width="2.1" stroke-linecap="round"/>
-  <circle cx="61" cy="19" r="2.6" fill="var(--accent)"/>
-</svg>
-      </span>
-      <span class="brandtext"><strong>Softw<span>-</span>arte</strong><small>Jerónimo Ricardo Ramírez Torres</small></span>
+      <img class="brand-logo" src="/jr/img/Logotipo-Softw-arte.png" alt="Softw-arte">
     </a>
     <nav class="links" aria-label="Navegación principal">
       <a href="#problema">Problemas</a>
@@ -771,17 +766,7 @@ body[data-theme="light"] .hero-grid > article.hero-side p{color:#526273}
   <div class="wrap foot">
     <div>
       <div class="brand">
-        <span class="mark" aria-hidden="true">
-          <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <path d="M61 19C55 15 45 14 35 17C25 20 19 26 19 34C19 41 24 45 34 47L47 50C55 52 59 56 59 62C59 70 51 75 40 75C30 75 22 72 18 67"
-        stroke="currentColor" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M25 62L39 20L54 62" stroke="var(--accent)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M30 49H49" stroke="var(--accent2)" stroke-width="3.2" stroke-linecap="round"/>
-  <path d="M19 34H31" stroke="rgba(199,185,255,.72)" stroke-width="2.1" stroke-linecap="round"/>
-  <circle cx="61" cy="19" r="2.6" fill="var(--accent)"/>
-</svg>
-        </span>
-        <span class="brandtext"><strong>Softw<span>-</span>arte</strong><small>Jerónimo Ricardo Ramírez Torres</small></span>
+        <img class="brand-logo" src="/jr/img/Logotipo-Softw-arte.png" alt="Softw-arte">
       </div>
       <p style="margin-top:12px">Soluciones digitales para organizaciones que quieren trabajar mejor.</p>
       <p style="margin-top:4px">Datos · Sistemas · Automatización · Inteligencia de negocio</p>
