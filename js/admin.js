@@ -55,22 +55,59 @@ function confirmarAdmin(mensaje) {
     if (!contenedor) return;
     p = p || {};
     const categorias = Array.isArray(p.categorias) ? p.categorias.join(", ") : (p.categorias || "todas");
+    const esAdmin = p.rol === "admin";
+    const activo = p.activo !== false;
+    const etiquetasCategorias = (Array.isArray(p.categorias) ? p.categorias : String(categorias).split(","))
+      .map((c) => String(c).trim()).filter(Boolean)
+      .map((c) => `<span class="perfil-tag">${escapar(c)}</span>`).join("");
     contenedor.innerHTML = `
-      <form id="form-mi-perfil" class="perfil-edicion" style="max-width:720px">
-        <div class="campo"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(p.nombre || p.name || "")}"></div>
-        <div class="campo"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo de acceso no se modifica desde este formulario.</small></div>
-        <div class="campo"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto"></div>
-        <div class="campo"><label>Rol</label><div>${escapar(p.rol || "usuario")}</div></div>
-        <div class="campo"><label>Categorías permitidas</label><div>${escapar(categorias)}</div></div>
-        <div class="campo"><label>Estado</label><div>${p.activo === false ? "Inactivo" : "Activo"}</div></div>
-        <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div>
-        <div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
-        <div class="campo"><label>Puntos de confianza</label><div>${escapar(p.puntos_confianza ?? 0)}</div></div>
-        <div class="campo"><label>Nivel</label><div>${escapar(p.nivel || "Sin nivel")}</div></div>
-        <div class="campo"><label>Avisos publicados</label><div>${escapar(p.avisos_publicados ?? 0)}</div></div>
-        <div class="campo"><label>Reportes recibidos</label><div>${escapar(p.reportes_recibidos ?? 0)}</div></div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px">
-          <button class="boton" type="submit">Guardar cambios</button><span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
+      <form id="form-mi-perfil" class="perfil-edicion">
+        <section class="perfil-hero">
+          <div class="perfil-avatar" aria-hidden="true">${escapar((p.nombre || p.name || p.email || "U").trim().charAt(0).toUpperCase())}</div>
+          <div class="perfil-hero-copy">
+            <span class="perfil-eyebrow">CUENTA PERSONAL</span>
+            <h3>${escapar(p.nombre || p.name || "Usuario")}</h3>
+            <p>${escapar(p.email || "Correo no disponible")}</p>
+            <div class="perfil-badges">
+              <span class="perfil-badge ${esAdmin ? "is-admin" : ""}">${esAdmin ? "Administrador" : "Usuario"}</span>
+              <span class="perfil-badge ${activo ? "is-active" : "is-inactive"}">${activo ? "Cuenta activa" : "Cuenta inactiva"}</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="perfil-section">
+          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">DATOS PERSONALES</span><h4>Tu información</h4></div><span class="perfil-section-note">Edita tus datos de contacto</span></div>
+          <div class="perfil-fields-grid">
+            <div class="perfil-field"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(p.nombre || p.name || "")}"></div>
+            <div class="perfil-field"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto"></div>
+            <div class="perfil-field perfil-field-wide"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo asociado al acceso no se modifica desde aquí.</small></div>
+          </div>
+        </section>
+
+        <section class="perfil-section">
+          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">TU ACTIVIDAD</span><h4>Resumen de cuenta</h4></div></div>
+          <div class="perfil-stats-grid">
+            <article class="perfil-stat"><span>Puntos de confianza</span><strong>${escapar(p.puntos_confianza ?? 0)}</strong></article>
+            <article class="perfil-stat"><span>Avisos publicados</span><strong>${escapar(p.avisos_publicados ?? 0)}</strong></article>
+            <article class="perfil-stat"><span>Reportes recibidos</span><strong>${escapar(p.reportes_recibidos ?? 0)}</strong></article>
+            <article class="perfil-stat"><span>Nivel</span><strong class="perfil-stat-level">${escapar(p.nivel || "Sin nivel")}</strong></article>
+          </div>
+        </section>
+
+        <section class="perfil-section perfil-access">
+          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">ACCESO Y PERMISOS</span><h4>Tu cuenta</h4></div></div>
+          <div class="perfil-access-grid">
+            <div><span>Rol</span><strong>${esAdmin ? "Administrador" : "Usuario"}</strong></div>
+            <div><span>Estado</span><strong>${activo ? "Activo" : "Inactivo"}</strong></div>
+            <div class="perfil-access-categories"><span>Categorías autorizadas</span><div class="perfil-tags">${etiquetasCategorias || '<span class="perfil-tag">Sin categorías</span>'}</div></div>
+            <div><span>Fecha de registro</span><strong>${escapar(formatearFecha(p.fecha_registro))}</strong></div>
+            <div><span>Último acceso</span><strong>${escapar(formatearFecha(p.ultimo_acceso))}</strong></div>
+          </div>
+        </section>
+
+        <div class="perfil-form-actions">
+          <button class="perfil-save-button" type="submit">Guardar cambios</button>
+          <span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
         </div>
       </form>`;
     const form = document.getElementById("form-mi-perfil");
