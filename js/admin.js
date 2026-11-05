@@ -1275,26 +1275,33 @@ window.cambiarDestacado = async function (id, nuevoValor) {
 };
 
 window.eliminarAviso = async function (id) {
-  if (!(await confirmarAdmin("¿Eliminar este aviso?"))) return;
+  const usuario = API.getUsuarioActual();
+  const aviso = todosLosAvisos.find((a) => String(a.id) === String(id));
+  const esAdmin = usuario?.rol === "admin";
+  const autor = String(aviso?.created_by || aviso?.user_id || aviso?.usuario_id || "").trim();
+  const propietario = !!usuario?.id && autor === String(usuario.id);
+  if (!aviso) { notificarAdmin("No se encontró la publicación."); return false; }
+  if (!esAdmin && !propietario) { notificarAdmin("Solo el administrador o el propietario pueden eliminar esta publicación."); return false; }
+  if (!(await confirmarAdmin("¿Eliminar definitivamente esta publicación? Esta acción no se puede deshacer."))) return false;
   try {
     const apiKey = localStorage.getItem("api_key");
-    const resultado = await API.peticion(
-      "ELIMINAR",
-      { coleccion: "AVISOS", id: id },
-      apiKey,
-    );
+    if (!apiKey) throw new Error("No hay una sesión válida.");
+    const resultado = await API.peticion("ELIMINAR", { coleccion: "AVISOS", id: id }, apiKey);
     if (resultado && resultado.success) {
-      todosLosAvisos = todosLosAvisos.filter((a) => a.id != id);
+      todosLosAvisos = todosLosAvisos.filter((a) => String(a.id) !== String(id));
+      avisosOriginales = avisosOriginales.filter((a) => String(a.id) !== String(id));
       renderizarTablaAvisos();
-      if (resultado.mediaEliminada === false) {
-        notificarAdmin("Aviso eliminado, pero quedó pendiente borrar su archivo: " + (resultado.advertenciaMedia || "error de Storage"));
-      } else {
-        notificarAdmin("✅ Aviso eliminado y multimedia retirada de Storage");
-      }
-    } else throw new Error(resultado?.error || "Error al eliminar");
+      const modal = document.getElementById("modal-editar");
+      if (modal && String(document.getElementById("edit-id")?.value) === String(id)) modal.style.display = "none";
+      if (resultado.mediaEliminada === false) notificarAdmin("Publicación eliminada, pero quedó pendiente borrar su archivo: " + (resultado.advertenciaMedia || "error de Storage"));
+      else notificarAdmin("Publicación eliminada y multimedia retirada de Storage.");
+      return true;
+    }
+    throw new Error(resultado?.error || "Error al eliminar");
   } catch (error) {
-    console.error("Error:", error);
-    notificarAdmin("❌ Error: " + error.message);
+    console.error("Error al eliminar publicación:", error);
+    notificarAdmin("No se pudo eliminar: " + (error?.message || error));
+    return false;
   }
 };
 
@@ -1329,6 +1336,13 @@ window.editarAviso = function (id) {
   const chkDestacado = document.getElementById("edit-destacado");
   const usuarioActual = API.getUsuarioActual();
   const puedeCambiarPromocion = usuarioActual?.rol === "admin";
+  const btnEliminar = document.getElementById("eliminar-desde-modal");
+  if (btnEliminar) {
+    const autorAviso = String(aviso.created_by || aviso.user_id || aviso.usuario_id || "").trim();
+    const esPropietario = !!usuarioActual?.id && autorAviso === String(usuarioActual.id);
+    btnEliminar.hidden = !(puedeCambiarPromocion || esPropietario);
+    btnEliminar.onclick = () => window.eliminarAviso(aviso.id);
+  }
   if (chkUrgente) {
     chkUrgente.checked = aviso.urgente === true || aviso.urgente === "TRUE" || aviso.urgente === "true" || aviso.urgente === 1 || aviso.urgente === "1";
     chkUrgente.disabled = !puedeCambiarPromocion;
@@ -1442,20 +1456,20 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     st.id="estilos-modal-ficha-usuario";
     st.textContent = '.fila-usuario-detalle{cursor:pointer}.fila-usuario-detalle:focus-visible{outline:2px solid #4a90a4;outline-offset:2px}'+
       '#modal-ficha-usuario{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;padding:clamp(8px,2vh,22px);box-sizing:border-box;background:rgba(12,24,38,.72);backdrop-filter:blur(10px)}'+
-      '#modal-ficha-usuario .fu-panel{width:min(100%,920px);max-height:calc(100dvh - 24px);overflow:auto;box-sizing:border-box;background:linear-gradient(145deg,#fff,#f4f7fb);color:#263849;border:1px solid #fff;border-radius:22px;box-shadow:0 28px 90px rgba(8,20,35,.35);padding:clamp(16px,2.5vw,28px)}'+
+      '#modal-ficha-usuario .fu-panel{width:min(100%,760px);max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;background:linear-gradient(145deg,#fff,#f4f7fb);color:#263849;border:1px solid #fff;border-radius:17px;box-shadow:0 18px 55px rgba(8,20,35,.28);padding:18px 20px}'+
       '#modal-ficha-usuario .fu-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;background:#fff;border-bottom:1px solid #e2eaf1}'+
       '#modal-ficha-usuario .fu-head h2{margin:0;font-size:1.4rem;color:#24384b}#modal-ficha-usuario .fu-sub{margin:5px 0 0;color:#657789;font-size:.85rem;overflow-wrap:anywhere}'+
       '#modal-ficha-usuario .fu-close{border:0;border-radius:50%;width:38px;height:38px;flex:0 0 38px;cursor:pointer;background:#eaf0f5;color:#34495e;font-size:20px}'+
-      '#modal-ficha-usuario .fu-section{margin-top:20px}#modal-ficha-usuario .fu-section h3{margin:0 0 11px;font-size:1rem;color:#2c465c}'+
-      '#modal-ficha-usuario .fu-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}#modal-ficha-usuario .fu-field{min-width:0;padding:11px 12px;border:1px solid #e3eaf1;border-radius:12px;background:#fff}'+
+      '#modal-ficha-usuario .fu-section{margin-top:13px}#modal-ficha-usuario .fu-section h3{margin:0 0 8px;font-size:.88rem;color:#2c465c}'+
+      '#modal-ficha-usuario .fu-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}#modal-ficha-usuario .fu-field{min-width:0;padding:8px 10px;border:1px solid #e3eaf1;border-radius:9px;background:#fff}'+
       '#modal-ficha-usuario .fu-label{display:block;color:#7b8b9a;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}#modal-ficha-usuario .fu-value{display:block;font-size:.88rem;font-weight:600;overflow-wrap:anywhere}'+
-      '#modal-ficha-usuario .fu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#modal-ficha-usuario .fu-stat{padding:14px;border-radius:14px;background:#fff;border:1px solid #e2eaf1}'+
-      '#modal-ficha-usuario .fu-stat span{display:block;font-size:.7rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:5px;font-size:1.45rem;color:#29465d}'+
+      '#modal-ficha-usuario .fu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}#modal-ficha-usuario .fu-stat{padding:10px;border-radius:10px;background:#fff;border:1px solid #e2eaf1}'+
+      '#modal-ficha-usuario .fu-stat span{display:block;font-size:.66rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:4px;font-size:1.18rem;color:#29465d}'+
       '#modal-ficha-usuario .fu-box{margin-top:12px;padding:14px;border:1px solid #e2eaf1;border-radius:14px;background:#fff}#modal-ficha-usuario .fu-box h4{margin:0 0 10px;font-size:.9rem;color:#344f65}'+
       '#modal-ficha-usuario .fu-chart{display:block;width:100%;height:170px}#modal-ficha-usuario .fu-table-wrap{overflow-x:auto}#modal-ficha-usuario .fu-table{width:100%;border-collapse:collapse;font-size:.78rem}'+
       '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
-      '#modal-ficha-usuario .fu-admin-form{padding:14px;border:1px solid #dfe7ee;border-radius:13px;background:#fff;font-size:.82rem}#modal-ficha-usuario .fu-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal-ficha-usuario .fu-admin-grid label{display:grid;gap:5px;font-weight:600;color:#536779}#modal-ficha-usuario .fu-admin-form select{width:100%;padding:8px;border:1px solid #d6e0e8;border-radius:8px;background:#fff;font:inherit}#modal-ficha-usuario .fu-admin-form fieldset{margin:12px 0 0;padding:10px;border:1px solid #e1e8ef;border-radius:9px}#modal-ficha-usuario .fu-admin-form legend{padding:0 5px;font-weight:600}#modal-ficha-usuario .fu-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}#modal-ficha-usuario .fu-categorias label{display:flex;align-items:center;gap:6px}#modal-ficha-usuario .fu-admin-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}#modal-ficha-usuario .fu-admin-actions button{border:0;border-radius:9px;background:#2c3e50;color:#fff;padding:9px 14px;font:600 .82rem system-ui;cursor:pointer}'+
-      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:18px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}#modal-ficha-usuario .fu-admin-grid{grid-template-columns:1fr}}';
+      '#modal-ficha-usuario .fu-admin-form{padding:10px;border:1px solid #dfe7ee;border-radius:13px;background:#fff;font-size:.82rem}#modal-ficha-usuario .fu-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal-ficha-usuario .fu-admin-grid label{display:grid;gap:5px;font-weight:600;color:#536779}#modal-ficha-usuario .fu-admin-form select{width:100%;padding:8px;border:1px solid #d6e0e8;border-radius:8px;background:#fff;font:inherit}#modal-ficha-usuario .fu-admin-form fieldset{margin:12px 0 0;padding:10px;border:1px solid #e1e8ef;border-radius:9px}#modal-ficha-usuario .fu-admin-form legend{padding:0 5px;font-weight:600}#modal-ficha-usuario .fu-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}#modal-ficha-usuario .fu-categorias label{display:flex;align-items:center;gap:6px}#modal-ficha-usuario .fu-admin-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}#modal-ficha-usuario .fu-admin-actions button{border:0;border-radius:9px;background:#2c3e50;color:#fff;padding:9px 14px;font:600 .82rem system-ui;cursor:pointer}'+
+      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:14px;padding:14px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}#modal-ficha-usuario .fu-admin-grid{grid-template-columns:1fr}}';
     document.head.appendChild(st);
     const modal=document.createElement("div"); modal.id="modal-ficha-usuario";
     modal.innerHTML='<section class="fu-panel" role="dialog" aria-modal="true" aria-labelledby="fu-titulo">'+
