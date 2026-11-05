@@ -1,50 +1,65 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("🎨 Piscis Digital iniciado correctamente.");
+// 1. Configura tu cliente de Supabase (Pon tus credenciales reales)
+const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
-    // 1. Simulamos que estamos obteniendo la lista de invitados de Supabase
-    const invitados = [
-        { id: '1', nombre: 'Regina Treviño', whatsapp: '+52 55 1234 5678', estado: 'guardado' },
-        { id: '2', nombre: 'Carlos Mendoza', whatsapp: '+52 55 8765 4321', estado: 'pendiente' },
-    ];
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const { data } = await supabase
-        .schema('piscis')
-        .from('planning_evento')
-        .select('*')
-        .eq('evento_id', eventoId)
-        .order('hora_inicio', { ascending: true });
+// 2. Función para cargar los datos reales en la interfaz
+async function cargarDashboard() {
+    try {
+        // A) Traer los eventos del esquema 'piscis'
+        const { data: eventos, error: errEventos } = await supabaseClient
+            .schema('piscis')
+            .from('eventos')
+            .select('*')
+            .order('fecha_evento', { ascending: true });
 
-    // 2. Seleccionamos todos los botones de la tabla
-    const botonesEnviar = document.querySelectorAll('.btn-sm');
+        if (errEventos) throw errEventos;
 
-    botonesEnviar.forEach(boton => {
-        boton.addEventListener('click', (e) => {
-            // Encontramos la fila del botón que se picó
-            const fila = e.target.closest('tr');
-            const nombreInvitado = fila.querySelector('td').innerText;
-            const numeroWA = fila.querySelectorAll('td')[1].innerText;
+        // B) Traer los invitados
+        const { data: invitados, error: errInvitados } = await supabaseClient
+            .schema('piscis')
+            .from('invitados')
+            .select('*');
 
-            // 3. Aquí conectaremos con Supabase después:
-            // - Llamar a la Edge Function para generar el link de Google Wallet.
-            // - Generar el link de wa.me con el pase.
-            // - Abrir WhatsApp o enviar por API.
+        if (errInvitados) throw errInvitados;
 
-            console.log(`Generando pase para ${nombreInvitado}...`);
-            
-            // Simulación visual para que veas que funciona
-            const badge = fila.querySelector('.badge');
-            badge.innerText = "Generando...";
-            badge.className = "badge badge-pending";
+        // 3. Actualizar las estadísticas de las tarjetas superiores
+        document.querySelectorAll('.stat-number')[0].innerText = eventos.length; 
+        document.querySelectorAll('.stat-number')[1].innerText = invitados.length; 
 
-            setTimeout(() => {
-                badge.innerText = "Guardado en Wallet";
-                badge.className = "badge badge-success";
-                boton.innerText = "Reenviar Link";
-                
-                // Simulamos la apertura de WhatsApp
-                // const linkWhatsApp = `https://wa.me/${numeroWA.replace(/\s/g, '')}?text=Hola%20${nombreInvitado},%20aquí%20está%20tu%20pase%20para%20la%20boda...`;
-                // window.open(linkWhatsApp, '_blank'); 
-            }, 1500);
+        // 4. Llenar la tabla de invitados
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = ''; // Limpiamos los datos falsos
+
+        invitados.forEach(inv => {
+            // Formateamos el estado del pase para que se vea bonito
+            let badgeClass = 'badge-pending';
+            let badgeText = 'Pendiente';
+            if (inv.estado_pase === 'guardado_en_wallet') {
+                badgeClass = 'badge-success';
+                badgeText = 'Guardado en Wallet';
+            }
+
+            // Creamos la fila
+            const fila = `
+                <tr>
+                    <td>${inv.nombre}</td>
+                    <td>${inv.whatsapp || 'Sin número'}</td>
+                    <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+                    <td><button class="btn-sm" data-id="${inv.id}">Enviar Link</button></td>
+                </tr>
+            `;
+            tbody.innerHTML += fila;
         });
-    });
-});
+
+        console.log("✅ Dashboard cargado con datos de Supabase");
+
+    } catch (error) {
+        console.error("❌ Error cargando datos:", error.message);
+        alert("Error al conectar con la base de datos. Revisa la consola.");
+    }
+}
+
+// 3. Ejecutar cuando la página cargue
+document.addEventListener('DOMContentLoaded', cargarDashboard);
