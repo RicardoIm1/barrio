@@ -219,6 +219,7 @@
         forzarMigracion: true,
       });
 
+      if (guardado) localStorage.setItem("elbarrio_push_enabled", "true");
       if (guardado && typeof showToast === "function")
         showToast("Notificaciones activadas", 2200);
 
@@ -236,6 +237,7 @@
 
   async function sincronizarPushSiYaExiste() {
     try {
+      if (!preferenciasPushActivas()) return false;
       if (
         !("Notification" in window) ||
         Notification.permission !== "granted"
@@ -298,6 +300,7 @@
     }
 
     const activadas =
+      preferenciasPushActivas() &&
       typeof Notification !== "undefined" &&
       Notification.permission === "granted";
 
@@ -308,32 +311,102 @@
     boton.setAttribute("aria-label", boton.title);
   }
 
+  const PUSH_ENABLED_KEY = "elbarrio_push_enabled";
+
+  function preferenciasPushActivas() {
+    return localStorage.getItem(PUSH_ENABLED_KEY) !== "false";
+  }
+
+  async function desactivarPush() {
+    try {
+      const usuario = await obtenerUsuarioAutenticado();
+      const registration = await navigator.serviceWorker.getRegistration(SERVICE_WORKER_URL);
+      const subscription = registration?.pushManager
+        ? await registration.pushManager.getSubscription()
+        : null;
+
+      if (usuario?.id && subscription) {
+        const client = await obtenerCliente();
+        const { error } = await client
+          .from("push_subscriptions")
+          .update({ activo: false, updated_at: new Date().toISOString() })
+          .eq("usuario_id", usuario.id)
+          .eq("endpoint", subscription.endpoint);
+        if (error) throw error;
+        await subscription.unsubscribe();
+      }
+
+      localStorage.setItem(PUSH_ENABLED_KEY, "false");
+      actualizarControlPush();
+      if (typeof showToast === "function") showToast("Notificaciones desactivadas", 2200);
+      return true;
+    } catch (error) {
+      console.error("Web Push: no se pudieron desactivar las notificaciones:", error);
+      if (typeof showToast === "function") showToast("No se pudieron desactivar las notificaciones.", 2500);
+      return false;
+    }
+  }
+
+  async function alternarPush() {
+    if (preferenciasPushActivas()) {
+      const registration = await navigator.serviceWorker.getRegistration(SERVICE_WORKER_URL);
+      const subscription = registration?.pushManager
+        ? await registration.pushManager.getSubscription()
+        : null;
+      if (subscription || (typeof Notification !== "undefined" && Notification.permission === "granted")) {
+        return desactivarPush();
+      }
+    }
+    const activado = await activarPush();
+    if (activado) localStorage.setItem(PUSH_ENABLED_KEY, "true");
+    actualizarControlPush();
+    return activado;
+  }
+
+  function actualizarBotonPreferencias() {
+    const boton = document.getElementById("activar-notificaciones");
+    if (!boton) return;
+    const activas = preferenciasPushActivas() &&
+      typeof Notification !== "undefined" &&
+      Notification.permission === "granted";
+    boton.classList.toggle("is-on", activas);
+    boton.setAttribute("aria-checked", String(activas));
+    boton.setAttribute("aria-label", activas ? "Desactivar notificaciones" : "Activar notificaciones");
+    boton.title = activas ? "Desactivar notificaciones" : "Activar notificaciones";
+    const texto = boton.querySelector(".toggle-label");
+    if (texto) texto.textContent = activas ? "Activadas" : "Desactivadas";
+  }
+
   window.ElBarrioPush = {
     activar: activarPush,
+    desactivar: desactivarPush,
+    alternar: alternarPush,
     sincronizar: sincronizarPushSiYaExiste,
   };
 
   document.addEventListener("DOMContentLoaded", () => {
-    sincronizarPushSiYaExiste();
-
+    if (preferenciasPushActivas()) sincronizarPushSiYaExiste();
     const botonActivar = document.getElementById("activar-notificaciones");
-
     if (botonActivar) {
-      botonActivar.addEventListener("click", () => {
-        activarPush().catch((error) => {
+      botonActivar.addEventListener("click", async () => {
+        botonActivar.disabled = true;
+        try {
+          await alternarPush();
+        } catch (error) {
           console.error("Web Push:", error);
-
-          if (typeof showToast === "function") {
-            showToast("No se pudieron activar las notificaciones.", 2500);
-          }
-        });
+          if (typeof showToast === "function") showToast("No se pudo cambiar la preferencia de notificaciones.", 2500);
+        } finally {
+          botonActivar.disabled = false;
+          actualizarBotonPreferencias();
+        }
       });
-
-      console.log("Botón #activar-notificaciones conectado a Web Push");
     }
-
+    actualizarBotonPreferencias();
     setTimeout(actualizarControlPush, 500);
   });
 
-  window.addEventListener("storage", actualizarControlPush);
+  window.addEventListener("storage", () => {
+    actualizarControlPush();
+    actualizarBotonPreferencias();
+  });
 })();

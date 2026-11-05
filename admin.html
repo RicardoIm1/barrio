@@ -1213,6 +1213,92 @@
         @media(max-width:760px){#tab-perfil .perfil-layout{grid-template-columns:1fr}#tab-perfil .perfil-hero{padding:17px;gap:12px}#tab-perfil .perfil-avatar{width:46px;height:46px;flex-basis:46px;border-radius:13px}#tab-perfil .perfil-hero h2{font-size:1.12rem}#tab-perfil .perfil-card{padding:16px}}
         @media(max-width:480px){#tab-perfil .perfil-hero{align-items:flex-start;flex-wrap:wrap}#tab-perfil .perfil-status{margin-left:58px;margin-top:-5px}#tab-perfil .perfil-details{grid-template-columns:1fr 1fr}#tab-perfil .perfil-notificaciones{align-items:flex-start;flex-direction:column}#tab-perfil .perfil-notificaciones .boton{width:100%}#tab-perfil .perfil-stat{padding:9px 5px}}
     </style>
+
+    <style>
+      /* Formulario de publicación: distribución horizontal y compacta */
+      #form-aviso {
+        display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
+        gap:12px 14px; max-width:100%; box-sizing:border-box;
+        padding:clamp(16px,2.2vw,26px);
+      }
+      #form-aviso > h2 { grid-column:1/-1; margin:0 0 3px!important; font-size:1.2rem; }
+      #form-aviso > .campo { min-width:0; margin:0; }
+      #form-aviso > .campo:has(#categoria),
+      #form-aviso > .campo:has(#titulo) { grid-column:span 3; }
+      #form-aviso > .campo:has(#contenido),
+      #form-aviso > .campo:has(#btn-seleccionar-imagen),
+      #form-aviso > input[type="hidden"],
+      #form-aviso > .grupo-botones { grid-column:1/-1; }
+      #form-aviso > .campo:has(#ubicacion),
+      #form-aviso > .campo:has(#contacto),
+      #form-aviso > .campo:has(#fecha_evento) { grid-column:span 2; }
+      #form-aviso .campo label { margin-bottom:5px; font-size:.78rem; }
+      #form-aviso .campo input:not([type="checkbox"]),
+      #form-aviso .campo select,
+      #form-aviso .campo textarea {
+        box-sizing:border-box; width:100%; min-width:0; padding:9px 11px;
+        border:1px solid var(--color-borde); border-radius:7px; font-size:.86rem;
+      }
+      #form-aviso .campo textarea { min-height:105px; }
+      #form-aviso .campo:has(#urgente) { grid-column:1/-1; margin-top:1px; }
+      #form-aviso .grupo-botones { justify-content:flex-end; margin-top:3px; gap:9px; }
+      #form-aviso .boton { min-height:36px; padding:8px 15px; border-radius:7px!important; font-size:.8rem; box-shadow:none; }
+      #form-aviso .boton:hover { transform:translateY(-1px); box-shadow:none; }
+      #form-aviso #btn-seleccionar-imagen,
+      #form-aviso #btn-seleccionar-video { border-radius:7px!important; }
+      #form-aviso #vista-previa-multimedia { margin-top:7px!important; }
+      @media(max-width:700px) {
+        #form-aviso { grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+        #form-aviso > .campo:has(#categoria),
+        #form-aviso > .campo:has(#titulo),
+        #form-aviso > .campo:has(#ubicacion),
+        #form-aviso > .campo:has(#contacto),
+        #form-aviso > .campo:has(#fecha_evento) { grid-column:span 1; }
+      }
+      @media(max-width:480px) {
+        #form-aviso { grid-template-columns:minmax(0,1fr); }
+        #form-aviso > .campo,
+        #form-aviso > .campo:has(#categoria),
+        #form-aviso > .campo:has(#titulo),
+        #form-aviso > .campo:has(#ubicacion),
+        #form-aviso > .campo:has(#contacto),
+        #form-aviso > .campo:has(#fecha_evento),
+        #form-aviso > .campo:has(#contenido),
+        #form-aviso > .campo:has(#btn-seleccionar-imagen),
+        #form-aviso > .campo:has(#urgente) { grid-column:1/-1; }
+        #form-aviso .grupo-botones { justify-content:stretch; }
+        #form-aviso .grupo-botones .boton { flex:1; }
+      }
+      #tab-perfil .perfil-notificaciones { min-width:0; box-sizing:border-box; }
+      #tab-perfil .perfil-notificaciones > div { min-width:0; flex:1 1 auto; }
+      #tab-perfil .notificaciones-toggle {
+        flex:0 0 auto; display:inline-flex; align-items:center; justify-content:flex-end;
+        gap:10px; max-width:100%; min-width:0; padding:5px 0 5px 8px;
+        border:0; background:transparent; color:#718191; font-size:.76rem; font-weight:600; font-family:inherit;
+        cursor:pointer; white-space:nowrap;
+      }
+      #tab-perfil .notificaciones-toggle:disabled { opacity:.55; cursor:wait; }
+      #tab-perfil .toggle-track {
+        position:relative; display:inline-flex; align-items:center; flex:0 0 42px;
+        width:42px; height:24px; box-sizing:border-box; padding:3px;
+        border:1px solid #cbd5df; border-radius:20px; background:#dce3e9;
+        transition:background .2s,border-color .2s;
+      }
+      #tab-perfil .toggle-thumb {
+        display:block; width:16px; height:16px; border-radius:50%;
+        background:#fff; box-shadow:0 1px 3px rgba(25,40,55,.2); transform:translateX(0);
+        transition:transform .2s;
+      }
+      #tab-perfil .notificaciones-toggle.is-on { color:#2b7a55; }
+      #tab-perfil .notificaciones-toggle.is-on .toggle-track { background:#2f9b69; border-color:#2f9b69; }
+      #tab-perfil .notificaciones-toggle.is-on .toggle-thumb { transform:translateX(18px); }
+      @media(max-width:480px) {
+        #tab-perfil .perfil-notificaciones { flex-direction:row!important; align-items:center!important; gap:10px; padding:14px; }
+        #tab-perfil .notificaciones-toggle { flex:0 1 auto; gap:7px; font-size:.7rem; }
+        #tab-perfil .toggle-label { max-width:75px; overflow:hidden; text-overflow:ellipsis; }
+      }
+    </style>
+
 </head>
 
 <body>
@@ -1344,8 +1430,10 @@
                         <h3>Notificaciones</h3>
                         <p>Recibe avisos relevantes de la actividad de El Barrio.</p>
                     </div>
-                    <button class="boton boton-secundario" id="activar-notificaciones">
-                        🔔 Activar notificaciones
+                    <button type="button" class="notificaciones-toggle" id="activar-notificaciones"
+                        role="switch" aria-checked="false" aria-label="Activar notificaciones" title="Activar notificaciones">
+                        <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+                        <span class="toggle-label">Desactivadas</span>
                     </button>
                 </section>
             </div>
@@ -2051,7 +2139,7 @@
     <script src="/js/ui.js?v=20261105-2"></script>
     <script src="/js/admin.js?v=20261105-8"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
-    <script src="/js/push.js?v=20260908-1"></script>
+    <script src="/js/push.js?v=20261105-2"></script>
 
 
     
