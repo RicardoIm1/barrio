@@ -1237,7 +1237,20 @@
             }
 
             // El header se inserta con innerHTML: sus scripts internos no se ejecutan.
-            // Por eso el buscador de la página principal se conecta aquí explícitamente.
+            // Por eso inicializamos aquí el menú móvil y el buscador de la portada.
+            const menuToggle = headerContainer.querySelector("#header-menu-toggle");
+            const menuAcciones = headerContainer.querySelector("#header-acciones");
+            if (menuToggle && menuAcciones && !menuToggle.dataset.menuInit) {
+              menuToggle.dataset.menuInit = "1";
+              const cerrarMenu = () => { menuAcciones.classList.remove("menu-open"); menuToggle.setAttribute("aria-expanded", "false"); menuToggle.setAttribute("aria-label", "Abrir menú"); };
+              menuToggle.addEventListener("click", () => {
+                if (menuToggle.getAttribute("aria-expanded") === "true") cerrarMenu();
+                else { menuAcciones.classList.add("menu-open"); menuToggle.setAttribute("aria-expanded", "true"); menuToggle.setAttribute("aria-label", "Cerrar menú"); }
+              });
+              document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarMenu(); });
+              document.addEventListener("pointerdown", e => { if (!menuAcciones.contains(e.target) && !menuToggle.contains(e.target)) cerrarMenu(); });
+              window.addEventListener("resize", () => { if (window.innerWidth > 768) cerrarMenu(); });
+            }
             const buscador = headerContainer.querySelector(
               "#buscador-input-header",
             );
@@ -1354,9 +1367,13 @@
             if (userArea) userArea.style.display = "flex";
             if (userNameSpan) {
               userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || "Usuario"}`;
+              userNameSpan.classList.add("admin-link");
               userNameSpan.style.cursor = "pointer";
-              userNameSpan.onclick = () =>
-                (window.location.href = "/admin.html");
+              userNameSpan.title = "Abrir panel de administración";
+              userNameSpan.setAttribute("role", "link");
+              userNameSpan.setAttribute("tabindex", "0");
+              userNameSpan.onclick = () => (window.location.href = "/admin.html");
+              userNameSpan.onkeydown = (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); window.location.href = "/admin.html"; } };
             }
             if (cerrarBtn) {
               const nuevoCerrar = cerrarBtn.cloneNode(true);
