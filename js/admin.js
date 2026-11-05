@@ -1018,7 +1018,7 @@ function renderizarTablaAvisos() {
     );
   if (avisosFiltrados.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="${esAdmin ? 6 : 5}" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+      '<tr><td colspan="' + (esAdmin ? 6 : 5) + '" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
     return;
   }
   tbody.innerHTML = avisosFiltrados
