@@ -814,7 +814,7 @@ body {
     position: -webkit-sticky;
     isolation: isolate;
     background: linear-gradient(180deg, #101b33 0%, #1d3152 62%, #405a78 100%);
-    transition: background 700ms ease;
+    transition: background 1600ms cubic-bezier(.22,.61,.36,1);
 }
 .header::before,
 .header::after {
@@ -822,6 +822,10 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
+}
+.header::before,
+.header::after {
+    transition: opacity 1400ms ease;
 }
 .header::before {
     z-index: 0;
