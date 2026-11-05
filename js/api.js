@@ -293,10 +293,50 @@ async function supabasePeticion(accion, datos = {}) {
       if (!id) throw new Error('ID de registro no proporcionado');
 
       if (tabla === 'avisos') {
-        const { data, error } = await client.from('avisos').update({ status: 'eliminado' }).eq('id', id).select('id,status').single();
+        // Primero recuperamos las URLs y marcamos el aviso como eliminado.
+        // La ruta se borra únicamente si pertenece al bucket media y a este aviso.
+        const { data: aviso, error: avisoError } = await client
+          .from('avisos')
+          .select('id,status,imagen_url,video_url')
+          .eq('id', id)
+          .single();
+        if (avisoError) throw avisoError;
+        if (!aviso) throw new Error('No se encontró el aviso.');
+
+        const { data, error } = await client
+          .from('avisos')
+          .update({ status: 'eliminado' })
+          .eq('id', id)
+          .select('id,status')
+          .single();
         if (error) throw error;
         if (!data || data.status !== 'eliminado') throw new Error('El aviso no fue eliminado. Supabase no permitió la operación o el registro no existe.');
-        return respuestaOK(data);
+
+        const rutas = [...new Set([aviso.imagen_url, aviso.video_url].filter(Boolean).map(valor => {
+          try {
+            const pathname = new URL(valor).pathname;
+            const marcador = '/storage/v1/object/public/media/';
+            const posicion = pathname.indexOf(marcador);
+            if (posicion < 0) return null;
+            const ruta = decodeURIComponent(pathname.slice(posicion + marcador.length));
+            const partes = ruta.split('/');
+            // Las cargas de El Barrio usan avisos/{usuario_id}/{aviso_id}/{archivo}.
+            if (partes.length !== 4 || partes[0] !== 'avisos' || partes[2] !== id) return null;
+            return ruta;
+          } catch (_) { return null; }
+        }).filter(Boolean))];
+
+        let mediaEliminada = true;
+        let advertenciaMedia = null;
+        if (rutas.length) {
+          const { error: storageError } = await client.storage.from('media').remove(rutas);
+          if (storageError) {
+            mediaEliminada = false;
+            advertenciaMedia = storageError.message || 'No se pudo eliminar el archivo de Storage.';
+            console.error('Aviso eliminado, pero falló la limpieza de Storage:', rutas, storageError);
+          }
+        }
+        return respuestaOK(data, { mediaEliminada, advertenciaMedia });
       }
 
       const { data, error } = await client.from(tabla).delete().eq('id', id).select('id');
