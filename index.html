@@ -911,27 +911,59 @@
             // ✅ PRIORIDAD: VIDEO SOBRE IMAGEN
             let multimediaHTML = "";
             if (aviso.video_url && aviso.video_url.trim() !== "") {
-              // Convertir URL de YouTube a formato embed si es necesario
-              let videoUrl = aviso.video_url;
-              if (videoUrl.includes("youtube.com/watch?v=")) {
-                const videoId = videoUrl.split("v=")[1].split("&")[0];
-                videoUrl = `https://www.youtube.com/embed/${videoId}`;
-              } else if (videoUrl.includes("youtu.be/")) {
-                const videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
-                videoUrl = `https://www.youtube.com/embed/${videoId}`;
-              } else if (videoUrl.includes("vimeo.com/")) {
-                const videoId = videoUrl.split("vimeo.com/")[1];
-                videoUrl = `https://player.vimeo.com/video/${videoId}`;
-              }
+              const videoOriginal = aviso.video_url.trim();
+              const videoSeguro = escapeHtml(videoOriginal);
+              const esYouTube =
+                /(?:youtube\\.com\\/(?:watch|shorts|embed)|youtu\\.be\\/)/i.test(videoOriginal);
+              const esVimeo = /vimeo\\.com\\//i.test(videoOriginal);
 
-              // Para móvil (fondo sin controles)
-              multimediaHTML = `
+              if (esYouTube || esVimeo) {
+                let videoEmbed = "";
+                if (esYouTube) {
+                  const idYouTube =
+                    videoOriginal.match(/(?:v=|youtu\\.be\\/|shorts\\/|embed\\/)([\\w-]{11})/i)?.[1];
+                  if (idYouTube) videoEmbed = "https://www.youtube-nocookie.com/embed/" + idYouTube;
+                } else {
+                  const idVimeo = videoOriginal.match(/vimeo\\.com\\/(?:video\\/)?([0-9]+)/i)?.[1];
+                  if (idVimeo) videoEmbed = "https://player.vimeo.com/video/" + idVimeo;
+                }
+
+                multimediaHTML = videoEmbed
+                  ? `
     <div class="aviso-video" onclick="event.stopPropagation()">
-        <video autoplay muted loop playsinline style="width: 100%; height: 100%; object-fit: cover;">
-            <source src="${videoUrl}" type="video/mp4">
+        <iframe src="${videoEmbed}" title="Video del aviso" loading="lazy"
+            style="width:100%;height:100%;border:0;"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+    </div>`
+                  : `<div class="aviso-video"><a href="${videoSeguro}" target="_blank" rel="noopener noreferrer">Ver video</a></div>`;
+              } else {
+                let extensionVideo = "";
+                try {
+                  extensionVideo = new URL(videoOriginal, window.location.href).pathname
+                    .split(".").pop().toLowerCase();
+                } catch (_) {}
+
+                const tiposVideo = {
+                  mp4: "video/mp4",
+                  m4v: "video/mp4",
+                  webm: "video/webm",
+                  mov: "video/quicktime"
+                };
+                const tipoVideo = tiposVideo[extensionVideo] || "";
+
+                // Mantener el formato visual actual, declarando el MIME real del archivo.
+                multimediaHTML = `
+    <div class="aviso-video" onclick="event.stopPropagation()">
+        <video autoplay muted loop playsinline
+            style="width:100%;height:100%;object-fit:cover;"
+            aria-label="Video del aviso">
+            <source src="${videoSeguro}"${tipoVideo ? ` type="${tipoVideo}"` : ""}>
+            Tu navegador no puede reproducir este video.
+            <a href="${videoSeguro}" target="_blank" rel="noopener noreferrer">Abrir video</a>
         </video>
-    </div>
-`;
+    </div>`;
+              }
             } else if (aviso.imagen_url && aviso.imagen_url.trim() !== "") {
               multimediaHTML = `<img src="${aviso.imagen_url}" class="aviso-imagen" alt="${escapeHtml(aviso.titulo)}" loading="lazy" decoding="async">`;
             }
