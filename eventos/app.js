@@ -7,7 +7,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Variables globales
 let eventoActualId = null; 
-let tipoEventoActual = null;
 
 // Elementos del DOM - Eventos
 const formEvento = document.getElementById('formEvento');
@@ -49,6 +48,42 @@ inputWhatsapp.addEventListener('input', (e) => {
 });
 
 // ==========================================
+// 📊 ACTUALIZAR ESTADÍSTICAS DEL DASHBOARD
+// ==========================================
+async function actualizarEstadisticas() {
+    try {
+        const { count: totalEventos } = await supabaseClient
+            .schema('piscis').from('eventos').select('*', { count: 'exact', head: true });
+
+        const { count: totalInvitados } = await supabaseClient
+            .schema('piscis').from('invitados').select('*', { count: 'exact', head: true });
+
+        const { count: totalPases } = await supabaseClient
+            .schema('piscis').from('invitados').select('*', { count: 'exact', head: true })
+            .eq('estado_pase', 'guardado_en_wallet');
+
+        const { data: fondoData } = await supabaseClient
+            .schema('piscis').from('fondo_comun').select('monto').eq('estado', 'completado');
+
+        let totalFondo = 0;
+        if (fondoData && fondoData.length > 0) {
+            totalFondo = fondoData.reduce((sum, item) => sum + Number(item.monto), 0);
+        }
+
+        document.getElementById('statEventos').innerText = totalEventos || 0;
+        document.getElementById('statInvitados').innerText = totalInvitados || 0;
+        document.getElementById('statPases').innerText = totalPases || 0;
+        
+        document.getElementById('statFondo').innerText = new Intl.NumberFormat('es-MX', {
+            style: 'currency', currency: 'MXN', minimumFractionDigits: 0
+        }).format(totalFondo);
+
+    } catch (error) {
+        console.error("Error actualizando estadísticas:", error);
+    }
+}
+
+// ==========================================
 // 📅 READ: Cargar EVENTOS
 // ==========================================
 async function cargarEventos() {
@@ -60,28 +95,19 @@ async function cargarEventos() {
             .schema('piscis').from('eventos').select('*').order('fecha_evento', { ascending: true });
         if (error) throw error;
 
-        // Actualizar stats
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (statNumbers.length > 0) statNumbers[0].innerText = eventos.length;
-
         if (!tbody) return;
         tbody.innerHTML = '';
 
-        // Si no hay eventos, mostramos mensaje amigable
         if (eventos.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">No hay eventos creados aún.</td></tr>`;
             return;
         }
 
         eventos.forEach(ev => {
-            // 🛡️ FORMATEO DE FECHA SEGURO (Sin desfase de zona horaria)
             let fechaFormateada = 'Sin fecha';
             if (ev.fecha_evento) {
-                // Si viene como "2026-05-31", lo partimos y lo unimos como "31/05/2026"
                 const partes = ev.fecha_evento.split('-');
-                if (partes.length === 3) {
-                    fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
-                }
+                if (partes.length === 3) fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
             }
 
             const fila = `
@@ -100,39 +126,27 @@ async function cargarEventos() {
             tbody.innerHTML += fila;
         });
     } catch (error) {
-        // Aquí imprimimos el error real para saber qué pasa (luego lo quitamos)
-        console.error("Detalle del error:", error);
-        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar eventos: ${error.message}</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar eventos.</td></tr>`;
     }
 }
 
 // ==========================================
-// 👥 READ: Cargar INVITADOS (De un evento específico)
+// 👥 READ: Cargar INVITADOS (Filtrado por evento)
 // ==========================================
 async function cargarInvitados(eventoId, nombreEvento) {
     seccionEventos.classList.add('hidden');
     seccionInvitados.classList.remove('hidden');
     document.getElementById('tituloInvitados').innerText = `Invitados de: ${nombreEvento}`;
     
-    // 🔥 Aseguramos que el ID sea un string limpio
     eventoActualId = String(eventoId).trim();
 
     const tbody = document.querySelector('#tablaInvitados');
     if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando invitados...</td></tr>`;
 
     try {
-        // 🔥 Usamos .eq() con el ID limpio
         const { data: invitados, error } = await supabaseClient
-            .schema('piscis')
-            .from('invitados')
-            .select('*')
-            .eq('evento_id', eventoActualId);
-
+            .schema('piscis').from('invitados').select('*').eq('evento_id', eventoActualId);
         if (error) throw error;
-
-        // Actualizar stats (opcional, para que veas el conteo real)
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (statNumbers.length >= 2) statNumbers[1].innerText = invitados.length;
 
         if (!tbody) return;
         tbody.innerHTML = '';
@@ -160,14 +174,8 @@ async function cargarInvitados(eventoId, nombreEvento) {
             `;
             tbody.innerHTML += fila;
         });
-
-        // 🔍 ESTO ES CLAVE PARA DEPURAR: Mira la consola
-        console.log("Buscando invitados para el evento ID:", eventoActualId);
-        console.log("Invitados encontrados:", invitados);
-
     } catch (error) {
-        console.error("Error al cargar invitados:", error);
-        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error: ${error.message}</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar invitados.</td></tr>`;
     }
 }
 
@@ -180,7 +188,8 @@ btnVolverEventos.addEventListener('click', () => {
     seccionInvitados.classList.add('hidden');
     seccionEventos.classList.remove('hidden');
     eventoActualId = null;
-    cargarEventos(); // Recargamos eventos por si cambió algo
+    cargarEventos(); 
+    actualizarEstadisticas();
 });
 
 // ==========================================
@@ -196,7 +205,6 @@ btnNuevoEvento.addEventListener('click', () => {
 btnCerrarModalEvento.addEventListener('click', () => modalEvento.classList.add('hidden'));
 
 window.abrirModalEditarEvento = async (id) => {
-    // Buscamos los datos del evento para llenar el formulario
     const { data: ev, error } = await supabaseClient.schema('piscis').from('eventos').select('*').eq('id', id).single();
     if (error || !ev) return;
 
@@ -223,11 +231,8 @@ formEvento.addEventListener('submit', async (e) => {
 
     try {
         const datosEvento = { 
-            nombre_evento: nombre, 
-            tipo_evento: tipo, 
-            fecha_evento: fecha, 
-            lugar_nombre: lugar,
-            anfitrion_nombre: 'Admin' // Placeholder por ahora
+            nombre_evento: nombre, tipo_evento: tipo, fecha_evento: fecha, lugar_nombre: lugar,
+            anfitrion_nombre: 'Admin'
         };
 
         if (id) {
@@ -240,6 +245,7 @@ formEvento.addEventListener('submit', async (e) => {
         
         modalEvento.classList.add('hidden');
         cargarEventos(); 
+        actualizarEstadisticas();
 
     } catch (error) {
         alert("Error al guardar evento: " + error.message);
@@ -255,6 +261,7 @@ window.eliminarEvento = async (id) => {
         const { error } = await supabaseClient.schema('piscis').from('eventos').delete().eq('id', id);
         if (error) throw error;
         cargarEventos();
+        actualizarEstadisticas();
     } catch (error) {
         alert("Error al eliminar: " + error.message);
     }
@@ -309,9 +316,9 @@ formInvitado.addEventListener('submit', async (e) => {
         }
         
         modalInvitado.classList.add('hidden');
-        // Recargamos los invitados del evento actual
         const titulo = document.getElementById('tituloInvitados').innerText.replace('Invitados de: ', '');
         cargarInvitados(eventoActualId, titulo); 
+        actualizarEstadisticas();
 
     } catch (error) {
         alert("Error al guardar invitado: " + error.message);
@@ -328,6 +335,7 @@ window.eliminarInvitado = async (id) => {
         if (error) throw error;
         const titulo = document.getElementById('tituloInvitados').innerText.replace('Invitados de: ', '');
         cargarInvitados(eventoActualId, titulo);
+        actualizarEstadisticas();
     } catch (error) {
         alert("Error al eliminar: " + error.message);
     }
@@ -338,4 +346,5 @@ window.eliminarInvitado = async (id) => {
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     cargarEventos();
+    actualizarEstadisticas();
 });
