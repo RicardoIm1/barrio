@@ -1008,6 +1008,8 @@ function renderizarTablaAvisos() {
   if (!tbody) return;
   const usuario = API.getUsuarioActual();
   const esAdmin = usuario?.rol === "admin";
+  const tabla = tbody.closest("table");
+  if (tabla) tabla.classList.toggle("sin-acciones", !esAdmin);
   const esUrgente = (valor) => valor === true || valor === "TRUE" || valor === "true" || valor === 1 || valor === "1";
   let avisosFiltrados = [...todosLosAvisos];
   if (filtroStatusActual !== "todos")
@@ -1016,7 +1018,7 @@ function renderizarTablaAvisos() {
     );
   if (avisosFiltrados.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+      '<tr><td colspan="' + (esAdmin ? 6 : 5) + '" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
     return;
   }
   tbody.innerHTML = avisosFiltrados
