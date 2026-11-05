@@ -914,17 +914,17 @@
               const videoOriginal = aviso.video_url.trim();
               const videoSeguro = escapeHtml(videoOriginal);
               const esYouTube =
-                /(?:youtube\\.com\\/(?:watch|shorts|embed)|youtu\\.be\\/)/i.test(videoOriginal);
-              const esVimeo = /vimeo\\.com\\//i.test(videoOriginal);
+                /(?:youtube\.com\/(?:watch|shorts|embed)|youtu\.be\/)/i.test(videoOriginal);
+              const esVimeo = /vimeo\.com\//i.test(videoOriginal);
 
               if (esYouTube || esVimeo) {
                 let videoEmbed = "";
                 if (esYouTube) {
                   const idYouTube =
-                    videoOriginal.match(/(?:v=|youtu\\.be\\/|shorts\\/|embed\\/)([\\w-]{11})/i)?.[1];
+                    videoOriginal.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/i)?.[1];
                   if (idYouTube) videoEmbed = "https://www.youtube-nocookie.com/embed/" + idYouTube;
                 } else {
-                  const idVimeo = videoOriginal.match(/vimeo\\.com\\/(?:video\\/)?([0-9]+)/i)?.[1];
+                  const idVimeo = videoOriginal.match(/vimeo\.com\/(?:video\/)?([0-9]+)/i)?.[1];
                   if (idVimeo) videoEmbed = "https://player.vimeo.com/video/" + idVimeo;
                 }
 
