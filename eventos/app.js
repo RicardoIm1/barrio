@@ -61,17 +61,33 @@ async function cargarEventos() {
         if (error) throw error;
 
         // Actualizar stats
-        document.querySelectorAll('.stat-number')[0].innerText = eventos.length;
+        const statNumbers = document.querySelectorAll('.stat-number');
+        if (statNumbers.length > 0) statNumbers[0].innerText = eventos.length;
 
         if (!tbody) return;
         tbody.innerHTML = '';
 
+        // Si no hay eventos, mostramos mensaje amigable
+        if (eventos.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">No hay eventos creados aún.</td></tr>`;
+            return;
+        }
+
         eventos.forEach(ev => {
-            const fechaFormateada = new Date(ev.fecha_evento + 'T00:00:00').toLocaleDateString('es-MX');
+            // 🛡️ FORMATEO DE FECHA SEGURO (Sin desfase de zona horaria)
+            let fechaFormateada = 'Sin fecha';
+            if (ev.fecha_evento) {
+                // Si viene como "2026-05-31", lo partimos y lo unimos como "31/05/2026"
+                const partes = ev.fecha_evento.split('-');
+                if (partes.length === 3) {
+                    fechaFormateada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+                }
+            }
+
             const fila = `
                 <tr>
-                    <td><strong>${ev.nombre_evento}</strong></td>
-                    <td style="text-transform: capitalize;">${ev.tipo_evento}</td>
+                    <td><strong>${ev.nombre_evento || 'Sin nombre'}</strong></td>
+                    <td style="text-transform: capitalize;">${ev.tipo_evento || 'N/A'}</td>
                     <td>${fechaFormateada}</td>
                     <td>${ev.lugar_nombre || 'Sin lugar'}</td>
                     <td>
@@ -84,7 +100,9 @@ async function cargarEventos() {
             tbody.innerHTML += fila;
         });
     } catch (error) {
-        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar eventos.</td></tr>`;
+        // Aquí imprimimos el error real para saber qué pasa (luego lo quitamos)
+        console.error("Detalle del error:", error);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar eventos: ${error.message}</td></tr>`;
     }
 }
 
