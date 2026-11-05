@@ -5,7 +5,6 @@ const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduamF1bXBqZXJiYndsa2NneHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjQ5ODksImV4cCI6MjEwMzUwMDk4OX0.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Variable global para almacenar el ID del evento actual
 let eventoActualId = null; 
 
 // Elementos del DOM
@@ -13,63 +12,92 @@ const modal = document.getElementById('modalInvitado');
 const form = document.getElementById('formInvitado');
 const btnNuevo = document.getElementById('btnNuevoInvitado');
 const btnCerrar = document.getElementById('btnCerrarModal');
+const inputWhatsapp = document.getElementById('inputWhatsapp');
 
 // ==========================================
-// 2. READ: Cargar datos iniciales (Dashboard)
+// 🛡️ FUNCIONES DE SANITIZACIÓN Y MÁSCARA
+// ==========================================
+
+// Función para limpiar el nombre (evita inyecciones HTML y espacios dobles)
+function sanitizarTexto(texto) {
+    if (!texto) return '';
+    // 1. Quitar etiquetas HTML
+    const sinHTML = texto.replace(/<[^>]*>?/gm, '');
+    // 2. Quitar espacios al inicio/final y espacios dobles
+    return sinHTML.trim().replace(/\s+/g, ' ');
+}
+
+// Función para formatear el teléfono visualmente: +52 (322) 265-4110
+function formatearTelefonoVisual(valor) {
+    // Quitamos todo lo que no sea número
+    let numeros = valor.replace(/\D/g, '');
+    
+    // Si empieza con 52, lo respetamos. Si no, se lo agregamos.
+    if (!numeros.startsWith('52')) {
+        numeros = '52' + numeros;
+    }
+    
+    // Cortamos a un máximo de 12 dígitos (52 + 10 del celular)
+    numeros = numeros.slice(0, 12);
+
+    // Aplicamos la máscara visual
+    let formateado = '+52';
+    if (numeros.length > 2) formateado += ' (' + numeros.slice(2, 5);
+    if (numeros.length > 5) formateado += ') ' + numeros.slice(5, 8);
+    if (numeros.length > 8) formateado += '-' + numeros.slice(8, 12);
+
+    return formateado;
+}
+
+// Evento: Mientras el usuario escribe el teléfono, se formatea
+inputWhatsapp.addEventListener('input', (e) => {
+    e.target.value = formatearTelefonoVisual(e.target.value);
+});
+
+// ==========================================
+// 2. READ: Cargar datos iniciales
 // ==========================================
 async function cargarDashboard() {
     const tbody = document.querySelector('#tablaInvitados');
-    
-    // Mostrar mensaje de carga
-    if (tbody) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando datos...</td></tr>`;
-    }
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando datos...</td></tr>`;
 
     try {
-        // A) Traer los eventos del esquema 'piscis'
         const { data: eventos, error: errEventos } = await supabaseClient
-            .schema('piscis')
-            .from('eventos')
-            .select('*')
-            .order('fecha_evento', { ascending: true });
-
+            .schema('piscis').from('eventos').select('*').order('fecha_evento', { ascending: true });
         if (errEventos) throw errEventos;
 
-        // 🔥 ASIGNAR EL ID DEL EVENTO ACTUAL (Para que el formulario de invitados funcione)
         if (eventos && eventos.length > 0) {
             eventoActualId = eventos[0].id;
-            // Actualizamos el título de la sección con el nombre del evento real
             const headerTitle = document.querySelector('.table-header h3');
             if (headerTitle) headerTitle.innerText = `Invitados (${eventos[0].nombre_evento})`;
         }
 
-        // B) Traer los invitados (filtrados por el evento actual)
         let query = supabaseClient.schema('piscis').from('invitados').select('*');
-        if (eventoActualId) {
-            query = query.eq('evento_id', eventoActualId);
-        }
+        if (eventoActualId) query = query.eq('evento_id', eventoActualId);
+        
         const { data: invitados, error: errInvitados } = await query;
         if (errInvitados) throw errInvitados;
 
-        // C) Actualizar las estadísticas de las tarjetas superiores
         const statNumbers = document.querySelectorAll('.stat-number');
         if (statNumbers.length >= 2) {
             statNumbers[0].innerText = eventos.length; 
             statNumbers[1].innerText = invitados.length; 
         }
 
-        // D) Llenar la tabla de invitados
         if (!tbody) return;
-        tbody.innerHTML = ''; // Limpiamos el mensaje de carga
+        tbody.innerHTML = '';
 
         invitados.forEach(inv => {
             let badgeClass = inv.estado_pase === 'guardado_en_wallet' ? 'badge-success' : 'badge-pending';
             let badgeText = inv.estado_pase === 'guardado_en_wallet' ? 'Guardado en Wallet' : 'Pendiente';
+            
+            // Formateamos el teléfono para mostrarlo bonito en la tabla también
+            const telVisual = inv.whatsapp ? formatearTelefonoVisual(inv.whatsapp) : 'Sin número';
 
             const fila = `
                 <tr>
                     <td>${inv.nombre}</td>
-                    <td>${inv.whatsapp || 'Sin número'}</td>
+                    <td>${telVisual}</td>
                     <td><span class="badge ${badgeClass}">${badgeText}</span></td>
                     <td>
                         <button class="btn-sm btn-edit" onclick="abrirModalEditar('${inv.id}', '${inv.nombre}', '${inv.whatsapp || ''}')">Editar</button>
@@ -80,13 +108,9 @@ async function cargarDashboard() {
             tbody.innerHTML += fila;
         });
 
-        console.log("✅ Dashboard cargado. Evento actual:", eventoActualId);
-
     } catch (error) {
         console.error("❌ Error cargando datos:", error.message);
-        if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red; padding: 2rem;">Error al cargar los datos.</td></tr>`;
-        }
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar.</td></tr>`;
     }
 }
 
@@ -97,18 +121,17 @@ btnNuevo.addEventListener('click', () => {
     form.reset();
     document.getElementById('invitadoId').value = '';
     document.getElementById('modalTitulo').innerText = 'Nuevo Invitado';
+    inputWhatsapp.value = '+52 '; // Valor por defecto al abrir
     modal.classList.remove('hidden');
 });
 
-btnCerrar.addEventListener('click', () => {
-    modal.classList.add('hidden');
-});
+btnCerrar.addEventListener('click', () => modal.classList.add('hidden'));
 
-// Función global para el botón "Editar" de la tabla
 window.abrirModalEditar = (id, nombre, whatsapp) => {
     document.getElementById('invitadoId').value = id;
     document.getElementById('inputNombre').value = nombre;
-    document.getElementById('inputWhatsapp').value = whatsapp;
+    // Formateamos el teléfono de la BD para mostrarlo en el input
+    inputWhatsapp.value = whatsapp ? formatearTelefonoVisual(whatsapp) : '+52 ';
     document.getElementById('modalTitulo').innerText = 'Editar Invitado';
     modal.classList.remove('hidden');
 };
@@ -119,15 +142,24 @@ window.abrirModalEditar = (id, nombre, whatsapp) => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // 🔥 VALIDACIÓN CLAVE: Evitar error si no hay evento cargado
     if (!eventoActualId) {
-        alert("Error: No hay un evento seleccionado en el sistema. Recarga la página.");
+        alert("Error: No hay un evento seleccionado. Recarga la página.");
         return;
     }
 
     const id = document.getElementById('invitadoId').value;
-    const nombre = document.getElementById('inputNombre').value;
-    const whatsapp = document.getElementById('inputWhatsapp').value;
+    
+    // 🛡️ SANITIZAMOS EL NOMBRE antes de enviarlo
+    const nombreLimpio = sanitizarTexto(document.getElementById('inputNombre').value);
+    
+    // 🛡️ LIMPIAMOS EL TELÉFONO (solo números, sin espacios ni paréntesis)
+    const whatsappLimpio = inputWhatsapp.value.replace(/\D/g, '');
+
+    // Validación básica de longitud de teléfono (52 + 10 = 12 dígitos)
+    if (whatsappLimpio.length > 2 && whatsappLimpio.length < 12) {
+        alert("Por favor, ingresa un número de WhatsApp válido (10 dígitos).");
+        return;
+    }
 
     const btnGuardar = document.getElementById('btnGuardar');
     btnGuardar.innerText = 'Guardando...';
@@ -135,26 +167,24 @@ form.addEventListener('submit', async (e) => {
 
     try {
         if (id) {
-            // UPDATE (Actualizar)
+            // UPDATE
             const { error } = await supabaseClient.schema('piscis').from('invitados')
-                .update({ nombre, whatsapp }).eq('id', id);
+                .update({ nombre: nombreLimpio, whatsapp: whatsappLimpio }).eq('id', id);
             if (error) throw error;
-            console.log("✅ Invitado actualizado");
         } else {
-            // CREATE (Crear nuevo)
+            // CREATE
             const { error } = await supabaseClient.schema('piscis').from('invitados')
                 .insert([{ 
                     evento_id: eventoActualId, 
-                    nombre: nombre, 
-                    whatsapp: whatsapp, 
+                    nombre: nombreLimpio, 
+                    whatsapp: whatsappLimpio, 
                     estado_pase: 'pendiente' 
                 }]);
             if (error) throw error;
-            console.log("✅ Invitado creado");
         }
         
         modal.classList.add('hidden');
-        cargarDashboard(); // Recargar tabla con los datos frescos
+        cargarDashboard(); 
 
     } catch (error) {
         console.error("Error guardando:", error.message);
@@ -166,25 +196,18 @@ form.addEventListener('submit', async (e) => {
 });
 
 // ==========================================
-// 5. DELETE: Eliminar Invitado
+// 5. DELETE
 // ==========================================
 window.eliminarInvitado = async (id) => {
     if (!confirm('¿Estás seguro de eliminar a este invitado?')) return;
-
     try {
-        const { error } = await supabaseClient.schema('piscis').from('invitados')
-            .delete().eq('id', id);
+        const { error } = await supabaseClient.schema('piscis').from('invitados').delete().eq('id', id);
         if (error) throw error;
-        
-        console.log("✅ Invitado eliminado");
-        cargarDashboard(); // Recargar tabla
+        cargarDashboard();
     } catch (error) {
-        console.error("Error eliminando:", error.message);
         alert("Error al eliminar: " + error.message);
     }
 };
 
-// ==========================================
-// 6. INICIALIZACIÓN
-// ==========================================
+// Iniciar
 document.addEventListener('DOMContentLoaded', cargarDashboard);
