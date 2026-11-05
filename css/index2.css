@@ -624,7 +624,7 @@
 }
 
 .card-share-row{display:flex;justify-content:flex-end;align-items:center;margin-top:9px;position:relative;z-index:8}
-.share-post-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:32px;padding:6px 12px;border:1px solid rgba(212,160,67,.55);border-radius:999px;background:rgba(255,255,255,.92);color:#34495e;font:700 .76rem/1.1 inherit;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease;white-space:nowrap}
+.share-post-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:32px;padding:6px 12px;border:1px solid rgba(212,160,67,.55);border-radius:999px;background:rgba(255,255,255,.92);color:#34495e;font-family:inherit;font-size:.76rem;font-weight:700;line-height:1.1;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease;white-space:nowrap}
 .share-post-btn:hover{background:#fff7e6;border-color:#d4a043;transform:translateY(-1px)}
 .share-post-btn:focus-visible{outline:3px solid rgba(212,160,67,.35);outline-offset:2px}
 .share-post-btn span{font-size:1rem;line-height:1}
