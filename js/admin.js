@@ -1552,8 +1552,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
           rolSelect.addEventListener("change",()=>{
             if(rolSelect.value==="usuario"){
               const checks=Array.from(formAdmin.querySelectorAll('input[name="categorias"]'));
-              const estabanTodas=checks.every(x=>x.checked);
-              if(estabanTodas) checks.forEach(x=>{x.checked=x.value==="varios";});
+              checks.forEach(x=>{x.checked=x.value==="varios";});
             }
           });
         }
