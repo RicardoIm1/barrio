@@ -185,6 +185,7 @@
 
                 if (cerrarBtn) {
                     const nuevoCerrar = cerrarBtn.cloneNode(true);
+                    nuevoCerrar.dataset.logoutInit = '1';
                     cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
                     nuevoCerrar.addEventListener('click', function (e) {
                         e.preventDefault();
