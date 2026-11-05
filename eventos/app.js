@@ -494,4 +494,43 @@ formChecklist.addEventListener('submit', async (e) => {
     const fecha_limite = document.getElementById('inputFechaLimite').value || null;
     const prioridad = document.getElementById('inputPrioridad').value;
     const btnGuardar = document.getElementById('btnGuardarChecklist');
-    btnGuard
+    btnGuardar.innerText = 'Guardando...';
+    btnGuardar.disabled = true;
+    try {
+        if (id) {
+            const { error } = await supabaseClient.schema('piscis').from('checklist_evento').update({ tarea, fecha_limite, prioridad }).eq('id', id);
+            if (error) throw error;
+        } else {
+            const { error } = await supabaseClient.schema('piscis').from('checklist_evento').insert([{ evento_id: eventoActualId, tarea, fecha_limite, prioridad }]);
+            if (error) throw error;
+        }
+        modalChecklist.classList.add('hidden');
+        cargarChecklist();
+    } catch (error) { alert("Error: " + error.message); }
+    finally { btnGuardar.innerText = 'Guardar'; btnGuardar.disabled = false; }
+});
+
+window.toggleChecklist = async (id, completado) => {
+    try {
+        const { error } = await supabaseClient.schema('piscis').from('checklist_evento').update({ completado }).eq('id', id);
+        if (error) throw error;
+        cargarChecklist();
+    } catch (error) { alert("Error al actualizar"); }
+};
+
+window.eliminarChecklist = async (id) => {
+    if (!confirm('¿Eliminar esta tarea?')) return;
+    try {
+        const { error } = await supabaseClient.schema('piscis').from('checklist_evento').delete().eq('id', id);
+        if (error) throw error;
+        cargarChecklist();
+    } catch (error) { alert("Error al eliminar"); }
+};
+
+// ==========================================
+// 🚀 INICIALIZACIÓN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    cargarEventos();
+    actualizarEstadisticas();
+});
