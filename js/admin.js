@@ -1399,12 +1399,22 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       '#modal-ficha-usuario .fu-box{margin-top:12px;padding:14px;border:1px solid #e2eaf1;border-radius:14px;background:#fff}#modal-ficha-usuario .fu-box h4{margin:0 0 10px;font-size:.9rem;color:#344f65}'+
       '#modal-ficha-usuario .fu-chart{display:block;width:100%;height:170px}#modal-ficha-usuario .fu-table-wrap{overflow-x:auto}#modal-ficha-usuario .fu-table{width:100%;border-collapse:collapse;font-size:.78rem}'+
       '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
-      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:18px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}}';
+      '#modal-ficha-usuario .fu-admin-form{padding:14px;border:1px solid #dfe7ee;border-radius:13px;background:#fff;font-size:.82rem}#modal-ficha-usuario .fu-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal-ficha-usuario .fu-admin-grid label{display:grid;gap:5px;font-weight:600;color:#536779}#modal-ficha-usuario .fu-admin-form select{width:100%;padding:8px;border:1px solid #d6e0e8;border-radius:8px;background:#fff;font:inherit}#modal-ficha-usuario .fu-admin-form fieldset{margin:12px 0 0;padding:10px;border:1px solid #e1e8ef;border-radius:9px}#modal-ficha-usuario .fu-admin-form legend{padding:0 5px;font-weight:600}#modal-ficha-usuario .fu-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}#modal-ficha-usuario .fu-categorias label{display:flex;align-items:center;gap:6px}#modal-ficha-usuario .fu-admin-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}#modal-ficha-usuario .fu-admin-actions button{border:0;border-radius:9px;background:#2c3e50;color:#fff;padding:9px 14px;font:600 .82rem system-ui;cursor:pointer}'+
+      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:18px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}#modal-ficha-usuario .fu-admin-grid{grid-template-columns:1fr}}';
     document.head.appendChild(st);
     const modal=document.createElement("div"); modal.id="modal-ficha-usuario";
     modal.innerHTML='<section class="fu-panel" role="dialog" aria-modal="true" aria-labelledby="fu-titulo">'+
       '<header class="fu-head"><div><h2 id="fu-titulo">Ficha del usuario</h2><p id="fu-subtitulo" class="fu-sub"></p></div><button type="button" class="fu-close" id="fu-cerrar" aria-label="Cerrar ficha">×</button></header>'+
       '<section class="fu-section"><h3>Datos del usuario</h3><div id="fu-datos" class="fu-fields"><div class="fu-muted">Cargando datos…</div></div></section>'+
+      '<section class="fu-section" id="fu-admin-edit" hidden><h3>Administración del perfil</h3><form id="fu-admin-form" class="fu-admin-form">'+
+      '<div class="fu-admin-grid"><label>Rol<select name="rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></label>'+
+      '<label>Estado<select name="activo"><option value="true">Activo</option><option value="false">Inactivo</option></select></label></div>'+
+      '<fieldset><legend>Categorías permitidas</legend><div class="fu-categorias">'+
+      '<label><input type="checkbox" name="categorias" value="urgente"> Urgente</label><label><input type="checkbox" name="categorias" value="escuelas"> Escuelas</label>'+
+      '<label><input type="checkbox" name="categorias" value="servicios"> Servicios</label><label><input type="checkbox" name="categorias" value="comercios"> Comercios</label>'+
+      '<label><input type="checkbox" name="categorias" value="eventos"> Eventos</label><label><input type="checkbox" name="categorias" value="gobierno"> Gobierno</label>'+
+      '<label><input type="checkbox" name="categorias" value="varios"> Varios</label></div></fieldset>'+
+      '<div class="fu-admin-actions"><button type="submit">Guardar perfil</button><span id="fu-admin-status" role="status" aria-live="polite"></span></div></form></section>'+
       '<section class="fu-section"><h3>Estadísticas de sus publicaciones</h3><div class="fu-stats">'+
       '<div class="fu-stat"><span>Publicaciones</span><strong id="fu-total">…</strong></div><div class="fu-stat"><span>Avisos activos</span><strong id="fu-activos">…</strong></div><div class="fu-stat"><span>Vistas totales</span><strong id="fu-vistas">…</strong></div>'+
       '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
@@ -1414,6 +1424,31 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     const cerrar=function(){modal.style.display="none";document.body.style.overflow="";};
     modal.querySelector("#fu-cerrar").addEventListener("click",cerrar);
     modal.addEventListener("click",function(e){if(e.target===modal)cerrar();});
+    modal.addEventListener("submit", async function(e) {
+      if (e.target.id !== "fu-admin-form") return;
+      e.preventDefault();
+      const form=e.target, status=document.getElementById("fu-admin-status"), boton=form.querySelector('button[type="submit"]');
+      const objetivo=form.dataset.userId;
+      if (!objetivo) return;
+      const categorias=Array.from(form.querySelectorAll('input[name="categorias"]:checked')).map(x=>x.value);
+      const payload={rol:form.elements.rol.value,activo:form.elements.activo.value==="true",categorias:categorias.length===7?"todas":categorias.join(",")};
+      if (!categorias.length) { status.textContent="Selecciona al menos una categoría."; return; }
+      boton.disabled=true; status.textContent="Guardando…";
+      try {
+        const client=typeof window.getSupabaseClient==="function"?await window.getSupabaseClient():await window.obtenerSupabaseClient();
+        const {data,error}=await client.from("usuarios").update(payload).eq("id",objetivo).select("id,rol,categorias,activo").single();
+        if(error) throw error;
+        const item=(window.__elBarrioUsuariosAdmin||[]).find(u=>String(u.id)===String(objetivo));
+        if(item) Object.assign(item,data);
+        status.textContent="Perfil actualizado.";
+        await cargarUsuariosAdmin();
+        const actual=(window.__elBarrioUsuariosAdmin||[]).find(u=>String(u.id)===String(objetivo));
+        if(actual) { form.elements.rol.value=actual.rol||"usuario"; form.elements.activo.value=actual.activo===false?"false":"true"; }
+      } catch(error) {
+        console.error("Error actualizando perfil de usuario:",error);
+        status.textContent=error.message||"No se pudo actualizar el perfil.";
+      } finally { boton.disabled=false; }
+    });
     document.addEventListener("keydown",function(e){if(e.key==="Escape"&&modal.style.display==="flex")cerrar();});
   }
   function dibujarGrafica(avisos) {
@@ -1443,6 +1478,22 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       ["Estado",usuario.activo===true||String(usuario.activo).toUpperCase()==="TRUE"?"Activo":"Inactivo"],["Categorías",usuario.categorias],
       ["Registro",fecha(usuario.fecha_registro||usuario.created_at)],["Último acceso",fecha(usuario.ultimo_acceso)],["ID",usuario.id]].filter(function(c){return c[1]!==undefined&&c[1]!==null&&String(c[1]).trim()!=="";});
     document.getElementById("fu-datos").innerHTML=campos.map(function(c){return '<div class="fu-field"><span class="fu-label">'+esc(c[0])+'</span><span class="fu-value">'+esc(c[1])+'</span></div>';}).join("")||'<div class="fu-muted">No hay datos adicionales disponibles.</div>';
+    const esAdmin=API.getUsuarioActual()?.rol==="admin";
+    const edit=document.getElementById("fu-admin-edit"), formAdmin=document.getElementById("fu-admin-form");
+    if(edit&&formAdmin){
+      edit.hidden=!esAdmin;
+      if(esAdmin){
+        formAdmin.dataset.userId=String(id);
+        formAdmin.elements.rol.value=usuario.rol||"usuario";
+        formAdmin.elements.activo.value=usuario.activo===false||String(usuario.activo).toUpperCase()==="FALSE"?"false":"true";
+        const raw=Array.isArray(usuario.categorias)?usuario.categorias:(String(usuario.categorias||"todas").toLowerCase()==="todas"?categoriasPerfil.map(x=>x[0]):String(usuario.categorias).split(",").map(x=>x.trim().toLowerCase()));
+        formAdmin.querySelectorAll('input[name="categorias"]').forEach(x=>{x.checked=raw.includes(x.value);});
+        const rolSelect=formAdmin.elements.rol;
+        if(String(id)===String(API.getUsuarioActual()?.id)){rolSelect.disabled=true;rolSelect.title="No puedes cambiar tu propio rol desde esta ficha.";}
+        else {rolSelect.disabled=false;rolSelect.title="";}
+        document.getElementById("fu-admin-status").textContent="";
+      }
+    }
     ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="…";});
     document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr>';
     modal.style.display="flex";document.body.style.overflow="hidden";
