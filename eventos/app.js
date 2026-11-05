@@ -5,36 +5,42 @@ const SUPABASE_URL = 'https://gnjaumpjerbbwlkcgxqa.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduamF1bXBqZXJiYndsa2NneHFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc5MjQ5ODksImV4cCI6MjEwMzUwMDk4OX0.B6QRJN4gg1NuTmv-RyFBeWQaTmlFUoOYDZlkYaiFUjU';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Variables globales
 let eventoActualId = null; 
+let tipoEventoActual = null;
 
-// Elementos del DOM
-const modal = document.getElementById('modalInvitado');
-const form = document.getElementById('formInvitado');
-const btnNuevo = document.getElementById('btnNuevoInvitado');
-const btnCerrar = document.getElementById('btnCerrarModal');
+// Elementos del DOM - Eventos
+const formEvento = document.getElementById('formEvento');
+const modalEvento = document.getElementById('modalEvento');
+const btnNuevoEvento = document.getElementById('btnNuevoEvento');
+const btnCerrarModalEvento = document.getElementById('btnCerrarModalEvento');
+const seccionEventos = document.getElementById('seccionEventos');
+const seccionInvitados = document.getElementById('seccionInvitados');
+
+// Elementos del DOM - Invitados
+const modalInvitado = document.getElementById('modalInvitado');
+const formInvitado = document.getElementById('formInvitado');
+const btnNuevoInvitado = document.getElementById('btnNuevoInvitado');
+const btnCerrarModalInvitado = document.getElementById('btnCerrarModal');
+const btnVolverEventos = document.getElementById('btnVolverEventos');
 const inputWhatsapp = document.getElementById('inputWhatsapp');
 
 // ==========================================
-// 🛡️ FUNCIONES DE SANITIZACIÓN Y MÁSCARA
+// 🛡️ SANITIZACIÓN Y MÁSCARA
 // ==========================================
 function sanitizarTexto(texto) {
     if (!texto) return '';
-    const sinHTML = texto.replace(/<[^>]*>?/gm, '');
-    return sinHTML.trim().replace(/\s+/g, ' ');
+    return texto.replace(/<[^>]*>?/gm, '').trim().replace(/\s+/g, ' ');
 }
 
 function formatearTelefonoVisual(valor) {
     let numeros = valor.replace(/\D/g, '');
-    if (!numeros.startsWith('52')) {
-        numeros = '52' + numeros;
-    }
+    if (!numeros.startsWith('52')) numeros = '52' + numeros;
     numeros = numeros.slice(0, 12);
-
     let formateado = '+52';
     if (numeros.length > 2) formateado += ' (' + numeros.slice(2, 5);
     if (numeros.length > 5) formateado += ') ' + numeros.slice(5, 8);
     if (numeros.length > 8) formateado += '-' + numeros.slice(8, 12);
-
     return formateado;
 }
 
@@ -43,37 +49,73 @@ inputWhatsapp.addEventListener('input', (e) => {
 });
 
 // ==========================================
-// 2. READ: Cargar datos iniciales
+// 📅 READ: Cargar EVENTOS
 // ==========================================
-async function cargarDashboard() {
-    const tbody = document.querySelector('#tablaInvitados');
-    if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando datos...</td></tr>`;
+async function cargarEventos() {
+    const tbody = document.querySelector('#tablaEventos');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding: 2rem;">Cargando eventos...</td></tr>`;
 
     try {
-        const { data: eventos, error: errEventos } = await supabaseClient
+        const { data: eventos, error } = await supabaseClient
             .schema('piscis').from('eventos').select('*').order('fecha_evento', { ascending: true });
-        if (errEventos) throw errEventos;
+        if (error) throw error;
 
-        if (eventos && eventos.length > 0) {
-            eventoActualId = eventos[0].id;
-            const headerTitle = document.querySelector('.table-header h3');
-            if (headerTitle) headerTitle.innerText = `Invitados (${eventos[0].nombre_evento})`;
-        }
-
-        let query = supabaseClient.schema('piscis').from('invitados').select('*');
-        if (eventoActualId) query = query.eq('evento_id', eventoActualId);
-        
-        const { data: invitados, error: errInvitados } = await query;
-        if (errInvitados) throw errInvitados;
-
-        const statNumbers = document.querySelectorAll('.stat-number');
-        if (statNumbers.length >= 2) {
-            statNumbers[0].innerText = eventos.length; 
-            statNumbers[1].innerText = invitados.length; 
-        }
+        // Actualizar stats
+        document.querySelectorAll('.stat-number')[0].innerText = eventos.length;
 
         if (!tbody) return;
         tbody.innerHTML = '';
+
+        eventos.forEach(ev => {
+            const fechaFormateada = new Date(ev.fecha_evento + 'T00:00:00').toLocaleDateString('es-MX');
+            const fila = `
+                <tr>
+                    <td><strong>${ev.nombre_evento}</strong></td>
+                    <td style="text-transform: capitalize;">${ev.tipo_evento}</td>
+                    <td>${fechaFormateada}</td>
+                    <td>${ev.lugar_nombre || 'Sin lugar'}</td>
+                    <td>
+                        <button class="btn-sm btn-edit" onclick="verInvitados('${ev.id}', '${ev.nombre_evento}')">Ver Invitados</button>
+                        <button class="btn-sm" onclick="abrirModalEditarEvento('${ev.id}')">✏️</button>
+                        <button class="btn-sm btn-delete" onclick="eliminarEvento('${ev.id}')">🗑️</button>
+                    </td>
+                </tr>
+            `;
+            tbody.innerHTML += fila;
+        });
+    } catch (error) {
+        if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar eventos.</td></tr>`;
+    }
+}
+
+// ==========================================
+// 👥 READ: Cargar INVITADOS (De un evento específico)
+// ==========================================
+async function cargarInvitados(eventoId, nombreEvento) {
+    // Cambiamos de vista
+    seccionEventos.classList.add('hidden');
+    seccionInvitados.classList.remove('hidden');
+    document.getElementById('tituloInvitados').innerText = `Invitados de: ${nombreEvento}`;
+    eventoActualId = eventoId;
+
+    const tbody = document.querySelector('#tablaInvitados');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando invitados...</td></tr>`;
+
+    try {
+        const { data: invitados, error } = await supabaseClient
+            .schema('piscis').from('invitados').select('*').eq('evento_id', eventoId);
+        if (error) throw error;
+
+        // Actualizar stats
+        document.querySelectorAll('.stat-number')[1].innerText = invitados.length;
+
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (invitados.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999;">No hay invitados aún. ¡Añade el primero!</td></tr>`;
+            return;
+        }
 
         invitados.forEach(inv => {
             let badgeClass = inv.estado_pase === 'guardado_en_wallet' ? 'badge-success' : 'badge-pending';
@@ -86,7 +128,7 @@ async function cargarDashboard() {
                     <td>${telVisual}</td>
                     <td><span class="badge ${badgeClass}">${badgeText}</span></td>
                     <td>
-                        <button class="btn-sm btn-edit" onclick="abrirModalEditar('${inv.id}', '${inv.nombre}', '${inv.whatsapp || ''}')">Editar</button>
+                        <button class="btn-sm btn-edit" onclick="abrirModalEditarInvitado('${inv.id}', '${inv.nombre}', '${inv.whatsapp || ''}')">Editar</button>
                         <button class="btn-sm btn-delete" onclick="eliminarInvitado('${inv.id}')">Borrar</button>
                     </td>
                 </tr>
@@ -95,49 +137,130 @@ async function cargarDashboard() {
         });
 
     } catch (error) {
-        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar.</td></tr>`;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar invitados.</td></tr>`;
     }
 }
 
 // ==========================================
-// 3. MODAL: Abrir y Cerrar
+// 🔄 NAVEGACIÓN
 // ==========================================
-btnNuevo.addEventListener('click', () => {
-    form.reset();
+window.verInvitados = (id, nombre) => cargarInvitados(id, nombre);
+
+btnVolverEventos.addEventListener('click', () => {
+    seccionInvitados.classList.add('hidden');
+    seccionEventos.classList.remove('hidden');
+    eventoActualId = null;
+    cargarEventos(); // Recargamos eventos por si cambió algo
+});
+
+// ==========================================
+// ✍️ CREATE & UPDATE: EVENTOS
+// ==========================================
+btnNuevoEvento.addEventListener('click', () => {
+    formEvento.reset();
+    document.getElementById('eventoId').value = '';
+    document.getElementById('modalTituloEvento').innerText = 'Nuevo Evento';
+    modalEvento.classList.remove('hidden');
+});
+
+btnCerrarModalEvento.addEventListener('click', () => modalEvento.classList.add('hidden'));
+
+window.abrirModalEditarEvento = async (id) => {
+    // Buscamos los datos del evento para llenar el formulario
+    const { data: ev, error } = await supabaseClient.schema('piscis').from('eventos').select('*').eq('id', id).single();
+    if (error || !ev) return;
+
+    document.getElementById('eventoId').value = ev.id;
+    document.getElementById('inputNombreEvento').value = ev.nombre_evento;
+    document.getElementById('inputTipoEvento').value = ev.tipo_evento;
+    document.getElementById('inputFechaEvento').value = ev.fecha_evento;
+    document.getElementById('inputLugarEvento').value = ev.lugar_nombre || '';
+    document.getElementById('modalTituloEvento').innerText = 'Editar Evento';
+    modalEvento.classList.remove('hidden');
+};
+
+formEvento.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const id = document.getElementById('eventoId').value;
+    const nombre = sanitizarTexto(document.getElementById('inputNombreEvento').value);
+    const tipo = document.getElementById('inputTipoEvento').value;
+    const fecha = document.getElementById('inputFechaEvento').value;
+    const lugar = sanitizarTexto(document.getElementById('inputLugarEvento').value);
+
+    const btnGuardar = document.getElementById('btnGuardarEvento');
+    btnGuardar.innerText = 'Guardando...';
+    btnGuardar.disabled = true;
+
+    try {
+        const datosEvento = { 
+            nombre_evento: nombre, 
+            tipo_evento: tipo, 
+            fecha_evento: fecha, 
+            lugar_nombre: lugar,
+            anfitrion_nombre: 'Admin' // Placeholder por ahora
+        };
+
+        if (id) {
+            const { error } = await supabaseClient.schema('piscis').from('eventos').update(datosEvento).eq('id', id);
+            if (error) throw error;
+        } else {
+            const { error } = await supabaseClient.schema('piscis').from('eventos').insert([datosEvento]);
+            if (error) throw error;
+        }
+        
+        modalEvento.classList.add('hidden');
+        cargarEventos(); 
+
+    } catch (error) {
+        alert("Error al guardar evento: " + error.message);
+    } finally {
+        btnGuardar.innerText = 'Guardar';
+        btnGuardar.disabled = false;
+    }
+});
+
+window.eliminarEvento = async (id) => {
+    if (!confirm('¿Seguro que quieres borrar este evento? Se borrarán todos sus invitados.')) return;
+    try {
+        const { error } = await supabaseClient.schema('piscis').from('eventos').delete().eq('id', id);
+        if (error) throw error;
+        cargarEventos();
+    } catch (error) {
+        alert("Error al eliminar: " + error.message);
+    }
+};
+
+// ==========================================
+// ✍️ CREATE & UPDATE: INVITADOS
+// ==========================================
+btnNuevoInvitado.addEventListener('click', () => {
+    formInvitado.reset();
     document.getElementById('invitadoId').value = '';
     document.getElementById('modalTitulo').innerText = 'Nuevo Invitado';
     inputWhatsapp.value = '+52 '; 
-    modal.classList.remove('hidden');
+    modalInvitado.classList.remove('hidden');
 });
 
-btnCerrar.addEventListener('click', () => modal.classList.add('hidden'));
+btnCerrarModalInvitado.addEventListener('click', () => modalInvitado.classList.add('hidden'));
 
-window.abrirModalEditar = (id, nombre, whatsapp) => {
+window.abrirModalEditarInvitado = (id, nombre, whatsapp) => {
     document.getElementById('invitadoId').value = id;
     document.getElementById('inputNombre').value = nombre;
     inputWhatsapp.value = whatsapp ? formatearTelefonoVisual(whatsapp) : '+52 ';
     document.getElementById('modalTitulo').innerText = 'Editar Invitado';
-    modal.classList.remove('hidden');
+    modalInvitado.classList.remove('hidden');
 };
 
-// ==========================================
-// 4. CREATE & UPDATE: Guardar Formulario
-// ==========================================
-form.addEventListener('submit', async (e) => {
+formInvitado.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    if (!eventoActualId) {
-        alert("Error: No hay un evento seleccionado. Recarga la página.");
-        return;
-    }
+    if (!eventoActualId) return alert("Error: No hay evento seleccionado.");
 
     const id = document.getElementById('invitadoId').value;
     const nombreLimpio = sanitizarTexto(document.getElementById('inputNombre').value);
     const whatsappLimpio = inputWhatsapp.value.replace(/\D/g, '');
 
     if (whatsappLimpio.length > 2 && whatsappLimpio.length < 12) {
-        alert("Por favor, ingresa un número de WhatsApp válido (10 dígitos).");
-        return;
+        return alert("Ingresa un número de WhatsApp válido (10 dígitos).");
     }
 
     const btnGuardar = document.getElementById('btnGuardar');
@@ -151,39 +274,38 @@ form.addEventListener('submit', async (e) => {
             if (error) throw error;
         } else {
             const { error } = await supabaseClient.schema('piscis').from('invitados')
-                .insert([{ 
-                    evento_id: eventoActualId, 
-                    nombre: nombreLimpio, 
-                    whatsapp: whatsappLimpio, 
-                    estado_pase: 'pendiente' 
-                }]);
+                .insert([{ evento_id: eventoActualId, nombre: nombreLimpio, whatsapp: whatsappLimpio, estado_pase: 'pendiente' }]);
             if (error) throw error;
         }
         
-        modal.classList.add('hidden');
-        cargarDashboard(); 
+        modalInvitado.classList.add('hidden');
+        // Recargamos los invitados del evento actual
+        const titulo = document.getElementById('tituloInvitados').innerText.replace('Invitados de: ', '');
+        cargarInvitados(eventoActualId, titulo); 
 
     } catch (error) {
-        alert("Error al guardar: " + error.message);
+        alert("Error al guardar invitado: " + error.message);
     } finally {
         btnGuardar.innerText = 'Guardar';
         btnGuardar.disabled = false;
     }
 });
 
-// ==========================================
-// 5. DELETE
-// ==========================================
 window.eliminarInvitado = async (id) => {
     if (!confirm('¿Estás seguro de eliminar a este invitado?')) return;
     try {
         const { error } = await supabaseClient.schema('piscis').from('invitados').delete().eq('id', id);
         if (error) throw error;
-        cargarDashboard();
+        const titulo = document.getElementById('tituloInvitados').innerText.replace('Invitados de: ', '');
+        cargarInvitados(eventoActualId, titulo);
     } catch (error) {
         alert("Error al eliminar: " + error.message);
     }
 };
 
-// Iniciar
-document.addEventListener('DOMContentLoaded', cargarDashboard);
+// ==========================================
+// 🚀 INICIALIZACIÓN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    cargarEventos();
+});

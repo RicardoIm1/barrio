@@ -39,51 +39,49 @@
             </div>
         </header>
 
-        <!-- Tarjetas de Resumen (Estadísticas) -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <h3>Eventos Activos</h3>
-                <p class="stat-number">3</p>
-                <span class="stat-desc">Bodas y XV Años</span>
+                <!-- SECCIÓN 1: TABLA DE EVENTOS -->
+        <section class="table-section" id="seccionEventos">
+            <div class="table-header">
+                <h3>Todos los Eventos</h3>
+                <button class="btn-primary" id="btnNuevoEvento">+ Añadir Evento</button>
             </div>
-            <div class="stat-card">
-                <h3>Pases Generados</h3>
-                <p class="stat-number">450</p>
-                <span class="stat-desc">Enviados a Google Wallet</span>
-            </div>
-            <div class="stat-card">
-                <h3>Confirmaciones</h3>
-                <p class="stat-number">280</p>
-                <span class="stat-desc">Invitados confirmados</span>
-            </div>
-            <div class="stat-card highlight">
-                <h3>Fondo Común</h3>
-                <p class="stat-number">$45,000</p>
-                <span class="stat-desc">MXN recaudados</span>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Tipo</th>
+                        <th>Fecha</th>
+                        <th>Lugar</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaEventos">
+                    <!-- Aquí JavaScript inyectará las filas -->
+                </tbody>
+            </table>
         </section>
 
-        <!-- Tabla de Invitados (Ejemplo) -->
-        <section class="table-section">
-        <div class="table-header">
-            <h3>Invitados (Boda Andrea & Gerardo)</h3>
-            <!-- Botón que abre el modal para crear -->
-            <button class="btn-primary" id="btnNuevoInvitado">+ Añadir Invitado</button>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>WhatsApp</th>
-                    <th>Estado del Pase</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaInvitados">
-                <!-- Aquí JavaScript inyectará las filas -->
-            </tbody>
-        </table>
-    </section>
+        <!-- SECCIÓN 2: TABLA DE INVITADOS (Oculta al inicio) -->
+        <section class="table-section hidden" id="seccionInvitados">
+            <div class="table-header">
+                <div>
+                    <button class="btn-sm" id="btnVolverEventos" style="margin-bottom: 0.5rem;">← Volver a Eventos</button>
+                    <h3 id="tituloInvitados">Invitados</h3>
+                </div>
+                <button class="btn-primary" id="btnNuevoInvitado">+ Añadir Invitado</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>WhatsApp</th>
+                        <th>Estado del Pase</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaInvitados"></tbody>
+            </table>
+        </section>
 </main>
 
 <!-- MODAL PARA CREAR/EDITAR INVITADOS -->
@@ -110,7 +108,42 @@
         </form>
     </div>
 </div>
-
+<!-- MODAL PARA CREAR/EDITAR EVENTOS -->
+<div id="modalEvento" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3 id="modalTituloEvento">Nuevo Evento</h3>
+        <form id="formEvento">
+            <input type="hidden" id="eventoId" value="">
+            
+            <div class="form-group">
+                <label>Nombre del Evento:</label>
+                <input type="text" id="inputNombreEvento" required placeholder="Ej: Boda de Andrea & Gerardo">
+            </div>
+            <div class="form-group">
+                <label>Tipo de Evento:</label>
+                <select id="inputTipoEvento" required>
+                    <option value="boda">Boda</option>
+                    <option value="xv_anos">XV Años</option>
+                    <option value="bautizo">Bautizo</option>
+                    <option value="corporativo">Corporativo</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha:</label>
+                <input type="date" id="inputFechaEvento" required>
+            </div>
+            <div class="form-group">
+                <label>Lugar:</label>
+                <input type="text" id="inputLugarEvento" placeholder="Ej: Stock & Woods">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="btnCerrarModalEvento">Cancelar</button>
+                <button type="submit" class="btn-primary" id="btnGuardarEvento">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/eventos/app.js"></script>
