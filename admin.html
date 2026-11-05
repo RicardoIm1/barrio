@@ -1813,6 +1813,18 @@
             overflow-wrap: anywhere;
         }
 
+        /* Usuarios normales: ocultar por completo la columna Acciones. */
+        .tabla-admin.sin-acciones th:last-child,
+        .tabla-admin.sin-acciones td:last-child {
+            display: none !important;
+        }
+
+        .tabla-admin.sin-acciones th:nth-child(1) { width: 8% !important; }
+        .tabla-admin.sin-acciones th:nth-child(2) { width: 10% !important; }
+        .tabla-admin.sin-acciones th:nth-child(3) { width: 36% !important; }
+        .tabla-admin.sin-acciones th:nth-child(4) { width: 28% !important; }
+        .tabla-admin.sin-acciones th:nth-child(5) { width: 18% !important; }
+
         /* Avisos: prioriza título y acciones sin perder ninguna columna */
         #tab-lista .tabla-admin th:nth-child(1),
         #tab-lista .tabla-admin td:nth-child(1) { width: 7%; }
@@ -1916,7 +1928,7 @@
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20261105-1"></script>
     <script src="/js/ui.js?v=20261105-2"></script>
-    <script src="/js/admin.js?v=20261105-2"></script>
+    <script src="/js/admin.js?v=20261105-3"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
     <script src="/js/push.js?v=20260908-1"></script>
 
