@@ -110,22 +110,29 @@ async function cargarEventos() {
 // 👥 READ: Cargar INVITADOS (De un evento específico)
 // ==========================================
 async function cargarInvitados(eventoId, nombreEvento) {
-    // Cambiamos de vista
     seccionEventos.classList.add('hidden');
     seccionInvitados.classList.remove('hidden');
     document.getElementById('tituloInvitados').innerText = `Invitados de: ${nombreEvento}`;
-    eventoActualId = eventoId;
+    
+    // 🔥 Aseguramos que el ID sea un string limpio
+    eventoActualId = String(eventoId).trim();
 
     const tbody = document.querySelector('#tablaInvitados');
     if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#999; padding: 2rem;">Cargando invitados...</td></tr>`;
 
     try {
+        // 🔥 Usamos .eq() con el ID limpio
         const { data: invitados, error } = await supabaseClient
-            .schema('piscis').from('invitados').select('*').eq('evento_id', eventoId);
+            .schema('piscis')
+            .from('invitados')
+            .select('*')
+            .eq('evento_id', eventoActualId);
+
         if (error) throw error;
 
-        // Actualizar stats
-        document.querySelectorAll('.stat-number')[1].innerText = invitados.length;
+        // Actualizar stats (opcional, para que veas el conteo real)
+        const statNumbers = document.querySelectorAll('.stat-number');
+        if (statNumbers.length >= 2) statNumbers[1].innerText = invitados.length;
 
         if (!tbody) return;
         tbody.innerHTML = '';
@@ -154,8 +161,13 @@ async function cargarInvitados(eventoId, nombreEvento) {
             tbody.innerHTML += fila;
         });
 
+        // 🔍 ESTO ES CLAVE PARA DEPURAR: Mira la consola
+        console.log("Buscando invitados para el evento ID:", eventoActualId);
+        console.log("Invitados encontrados:", invitados);
+
     } catch (error) {
-        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar invitados.</td></tr>`;
+        console.error("Error al cargar invitados:", error);
+        if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error: ${error.message}</td></tr>`;
     }
 }
 
