@@ -1199,11 +1199,12 @@
             <form id="form-aviso" class="formulario" style="max-width: 100%;">
                 <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar</h2>
 
-                <div class="campo" style="display: none;">
-                    <label for="categoria">Categoría</label>
+                <div class="campo" id="campo-categoria-publicacion">
+                    <label for="categoria">Categoría de publicación</label>
                     <select id="categoria" required>
                         <option value="varios" selected>📢 VARIOS</option>
                     </select>
+                    <small id="ayuda-categoria-publicacion">Tu cuenta puede publicar en las categorías que tenga autorizadas.</small>
                 </div>
 
                 <div class="campo">
@@ -1928,7 +1929,7 @@
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20261105-1"></script>
     <script src="/js/ui.js?v=20261105-2"></script>
-    <script src="/js/admin.js?v=20261105-5"></script>
+    <script src="/js/admin.js?v=20261105-6"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
     <script src="/js/push.js?v=20260908-1"></script>
 
