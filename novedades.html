@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2c3e50">
+  <title>Novedades | El Barrio</title>
+  <meta name="description" content="Conoce las novedades, mejoras y nuevas guías de El Barrio.">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/index2.css">
+  <style>
+    .info-page { max-width:920px; margin:2.2rem auto 3rem; padding:0 1rem; }
+    .info-hero { padding:clamp(1.5rem,4vw,2.7rem); border-radius:22px; color:#fff; background:linear-gradient(135deg,#1e4620,#2c7da0); box-shadow:0 14px 34px rgba(31,65,75,.14); }
+    .info-kicker { margin:0 0 .65rem; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; opacity:.82; }
+    .info-hero h1 { margin:0 0 .7rem; font-size:clamp(1.8rem,4vw,2.5rem); }
+    .info-hero p { max-width:680px; margin:0; line-height:1.65; color:rgba(255,255,255,.9); }
+    .novedad-card { margin-top:1.2rem; padding:clamp(1.2rem,3vw,1.8rem); background:#fff; border:1px solid #e7ebef; border-radius:18px; box-shadow:0 8px 24px rgba(30,50,65,.055); }
+    .novedad-meta { color:#2c7da0; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .novedad-card h2 { margin:.5rem 0 .6rem; color:#2c3e50; font-size:1.25rem; }
+    .novedad-card p { color:#59636d; line-height:1.7; margin:.5rem 0; }
+    .novedad-links { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1rem; }
+    .novedad-links a { display:inline-flex; align-items:center; padding:.65rem 1rem; border-radius:30px; background:#eef5f8; color:#245c73; text-decoration:none; font-weight:600; font-size:.88rem; }
+    .novedad-links a:hover { background:#dcecf2; }
+    .info-note { margin-top:1.3rem; padding:1rem 1.2rem; border-left:3px solid #d4a043; background:#fffaf0; border-radius:0 12px 12px 0; color:#59636d; line-height:1.6; }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main class="info-page">
+    <section class="info-hero">
+      <p class="info-kicker">El Barrio · Actualizaciones</p>
+      <h1>Novedades</h1>
+      <p>Un espacio para conocer los cambios, mejoras y nuevas herramientas que van dando forma a El Barrio. La idea es mantenerte al tanto, sin ruido y con información clara.</p>
+    </section>
+
+    <article class="novedad-card">
+      <div class="novedad-meta">Nueva experiencia de navegación</div>
+      <h2>Una entrada más sencilla a la información</h2>
+      <p>El encabezado reúne ahora la identidad de El Barrio, el buscador de avisos y un menú compacto. Desde ese menú puedes acceder a tu espacio de administración, consultar las novedades y aprender cómo funciona la plataforma.</p>
+      <p>También se incorporó una guía de uso que explica el recorrido para consultar avisos, elegir categorías, publicar y contactar a quien anuncia.</p>
+      <div class="novedad-links">
+        <a href="/como-funciona.html">Conocer cómo funciona →</a>
+        <a href="/index.html">Explorar avisos →</a>
+      </div>
+    </article>
+
+    <div class="info-note">
+      El Barrio es un proyecto en evolución. Esta página se actualizará cuando haya cambios relevantes en sus herramientas o en la forma de utilizarlas.
+    </div>
+  </main>
+  <div id="footer-container"></div>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/common/header-init.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        await cargarHeaderCompartido();
+        await cargarFooterCompartido();
+      } catch (error) {
+        console.error('No se pudo inicializar la página:', error);
+      }
+    });
+  </script>
+</body>
+</html>
