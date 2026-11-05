@@ -390,9 +390,16 @@ if (!window.__elBarrioHeaderObserversInstalled) {
     }
   });
   const observer = new MutationObserver(function () {
-    if (document.getElementById('header-menu-toggle')) inicializarHeaderAuth();
+    if (document.getElementById('header-menu-toggle')) {
+      observer.disconnect();
+      inicializarHeaderAuth();
+    }
   });
   observer.observe(document.documentElement, { childList: true, subtree: true });
+  if (document.getElementById('header-menu-toggle')) {
+    observer.disconnect();
+    inicializarHeaderAuth();
+  }
 }
 
 
