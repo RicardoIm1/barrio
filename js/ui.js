@@ -107,16 +107,8 @@
         const html = await res.text();
         container.innerHTML = html;
 
-        // Atmósfera del encabezado compartido, basada en la hora local y sin llamadas de red.
-        const headerAtmosferico = container.querySelector('.header');
-        if (headerAtmosferico) {
-          const horaLocal = new Date().getHours();
-          const cieloLocal = (horaLocal >= 6 && horaLocal < 9) ? 'amanecer'
-            : (horaLocal >= 9 && horaLocal < 17) ? 'dia'
-            : (horaLocal >= 17 && horaLocal < 20) ? 'atardecer' : 'noche';
-          headerAtmosferico.dataset.cielo = cieloLocal;
-          headerAtmosferico.setAttribute('aria-label', 'Encabezado de El Barrio');
-        }
+        // Una sola implementación para todas las páginas.
+        window.inicializarAtmosferaHeader?.(container);
 
 
         this.inicializarMenuMovil(container);

@@ -9,6 +9,7 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/estilo.css">
   <link rel="stylesheet" href="/css/index2.css">
+    <script src="/common/header-atmosfera.js" defer></script>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
@@ -351,6 +352,7 @@
         })
         .then(html => {
           document.getElementById('header-container').innerHTML = html;
+          window.inicializarAtmosferaHeader?.(document.getElementById('header-container'));
           setTimeout(() => {
             if (typeof window.inicializarHeaderAuth === 'function') {
               window.inicializarHeaderAuth();

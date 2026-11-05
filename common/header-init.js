@@ -11,6 +11,7 @@
     const response = await fetch('/common/header.html', { cache: 'no-store' });
     if (!response.ok) throw new Error('No se pudo cargar el encabezado');
     target.innerHTML = await response.text();
+    window.inicializarAtmosferaHeader?.(target);
     inicializarHeader();
   };
 
