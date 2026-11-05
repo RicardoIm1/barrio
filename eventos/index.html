@@ -65,45 +65,54 @@
 
         <!-- Tabla de Invitados (Ejemplo) -->
         <section class="table-section">
-            <div class="table-header">
-                <h3>Últimos Invitados (Boda Andrea & Gerardo)</h3>
-                <button class="btn-primary">+ Añadir Invitado</button>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>WhatsApp</th>
-                        <th>Estado del Pase</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Regina Treviño</td>
-                        <td>+52 55 1234 5678</td>
-                        <td><span class="badge badge-success">Guardado en Wallet</span></td>
-                        <td><button class="btn-sm">Reenviar Link</button></td>
-                    </tr>
-                    <tr>
-                        <td>Carlos Mendoza</td>
-                        <td>+52 55 8765 4321</td>
-                        <td><span class="badge badge-pending">Pendiente de envío</span></td>
-                        <td><button class="btn-sm">Enviar Link</button></td>
-                    </tr>
-                    <tr>
-                        <td>Ana Sofía Ruiz</td>
-                        <td>+52 55 1111 2222</td>
-                        <td><span class="badge badge-success">Guardado en Wallet</span></td>
-                        <td><button class="btn-sm">Reenviar Link</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+        <div class="table-header">
+            <h3>Invitados (Boda Andrea & Gerardo)</h3>
+            <!-- Botón que abre el modal para crear -->
+            <button class="btn-primary" id="btnNuevoInvitado">+ Añadir Invitado</button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>WhatsApp</th>
+                    <th>Estado del Pase</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaInvitados">
+                <!-- Aquí JavaScript inyectará las filas -->
+            </tbody>
+        </table>
+    </section>
+</main>
 
-    </main>
-    <!-- Al final del body, antes de tu app.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/eventos/app.js"></script>
+<!-- MODAL PARA CREAR/EDITAR INVITADOS -->
+<div id="modalInvitado" class="modal-overlay hidden">
+    <div class="modal-content">
+        <h3 id="modalTitulo">Nuevo Invitado</h3>
+        <form id="formInvitado">
+            <!-- Input oculto para guardar el ID si estamos editando -->
+            <input type="hidden" id="invitadoId" value="">
+            
+            <div class="form-group">
+                <label>Nombre Completo:</label>
+                <input type="text" id="inputNombre" required placeholder="Ej: Regina Treviño">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp:</label>
+                <input type="tel" id="inputWhatsapp" placeholder="Ej: +525512345678">
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="btnCerrarModal">Cancelar</button>
+                <button type="submit" class="btn-primary" id="btnGuardar">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
 </body>
 </html>
