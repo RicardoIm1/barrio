@@ -108,6 +108,50 @@
             </table>
         </section>
 
+                <!-- SECCIÓN 3: PLANNING DEL EVENTO (Oculta al inicio) -->
+        <section class="table-section hidden" id="seccionPlanning">
+            <div class="table-header">
+                <div>
+                    <button class="btn-sm" id="btnVolverEventosDesdePlanning" style="margin-bottom: 0.5rem;">← Volver a Eventos</button>
+                    <h3 id="tituloPlanning">Planning del Evento</h3>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn-sm btn-edit" id="btnVerChecklist">📋 Checklist</button>
+                    <button class="btn-primary" id="btnNuevoItinerario">+ Añadir al Itinerario</button>
+                </div>
+            </div>
+            
+            <!-- Tabla de Itinerario -->
+            <table id="tablaItinerarioWrapper">
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Actividad</th>
+                        <th>Responsable</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaItinerario"></tbody>
+            </table>
+
+            <!-- Tabla de Checklist (Oculta por defecto) -->
+            <div id="tablaChecklistWrapper" class="hidden">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarea</th>
+                            <th>Prioridad</th>
+                            <th>Límite</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaChecklist"></tbody>
+                </table>
+            </div>
+        </section>
+
     </main>
 
     <!-- MODAL PARA CREAR/EDITAR EVENTOS -->
@@ -166,6 +210,66 @@
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" id="btnCerrarModal">Cancelar</button>
                     <button type="submit" class="btn-primary" id="btnGuardar">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ITINERARIO -->
+    <div id="modalItinerario" class="modal-overlay hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <h3 id="modalTituloItinerario">Nueva Actividad</h3>
+            <form id="formItinerario">
+                <input type="hidden" id="itinerarioId" value="">
+                
+                <div class="form-group">
+                    <label>Título de la Actividad:</label>
+                    <input type="text" id="inputTituloActividad" required placeholder="Ej: Entrada de los novios">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Inicio:</label>
+                    <input type="time" id="inputHoraInicio" required>
+                </div>
+                <div class="form-group">
+                    <label>Responsable (Opcional):</label>
+                    <input type="text" id="inputResponsable" placeholder="Ej: DJ, Banquete, Planner">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="btnCerrarModalItinerario">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnGuardarItinerario">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CHECKLIST -->
+    <div id="modalChecklist" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modalTituloChecklist">Nueva Tarea</h3>
+            <form id="formChecklist">
+                <input type="hidden" id="checklistId" value="">
+                
+                <div class="form-group">
+                    <label>Tarea:</label>
+                    <input type="text" id="inputTarea" required placeholder="Ej: Confirmar menú con el salón">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Límite:</label>
+                    <input type="date" id="inputFechaLimite">
+                </div>
+                <div class="form-group">
+                    <label>Prioridad:</label>
+                    <select id="inputPrioridad">
+                        <option value="alta">Alta</option>
+                        <option value="media" selected>Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" id="btnCerrarModalChecklist">Cancelar</button>
+                    <button type="submit" class="btn-primary" id="btnGuardarChecklist">Guardar</button>
                 </div>
             </form>
         </div>
