@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piscis Digital | Panel de Eventos</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Fuente de Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Barra Lateral (Navegación) -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1>♓️ Piscis</h1>
+            <span>Digital</span>
+        </div>
+        <nav>
+            <a href="#" class="active">📊 Dashboard</a>
+            <a href="#">🎉 Eventos</a>
+            <a href="#">👥 Invitados</a>
+            <a href="#">💌 Pases Wallet</a>
+            <a href="#">💰 Fondo Común</a>
+            <a href="#">⚙️ Configuración</a>
+        </nav>
+        <div class="sidebar-footer">
+            <p>Imprenta Piscis © 2026</p>
+        </div>
+    </aside>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <header>
+            <h2>Panel de Control</h2>
+            <div class="user-profile">
+                <span>Bienvenido, Artista</span>
+                <div class="avatar">P</div>
+            </div>
+        </header>
+
+        <!-- Tarjetas de Resumen (Estadísticas) -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Eventos Activos</h3>
+                <p class="stat-number">3</p>
+                <span class="stat-desc">Bodas y XV Años</span>
+            </div>
+            <div class="stat-card">
+                <h3>Pases Generados</h3>
+                <p class="stat-number">450</p>
+                <span class="stat-desc">Enviados a Google Wallet</span>
+            </div>
+            <div class="stat-card">
+                <h3>Confirmaciones</h3>
+                <p class="stat-number">280</p>
+                <span class="stat-desc">Invitados confirmados</span>
+            </div>
+            <div class="stat-card highlight">
+                <h3>Fondo Común</h3>
+                <p class="stat-number">$45,000</p>
+                <span class="stat-desc">MXN recaudados</span>
+            </div>
+        </section>
+
+        <!-- Tabla de Invitados (Ejemplo) -->
+        <section class="table-section">
+            <div class="table-header">
+                <h3>Últimos Invitados (Boda Andrea & Gerardo)</h3>
+                <button class="btn-primary">+ Añadir Invitado</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>WhatsApp</th>
+                        <th>Estado del Pase</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Regina Treviño</td>
+                        <td>+52 55 1234 5678</td>
+                        <td><span class="badge badge-success">Guardado en Wallet</span></td>
+                        <td><button class="btn-sm">Reenviar Link</button></td>
+                    </tr>
+                    <tr>
+                        <td>Carlos Mendoza</td>
+                        <td>+52 55 8765 4321</td>
+                        <td><span class="badge badge-pending">Pendiente de envío</span></td>
+                        <td><button class="btn-sm">Enviar Link</button></td>
+                    </tr>
+                    <tr>
+                        <td>Ana Sofía Ruiz</td>
+                        <td>+52 55 1111 2222</td>
+                        <td><span class="badge badge-success">Guardado en Wallet</span></td>
+                        <td><button class="btn-sm">Reenviar Link</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
