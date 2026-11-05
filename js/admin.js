@@ -1486,7 +1486,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
         formAdmin.dataset.userId=String(id);
         formAdmin.elements.rol.value=usuario.rol||"usuario";
         formAdmin.elements.activo.value=usuario.activo===false||String(usuario.activo).toUpperCase()==="FALSE"?"false":"true";
-        const raw=Array.isArray(usuario.categorias)?usuario.categorias:(String(usuario.categorias||"todas").toLowerCase()==="todas"?categoriasPerfil.map(x=>x[0]):String(usuario.categorias).split(",").map(x=>x.trim().toLowerCase()));
+        const raw=Array.isArray(usuario.categorias)?usuario.categorias:(String(usuario.categorias||"todas").toLowerCase()==="todas"?["urgente","escuelas","servicios","comercios","eventos","gobierno","varios"]:String(usuario.categorias).split(",").map(x=>x.trim().toLowerCase()));
         formAdmin.querySelectorAll('input[name="categorias"]').forEach(x=>{x.checked=raw.includes(x.value);});
         const rolSelect=formAdmin.elements.rol;
         if(String(id)===String(API.getUsuarioActual()?.id)){rolSelect.disabled=true;rolSelect.title="No puedes cambiar tu propio rol desde esta ficha.";}
