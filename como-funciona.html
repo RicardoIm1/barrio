@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2c3e50">
+  <title>Cómo funciona | El Barrio</title>
+  <meta name="description" content="Aprende a consultar avisos, elegir categorías, publicar y contactar en El Barrio.">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/index2.css">
+  <style>
+    .guia-page { max-width:1000px; margin:2.2rem auto 3rem; padding:0 1rem; }
+    .guia-hero { padding:clamp(1.5rem,4vw,2.7rem); border-radius:22px; color:#fff; background:linear-gradient(135deg,#1e4620,#2c7da0); box-shadow:0 14px 34px rgba(31,65,75,.14); }
+    .guia-kicker { margin:0 0 .65rem; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; opacity:.82; }
+    .guia-hero h1 { margin:0 0 .7rem; font-size:clamp(1.8rem,4vw,2.5rem); }
+    .guia-hero p { max-width:720px; margin:0; line-height:1.65; color:rgba(255,255,255,.9); }
+    .guia-intro { margin:1.3rem 0; color:#59636d; line-height:1.7; }
+    .pasos-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+    .paso-card { padding:1.25rem; background:#fff; border:1px solid #e7ebef; border-radius:17px; box-shadow:0 8px 24px rgba(30,50,65,.045); }
+    .paso-numero { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:#eaf3f6; color:#245c73; font-weight:800; }
+    .paso-card h2 { margin:.75rem 0 .45rem; color:#2c3e50; font-size:1.12rem; }
+    .paso-card p { margin:.4rem 0; color:#59636d; line-height:1.65; font-size:.94rem; }
+    .paso-card a,.guia-texto a { color:#236b87; font-weight:650; }
+    .guia-seccion { margin-top:2rem; }
+    .guia-seccion > h2 { color:#2c3e50; font-size:1.5rem; margin:0 0 .5rem; }
+    .guia-seccion > p { color:#59636d; line-height:1.7; margin:.4rem 0 1.1rem; }
+    .guia-categorias { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.9rem; }
+    .guia-categorias .categoria-info { margin:0; padding:1.1rem 1.2rem; background:#fff; border:1px solid #e7ebef; border-radius:15px; box-shadow:0 6px 18px rgba(30,50,65,.04); }
+    .guia-categorias .categoria-info h4 { margin:0 0 .55rem; color:#2c3e50; font-size:1rem; }
+    .guia-categorias .categoria-info p { margin:.35rem 0; color:#59636d; line-height:1.6; font-size:.9rem; }
+    .guia-categorias .categoria-info small { display:block; margin-top:.5rem; color:#a33; line-height:1.5; }
+    .guia-consejo { margin-top:1.4rem; padding:1.1rem 1.25rem; border-left:3px solid #d4a043; background:#fffaf0; border-radius:0 12px 12px 0; color:#59636d; line-height:1.65; }
+    .guia-final { margin-top:2rem; padding:1.5rem; text-align:center; background:#f0f6f8; border:1px solid #dceaf0; border-radius:18px; }
+    .guia-final h2 { color:#2c3e50; margin:0 0 .5rem; }
+    .guia-final p { color:#59636d; line-height:1.6; }
+    .guia-botones { display:flex; justify-content:center; flex-wrap:wrap; gap:.7rem; margin-top:1rem; }
+    .guia-botones a { display:inline-flex; padding:.7rem 1.1rem; border-radius:30px; text-decoration:none; font-weight:650; background:#2c7da0; color:#fff; }
+    .guia-botones a.secundario { background:#fff; color:#2c3e50; border:1px solid #d8e0e5; }
+    @media(max-width:680px) { .pasos-grid,.guia-categorias { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main class="guia-page">
+    <section class="guia-hero">
+      <p class="guia-kicker">Guía de uso · El Barrio</p>
+      <h1>Cómo funciona</h1>
+      <p>El Barrio acerca avisos e información útil a las personas de una misma comunidad. Puedes consultar publicaciones, compartir información y comunicarte directamente con quien anuncia.</p>
+    </section>
+
+    <p class="guia-intro">No necesitas conocer toda la plataforma para empezar. Estos son los pasos esenciales para sacarle provecho.</p>
+
+    <section class="pasos-grid" aria-label="Pasos para utilizar El Barrio">
+      <article class="paso-card">
+        <span class="paso-numero">1</span>
+        <h2>Explora los avisos</h2>
+        <p>En la portada encontrarás las publicaciones disponibles. Abre cualquier aviso para consultar su información completa y los medios que haya compartido su autor.</p>
+        <p>En la portada también puedes utilizar el buscador para localizar palabras o temas.</p>
+      </article>
+      <article class="paso-card">
+        <span class="paso-numero">2</span>
+        <h2>Elige la categoría adecuada</h2>
+        <p>Las categorías ayudan a ordenar la información y permiten que cada aviso llegue a las personas interesadas. Consulta la guía que aparece más abajo antes de publicar.</p>
+        <p><a href="#categorias">Ver las siete categorías ↓</a></p>
+      </article>
+      <article class="paso-card">
+        <span class="paso-numero">3</span>
+        <h2>Publica tu aviso</h2>
+        <p>Regístrate o inicia sesión. Después, selecciona tu nombre en el encabezado para entrar a Administración y gestionar tus publicaciones.</p>
+        <p>Redacta el aviso con claridad, selecciona la categoría correcta y agrega imágenes o videos cuando ayuden a explicar lo que compartes.</p>
+        <p><a href="/registro.html">Crear una cuenta</a> · <a href="/login.html">Iniciar sesión</a></p>
+      </article>
+      <article class="paso-card">
+        <span class="paso-numero">4</span>
+        <h2>Contacta directamente</h2>
+        <p>Si un aviso te interesa, utiliza el botón de WhatsApp que aparece en la publicación para comunicarte con quien anuncia.</p>
+        <p>Antes de tomar una decisión, confirma los detalles directamente con esa persona o negocio.</p>
+      </article>
+    </section>
+
+    <section class="guia-seccion" id="categorias">
+      <h2>¿Qué va en cada categoría?</h2>
+      <p>Esta es la guía de referencia de El Barrio. El mismo contenido está disponible en el botón de ayuda del footer para consultarlo rápidamente desde cualquier página.</p>
+      <div class="guia-categorias" id="guia-categorias-contenido">
+        <p>Cargando categorías...</p>
+      </div>
+    </section>
+
+    <div class="guia-consejo">
+      <strong>Una recomendación:</strong> procura que cada aviso tenga un título concreto, información verificable y una categoría apropiada. La categoría «Urgente» debe reservarse para situaciones que realmente requieren atención inmediata, no para promociones.
+    </div>
+
+    <section class="guia-final">
+      <h2>Listo para participar</h2>
+      <p>Consulta lo que sucede cerca de ti o comparte información que pueda ser útil para otras personas de la comunidad.</p>
+      <div class="guia-botones">
+        <a href="/index.html">Explorar avisos</a>
+        <a class="secundario" href="/registro.html">Crear una cuenta</a>
+      </div>
+    </section>
+  </main>
+  <div id="footer-container"></div>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/common/header-init.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        await Promise.all([cargarHeaderCompartido(), cargarFooterCompartido()]);
+        const response = await fetch('/common/categorias.html', { cache: 'no-store' });
+        if (!response.ok) throw new Error('No se pudo cargar la guía de categorías');
+        document.getElementById('guia-categorias-contenido').innerHTML = await response.text();
+      } catch (error) {
+        console.error('No se pudo inicializar la guía:', error);
+        const target = document.getElementById('guia-categorias-contenido');
+        if (target) target.innerHTML = '<p>No fue posible cargar las categorías. Intenta recargar la página.</p>';
+      }
+    });
+  </script>
+</body>
+</html>
