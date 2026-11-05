@@ -18,159 +18,102 @@
         </div>
 
         <div id="reputacion-widget"
-            style="display: none; align-items: center; gap: 12px; background: rgba(255,255,255,0.1); padding: 6px 15px; border-radius: 40px; margin-right: 15px;">
+            style="display:none; align-items:center; gap:12px; background:rgba(255,255,255,.1); padding:6px 15px; border-radius:40px; margin-right:15px;">
             <div>⭐ <span id="puntos-valor">0</span></div>
             <div>🏆 <span id="nivel-valor">cargando</span></div>
             <div>📊 <span id="avisos-restantes">-</span>/<span id="avisos-limite">-</span></div>
-            <div style="width: 60px; height: 4px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden;">
-                <div id="reputacion-barra" style="width:0%; height:100%; background:#fbbf24;"></div>
+            <div style="width:60px;height:4px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden;">
+                <div id="reputacion-barra" style="width:0%;height:100%;background:#fbbf24;"></div>
             </div>
-            <button id="btn-ver-reputacion" style="background:none; border:none; color:white; cursor:pointer;">📊</button>
+            <button id="btn-ver-reputacion" style="background:none;border:none;color:white;cursor:pointer;">📊</button>
         </div>
 
-        <button type="button" class="header-menu-toggle" id="header-menu-toggle" aria-label="Abrir menú" aria-controls="header-acciones" aria-expanded="false"><span></span><span></span><span></span></button>
-        <div class="header-acciones" id="header-acciones">
-            <a href="/login.html" id="login-link" class="btn-login">🔑 <span class="btn-text">Iniciar
-                    sesión</span></a>
+        <button type="button" class="header-menu-toggle" id="header-menu-toggle"
+            aria-label="Abrir menú" aria-controls="header-acciones" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
 
-            <div class="user-area" id="user-area" style="display: none;">
+        <div class="header-acciones" id="header-acciones">
+            <div class="user-area" id="user-area" style="display:none;">
                 <span class="user-name" id="user-name"></span>
                 <a href="#" id="cerrar-sesion" class="btn-logout" aria-label="Cerrar sesión" title="Cerrar sesión">↪ <span class="btn-text">Cerrar sesión</span></a>
             </div>
+            <a href="/login.html" id="login-link" class="btn-login">🔑 <span class="btn-text">Iniciar sesión</span></a>
+            <nav class="header-menu-links" aria-label="Información de El Barrio">
+                <a href="/novedades.html">✨ Novedades</a>
+                <a href="/como-funciona.html">❓ Cómo funciona</a>
+            </nav>
         </div>
     </div>
 </header>
 <style>
-    .user-name.admin-link { cursor: pointer; }
-    .user-name.admin-link:hover { text-decoration: underline; }
-    .header-menu-toggle { display:none; }
+    .header-contenido { position:relative; display:flex; align-items:center; justify-content:space-between; gap:1rem; min-width:0; }
+    .header-logo { order:1; display:flex; align-items:center; gap:10px; flex:0 1 auto; min-width:0; text-decoration:none; }
+    .header-menu-toggle { order:4; display:flex; flex:0 0 44px; width:44px; height:44px; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border:1px solid rgba(255,255,255,.28); border-radius:12px; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; z-index:12; }
+    .header-menu-toggle span { display:block; width:19px; height:2px; border-radius:2px; background:currentColor; transition:transform .2s ease,opacity .2s ease; }
+    .header-menu-toggle[aria-expanded="true"] span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .header-menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity:0; }
+    .header-menu-toggle[aria-expanded="true"] span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .header-buscador { order:2; display:none; flex:1 1 360px; width:100%; max-width:380px; min-width:0; margin:0 auto; }
+    body.pagina-index .header-buscador { display:flex; }
+    .buscador-input-header { width:100%; min-width:0; padding:9px 16px; border-radius:30px; border:1px solid #e5e7eb; background:#f9fafb; font-size:.9rem; }
+    .buscador-input-header:focus { outline:none; border-color:#f5b042; background:white; box-shadow:0 0 0 2px rgba(245,176,66,.2); }
+    .buscador-acciones-movil { display:none; align-items:center; gap:3px; flex:0 0 auto; }
+    .buscador-acciones-movil button { width:30px; height:32px; border:1px solid #e5e7eb; border-radius:50%; background:#fff; color:#2c3e50; cursor:pointer; }
+    .header-acciones { order:5; display:none; position:absolute; top:calc(100% + 7px); right:12px; width:min(320px,calc(100vw - 24px)); padding:14px; flex-direction:column; align-items:stretch; gap:10px; border:1px solid rgba(255,255,255,.16); border-radius:16px; background:#2c3e50; box-shadow:0 16px 38px rgba(15,27,39,.24); z-index:10001; }
+    .header-acciones.menu-open { display:flex !important; }
+    .header-acciones .user-area { display:flex; flex-direction:column; align-items:stretch; gap:8px; }
+    .header-acciones .user-name { display:inline-flex !important; justify-content:flex-start; width:100%; min-height:42px; padding:10px 12px; border-radius:10px; color:#fff; cursor:pointer; white-space:normal; }
+    .header-acciones .btn-login,.header-acciones .btn-logout { justify-content:center; width:100%; min-height:42px; }
+    .header-menu-links { display:flex; flex-direction:column; gap:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,.16); }
+    .header-menu-links a { display:flex; align-items:center; min-height:42px; padding:9px 12px; border-radius:10px; color:#fff; text-decoration:none; font-size:.9rem; transition:background .18s ease; }
+    .header-menu-links a:hover,.header-menu-links a:focus-visible { background:rgba(255,255,255,.12); }
+    .header-menu-toggle:focus-visible,.header-acciones a:focus-visible,.header-acciones .user-name:focus-visible { outline:3px solid #f5b042; outline-offset:3px; }
+    .user-name.admin-link { cursor:pointer; }
+    .notif-wrapper { position:relative; display:inline-block; }
+    .notif-bell { background:transparent; border:none; outline:none; box-shadow:none; }
+    .notif-bell:focus { outline:none; box-shadow:0 0 0 2px rgba(0,0,0,.08); border-radius:50%; }
+    .notif-bell:hover { background:rgba(0,0,0,.05); }
+    .notif-badge { top:-2px; right:-2px; font-size:.55rem; min-width:14px; padding:1px 5px; }
+    .notif-panel { position:absolute; top:40px; right:-10px; width:300px; background:white; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,.15); z-index:1000; overflow:hidden; display:none; }
+    .notif-header { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:.85rem; color:#333; }
+    .notif-clear-all { background:none; border:none; color:#888; font-size:.7rem; cursor:pointer; padding:4px 8px; border-radius:20px; }
+    .notif-clear-all:hover { background:#f5f5f5; color:#e74c3c; }
+    .notif-list { max-height:350px; overflow-y:auto; }
+    .notif-item { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid #f0f0f0; cursor:pointer; transition:background .2s; }
+    .notif-item:hover { background:#f9f9f9; }
+    .notif-item.no-leida { background:#fff8e7; }
+    .notif-icon { font-size:1.2rem; }
+    .notif-content { flex:1; }
+    .notif-mensaje { font-size:.8rem; color:#333; line-height:1.3; }
+    .notif-tiempo { font-size:.65rem; color:#999; margin-top:4px; }
+    .notif-empty { text-align:center; padding:30px 20px; color:#999; font-size:.8rem; }
     @media (max-width:768px) {
-      .header-contenido { position:relative; }
-      .header-menu-toggle { display:flex; flex:0 0 42px; width:42px; height:42px; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border:1px solid rgba(255,255,255,.28); border-radius:12px; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; z-index:12; }
-      .header-menu-toggle span { display:block; width:19px; height:2px; border-radius:2px; background:currentColor; transition:transform .2s ease,opacity .2s ease; }
-      .header-menu-toggle[aria-expanded="true"] span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-      .header-menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity:0; }
-      .header-menu-toggle[aria-expanded="true"] span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-      .header-acciones { display:none !important; position:absolute; top:calc(100% - 2px); right:10px; width:min(310px,calc(100vw - 20px)); padding:14px; flex-direction:column; align-items:stretch; gap:10px; border:1px solid rgba(255,255,255,.16); border-radius:16px; background:#2c3e50; box-shadow:0 16px 38px rgba(15,27,39,.24); z-index:11; }
-      .header-acciones.menu-open { display:flex !important; }
-      .header-acciones .user-area { display:flex; flex-direction:column; align-items:stretch; gap:10px; }
-      .header-acciones .user-name { display:inline-flex !important; justify-content:flex-start; width:100%; min-height:42px; padding:10px 12px; border-radius:10px; color:#fff; cursor:pointer; }
-      .header-acciones .btn-login,.header-acciones .btn-logout { justify-content:center; width:100%; min-height:42px; }
-      .header-menu-toggle:focus-visible,.header-acciones a:focus-visible,.header-acciones .user-name:focus-visible { outline:3px solid #f5b042; outline-offset:3px; }
+        .header-contenido { gap:8px; padding:10px 12px; min-height:0; }
+        .header-logo { max-width:42%; gap:6px; }
+        .logo-icon { width:42px; height:42px; }
+        .header-slogan { display:none; }
+        .header-buscador,body.pagina-index .header-buscador { display:flex; flex:1 1 0; width:auto; max-width:360px; min-width:0; margin:0 auto; }
+        body:not(.pagina-index) .header-buscador { display:none !important; }
+        .header-buscador .buscador-input-header { flex:1 1 0; width:100%; min-width:0; padding:8px 10px; font-size:16px; color:#fff; border-color:rgba(255,255,255,.3); background:rgba(255,255,255,.14); }
+        .header-buscador .buscador-input-header::placeholder { color:rgba(255,255,255,.78); }
+        .header-buscador .buscador-input-header:focus { background:rgba(255,255,255,.24); border-color:rgba(255,255,255,.58); box-shadow:0 0 0 2px rgba(255,255,255,.1); }
+        .header-buscador.activo .buscador-acciones-movil { display:flex; }
+        .header-buscador.activo { flex:1 1 0; max-width:360px; }
     }
-    @media (max-width:380px) { .header-menu-toggle { flex-basis:38px; width:38px; height:38px; } .header-acciones { right:7px; width:min(290px,calc(100vw - 14px)); } }
-    .notif-wrapper { position: relative; display: inline-block; }
-    .notif-bell { background: transparent; border: none; outline: none; box-shadow: none; }
-    .notif-bell:focus { outline: none; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08); border-radius: 50%; }
-    .notif-bell:hover { background: rgba(0, 0, 0, 0.05); }
-    .notif-badge { top: -2px; right: -2px; font-size: 0.55rem; min-width: 14px; padding: 1px 5px; }
-    .notif-panel { position: absolute; top: 40px; right: -10px; width: 300px; background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); z-index: 1000; overflow: hidden; display: none; }
-    .notif-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; font-weight: 600; font-size: 0.85rem; color: #333; }
-    .notif-clear-all { background: none; border: none; color: #888; font-size: 0.7rem; cursor: pointer; padding: 4px 8px; border-radius: 20px; }
-    .notif-clear-all:hover { background: #f5f5f5; color: #e74c3c; }
-    .notif-list { max-height: 350px; overflow-y: auto; }
-    .notif-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s; }
-    .notif-item:hover { background: #f9f9f9; }
-    .notif-item.no-leida { background: #fff8e7; }
-    .notif-icon { font-size: 1.2rem; }
-    .notif-content { flex: 1; }
-    .notif-mensaje { font-size: 0.8rem; color: #333; line-height: 1.3; }
-    .notif-tiempo { font-size: 0.65rem; color: #999; margin-top: 4px; }
-    .notif-empty { text-align: center; padding: 30px 20px; color: #999; font-size: 0.8rem; }
-    @media (max-width: 550px) { .notif-panel { width: 280px; right: -20px; } }
-    .header-buscador { flex: 1; max-width: 300px; margin: 0 15px; display: none; }
-    body.pagina-index .header-buscador { display: block; }
-    .buscador-input-header { width: 100%; min-width: 0; padding: 8px 16px; border-radius: 30px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 0.85rem; transition: all 0.2s; }
-    .buscador-input-header:focus { outline: none; border-color: #f5b042; background: white; box-shadow: 0 0 0 2px rgba(245, 176, 66, 0.2); }
-    .buscador-acciones-movil { display: none; }
-    @media (max-width: 768px) {
-        .header-contenido { position: relative; }
-        .header-buscador { position: absolute; z-index: 5; right: 12px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 4px; width: 38%; max-width: none; min-width: 0; margin: 0; flex: none; transition: width .22s ease; }
-        .header-buscador.activo { width: 60%; }
-        .header-buscador .buscador-input-header { display: block; flex: 1 1 0; width: 0; min-width: 0; padding: 8px 8px; font-size: .82rem; }
-        .buscador-acciones-movil { display: none; align-items: center; gap: 3px; flex: 0 0 auto; }
-        .header-buscador.activo .buscador-acciones-movil { display: flex; }
-        .buscador-acciones-movil button { width: 28px; height: 32px; border: 1px solid #e5e7eb; border-radius: 50%; background: #fff; color: #2c3e50; font-size: 1rem; line-height: 1; cursor: pointer; padding: 0; }
-        .buscador-acciones-movil #buscador-aceptar { color: #2b7a2b; }
-        .buscador-acciones-movil #buscador-cancelar { color: #b42318; }
+    @media (max-width:420px) {
+        .header-contenido { gap:6px; padding:9px 8px; }
+        .header-logo { max-width:42%; gap:5px; }
+        .logo-icon { width:36px; height:36px; }
+        .logo-texto h1 { font-size:1.02rem; }
+        .header-menu-toggle { flex-basis:40px; width:40px; height:40px; }
+        .header-acciones { right:8px; width:min(300px,calc(100vw - 16px)); }
     }
-    @media (max-width: 380px) {
-        .header-buscador { width: 35%; }
-        .header-buscador.activo { width: 60%; }
-        .buscador-acciones-movil { gap: 2px; }
-        .buscador-acciones-movil button { width: 26px; height: 30px; }
+    @media (max-width:340px) {
+        .logo-icon { width:32px; height:32px; }
+        .logo-texto h1 { font-size:.94rem; }
+        .header-menu-toggle { flex-basis:38px; width:38px; height:38px; }
     }
-
-    /* Header adaptable: conserva logo, búsqueda y acciones prioritarias */
-    .header-contenido { min-width: 0; }
-    .header-logo { flex: 0 1 auto; }
-    .logo-texto, .header-acciones, .user-area { min-width: 0; }
-    .btn-logout, .btn-login { flex: 0 0 auto; }
-    @media (max-width: 900px) {
-        .header-contenido { gap: .65rem; }
-        .header-logo { gap: 8px; }
-        .logo-icon { width: 44px; height: 44px; }
-        .header-slogan { display: none; }
-        .header-buscador { margin-inline: 4px; }
-        .user-name { display: none; }
-        .btn-logout, .btn-login { padding: .45rem .7rem; }
-    }
-    @media (max-width: 768px) {
-        .header-contenido {
-            display: flex; flex-wrap: nowrap; justify-content: space-between;
-            gap: 8px; padding: 10px 12px; min-height: 0;
-        }
-        .header-logo { order: 1; flex: 0 1 auto; max-width: 42%; }
-        .header-acciones { order: 3; margin-left: 0; gap: 6px; flex: 0 0 auto; }
-        .user-area { gap: 6px; }
-        .header-buscador, body.pagina-index .header-buscador {
-            position: static; order: 2; transform: none; display: flex;
-            flex: 1 1 0; width: auto; max-width: 320px; min-width: 0;
-            margin: 0 auto; gap: 5px;
-        }
-        .header-buscador .buscador-input-header {
-            display: block; flex: 1 1 auto; width: 100%; min-width: 0;
-            padding: 7px 11px; font-size: 16px;
-            color: #fff; border-color: rgba(255,255,255,.3);
-            background: rgba(255,255,255,.14);
-            box-shadow: inset 0 1px 2px rgba(0,0,0,.08);
-        }
-        .header-buscador .buscador-input-header::placeholder {
-            color: rgba(255,255,255,.78);
-        }
-        .header-buscador .buscador-input-header:focus {
-            background: rgba(255,255,255,.24);
-            border-color: rgba(255,255,255,.58);
-            box-shadow: 0 0 0 2px rgba(255,255,255,.1);
-        }
-        .header-buscador.activo { flex: 1 1 0; width: auto; max-width: 360px; }
-        .buscador-acciones-movil { display: none; }
-        .header-buscador.activo .buscador-acciones-movil { display: flex; }
-        .buscador-acciones-movil button { width: 34px; height: 36px; }
-        body:not(.pagina-index) .header-buscador { display: none !important; }
-    }
-    @media (max-width: 420px) {
-        .header-contenido { padding: 9px 10px; gap: 8px; }
-        .header-contenido { gap: 6px; padding-inline: 8px; }
-        .header-logo { max-width: 42%; gap: 5px; }
-        .header-buscador, body.pagina-index .header-buscador {
-            flex: 1 1 0; width: auto; max-width: 220px;
-        }
-        .header-buscador.activo { flex: 1 1 0; width: auto; max-width: 260px; }
-        .logo-icon { width: 38px; height: 38px; }
-        .logo-texto h1 { font-size: 1.05rem; }
-        .header-acciones, .user-area { gap: 5px; }
-        .btn-logout, .btn-login { padding: .42rem .55rem; font-size: .75rem; gap: 4px; }
-        .btn-logout .btn-text { font-size: 0; }
-        .btn-logout .btn-text::after { content: "Salir"; font-size: .75rem; }
-    }
-    @media (max-width: 340px) {
-        .header-logo { max-width: 42%; gap: 5px; }
-        .logo-icon { width: 34px; height: 34px; }
-        .logo-texto h1 { font-size: .98rem; }
-        .btn-logout, .btn-login { padding: .4rem .45rem; }
-    }
-
 </style>
 <script src="/js/push.js"></script>
 <script>
@@ -242,6 +185,7 @@
 
                 if (cerrarBtn) {
                     const nuevoCerrar = cerrarBtn.cloneNode(true);
+                    nuevoCerrar.dataset.logoutInit = '1';
                     cerrarBtn.parentNode.replaceChild(nuevoCerrar, cerrarBtn);
                     nuevoCerrar.addEventListener('click', function (e) {
                         e.preventDefault();

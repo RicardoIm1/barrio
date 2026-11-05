@@ -94,6 +94,66 @@
     </div>
 </footer>
 
+<!-- Guía de categorías compartida por el footer y la página Cómo funciona -->
+<div id="modalCategorias" class="modal-categorias" style="display:none;">
+  <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="modal-categorias-titulo">
+    <div class="modal-header">
+      <h3 id="modal-categorias-titulo">📋 Categorías de avisos</h3>
+      <button class="modal-cerrar" type="button" onclick="cerrarModalCategorias()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body" id="modal-categorias-body"><p>Cargando categorías...</p></div>
+    <div class="modal-footer"><button type="button" onclick="cerrarModalCategorias()" class="boton">Entendido</button></div>
+  </div>
+</div>
+<style>
+  .modal-categorias { position:fixed; inset:0; z-index:20000; display:none; justify-content:center; align-items:center; overflow-y:auto; padding:18px 0; background:rgba(0,0,0,.78); }
+  .modal-contenido { background:#fff; width:min(500px,90vw); max-height:calc(100vh - 36px); margin:auto; border-radius:20px; overflow:hidden; box-shadow:0 18px 55px rgba(0,0,0,.28); animation:modalFadeIn .25s ease; }
+  .modal-header { background:linear-gradient(135deg,#1e4620,#2b7a2b); color:#fff; padding:1rem; display:flex; justify-content:space-between; align-items:center; }
+  .modal-header h3 { margin:0; font-size:1.05rem; }
+  .modal-cerrar { background:none; border:0; color:#fff; font-size:1.5rem; cursor:pointer; }
+  .modal-body { padding:1rem; max-height:60vh; overflow-y:auto; }
+  .modal-footer { padding:1rem; border-top:1px solid #eee; text-align:center; }
+  .modal-footer .boton { cursor:pointer; }
+  .modal-categorias .categoria-info { margin-bottom:1.1rem; padding-bottom:.8rem; border-bottom:1px solid #eee; }
+  .modal-categorias .categoria-info:last-child { border-bottom:0; margin-bottom:0; }
+  .modal-categorias .categoria-info h4 { color:#2c3e50; margin:0 0 .45rem; }
+  .modal-categorias .categoria-info p { font-size:.85rem; color:#444; line-height:1.5; margin:.35rem 0; }
+  .modal-categorias .categoria-info small { display:block; color:#a33; margin-top:.45rem; }
+  @keyframes modalFadeIn { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+</style>
+<script>
+  async function abrirModalCategorias() {
+    const modal = document.getElementById('modalCategorias');
+    const body = document.getElementById('modal-categorias-body');
+    if (!modal || !body) return;
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    if (body.dataset.loaded === '1') return;
+    try {
+      const response = await fetch('/common/categorias.html');
+      if (!response.ok) throw new Error('No se pudo cargar la guía');
+      body.innerHTML = await response.text();
+      body.dataset.loaded = '1';
+    } catch (error) {
+      body.innerHTML = '<p>No fue posible cargar las categorías. Consulta la guía <a href="/como-funciona.html#categorias">Cómo funciona</a>.</p>';
+      console.error('Guía de categorías:', error);
+    }
+  }
+  function cerrarModalCategorias() {
+    const modal = document.getElementById('modalCategorias');
+    if (modal) modal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('click', function(event) {
+    const modal = document.getElementById('modalCategorias');
+    if (modal && event.target === modal) cerrarModalCategorias();
+  });
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') cerrarModalCategorias();
+  });
+</script>
+
+
 <style>
     /* ========== FOOTER MEJORADO ========== */
     .footer {

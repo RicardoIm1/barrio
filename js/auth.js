@@ -277,8 +277,131 @@ const Auth = {
   }
 };
 
+
 window.Auth = Auth;
 window.obtenerSupabaseClient = obtenerSupabaseClient;
+
+// Inicialización única del encabezado compartido. También cubre páginas que
+// insertan common/header.html mediante innerHTML, donde los scripts del fragmento no se ejecutan.
+function inicializarHeaderAuth() {
+  const root = document.getElementById('header-container') || document;
+  const login = root.querySelector('#login-link');
+  const userArea = root.querySelector('#user-area');
+  const userName = root.querySelector('#user-name');
+  const logout = root.querySelector('#cerrar-sesion');
+  const toggle = root.querySelector('#header-menu-toggle');
+  const menu = root.querySelector('#header-acciones');
+
+  let usuario = null;
+  try {
+    const raw = localStorage.getItem('usuario');
+    if (raw && localStorage.getItem('api_key')) usuario = JSON.parse(raw);
+  } catch (error) {
+    console.warn('No se pudo leer la sesión del encabezado:', error);
+  }
+
+  if (usuario) {
+    if (login) login.style.display = 'none';
+    if (userArea) userArea.style.display = 'flex';
+    if (userName) {
+      userName.textContent = '👋 ' + (usuario.nombre || usuario.email || 'Usuario');
+      userName.classList.add('admin-link');
+      userName.title = 'Abrir panel de administración';
+      userName.setAttribute('role', 'link');
+      userName.setAttribute('tabindex', '0');
+      userName.onclick = function () { window.location.href = '/admin.html'; };
+      userName.onkeydown = function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = '/admin.html';
+        }
+      };
+    }
+  } else {
+    if (login) login.style.display = 'inline-flex';
+    if (userArea) userArea.style.display = 'none';
+  }
+
+  if (logout && logout.dataset.logoutInit !== '1') {
+    logout.dataset.logoutInit = '1';
+    logout.addEventListener('click', async function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      try {
+        await Auth.logout();
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('api_key');
+      }
+      window.location.href = '/index.html';
+    });
+  }
+
+  if (toggle && menu && toggle.dataset.menuInit !== '1') {
+    toggle.dataset.menuInit = '1';
+    const cerrar = function () {
+      menu.classList.remove('menu-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+    };
+    toggle.addEventListener('click', function (event) {
+      event.stopPropagation();
+      if (toggle.getAttribute('aria-expanded') === 'true') cerrar();
+      else {
+        menu.classList.add('menu-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        toggle.setAttribute('aria-label', 'Cerrar menú');
+      }
+    });
+  }
+}
+window.inicializarHeaderAuth = inicializarHeaderAuth;
+
+if (!window.__elBarrioHeaderObserversInstalled) {
+  window.__elBarrioHeaderObserversInstalled = true;
+  document.addEventListener('pointerdown', function (event) {
+    const menu = document.getElementById('header-acciones');
+    const toggle = document.getElementById('header-menu-toggle');
+    if (menu && toggle && !menu.contains(event.target) && !toggle.contains(event.target)) {
+      menu.classList.remove('menu-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+    }
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    const menu = document.getElementById('header-acciones');
+    const toggle = document.getElementById('header-menu-toggle');
+    if (menu && toggle) {
+      menu.classList.remove('menu-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+    }
+  });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth <= 768) return;
+    const menu = document.getElementById('header-acciones');
+    const toggle = document.getElementById('header-menu-toggle');
+    if (menu && toggle) {
+      menu.classList.remove('menu-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menú');
+    }
+  });
+  const observer = new MutationObserver(function () {
+    if (document.getElementById('header-menu-toggle')) {
+      observer.disconnect();
+      inicializarHeaderAuth();
+    }
+  });
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  if (document.getElementById('header-menu-toggle')) {
+    observer.disconnect();
+    inicializarHeaderAuth();
+  }
+}
+
 
 if (typeof API !== 'undefined') {
   API.listarPublicos = async function (filtros = {}, paginacion = {}) {
