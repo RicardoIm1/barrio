@@ -119,6 +119,8 @@
         }
 
 
+        this.inicializarMenuMovil(container);
+
         // Estos scripts se inicializan aquí: los scripts insertados con innerHTML no se ejecutan.
         const loginLink = container.querySelector('#login-link');
         const userArea = container.querySelector('#user-area');
@@ -130,18 +132,12 @@
           if (userArea) userArea.style.display = 'flex';
           if (userName) {
             userName.textContent = '👋 ' + (usuario.nombre || usuario.email || 'Usuario');
-            const esAdmin = usuario.rol === 'admin';
-            userName.classList.toggle('admin-link', esAdmin);
-            userName.title = esAdmin ? 'Abrir panel de administración' : '';
-            userName.setAttribute('role', esAdmin ? 'link' : 'text');
-            userName.setAttribute('tabindex', esAdmin ? '0' : '-1');
-            userName.onclick = esAdmin ? () => { window.location.href = '/admin.html'; } : null;
-            userName.onkeydown = esAdmin ? (event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                window.location.href = '/admin.html';
-              }
-            } : null;
+            userName.classList.add('admin-link');
+            userName.title = 'Abrir panel de administración';
+            userName.setAttribute('role', 'link');
+            userName.setAttribute('tabindex', '0');
+            userName.onclick = () => { window.location.href = '/admin.html'; };
+            userName.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href = '/admin.html'; } };
           }
         } else {
           if (loginLink) loginLink.style.display = 'inline-flex';
@@ -200,6 +196,21 @@
       } catch (error) {
         console.error('Error cargando header:', error);
       }
+    },
+
+    inicializarMenuMovil(container = document) {
+      const toggle = container.querySelector('#header-menu-toggle');
+      const acciones = container.querySelector('#header-acciones');
+      if (!toggle || !acciones || toggle.dataset.menuInit === '1') return;
+      toggle.dataset.menuInit = '1';
+      const cerrar = () => { acciones.classList.remove('menu-open'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Abrir menú'); };
+      toggle.addEventListener('click', () => {
+        if (toggle.getAttribute('aria-expanded') === 'true') cerrar();
+        else { acciones.classList.add('menu-open'); toggle.setAttribute('aria-expanded', 'true'); toggle.setAttribute('aria-label', 'Cerrar menú'); }
+      });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+      document.addEventListener('pointerdown', e => { if (!acciones.contains(e.target) && !toggle.contains(e.target)) cerrar(); });
+      window.addEventListener('resize', () => { if (window.innerWidth > 768) cerrar(); });
     },
 
     mostrarMensaje(mensaje, tipo = 'info') {
@@ -266,12 +277,14 @@
         if (loginLink) loginLink.style.display = 'none';
         if (userArea) userArea.style.display = 'flex';
         if (userNameSpan) {
-          const esAdmin = usuario.rol === 'admin';
           userNameSpan.textContent = `👋 ${usuario.nombre || usuario.email || 'Usuario'}`;
-          userNameSpan.classList.toggle('admin-link', esAdmin);
-          userNameSpan.style.cursor = esAdmin ? 'pointer' : 'default';
-          userNameSpan.title = esAdmin ? 'Abrir panel de administración' : '';
-          userNameSpan.onclick = esAdmin ? () => { window.location.href = '/admin.html'; } : null;
+          userNameSpan.classList.add('admin-link');
+          userNameSpan.style.cursor = 'pointer';
+          userNameSpan.title = 'Abrir panel de administración';
+          userNameSpan.setAttribute('role', 'link');
+          userNameSpan.setAttribute('tabindex', '0');
+          userNameSpan.onclick = () => { window.location.href = '/admin.html'; };
+          userNameSpan.onkeydown = (event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href = '/admin.html'; } };
         }
         if (cerrarBtn) {
           const nuevoCerrar = cerrarBtn.cloneNode(true);
