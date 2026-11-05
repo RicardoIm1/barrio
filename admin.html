@@ -1168,6 +1168,50 @@
             height: 0;
             display: none;
         }
+        /* Mi perfil: panel personal compacto y adaptable */
+        #tab-perfil .perfil-page{width:100%;max-width:1080px;margin:0 auto;padding:4px 0 28px}
+        #tab-perfil .perfil-hero{display:flex;align-items:center;gap:17px;padding:23px 25px;margin-bottom:17px;border:1px solid rgba(255,255,255,.75);border-radius:18px;background:linear-gradient(125deg,#f7fafc 0%,#edf3f8 100%);box-shadow:0 8px 24px rgba(35,55,75,.055)}
+        #tab-perfil .perfil-avatar{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(145deg,#34495e,#55748d);color:#fff;font-size:1.25rem;font-weight:650;letter-spacing:.02em;box-shadow:0 5px 14px rgba(44,62,80,.16)}
+        #tab-perfil .perfil-hero-copy{min-width:0;flex:1}
+        #tab-perfil .perfil-kicker{display:block;margin-bottom:5px;color:#8293a3;font-size:.66rem;font-weight:750;letter-spacing:.13em}
+        #tab-perfil .perfil-hero h2{margin:0;color:#263b4e;font-size:1.28rem;font-weight:650;letter-spacing:-.025em}
+        #tab-perfil .perfil-hero p{margin:4px 0 0;color:#718294;font-size:.84rem}
+        #tab-perfil .perfil-status{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid #d8e9df;border-radius:30px;background:#f2faf5;color:#31704b;font-size:.74rem;font-weight:650;white-space:nowrap}
+        #tab-perfil .perfil-status:before{content:"";width:7px;height:7px;border-radius:50%;background:#49a36c}
+        #tab-perfil .perfil-status.inactivo{border-color:#f0d8d5;background:#fff6f5;color:#a34a42}
+        #tab-perfil .perfil-status.inactivo:before{background:#c65d54}
+        #tab-perfil .perfil-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:16px;align-items:start}
+        #tab-perfil .perfil-card{min-width:0;padding:20px 21px;border:1px solid #e7edf2;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(35,55,75,.045)}
+        #tab-perfil .perfil-card-head{margin-bottom:17px}
+        #tab-perfil .perfil-card-head h3{margin:0;color:#2c4053;font-size:.98rem;font-weight:650}
+        #tab-perfil .perfil-card-head p{margin:5px 0 0;color:#8795a2;font-size:.78rem;line-height:1.45}
+        #tab-perfil .perfil-edit-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        #tab-perfil .perfil-edicion .campo{margin:0}
+        #tab-perfil .perfil-edicion .campo label{display:block;margin:0 0 6px;color:#687b8d;font-size:.76rem;font-weight:650}
+        #tab-perfil .perfil-edicion input{width:100%;min-height:41px;padding:9px 11px;border:1px solid #dfe7ee;border-radius:9px;background:#fbfcfd;color:#2d4052;font-size:.86rem;box-sizing:border-box;transition:border-color .18s,box-shadow .18s}
+        #tab-perfil .perfil-edicion input:focus{outline:none;border-color:#7da2bd;box-shadow:0 0 0 3px rgba(88,133,165,.12);background:#fff}
+        #tab-perfil .perfil-edicion input:disabled{background:#f3f6f8;color:#8493a0;cursor:not-allowed}
+        #tab-perfil .perfil-edicion small{display:block;margin-top:5px;color:#96a2ad;font-size:.7rem;line-height:1.4}
+        #tab-perfil .perfil-save-row{display:flex;align-items:center;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid #edf1f4}
+        #tab-perfil .perfil-save-row .boton{min-height:38px;padding:8px 16px;border-radius:9px;font-size:.8rem}
+        #tab-perfil #perfil-estado-guardado{color:#64816f;font-size:.76rem}
+        #tab-perfil .perfil-details{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+        #tab-perfil .perfil-detail{min-width:0;padding:11px 12px;border:1px solid #edf1f4;border-radius:10px;background:#fbfcfd}
+        #tab-perfil .perfil-detail.wide{grid-column:1/-1}
+        #tab-perfil .perfil-detail span{display:block;margin-bottom:5px;color:#8a98a5;font-size:.65rem;font-weight:700;letter-spacing:.055em;text-transform:uppercase}
+        #tab-perfil .perfil-detail strong{display:block;overflow-wrap:anywhere;color:#354b5e;font-size:.81rem;font-weight:600;line-height:1.4}
+        #tab-perfil .perfil-chip-list{display:flex;flex-wrap:wrap;gap:5px}
+        #tab-perfil .perfil-chip{display:inline-flex;padding:4px 8px;border:1px solid #e1eaf1;border-radius:20px;background:#f3f7fa;color:#536c80;font-size:.69rem;font-weight:600}
+        #tab-perfil .perfil-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:9px}
+        #tab-perfil .perfil-stat{padding:11px 9px;border:1px solid #e8eef3;border-radius:10px;background:#fff;text-align:center}
+        #tab-perfil .perfil-stat strong{display:block;color:#2f4b62;font-size:1.12rem;font-weight:700;line-height:1.2}
+        #tab-perfil .perfil-stat span{display:block;margin-top:5px;color:#8b99a5;font-size:.64rem;line-height:1.3}
+        #tab-perfil .perfil-notificaciones{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:16px;padding:17px 20px;border:1px solid #e7edf2;border-radius:15px;background:#fff;box-shadow:0 5px 18px rgba(35,55,75,.04)}
+        #tab-perfil .perfil-notificaciones h3{margin:0;color:#2c4053;font-size:.92rem;font-weight:650}
+        #tab-perfil .perfil-notificaciones p{margin:4px 0 0;color:#8795a2;font-size:.76rem}
+        #tab-perfil .perfil-notificaciones .boton{flex:0 0 auto;min-height:38px;padding:8px 13px;border-radius:9px;font-size:.78rem}
+        @media(max-width:760px){#tab-perfil .perfil-layout{grid-template-columns:1fr}#tab-perfil .perfil-hero{padding:17px;gap:12px}#tab-perfil .perfil-avatar{width:46px;height:46px;flex-basis:46px;border-radius:13px}#tab-perfil .perfil-hero h2{font-size:1.12rem}#tab-perfil .perfil-card{padding:16px}}
+        @media(max-width:480px){#tab-perfil .perfil-hero{align-items:flex-start;flex-wrap:wrap}#tab-perfil .perfil-status{margin-left:58px;margin-top:-5px}#tab-perfil .perfil-details{grid-template-columns:1fr 1fr}#tab-perfil .perfil-notificaciones{align-items:flex-start;flex-direction:column}#tab-perfil .perfil-notificaciones .boton{width:100%}#tab-perfil .perfil-stat{padding:9px 5px}}
     </style>
 </head>
 
@@ -1199,11 +1243,12 @@
             <form id="form-aviso" class="formulario" style="max-width: 100%;">
                 <h2 style="margin-bottom: 24px; font-weight: 500;">Publicar</h2>
 
-                <div class="campo" style="display: none;">
-                    <label for="categoria">Categoría</label>
+                <div class="campo" id="campo-categoria-publicacion">
+                    <label for="categoria">Categoría de publicación</label>
                     <select id="categoria" required>
                         <option value="varios" selected>📢 VARIOS</option>
                     </select>
+                    <small id="ayuda-categoria-publicacion">Tu cuenta puede publicar en las categorías que tenga autorizadas.</small>
                 </div>
 
                 <div class="campo">
@@ -1291,15 +1336,18 @@
 
         <!-- Pestaña: Perfil -->
         <div id="tab-perfil" class="tab">
-            <div class="formulario" style="max-width: 100%;">
-                <h2 style="margin-bottom: 24px; font-weight: 500;">Mi perfil</h2>
+            <div class="perfil-page">
                 <div id="perfil-info"></div>
-                <div style="margin-top: 32px;">
-                    <h3 style="margin-bottom: 16px; font-weight: 500;">Notificaciones</h3>
-                    <button class="boton boton-secundario" id="activar-notificaciones" style="width: auto;">
+                <section class="perfil-notificaciones">
+                    <div>
+                        <span class="perfil-kicker">PREFERENCIAS</span>
+                        <h3>Notificaciones</h3>
+                        <p>Recibe avisos relevantes de la actividad de El Barrio.</p>
+                    </div>
+                    <button class="boton boton-secundario" id="activar-notificaciones">
                         🔔 Activar notificaciones
                     </button>
-                </div>
+                </section>
             </div>
         </div>
 
@@ -1442,12 +1490,12 @@
 
                 </div>
 
-                <div style="display: flex; gap: 12px;">
-                    <button type="submit"
-                        style="flex:1; background:#0f3b2c; border:none; padding:12px; border-radius:40px; color:white; font-weight:700; cursor:pointer;">💾
-                        Guardar</button>
-                    <button type="button" id="cancelar-editar"
-                        style="flex:1; background:#e74c3c; border:none; padding:12px; border-radius:40px; font-weight:600; cursor:pointer;">Cancelar</button>
+                <div class="edit-modal-actions">
+                    <button type="button" id="eliminar-desde-modal" class="edit-btn-delete" hidden>Eliminar publicación</button>
+                    <div class="edit-modal-actions-main">
+                        <button type="submit" class="edit-btn-save">Guardar cambios</button>
+                        <button type="button" id="cancelar-editar" class="edit-btn-cancel">Cancelar</button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1623,6 +1671,79 @@
                 max-height: 110px;
             }
         }
+
+        /* Mi perfil: composición por secciones, jerarquía y lectura ligera */
+        #tab-perfil .formulario { max-width:100%; padding:0; background:transparent; box-shadow:none; border:0; }
+        #tab-perfil .formulario > h2 { margin:0 0 18px!important; font-size:1.45rem; font-weight:650!important; color:#263b4d; }
+        #perfil-info { max-width:860px; }
+        .perfil-edicion { display:flex; flex-direction:column; gap:15px; max-width:100%; }
+        .perfil-hero { display:flex; align-items:center; gap:17px; padding:22px 24px; border:1px solid #e4ebf2; border-radius:17px; background:linear-gradient(115deg,#fff 0%,#f4f8fb 100%); box-shadow:0 8px 24px rgba(35,55,75,.055); }
+        .perfil-avatar { width:58px; height:58px; flex:0 0 58px; display:grid; place-items:center; border-radius:17px; background:linear-gradient(145deg,#34495e,#52748a); color:#fff; font-size:1.45rem; font-weight:650; box-shadow:0 6px 16px rgba(44,62,80,.18); }
+        .perfil-hero-copy { min-width:0; }
+        .perfil-eyebrow { display:block; color:#8292a1; font-size:.65rem; font-weight:750; letter-spacing:.13em; }
+        .perfil-hero h3 { margin:4px 0 2px; color:#263b4d; font-size:1.2rem; font-weight:650; }
+        .perfil-hero p { margin:0; color:#718191; font-size:.84rem; overflow-wrap:anywhere; }
+        .perfil-badges { display:flex; gap:7px; flex-wrap:wrap; margin-top:10px; }
+        .perfil-badge { display:inline-flex; align-items:center; padding:4px 9px; border-radius:30px; background:#edf2f6; color:#536678; font-size:.69rem; font-weight:650; }
+        .perfil-badge.is-admin { background:#e9eef8; color:#425c86; }
+        .perfil-badge.is-active { background:#e9f5ef; color:#28734e; }
+        .perfil-badge.is-inactive { background:#fff0ed; color:#a94b3d; }
+        .perfil-section { padding:18px 20px 20px; border:1px solid #e7edf2; border-radius:15px; background:#fff; box-shadow:0 5px 18px rgba(35,55,75,.035); }
+        .perfil-section-heading { display:flex; justify-content:space-between; align-items:end; gap:12px; margin-bottom:14px; }
+        .perfil-section-heading h4 { margin:3px 0 0; color:#2c4052; font-size:.98rem; font-weight:650; }
+        .perfil-section-note { color:#91a0ad; font-size:.73rem; }
+        .perfil-fields-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+        .perfil-field { min-width:0; }
+        .perfil-field-wide { grid-column:1/-1; }
+        .perfil-field label { display:block; margin-bottom:5px; color:#5c6e7e; font-size:.76rem; font-weight:650; }
+        .perfil-field input { width:100%; min-width:0; box-sizing:border-box; padding:10px 12px; border:1px solid #dfe7ee; border-radius:9px; background:#fbfcfd; color:#2c3e50; font:inherit; font-size:.86rem; transition:border-color .18s,box-shadow .18s,background .18s; }
+        .perfil-field input:focus { outline:0; border-color:#7d9eb5; background:#fff; box-shadow:0 0 0 3px rgba(80,125,155,.11); }
+        .perfil-field input:disabled { color:#8795a2; background:#f3f6f8; cursor:not-allowed; }
+        .perfil-field small { display:block; margin-top:5px; color:#98a4af; font-size:.7rem; }
+        .perfil-stats-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; }
+        .perfil-stat { min-width:0; padding:12px 13px; border:1px solid #edf1f4; border-radius:11px; background:#f9fbfc; }
+        .perfil-stat span { display:block; color:#83919d; font-size:.68rem; line-height:1.35; }
+        .perfil-stat strong { display:block; margin-top:6px; color:#2c465c; font-size:1.25rem; font-weight:700; overflow-wrap:anywhere; }
+        .perfil-stat .perfil-stat-level { font-size:.9rem; }
+        .perfil-access-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px 18px; }
+        .perfil-access-grid > div { min-width:0; }
+        .perfil-access-grid > div > span { display:block; margin-bottom:4px; color:#8a98a5; font-size:.7rem; }
+        .perfil-access-grid strong { display:block; color:#405567; font-size:.8rem; font-weight:600; overflow-wrap:anywhere; }
+        .perfil-access-categories { grid-column:1/-1; }
+        .perfil-tags { display:flex; flex-wrap:wrap; gap:6px; }
+        .perfil-tag { display:inline-flex; padding:4px 9px; border:1px solid #e3eaf0; border-radius:30px; background:#f6f9fb; color:#526879; font-size:.7rem; }
+        .perfil-form-actions { display:flex; align-items:center; gap:12px; padding:2px 2px 0; }
+        .perfil-save-button { padding:10px 17px; border:0; border-radius:9px; background:#2c3e50; color:#fff; font-size:.82rem; font-weight:650; cursor:pointer; transition:background .18s,transform .18s; }
+        .perfil-save-button:hover { background:#3c5870; transform:translateY(-1px); }
+        .perfil-save-button:disabled { opacity:.6; cursor:wait; transform:none; }
+        #perfil-estado-guardado { color:#42805e; font-size:.78rem; }
+        #tab-perfil #activar-notificaciones { margin-top:9px; padding:9px 13px; border-radius:9px; font-size:.8rem; }
+        @media(max-width:680px) { .perfil-hero { padding:17px; gap:13px; } .perfil-avatar { width:49px;height:49px;flex-basis:49px;border-radius:14px; } .perfil-section { padding:15px; } .perfil-stats-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .perfil-section-heading { align-items:start;flex-direction:column;gap:4px; } }
+        @media(max-width:440px) { .perfil-fields-grid,.perfil-access-grid { grid-template-columns:1fr; } .perfil-field-wide,.perfil-access-categories { grid-column:auto; } .perfil-form-actions { align-items:stretch;flex-direction:column; } .perfil-save-button { width:100%; } }
+
+        /* Ajuste final: jerarquía sobria, dimensiones contenidas y adaptación real */
+        #modal-editar > div { width:min(100%,570px)!important;max-width:570px!important;max-height:min(88dvh,760px)!important;padding:19px 21px!important;border-radius:18px!important;box-shadow:0 18px 55px rgba(8,20,35,.28)!important; }
+        #modal-editar > div > div:first-child { margin-bottom:9px!important;padding-bottom:9px!important; }
+        #modal-editar h2 { font-size:1.18rem!important; }
+        #form-editar > div { margin-bottom:9px!important; }
+        #form-editar label { font-size:.78rem!important;margin-bottom:4px!important; }
+        #form-editar input:not([type="checkbox"]):not([type="hidden"]),#form-editar textarea { padding:8px 10px!important;border-radius:9px!important;font-size:.86rem!important; }
+        #edit-contenido { min-height:76px!important; }
+        #form-editar .edit-grid-contacto-fecha { gap:8px!important;margin-bottom:9px!important; }
+        #form-editar .edit-campo-compacto label { min-height:0!important; }
+        #form-editar .edit-checks-row { margin:9px 0!important; }
+        #form-editar .edit-checks-row > label { padding:7px 9px!important;font-size:.76rem!important; }
+        #edit-btn-imagen,#edit-btn-video { padding:8px!important;font-size:.8rem; }
+        #edit-vista-previa { margin-top:5px!important; }
+        #edit-vista-previa img,#edit-vista-previa video { max-height:105px!important; }
+        .edit-modal-actions { display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;padding-top:11px;border-top:1px solid #e4ebf3; }
+        .edit-modal-actions-main { display:flex;gap:8px;margin-left:auto; }
+        .edit-modal-actions button { min-height:36px!important;padding:8px 13px!important;border:0;border-radius:9px!important;font-size:.8rem;font-weight:650;cursor:pointer; }
+        .edit-modal-actions .edit-btn-save { background:#2c3e50!important;color:#fff; }
+        .edit-modal-actions .edit-btn-cancel { background:#e9eef3!important;color:#405264!important; }
+        .edit-modal-actions .edit-btn-delete { background:#fff1f0;color:#b42318;border:1px solid #f1c5c1; }
+        .edit-modal-actions .edit-btn-delete:hover { background:#fee4e2; }
+        @media(max-width:600px) { #modal-editar{padding:8px!important}#modal-editar>div{width:100%!important;max-height:calc(100dvh - 16px)!important;padding:14px 13px!important;border-radius:15px!important}.edit-modal-actions{align-items:stretch;flex-direction:column-reverse}.edit-modal-actions-main{width:100%;margin:0}.edit-modal-actions-main button{flex:1}.edit-modal-actions .edit-btn-delete{width:100%} }
 
         /* Dos columnas compactas para los campos secundarios */
         #form-editar .edit-grid-contacto-fecha {
@@ -1928,7 +2049,7 @@
     <script src="/js/auth.js?v=20260903-1"></script>
     <script src="/js/api.js?v=20261105-1"></script>
     <script src="/js/ui.js?v=20261105-2"></script>
-    <script src="/js/admin.js?v=20261105-3"></script>
+    <script src="/js/admin.js?v=20261105-8"></script>
     <!-- Acciones de avisos gestionadas únicamente por admin.js para evitar botones duplicados. -->
     <script src="/js/push.js?v=20260908-1"></script>
 

@@ -46,24 +46,113 @@ function confirmarAdmin(mensaje) {
       timeZone: EL_BARRIO_TIME_ZONE,
     });
   };
+  const categoriasPerfil = [
+    ["urgente","Urgente"],["escuelas","Escuelas"],["servicios","Servicios"],
+    ["comercios","Comercios"],["eventos","Eventos"],["gobierno","Gobierno"],["varios","Varios"]
+  ];
   function mostrarPerfil(p) {
     const contenedor = document.getElementById("perfil-info");
     if (!contenedor) return;
     p = p || {};
-    const nombre = p.nombre || p.name || "Usuario",
-      email = p.email || "No disponible",
-      rol = p.rol || "usuario",
-      telefono = p.telefono || "No registrado";
-    const categorias = Array.isArray(p.categorias)
-      ? p.categorias.join(", ")
-      : p.categorias || "No registradas";
-    contenedor.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
-        <div class="campo"><label>Nombre</label><div>${escapar(nombre)}</div></div><div class="campo"><label>Correo electrónico</label><div>${escapar(email)}</div></div>
-        <div class="campo"><label>Rol</label><div>${escapar(rol)}</div></div><div class="campo"><label>Teléfono</label><div>${escapar(telefono)}</div></div>
-        <div class="campo"><label>Categorías</label><div>${escapar(categorias)}</div></div><div class="campo"><label>Estado</label><div>${p.activo === false ? "Inactivo" : "Activo"}</div></div>
-        <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div><div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
-        <div class="campo"><label>Puntos de confianza</label><div>${escapar(p.puntos_confianza ?? 0)}</div></div><div class="campo"><label>Nivel</label><div>${escapar(p.nivel || "Sin nivel")}</div></div>
-        <div class="campo"><label>Avisos publicados</label><div>${escapar(p.avisos_publicados ?? 0)}</div></div><div class="campo"><label>Reportes recibidos</label><div>${escapar(p.reportes_recibidos ?? 0)}</div></div></div>`;
+    const nombre = p.nombre || p.name || "Usuario";
+    const iniciales = nombre.trim().split(/\s+/).slice(0,2).map(x => x.charAt(0)).join("").toUpperCase() || "U";
+    const categoriasRaw = Array.isArray(p.categorias) ? p.categorias : String(p.categorias || "todas").split(",");
+    const etiquetasCategorias = categoriasRaw.map(c => String(c).trim()).filter(Boolean)
+      .map(c => '<span class="perfil-chip">' + escapar(categoriasPerfil.find(x => x[0] === c.toLowerCase())?.[1] || c) + '</span>').join("");
+    const rol = String(p.rol || "usuario");
+    const estadoActivo = p.activo !== false;
+    const fechaRegistro = p.fecha_registro ? formatearFecha(p.fecha_registro) : "No disponible";
+    const ultimoAcceso = p.ultimo_acceso ? formatearFecha(p.ultimo_acceso) : "No disponible";
+    const valor = (v, fallback = "No disponible") => escapar(v === null || v === undefined || v === "" ? fallback : v);
+    contenedor.innerHTML = `
+      <div class="perfil-hero">
+        <div class="perfil-avatar" aria-hidden="true">${escapar(iniciales)}</div>
+        <div class="perfil-hero-copy">
+          <span class="perfil-kicker">ESPACIO PERSONAL</span>
+          <h2>${escapar(nombre)}</h2>
+          <p>Administra tus datos y consulta la actividad de tu cuenta.</p>
+        </div>
+        <span class="perfil-status ${estadoActivo ? "" : "inactivo"}">${estadoActivo ? "Cuenta activa" : "Cuenta inactiva"}</span>
+      </div>
+      <form id="form-mi-perfil" class="perfil-edicion">
+        <div class="perfil-layout">
+          <section class="perfil-card">
+            <div class="perfil-card-head">
+              <h3>Datos personales</h3>
+              <p>Esta información ayuda a identificarte dentro de la comunidad.</p>
+            </div>
+            <div class="perfil-edit-grid">
+              <div class="campo"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(nombre === "Usuario" ? "" : nombre)}" autocomplete="name"></div>
+              <div class="campo"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo de acceso no se modifica desde este formulario.</small></div>
+              <div class="campo"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto" autocomplete="tel"></div>
+            </div>
+            <div class="perfil-save-row">
+              <button class="boton" type="submit">Guardar cambios</button>
+              <span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
+            </div>
+          </section>
+          <div>
+            <section class="perfil-card">
+              <div class="perfil-card-head">
+                <h3>Información de cuenta</h3>
+                <p>Datos de acceso y configuración asignada.</p>
+              </div>
+              <div class="perfil-details">
+                <div class="perfil-detail"><span>Rol</span><strong>${valor(rol === "admin" ? "Administrador" : "Usuario")}</strong></div>
+                <div class="perfil-detail"><span>Estado</span><strong>${estadoActivo ? "Activo" : "Inactivo"}</strong></div>
+                <div class="perfil-detail wide"><span>Categorías permitidas</span><div class="perfil-chip-list">${etiquetasCategorias || '<span class="perfil-chip">Sin categorías</span>'}</div></div>
+                <div class="perfil-detail wide"><span>Fecha de registro</span><strong>${valor(fechaRegistro)}</strong></div>
+                <div class="perfil-detail wide"><span>Último acceso</span><strong>${valor(ultimoAcceso)}</strong></div>
+              </div>
+            </section>
+            <section class="perfil-card" style="margin-top:12px">
+              <div class="perfil-card-head">
+                <h3>Actividad en El Barrio</h3>
+                <p>Un resumen de tu participación.</p>
+              </div>
+              <div class="perfil-stats">
+                <div class="perfil-stat"><strong>${valor(p.avisos_publicados, "0")}</strong><span>Avisos publicados</span></div>
+                <div class="perfil-stat"><strong>${valor(p.puntos_confianza, "0")}</strong><span>Puntos de confianza</span></div>
+                <div class="perfil-stat"><strong>${valor(p.reportes_recibidos, "0")}</strong><span>Reportes recibidos</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </form>`;
+    const form = document.getElementById("form-mi-perfil");
+    if (form && form.dataset.init !== "1") {
+      form.dataset.init = "1";
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const estado = document.getElementById("perfil-estado-guardado");
+        const nombre = form.elements.nombre.value.trim();
+        const telefono = form.elements.telefono.value.trim();
+        if (!nombre) { estado.textContent = "El nombre es obligatorio."; return; }
+        const boton = form.querySelector('button[type="submit"]');
+        boton.disabled = true; estado.textContent = "Guardando…";
+        try {
+          const client = await window.obtenerSupabaseClient();
+          const { data: auth, error: authError } = await client.auth.getUser();
+          if (authError || !auth?.user?.id) throw authError || new Error("Sesión no disponible.");
+          const { data, error } = await client.from("usuarios").update({ nombre, telefono }).eq("id", auth.user.id)
+            .select("id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso,puntos_confianza,nivel,avisos_publicados,reportes_recibidos").single();
+          if (error) throw error;
+          const local = JSON.parse(localStorage.getItem("usuario") || "{}");
+          local.nombre = data.nombre; local.telefono = data.telefono;
+          localStorage.setItem("usuario", JSON.stringify(local));
+          mostrarPerfil(data);
+          const nuevoEstado = document.getElementById("perfil-estado-guardado");
+          if (nuevoEstado) nuevoEstado.textContent = "Cambios guardados.";
+          if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
+        } catch (error) {
+          console.error("Error guardando perfil:", error);
+          estado.textContent = error.message || "No se pudieron guardar los cambios.";
+        } finally {
+          const actual = document.querySelector('#form-mi-perfil button[type="submit"]');
+          if (actual) actual.disabled = false;
+        }
+      });
+    }
   }
   async function cargarPerfil() {
     const contenedor = document.getElementById("perfil-info");
@@ -74,12 +163,11 @@ function confirmarAdmin(mensaje) {
     } catch (e) {
       console.warn("⚠️ No se pudo leer el perfil local:", e);
     }
-    if (!window.supabaseClient) return;
     try {
-      const { data: authData, error: authError } =
-        await window.supabaseClient.auth.getUser();
+      const client = await window.obtenerSupabaseClient();
+      const { data: authData, error: authError } = await client.auth.getUser();
       if (authError || !authData?.user?.id) return;
-      const { data, error } = await window.supabaseClient
+      const { data, error } = await client
         .from("usuarios")
         .select(
           `id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso,puntos_confianza,nivel,avisos_publicados,reportes_recibidos,reportes_realizados,votos_positivos_recibidos,votos_negativos_recibidos,fecha_verificacion,sancion_hasta`,
@@ -90,7 +178,13 @@ function confirmarAdmin(mensaje) {
         console.error("❌ Error cargando perfil desde Supabase:", error);
         return;
       }
-      if (data) mostrarPerfil(data);
+      if (data) {
+        mostrarPerfil(data);
+        const local = JSON.parse(localStorage.getItem("usuario") || "{}");
+        local.nombre = data.nombre; local.telefono = data.telefono;
+        localStorage.setItem("usuario", JSON.stringify(local));
+        if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
+      }
     } catch (error) {
       console.error("❌ Error inesperado cargando perfil:", error);
     }
@@ -133,6 +227,48 @@ function confirmarAdmin(mensaje) {
 })();
 
 (function inicializarCreacionAviso() {
+  const categoriasPublicables = [
+    ["urgente","⚠️ URGENTE"],["escuelas","🏫 ESCUELAS"],["servicios","🛠️ SERVICIOS"],
+    ["comercios","🛒 COMERCIOS"],["eventos","📅 EVENTOS"],["gobierno","🏛️ GOBIERNO"],["varios","📢 VARIOS"]
+  ];
+  async function obtenerPermisosPublicacion() {
+    const client=await window.obtenerSupabaseClient();
+    const {data:auth,error:authError}=await client.auth.getUser();
+    if(authError||!auth?.user?.id) throw new Error("Inicia sesión para publicar.");
+    const {data:user,error}=await client.from("usuarios").select("id,rol,categorias,activo").eq("id",auth.user.id).single();
+    if(error) throw error;
+    if(user.activo===false) throw new Error("Tu cuenta está inactiva. No puedes publicar.");
+    if(user.rol==="admin") return {admin:true,permitidas:categoriasPublicables.map(x=>x[0])};
+    let raw=Array.isArray(user.categorias)?user.categorias:String(user.categorias||"varios").split(",");
+    raw=raw.map(x=>String(x).trim().toLowerCase()).filter(Boolean);
+    // "todas" fue el valor histórico predeterminado. Para cuentas normales equivale a Varios.
+    if(raw.includes("todas")||!raw.length) raw=["varios"];
+    const validas=categoriasPublicables.map(x=>x[0]);
+    const permitidas=raw.filter(x=>validas.includes(x));
+    if(!permitidas.length) permitidas.push("varios");
+    return {admin:false,permitidas};
+  }
+  async function configurarSelectorCategoria() {
+    const select=document.getElementById("categoria"), campo=document.getElementById("campo-categoria-publicacion");
+    const ayuda=document.getElementById("ayuda-categoria-publicacion");
+    if(!select) return;
+    try {
+      const permisos=await obtenerPermisosPublicacion();
+      select.replaceChildren();
+      categoriasPublicables.filter(([key])=>permisos.permitidas.includes(key)).forEach(([key,label])=>{
+        const option=document.createElement("option"); option.value=key; option.textContent=label; select.appendChild(option);
+      });
+      select.value=permisos.admin?"varios":(permisos.permitidas.includes("varios")?"varios":permisos.permitidas[0]);
+      if(campo) campo.style.display="";
+      if(ayuda) ayuda.textContent=permisos.admin?"Como administrador puedes publicar en cualquiera de las siete categorías.":"Tu cuenta solo puede publicar en las categorías autorizadas por el administrador.";
+    } catch(error) {
+      select.replaceChildren();
+      const option=document.createElement("option"); option.value="varios"; option.textContent="📢 VARIOS"; select.appendChild(option);
+      select.disabled=true;
+      if(ayuda) ayuda.textContent=error.message||"No fue posible consultar tus permisos de publicación.";
+      console.warn("No se pudieron cargar permisos de publicación:",error);
+    }
+  }
   const valor = (id) => {
     const e = document.getElementById(id);
     return e ? String(e.value || "").trim() : "";
@@ -141,8 +277,8 @@ function confirmarAdmin(mensaje) {
     event.preventDefault();
     event.stopImmediatePropagation();
     const titulo = valor("titulo"),
-      contenido = valor("contenido"),
-      categoria = valor("categoria") || "varios";
+      contenido = valor("contenido");
+    let categoria=valor("categoria")||"varios";
     if (!titulo) return notificarAdmin("❌ El título del aviso es obligatorio.");
     if (!contenido) return notificarAdmin("❌ La descripción del aviso es obligatoria.");
     const datos = {
@@ -161,6 +297,8 @@ function confirmarAdmin(mensaje) {
     const videoUrl = valor("video_url");
     if (videoUrl) datos.video_url = videoUrl;
     try {
+      const permisos=await obtenerPermisosPublicacion();
+      if(!permisos.permitidas.includes(categoria)) throw new Error("No tienes autorización para publicar en esa categoría.");
       const apiKey = localStorage.getItem("api_key"),
         usuario = API.getUsuarioActual();
       if (!apiKey || !usuario?.id)
@@ -192,6 +330,7 @@ function confirmarAdmin(mensaje) {
     const form = document.getElementById("form-aviso");
     if (!form) return false;
     form.addEventListener("submit", crearAviso, true);
+    configurarSelectorCategoria();
     console.log("✅ CREAR AVISO: handler Supabase instalado en #form-aviso.");
     return true;
   }
@@ -1182,26 +1321,33 @@ window.cambiarDestacado = async function (id, nuevoValor) {
 };
 
 window.eliminarAviso = async function (id) {
-  if (!(await confirmarAdmin("¿Eliminar este aviso?"))) return;
+  const usuario = API.getUsuarioActual();
+  const aviso = todosLosAvisos.find((a) => String(a.id) === String(id));
+  const esAdmin = usuario?.rol === "admin";
+  const autor = String(aviso?.created_by || aviso?.user_id || aviso?.usuario_id || "").trim();
+  const propietario = !!usuario?.id && autor === String(usuario.id);
+  if (!aviso) { notificarAdmin("No se encontró la publicación."); return false; }
+  if (!esAdmin && !propietario) { notificarAdmin("Solo el administrador o el propietario pueden eliminar esta publicación."); return false; }
+  if (!(await confirmarAdmin("¿Eliminar definitivamente esta publicación? Esta acción no se puede deshacer."))) return false;
   try {
     const apiKey = localStorage.getItem("api_key");
-    const resultado = await API.peticion(
-      "ELIMINAR",
-      { coleccion: "AVISOS", id: id },
-      apiKey,
-    );
+    if (!apiKey) throw new Error("No hay una sesión válida.");
+    const resultado = await API.peticion("ELIMINAR", { coleccion: "AVISOS", id: id }, apiKey);
     if (resultado && resultado.success) {
-      todosLosAvisos = todosLosAvisos.filter((a) => a.id != id);
+      todosLosAvisos = todosLosAvisos.filter((a) => String(a.id) !== String(id));
+      avisosOriginales = avisosOriginales.filter((a) => String(a.id) !== String(id));
       renderizarTablaAvisos();
-      if (resultado.mediaEliminada === false) {
-        notificarAdmin("Aviso eliminado, pero quedó pendiente borrar su archivo: " + (resultado.advertenciaMedia || "error de Storage"));
-      } else {
-        notificarAdmin("✅ Aviso eliminado y multimedia retirada de Storage");
-      }
-    } else throw new Error(resultado?.error || "Error al eliminar");
+      const modal = document.getElementById("modal-editar");
+      if (modal && String(document.getElementById("edit-id")?.value) === String(id)) modal.style.display = "none";
+      if (resultado.mediaEliminada === false) notificarAdmin("Publicación eliminada, pero quedó pendiente borrar su archivo: " + (resultado.advertenciaMedia || "error de Storage"));
+      else notificarAdmin("Publicación eliminada y multimedia retirada de Storage.");
+      return true;
+    }
+    throw new Error(resultado?.error || "Error al eliminar");
   } catch (error) {
-    console.error("Error:", error);
-    notificarAdmin("❌ Error: " + error.message);
+    console.error("Error al eliminar publicación:", error);
+    notificarAdmin("No se pudo eliminar: " + (error?.message || error));
+    return false;
   }
 };
 
@@ -1236,6 +1382,13 @@ window.editarAviso = function (id) {
   const chkDestacado = document.getElementById("edit-destacado");
   const usuarioActual = API.getUsuarioActual();
   const puedeCambiarPromocion = usuarioActual?.rol === "admin";
+  const btnEliminar = document.getElementById("eliminar-desde-modal");
+  if (btnEliminar) {
+    const autorAviso = String(aviso.created_by || aviso.user_id || aviso.usuario_id || "").trim();
+    const esPropietario = !!usuarioActual?.id && autorAviso === String(usuarioActual.id);
+    btnEliminar.hidden = !(puedeCambiarPromocion || esPropietario);
+    btnEliminar.onclick = () => window.eliminarAviso(aviso.id);
+  }
   if (chkUrgente) {
     chkUrgente.checked = aviso.urgente === true || aviso.urgente === "TRUE" || aviso.urgente === "true" || aviso.urgente === 1 || aviso.urgente === "1";
     chkUrgente.disabled = !puedeCambiarPromocion;
@@ -1349,24 +1502,34 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     st.id="estilos-modal-ficha-usuario";
     st.textContent = '.fila-usuario-detalle{cursor:pointer}.fila-usuario-detalle:focus-visible{outline:2px solid #4a90a4;outline-offset:2px}'+
       '#modal-ficha-usuario{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;padding:clamp(8px,2vh,22px);box-sizing:border-box;background:rgba(12,24,38,.72);backdrop-filter:blur(10px)}'+
-      '#modal-ficha-usuario .fu-panel{width:min(100%,920px);max-height:calc(100dvh - 24px);overflow:auto;box-sizing:border-box;background:linear-gradient(145deg,#fff,#f4f7fb);color:#263849;border:1px solid #fff;border-radius:22px;box-shadow:0 28px 90px rgba(8,20,35,.35);padding:clamp(16px,2.5vw,28px)}'+
+      '#modal-ficha-usuario .fu-panel{width:min(100%,760px);max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;background:linear-gradient(145deg,#fff,#f4f7fb);color:#263849;border:1px solid #fff;border-radius:17px;box-shadow:0 18px 55px rgba(8,20,35,.28);padding:18px 20px}'+
       '#modal-ficha-usuario .fu-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:14px;background:#fff;border-bottom:1px solid #e2eaf1}'+
       '#modal-ficha-usuario .fu-head h2{margin:0;font-size:1.4rem;color:#24384b}#modal-ficha-usuario .fu-sub{margin:5px 0 0;color:#657789;font-size:.85rem;overflow-wrap:anywhere}'+
       '#modal-ficha-usuario .fu-close{border:0;border-radius:50%;width:38px;height:38px;flex:0 0 38px;cursor:pointer;background:#eaf0f5;color:#34495e;font-size:20px}'+
-      '#modal-ficha-usuario .fu-section{margin-top:20px}#modal-ficha-usuario .fu-section h3{margin:0 0 11px;font-size:1rem;color:#2c465c}'+
-      '#modal-ficha-usuario .fu-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}#modal-ficha-usuario .fu-field{min-width:0;padding:11px 12px;border:1px solid #e3eaf1;border-radius:12px;background:#fff}'+
+      '#modal-ficha-usuario .fu-section{margin-top:13px}#modal-ficha-usuario .fu-section h3{margin:0 0 8px;font-size:.88rem;color:#2c465c}'+
+      '#modal-ficha-usuario .fu-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}#modal-ficha-usuario .fu-field{min-width:0;padding:8px 10px;border:1px solid #e3eaf1;border-radius:9px;background:#fff}'+
       '#modal-ficha-usuario .fu-label{display:block;color:#7b8b9a;font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}#modal-ficha-usuario .fu-value{display:block;font-size:.88rem;font-weight:600;overflow-wrap:anywhere}'+
-      '#modal-ficha-usuario .fu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#modal-ficha-usuario .fu-stat{padding:14px;border-radius:14px;background:#fff;border:1px solid #e2eaf1}'+
-      '#modal-ficha-usuario .fu-stat span{display:block;font-size:.7rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:5px;font-size:1.45rem;color:#29465d}'+
+      '#modal-ficha-usuario .fu-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}#modal-ficha-usuario .fu-stat{padding:10px;border-radius:10px;background:#fff;border:1px solid #e2eaf1}'+
+      '#modal-ficha-usuario .fu-stat span{display:block;font-size:.66rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:4px;font-size:1.18rem;color:#29465d}'+
       '#modal-ficha-usuario .fu-box{margin-top:12px;padding:14px;border:1px solid #e2eaf1;border-radius:14px;background:#fff}#modal-ficha-usuario .fu-box h4{margin:0 0 10px;font-size:.9rem;color:#344f65}'+
       '#modal-ficha-usuario .fu-chart{display:block;width:100%;height:170px}#modal-ficha-usuario .fu-table-wrap{overflow-x:auto}#modal-ficha-usuario .fu-table{width:100%;border-collapse:collapse;font-size:.78rem}'+
       '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
-      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:18px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}}';
+      '#modal-ficha-usuario .fu-admin-form{padding:10px;border:1px solid #dfe7ee;border-radius:13px;background:#fff;font-size:.82rem}#modal-ficha-usuario .fu-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal-ficha-usuario .fu-admin-grid label{display:grid;gap:5px;font-weight:600;color:#536779}#modal-ficha-usuario .fu-admin-form select{width:100%;padding:8px;border:1px solid #d6e0e8;border-radius:8px;background:#fff;font:inherit}#modal-ficha-usuario .fu-admin-form fieldset{margin:12px 0 0;padding:10px;border:1px solid #e1e8ef;border-radius:9px}#modal-ficha-usuario .fu-admin-form legend{padding:0 5px;font-weight:600}#modal-ficha-usuario .fu-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}#modal-ficha-usuario .fu-categorias label{display:flex;align-items:center;gap:6px}#modal-ficha-usuario .fu-admin-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}#modal-ficha-usuario .fu-admin-actions button{border:0;border-radius:9px;background:#2c3e50;color:#fff;padding:9px 14px;font:600 .82rem system-ui;cursor:pointer}'+
+      '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:14px;padding:14px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}#modal-ficha-usuario .fu-admin-grid{grid-template-columns:1fr}}';
     document.head.appendChild(st);
     const modal=document.createElement("div"); modal.id="modal-ficha-usuario";
     modal.innerHTML='<section class="fu-panel" role="dialog" aria-modal="true" aria-labelledby="fu-titulo">'+
       '<header class="fu-head"><div><h2 id="fu-titulo">Ficha del usuario</h2><p id="fu-subtitulo" class="fu-sub"></p></div><button type="button" class="fu-close" id="fu-cerrar" aria-label="Cerrar ficha">×</button></header>'+
       '<section class="fu-section"><h3>Datos del usuario</h3><div id="fu-datos" class="fu-fields"><div class="fu-muted">Cargando datos…</div></div></section>'+
+      '<section class="fu-section" id="fu-admin-edit" hidden><h3>Administración del perfil</h3><form id="fu-admin-form" class="fu-admin-form">'+
+      '<div class="fu-admin-grid"><label>Rol<select name="rol"><option value="usuario">Usuario</option><option value="admin">Administrador</option></select></label>'+
+      '<label>Estado<select name="activo"><option value="true">Activo</option><option value="false">Inactivo</option></select></label></div>'+
+      '<fieldset><legend>Categorías permitidas</legend><div class="fu-categorias">'+
+      '<label><input type="checkbox" name="categorias" value="urgente"> Urgente</label><label><input type="checkbox" name="categorias" value="escuelas"> Escuelas</label>'+
+      '<label><input type="checkbox" name="categorias" value="servicios"> Servicios</label><label><input type="checkbox" name="categorias" value="comercios"> Comercios</label>'+
+      '<label><input type="checkbox" name="categorias" value="eventos"> Eventos</label><label><input type="checkbox" name="categorias" value="gobierno"> Gobierno</label>'+
+      '<label><input type="checkbox" name="categorias" value="varios"> Varios</label></div></fieldset>'+
+      '<div class="fu-admin-actions"><button type="submit">Guardar perfil</button><span id="fu-admin-status" role="status" aria-live="polite"></span></div></form></section>'+
       '<section class="fu-section"><h3>Estadísticas de sus publicaciones</h3><div class="fu-stats">'+
       '<div class="fu-stat"><span>Publicaciones</span><strong id="fu-total">…</strong></div><div class="fu-stat"><span>Avisos activos</span><strong id="fu-activos">…</strong></div><div class="fu-stat"><span>Vistas totales</span><strong id="fu-vistas">…</strong></div>'+
       '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
@@ -1376,6 +1539,32 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     const cerrar=function(){modal.style.display="none";document.body.style.overflow="";};
     modal.querySelector("#fu-cerrar").addEventListener("click",cerrar);
     modal.addEventListener("click",function(e){if(e.target===modal)cerrar();});
+    modal.addEventListener("submit", async function(e) {
+      if (e.target.id !== "fu-admin-form") return;
+      e.preventDefault();
+      const form=e.target, status=document.getElementById("fu-admin-status"), boton=form.querySelector('button[type="submit"]');
+      const objetivo=form.dataset.userId;
+      if (!objetivo) return;
+      const categorias=Array.from(form.querySelectorAll('input[name="categorias"]:checked')).map(x=>x.value);
+      const rolNuevo=form.elements.rol.value;
+      const payload={rol:rolNuevo,activo:form.elements.activo.value==="true",categorias:rolNuevo==="admin"?"todas":categorias.join(",")};
+      if (!categorias.length) { status.textContent="Selecciona al menos una categoría."; return; }
+      boton.disabled=true; status.textContent="Guardando…";
+      try {
+        const client=typeof window.getSupabaseClient==="function"?await window.getSupabaseClient():await window.obtenerSupabaseClient();
+        const {data,error}=await client.from("usuarios").update(payload).eq("id",objetivo).select("id,rol,categorias,activo").single();
+        if(error) throw error;
+        const item=(window.__elBarrioUsuariosAdmin||[]).find(u=>String(u.id)===String(objetivo));
+        if(item) Object.assign(item,data);
+        status.textContent="Perfil actualizado.";
+        await cargarUsuariosAdmin();
+        const actual=(window.__elBarrioUsuariosAdmin||[]).find(u=>String(u.id)===String(objetivo));
+        if(actual) { form.elements.rol.value=actual.rol||"usuario"; form.elements.activo.value=actual.activo===false?"false":"true"; }
+      } catch(error) {
+        console.error("Error actualizando perfil de usuario:",error);
+        status.textContent=error.message||"No se pudo actualizar el perfil.";
+      } finally { boton.disabled=false; }
+    });
     document.addEventListener("keydown",function(e){if(e.key==="Escape"&&modal.style.display==="flex")cerrar();});
   }
   function dibujarGrafica(avisos) {
@@ -1405,6 +1594,31 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       ["Estado",usuario.activo===true||String(usuario.activo).toUpperCase()==="TRUE"?"Activo":"Inactivo"],["Categorías",usuario.categorias],
       ["Registro",fecha(usuario.fecha_registro||usuario.created_at)],["Último acceso",fecha(usuario.ultimo_acceso)],["ID",usuario.id]].filter(function(c){return c[1]!==undefined&&c[1]!==null&&String(c[1]).trim()!=="";});
     document.getElementById("fu-datos").innerHTML=campos.map(function(c){return '<div class="fu-field"><span class="fu-label">'+esc(c[0])+'</span><span class="fu-value">'+esc(c[1])+'</span></div>';}).join("")||'<div class="fu-muted">No hay datos adicionales disponibles.</div>';
+    const esAdmin=API.getUsuarioActual()?.rol==="admin";
+    const edit=document.getElementById("fu-admin-edit"), formAdmin=document.getElementById("fu-admin-form");
+    if(edit&&formAdmin){
+      edit.hidden=!esAdmin;
+      if(esAdmin){
+        formAdmin.dataset.userId=String(id);
+        formAdmin.elements.rol.value=usuario.rol||"usuario";
+        formAdmin.elements.activo.value=usuario.activo===false||String(usuario.activo).toUpperCase()==="FALSE"?"false":"true";
+        const raw=Array.isArray(usuario.categorias)?usuario.categorias:(String(usuario.categorias||"todas").toLowerCase()==="todas"?["urgente","escuelas","servicios","comercios","eventos","gobierno","varios"]:String(usuario.categorias).split(",").map(x=>x.trim().toLowerCase()));
+        formAdmin.querySelectorAll('input[name="categorias"]').forEach(x=>{x.checked=raw.includes(x.value);});
+        const rolSelect=formAdmin.elements.rol;
+        if(String(id)===String(API.getUsuarioActual()?.id)){rolSelect.disabled=true;rolSelect.title="No puedes cambiar tu propio rol desde esta ficha.";}
+        else {rolSelect.disabled=false;rolSelect.title="";}
+        if(!formAdmin.dataset.roleChangeInit){
+          formAdmin.dataset.roleChangeInit="1";
+          rolSelect.addEventListener("change",()=>{
+            if(rolSelect.value==="usuario"){
+              const checks=Array.from(formAdmin.querySelectorAll('input[name="categorias"]'));
+              checks.forEach(x=>{x.checked=x.value==="varios";});
+            }
+          });
+        }
+        document.getElementById("fu-admin-status").textContent="";
+      }
+    }
     ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="…";});
     document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr>';
     modal.style.display="flex";document.body.style.overflow="hidden";
@@ -1873,13 +2087,7 @@ conectarControlesMultimedia({
 });
 // ===== Fin de multimedia Supabase =====
 
-document.getElementById("form-aviso")?.addEventListener("submit", function () {
-  document.getElementById("categoria").value = "varios";
-});
-document.getElementById("form-editar")?.addEventListener("submit", function () {
-  const categoria = document.getElementById("edit-categoria");
-  if (categoria) categoria.value = "varios";
-});
+// La categoría se valida contra los permisos vigentes del usuario y en Supabase.
 (function actualizarHeaderForce() {
   const usuario = API.getUsuarioActual();
   if (usuario && window.actualizarHeaderPorSesion)
