@@ -91,7 +91,8 @@ function confirmarAdmin(mensaje) {
           local.nombre = data.nombre; local.telefono = data.telefono;
           localStorage.setItem("usuario", JSON.stringify(local));
           mostrarPerfil(data);
-          estado.textContent = "Cambios guardados.";
+          const nuevoEstado = document.getElementById("perfil-estado-guardado");
+          if (nuevoEstado) nuevoEstado.textContent = "Cambios guardados.";
           if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
         } catch (error) {
           console.error("Error guardando perfil:", error);
