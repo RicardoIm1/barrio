@@ -17,30 +17,19 @@ const inputWhatsapp = document.getElementById('inputWhatsapp');
 // ==========================================
 // 🛡️ FUNCIONES DE SANITIZACIÓN Y MÁSCARA
 // ==========================================
-
-// Función para limpiar el nombre (evita inyecciones HTML y espacios dobles)
 function sanitizarTexto(texto) {
     if (!texto) return '';
-    // 1. Quitar etiquetas HTML
     const sinHTML = texto.replace(/<[^>]*>?/gm, '');
-    // 2. Quitar espacios al inicio/final y espacios dobles
     return sinHTML.trim().replace(/\s+/g, ' ');
 }
 
-// Función para formatear el teléfono visualmente: +52 (322) 265-4110
 function formatearTelefonoVisual(valor) {
-    // Quitamos todo lo que no sea número
     let numeros = valor.replace(/\D/g, '');
-    
-    // Si empieza con 52, lo respetamos. Si no, se lo agregamos.
     if (!numeros.startsWith('52')) {
         numeros = '52' + numeros;
     }
-    
-    // Cortamos a un máximo de 12 dígitos (52 + 10 del celular)
     numeros = numeros.slice(0, 12);
 
-    // Aplicamos la máscara visual
     let formateado = '+52';
     if (numeros.length > 2) formateado += ' (' + numeros.slice(2, 5);
     if (numeros.length > 5) formateado += ') ' + numeros.slice(5, 8);
@@ -49,7 +38,6 @@ function formatearTelefonoVisual(valor) {
     return formateado;
 }
 
-// Evento: Mientras el usuario escribe el teléfono, se formatea
 inputWhatsapp.addEventListener('input', (e) => {
     e.target.value = formatearTelefonoVisual(e.target.value);
 });
@@ -90,8 +78,6 @@ async function cargarDashboard() {
         invitados.forEach(inv => {
             let badgeClass = inv.estado_pase === 'guardado_en_wallet' ? 'badge-success' : 'badge-pending';
             let badgeText = inv.estado_pase === 'guardado_en_wallet' ? 'Guardado en Wallet' : 'Pendiente';
-            
-            // Formateamos el teléfono para mostrarlo bonito en la tabla también
             const telVisual = inv.whatsapp ? formatearTelefonoVisual(inv.whatsapp) : 'Sin número';
 
             const fila = `
@@ -109,7 +95,6 @@ async function cargarDashboard() {
         });
 
     } catch (error) {
-        console.error("❌ Error cargando datos:", error.message);
         if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:red;">Error al cargar.</td></tr>`;
     }
 }
@@ -121,7 +106,7 @@ btnNuevo.addEventListener('click', () => {
     form.reset();
     document.getElementById('invitadoId').value = '';
     document.getElementById('modalTitulo').innerText = 'Nuevo Invitado';
-    inputWhatsapp.value = '+52 '; // Valor por defecto al abrir
+    inputWhatsapp.value = '+52 '; 
     modal.classList.remove('hidden');
 });
 
@@ -130,7 +115,6 @@ btnCerrar.addEventListener('click', () => modal.classList.add('hidden'));
 window.abrirModalEditar = (id, nombre, whatsapp) => {
     document.getElementById('invitadoId').value = id;
     document.getElementById('inputNombre').value = nombre;
-    // Formateamos el teléfono de la BD para mostrarlo en el input
     inputWhatsapp.value = whatsapp ? formatearTelefonoVisual(whatsapp) : '+52 ';
     document.getElementById('modalTitulo').innerText = 'Editar Invitado';
     modal.classList.remove('hidden');
@@ -148,14 +132,9 @@ form.addEventListener('submit', async (e) => {
     }
 
     const id = document.getElementById('invitadoId').value;
-    
-    // 🛡️ SANITIZAMOS EL NOMBRE antes de enviarlo
     const nombreLimpio = sanitizarTexto(document.getElementById('inputNombre').value);
-    
-    // 🛡️ LIMPIAMOS EL TELÉFONO (solo números, sin espacios ni paréntesis)
     const whatsappLimpio = inputWhatsapp.value.replace(/\D/g, '');
 
-    // Validación básica de longitud de teléfono (52 + 10 = 12 dígitos)
     if (whatsappLimpio.length > 2 && whatsappLimpio.length < 12) {
         alert("Por favor, ingresa un número de WhatsApp válido (10 dígitos).");
         return;
@@ -167,12 +146,10 @@ form.addEventListener('submit', async (e) => {
 
     try {
         if (id) {
-            // UPDATE
             const { error } = await supabaseClient.schema('piscis').from('invitados')
                 .update({ nombre: nombreLimpio, whatsapp: whatsappLimpio }).eq('id', id);
             if (error) throw error;
         } else {
-            // CREATE
             const { error } = await supabaseClient.schema('piscis').from('invitados')
                 .insert([{ 
                     evento_id: eventoActualId, 
@@ -187,7 +164,6 @@ form.addEventListener('submit', async (e) => {
         cargarDashboard(); 
 
     } catch (error) {
-        console.error("Error guardando:", error.message);
         alert("Error al guardar: " + error.message);
     } finally {
         btnGuardar.innerText = 'Guardar';
