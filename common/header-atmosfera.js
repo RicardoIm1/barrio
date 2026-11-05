@@ -1,12 +1,5 @@
 /* Atmósfera horaria compartida para el encabezado de El Barrio. */
 (function () {
-  const estados = [
-    { desde: 6, hasta: 9, cielo: "amanecer" },
-    { desde: 9, hasta: 17, cielo: "dia" },
-    { desde: 17, hasta: 20, cielo: "atardecer" },
-    { desde: 20, hasta: 30, cielo: "noche" }
-  ];
-
   function obtenerCielo(fecha) {
     const hora = fecha.getHours() + fecha.getMinutes() / 60;
     if (hora >= 6 && hora < 9) return "amanecer";
