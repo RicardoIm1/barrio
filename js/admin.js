@@ -133,6 +133,7 @@ function confirmarAdmin(mensaje) {
         const local = JSON.parse(localStorage.getItem("usuario") || "{}");
         local.nombre = data.nombre; local.telefono = data.telefono;
         localStorage.setItem("usuario", JSON.stringify(local));
+        if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
       }
     } catch (error) {
       console.error("❌ Error inesperado cargando perfil:", error);
