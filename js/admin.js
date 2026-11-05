@@ -1547,6 +1547,16 @@ console.log("✅ Script de administración cargado - Conectado a API real");
         const rolSelect=formAdmin.elements.rol;
         if(String(id)===String(API.getUsuarioActual()?.id)){rolSelect.disabled=true;rolSelect.title="No puedes cambiar tu propio rol desde esta ficha.";}
         else {rolSelect.disabled=false;rolSelect.title="";}
+        if(!formAdmin.dataset.roleChangeInit){
+          formAdmin.dataset.roleChangeInit="1";
+          rolSelect.addEventListener("change",()=>{
+            if(rolSelect.value==="usuario"){
+              const checks=Array.from(formAdmin.querySelectorAll('input[name="categorias"]'));
+              const estabanTodas=checks.every(x=>x.checked);
+              if(estabanTodas) checks.forEach(x=>{x.checked=x.value==="varios";});
+            }
+          });
+        }
         document.getElementById("fu-admin-status").textContent="";
       }
     }
