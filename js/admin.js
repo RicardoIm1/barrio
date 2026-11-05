@@ -30,6 +30,53 @@ function confirmarAdmin(mensaje) {
   });
 }
 
+async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
+  const { data: avisos, error: avisosError } = await client
+    .from("avisos")
+    .select("id,titulo,status,created_at,vistas")
+    .eq("created_by", usuarioId)
+    .neq("status", "eliminado")
+    .order("created_at", { ascending: false });
+  if (avisosError) throw avisosError;
+
+  const lista = avisos || [];
+  const porAviso = new Map();
+  let positivos = 0, negativos = 0, comentarios = 0;
+
+  if (lista.length) {
+    const ids = lista.map(a => a.id);
+    const [votosResult, comentariosResult] = await Promise.all([
+      client.from("votos").select("aviso_id,tipo").in("aviso_id", ids),
+      client.from("comentarios").select("aviso_id").in("aviso_id", ids)
+    ]);
+    if (votosResult.error) throw votosResult.error;
+    if (comentariosResult.error) throw comentariosResult.error;
+
+    (votosResult.data || []).forEach(v => {
+      const id = String(v.aviso_id);
+      const item = porAviso.get(id) || { positivos: 0, negativos: 0, comentarios: 0 };
+      if (v.tipo === "positivo") { item.positivos++; positivos++; }
+      if (v.tipo === "negativo") { item.negativos++; negativos++; }
+      porAviso.set(id, item);
+    });
+    (comentariosResult.data || []).forEach(c => {
+      const id = String(c.aviso_id);
+      const item = porAviso.get(id) || { positivos: 0, negativos: 0, comentarios: 0 };
+      item.comentarios++;
+      comentarios++;
+      porAviso.set(id, item);
+    });
+  }
+
+  const vistas = lista.reduce((total, a) => total + (Number(a.vistas) || 0), 0);
+  return {
+    lista, porAviso, avisos: lista.length,
+    activos: lista.filter(a => a.status === "activo").length,
+    vistas, positivos, negativos, comentarios,
+    interacciones: positivos + negativos + comentarios
+  };
+}
+
 (function inicializarPerfilAdmin() {
   const escapar = (valor) => {
     const div = document.createElement("div");
@@ -140,6 +187,8 @@ function confirmarAdmin(mensaje) {
           const local = JSON.parse(localStorage.getItem("usuario") || "{}");
           local.nombre = data.nombre; local.telefono = data.telefono;
           localStorage.setItem("usuario", JSON.stringify(local));
+          const metricas = await obtenerMetricasPublicacionesUsuario(client, auth.user.id);
+          data.avisos_publicados = metricas.avisos;
           mostrarPerfil(data);
           const nuevoEstado = document.getElementById("perfil-estado-guardado");
           if (nuevoEstado) nuevoEstado.textContent = "Cambios guardados.";
@@ -179,6 +228,8 @@ function confirmarAdmin(mensaje) {
         return;
       }
       if (data) {
+        const metricas = await obtenerMetricasPublicacionesUsuario(client, authData.user.id);
+        data.avisos_publicados = metricas.avisos;
         mostrarPerfil(data);
         const local = JSON.parse(localStorage.getItem("usuario") || "{}");
         local.nombre = data.nombre; local.telefono = data.telefono;
@@ -1625,21 +1676,18 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     try {
       const client=typeof window.getSupabaseClient==="function"?await window.getSupabaseClient():null;
       if(!client)throw new Error("No está disponible la conexión con Supabase.");
-      const r=await client.from("avisos").select("id,titulo,status,created_at,vistas").eq("created_by",id).neq("status","eliminado").order("created_at",{ascending:false});
-      if(r.error)throw r.error;
-      const lista=r.data||[],votosMap=new Map();let positivos=0,negativos=0;
-      if(lista.length){
-        const vr=await client.from("votos").select("aviso_id,tipo").in("aviso_id",lista.map(function(a){return a.id;}));
-        if(vr.error) console.warn("No se pudieron cargar los votos de este usuario:",vr.error);
-        else (vr.data||[]).forEach(function(v){const x=votosMap.get(v.aviso_id)||{positivos:0,negativos:0};if(v.tipo==="positivo"){x.positivos++;positivos++;}if(v.tipo==="negativo"){x.negativos++;negativos++;}votosMap.set(v.aviso_id,x);});
-      }
-      const vistas=lista.reduce(function(s,a){return s+num(a.vistas);},0),activos=lista.filter(function(a){return a.status==="activo";}).length;
-      [["fu-total",lista.length],["fu-activos",activos],["fu-vistas",vistas],["fu-positivos",positivos],["fu-negativos",negativos],["fu-interacciones",positivos+negativos]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
+      const metricas = await obtenerMetricasPublicacionesUsuario(client, id);
+      const lista = metricas.lista;
+      [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
       dibujarGrafica(lista);
       const tbody=document.getElementById("fu-avisos");
-      if(!lista.length)tbody.innerHTML='<tr><td colspan="6" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
-      else tbody.innerHTML=lista.map(function(a){const v=votosMap.get(a.id)||{positivos:0,negativos:0},s=a.status||"pendiente",label=s==="activo"?"Activo":s==="rechazado"?"Rechazado":s==="pendiente"?"Pendiente":s;
-        return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong></td><td>'+esc(label)+'</td><td class="fu-num">'+fmt(a.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(v.positivos+v.negativos)+'</td></tr>';}).join("");
+      if(!lista.length) tbody.innerHTML='<tr><td colspan="6" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
+      else tbody.innerHTML=lista.map(function(a){
+        const v=metricas.porAviso.get(String(a.id))||{positivos:0,negativos:0,comentarios:0};
+        const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
+        const interacciones=v.positivos+v.negativos+v.comentarios;
+        return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></td><td>'+esc(label)+'</td><td class="fu-num">'+fmt(a.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(interacciones)+'</td></tr>';
+      }).join("");
     } catch(error) {
       console.error("No se pudo cargar la ficha estadística del usuario:",error);
       document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">No se pudieron cargar las estadísticas: '+esc(error.message||error)+'</td></tr>';
