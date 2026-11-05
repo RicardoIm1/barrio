@@ -102,7 +102,7 @@
         await UI.cargarHeader();
       } else {
         try {
-          const res = await fetch('/common/header.html');
+          const res = await fetch('/common/header.html?v=20261105-2');
           const html = await res.text();
           const header = document.getElementById('header-container');
           if (header) header.innerHTML = html;
