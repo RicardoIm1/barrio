@@ -1214,7 +1214,7 @@
         setupInfiniteScroll();
         cargarAvisos();
 
-        fetch("/common/header.html")
+        fetch("/common/header.html?v=20261105-2")
           .then((res) => (res.ok ? res.text() : Promise.reject()))
           .then((html) => {
             const headerContainer = document.getElementById("header-container");
