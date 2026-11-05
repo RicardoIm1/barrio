@@ -113,12 +113,11 @@ function confirmarAdmin(mensaje) {
     } catch (e) {
       console.warn("⚠️ No se pudo leer el perfil local:", e);
     }
-    if (!window.supabaseClient) return;
     try {
-      const { data: authData, error: authError } =
-        await window.supabaseClient.auth.getUser();
+      const client = await window.obtenerSupabaseClient();
+      const { data: authData, error: authError } = await client.auth.getUser();
       if (authError || !authData?.user?.id) return;
-      const { data, error } = await window.supabaseClient
+      const { data, error } = await client
         .from("usuarios")
         .select(
           `id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso,puntos_confianza,nivel,avisos_publicados,reportes_recibidos,reportes_realizados,votos_positivos_recibidos,votos_negativos_recibidos,fecha_verificacion,sancion_hasta`,
@@ -129,7 +128,12 @@ function confirmarAdmin(mensaje) {
         console.error("❌ Error cargando perfil desde Supabase:", error);
         return;
       }
-      if (data) mostrarPerfil(data);
+      if (data) {
+        mostrarPerfil(data);
+        const local = JSON.parse(localStorage.getItem("usuario") || "{}");
+        local.nombre = data.nombre; local.telefono = data.telefono;
+        localStorage.setItem("usuario", JSON.stringify(local));
+      }
     } catch (error) {
       console.error("❌ Error inesperado cargando perfil:", error);
     }
