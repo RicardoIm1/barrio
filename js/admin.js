@@ -181,6 +181,48 @@ function confirmarAdmin(mensaje) {
 })();
 
 (function inicializarCreacionAviso() {
+  const categoriasPublicables = [
+    ["urgente","⚠️ URGENTE"],["escuelas","🏫 ESCUELAS"],["servicios","🛠️ SERVICIOS"],
+    ["comercios","🛒 COMERCIOS"],["eventos","📅 EVENTOS"],["gobierno","🏛️ GOBIERNO"],["varios","📢 VARIOS"]
+  ];
+  async function obtenerPermisosPublicacion() {
+    const client=await window.obtenerSupabaseClient();
+    const {data:auth,error:authError}=await client.auth.getUser();
+    if(authError||!auth?.user?.id) throw new Error("Inicia sesión para publicar.");
+    const {data:user,error}=await client.from("usuarios").select("id,rol,categorias,activo").eq("id",auth.user.id).single();
+    if(error) throw error;
+    if(user.activo===false) throw new Error("Tu cuenta está inactiva. No puedes publicar.");
+    if(user.rol==="admin") return {admin:true,permitidas:categoriasPublicables.map(x=>x[0])};
+    let raw=Array.isArray(user.categorias)?user.categorias:String(user.categorias||"varios").split(",");
+    raw=raw.map(x=>String(x).trim().toLowerCase()).filter(Boolean);
+    // "todas" fue el valor histórico predeterminado. Para cuentas normales equivale a Varios.
+    if(raw.includes("todas")||!raw.length) raw=["varios"];
+    const validas=categoriasPublicables.map(x=>x[0]);
+    const permitidas=raw.filter(x=>validas.includes(x));
+    if(!permitidas.length) permitidas.push("varios");
+    return {admin:false,permitidas};
+  }
+  async function configurarSelectorCategoria() {
+    const select=document.getElementById("categoria"), campo=document.getElementById("campo-categoria-publicacion");
+    const ayuda=document.getElementById("ayuda-categoria-publicacion");
+    if(!select) return;
+    try {
+      const permisos=await obtenerPermisosPublicacion();
+      select.replaceChildren();
+      categoriasPublicables.filter(([key])=>permisos.permitidas.includes(key)).forEach(([key,label])=>{
+        const option=document.createElement("option"); option.value=key; option.textContent=label; select.appendChild(option);
+      });
+      select.value=permisos.admin?"varios":(permisos.permitidas.includes("varios")?"varios":permisos.permitidas[0]);
+      if(campo) campo.style.display="";
+      if(ayuda) ayuda.textContent=permisos.admin?"Como administrador puedes publicar en cualquiera de las siete categorías.":"Tu cuenta solo puede publicar en las categorías autorizadas por el administrador.";
+    } catch(error) {
+      select.replaceChildren();
+      const option=document.createElement("option"); option.value="varios"; option.textContent="📢 VARIOS"; select.appendChild(option);
+      select.disabled=true;
+      if(ayuda) ayuda.textContent=error.message||"No fue posible consultar tus permisos de publicación.";
+      console.warn("No se pudieron cargar permisos de publicación:",error);
+    }
+  }
   const valor = (id) => {
     const e = document.getElementById(id);
     return e ? String(e.value || "").trim() : "";
@@ -189,8 +231,8 @@ function confirmarAdmin(mensaje) {
     event.preventDefault();
     event.stopImmediatePropagation();
     const titulo = valor("titulo"),
-      contenido = valor("contenido"),
-      categoria = valor("categoria") || "varios";
+      contenido = valor("contenido");
+    let categoria=valor("categoria")||"varios";
     if (!titulo) return notificarAdmin("❌ El título del aviso es obligatorio.");
     if (!contenido) return notificarAdmin("❌ La descripción del aviso es obligatoria.");
     const datos = {
@@ -209,6 +251,8 @@ function confirmarAdmin(mensaje) {
     const videoUrl = valor("video_url");
     if (videoUrl) datos.video_url = videoUrl;
     try {
+      const permisos=await obtenerPermisosPublicacion();
+      if(!permisos.permitidas.includes(categoria)) throw new Error("No tienes autorización para publicar en esa categoría.");
       const apiKey = localStorage.getItem("api_key"),
         usuario = API.getUsuarioActual();
       if (!apiKey || !usuario?.id)
@@ -240,6 +284,7 @@ function confirmarAdmin(mensaje) {
     const form = document.getElementById("form-aviso");
     if (!form) return false;
     form.addEventListener("submit", crearAviso, true);
+    configurarSelectorCategoria();
     console.log("✅ CREAR AVISO: handler Supabase instalado en #form-aviso.");
     return true;
   }
@@ -1441,7 +1486,8 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       const objetivo=form.dataset.userId;
       if (!objetivo) return;
       const categorias=Array.from(form.querySelectorAll('input[name="categorias"]:checked')).map(x=>x.value);
-      const payload={rol:form.elements.rol.value,activo:form.elements.activo.value==="true",categorias:categorias.length===7?"todas":categorias.join(",")};
+      const rolNuevo=form.elements.rol.value;
+      const payload={rol:rolNuevo,activo:form.elements.activo.value==="true",categorias:rolNuevo==="admin"?"todas":categorias.join(",")};
       if (!categorias.length) { status.textContent="Selecciona al menos una categoría."; return; }
       boton.disabled=true; status.textContent="Guardando…";
       try {
@@ -1972,13 +2018,7 @@ conectarControlesMultimedia({
 });
 // ===== Fin de multimedia Supabase =====
 
-document.getElementById("form-aviso")?.addEventListener("submit", function () {
-  document.getElementById("categoria").value = "varios";
-});
-document.getElementById("form-editar")?.addEventListener("submit", function () {
-  const categoria = document.getElementById("edit-categoria");
-  if (categoria) categoria.value = "varios";
-});
+// La categoría se valida contra los permisos vigentes del usuario y en Supabase.
 (function actualizarHeaderForce() {
   const usuario = API.getUsuarioActual();
   if (usuario && window.actualizarHeaderPorSesion)
