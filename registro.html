@@ -314,7 +314,7 @@
       }
 
       // Header
-      fetch('/common/header.html')
+      fetch('/common/header.html?v=20261105-2')
         .then(res => {
           if (!res.ok) throw new Error('Header no encontrado');
           return res.text();
