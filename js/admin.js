@@ -54,60 +54,69 @@ function confirmarAdmin(mensaje) {
     const contenedor = document.getElementById("perfil-info");
     if (!contenedor) return;
     p = p || {};
-    const categorias = Array.isArray(p.categorias) ? p.categorias.join(", ") : (p.categorias || "todas");
-    const esAdmin = p.rol === "admin";
-    const activo = p.activo !== false;
-    const etiquetasCategorias = (Array.isArray(p.categorias) ? p.categorias : String(categorias).split(","))
-      .map((c) => String(c).trim()).filter(Boolean)
-      .map((c) => `<span class="perfil-tag">${escapar(c)}</span>`).join("");
+    const nombre = p.nombre || p.name || "Usuario";
+    const iniciales = nombre.trim().split(/\s+/).slice(0,2).map(x => x.charAt(0)).join("").toUpperCase() || "U";
+    const categoriasRaw = Array.isArray(p.categorias) ? p.categorias : String(p.categorias || "todas").split(",");
+    const etiquetasCategorias = categoriasRaw.map(c => String(c).trim()).filter(Boolean)
+      .map(c => '<span class="perfil-chip">' + escapar(categoriasPerfil.find(x => x[0] === c.toLowerCase())?.[1] || c) + '</span>').join("");
+    const rol = String(p.rol || "usuario");
+    const estadoActivo = p.activo !== false;
+    const fechaRegistro = p.fecha_registro ? formatearFecha(p.fecha_registro) : "No disponible";
+    const ultimoAcceso = p.ultimo_acceso ? formatearFecha(p.ultimo_acceso) : "No disponible";
+    const valor = (v, fallback = "No disponible") => escapar(v === null || v === undefined || v === "" ? fallback : v);
     contenedor.innerHTML = `
+      <div class="perfil-hero">
+        <div class="perfil-avatar" aria-hidden="true">${escapar(iniciales)}</div>
+        <div class="perfil-hero-copy">
+          <span class="perfil-kicker">ESPACIO PERSONAL</span>
+          <h2>${escapar(nombre)}</h2>
+          <p>Administra tus datos y consulta la actividad de tu cuenta.</p>
+        </div>
+        <span class="perfil-status ${estadoActivo ? "" : "inactivo"}">${estadoActivo ? "Cuenta activa" : "Cuenta inactiva"}</span>
+      </div>
       <form id="form-mi-perfil" class="perfil-edicion">
-        <section class="perfil-hero">
-          <div class="perfil-avatar" aria-hidden="true">${escapar((p.nombre || p.name || p.email || "U").trim().charAt(0).toUpperCase())}</div>
-          <div class="perfil-hero-copy">
-            <span class="perfil-eyebrow">CUENTA PERSONAL</span>
-            <h3>${escapar(p.nombre || p.name || "Usuario")}</h3>
-            <p>${escapar(p.email || "Correo no disponible")}</p>
-            <div class="perfil-badges">
-              <span class="perfil-badge ${esAdmin ? "is-admin" : ""}">${esAdmin ? "Administrador" : "Usuario"}</span>
-              <span class="perfil-badge ${activo ? "is-active" : "is-inactive"}">${activo ? "Cuenta activa" : "Cuenta inactiva"}</span>
+        <div class="perfil-layout">
+          <section class="perfil-card">
+            <div class="perfil-card-head">
+              <h3>Datos personales</h3>
+              <p>Esta información ayuda a identificarte dentro de la comunidad.</p>
             </div>
+            <div class="perfil-edit-grid">
+              <div class="campo"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(nombre === "Usuario" ? "" : nombre)}" autocomplete="name"></div>
+              <div class="campo"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo de acceso no se modifica desde este formulario.</small></div>
+              <div class="campo"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto" autocomplete="tel"></div>
+            </div>
+            <div class="perfil-save-row">
+              <button class="boton" type="submit">Guardar cambios</button>
+              <span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
+            </div>
+          </section>
+          <div>
+            <section class="perfil-card">
+              <div class="perfil-card-head">
+                <h3>Información de cuenta</h3>
+                <p>Datos de acceso y configuración asignada.</p>
+              </div>
+              <div class="perfil-details">
+                <div class="perfil-detail"><span>Rol</span><strong>${valor(rol === "admin" ? "Administrador" : "Usuario")}</strong></div>
+                <div class="perfil-detail"><span>Estado</span><strong>${estadoActivo ? "Activo" : "Inactivo"}</strong></div>
+                <div class="perfil-detail wide"><span>Categorías permitidas</span><div class="perfil-chip-list">${etiquetasCategorias || '<span class="perfil-chip">Sin categorías</span>'}</div></div>
+                <div class="perfil-detail wide"><span>Fecha de registro</span><strong>${valor(fechaRegistro)}</strong></div>
+                <div class="perfil-detail wide"><span>Último acceso</span><strong>${valor(ultimoAcceso)}</strong></div>
+              </div>
+            </section>
+            <section class="perfil-card" style="margin-top:12px">
+              <div class="perfil-card-head">
+                <h3>Actividad en El Barrio</h3>
+                <p>Un resumen de tu participación.</p>
+              </div>
+              <div class="perfil-stats">
+                <div class="perfil-stat"><strong>${valor(p.avisos_publicados, "0")}</strong><span>Avisos publicados</span></div>
+                <div class="perfil-stat"><strong>${valor(p.puntos_confianza, "0")}</strong><span>Puntos de confianza</span></div>
+                <div class="perfil-stat"><strong>${valor(p.reportes_recibidos, "0")}</strong><span>Reportes recibidos</span></div>
+              </div>
+            </section>
           </div>
-        </section>
-
-        <section class="perfil-section">
-          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">DATOS PERSONALES</span><h4>Tu información</h4></div><span class="perfil-section-note">Edita tus datos de contacto</span></div>
-          <div class="perfil-fields-grid">
-            <div class="perfil-field"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(p.nombre || p.name || "")}"></div>
-            <div class="perfil-field"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto"></div>
-            <div class="perfil-field perfil-field-wide"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo asociado al acceso no se modifica desde aquí.</small></div>
-          </div>
-        </section>
-
-        <section class="perfil-section">
-          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">TU ACTIVIDAD</span><h4>Resumen de cuenta</h4></div></div>
-          <div class="perfil-stats-grid">
-            <article class="perfil-stat"><span>Puntos de confianza</span><strong>${escapar(p.puntos_confianza ?? 0)}</strong></article>
-            <article class="perfil-stat"><span>Avisos publicados</span><strong>${escapar(p.avisos_publicados ?? 0)}</strong></article>
-            <article class="perfil-stat"><span>Reportes recibidos</span><strong>${escapar(p.reportes_recibidos ?? 0)}</strong></article>
-            <article class="perfil-stat"><span>Nivel</span><strong class="perfil-stat-level">${escapar(p.nivel || "Sin nivel")}</strong></article>
-          </div>
-        </section>
-
-        <section class="perfil-section perfil-access">
-          <div class="perfil-section-heading"><div><span class="perfil-eyebrow">ACCESO Y PERMISOS</span><h4>Tu cuenta</h4></div></div>
-          <div class="perfil-access-grid">
-            <div><span>Rol</span><strong>${esAdmin ? "Administrador" : "Usuario"}</strong></div>
-            <div><span>Estado</span><strong>${activo ? "Activo" : "Inactivo"}</strong></div>
-            <div class="perfil-access-categories"><span>Categorías autorizadas</span><div class="perfil-tags">${etiquetasCategorias || '<span class="perfil-tag">Sin categorías</span>'}</div></div>
-            <div><span>Fecha de registro</span><strong>${escapar(formatearFecha(p.fecha_registro))}</strong></div>
-            <div><span>Último acceso</span><strong>${escapar(formatearFecha(p.ultimo_acceso))}</strong></div>
-          </div>
-        </section>
-
-        <div class="perfil-form-actions">
-          <button class="perfil-save-button" type="submit">Guardar cambios</button>
-          <span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
         </div>
       </form>`;
     const form = document.getElementById("form-mi-perfil");
@@ -126,7 +135,7 @@ function confirmarAdmin(mensaje) {
           const { data: auth, error: authError } = await client.auth.getUser();
           if (authError || !auth?.user?.id) throw authError || new Error("Sesión no disponible.");
           const { data, error } = await client.from("usuarios").update({ nombre, telefono }).eq("id", auth.user.id)
-            .select("id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso").single();
+            .select("id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso,puntos_confianza,nivel,avisos_publicados,reportes_recibidos").single();
           if (error) throw error;
           const local = JSON.parse(localStorage.getItem("usuario") || "{}");
           local.nombre = data.nombre; local.telefono = data.telefono;
