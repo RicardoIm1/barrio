@@ -40,40 +40,49 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
   if (avisosError) throw avisosError;
 
   const lista = avisos || [];
-  const porAviso = new Map();
-  let positivos = 0, negativos = 0, comentarios = 0;
+  const porAviso = new Map(lista.map(a => [String(a.id), {
+    positivos: 0, negativos: 0, comentarios: 0
+  }]));
+  const ids = lista.map(a => a.id);
 
-  if (lista.length) {
-    const ids = lista.map(a => a.id);
-    const [votosResult, comentariosResult] = await Promise.all([
-      client.from("votos").select("aviso_id,tipo").in("aviso_id", ids),
-      client.from("comentarios").select("aviso_id").in("aviso_id", ids)
-    ]);
-    if (votosResult.error) throw votosResult.error;
-    if (comentariosResult.error) throw comentariosResult.error;
-
-    (votosResult.data || []).forEach(v => {
-      const id = String(v.aviso_id);
-      const item = porAviso.get(id) || { positivos: 0, negativos: 0, comentarios: 0 };
-      if (v.tipo === "positivo") { item.positivos++; positivos++; }
-      if (v.tipo === "negativo") { item.negativos++; negativos++; }
-      porAviso.set(id, item);
-    });
-    (comentariosResult.data || []).forEach(c => {
-      const id = String(c.aviso_id);
-      const item = porAviso.get(id) || { positivos: 0, negativos: 0, comentarios: 0 };
-      item.comentarios++;
-      comentarios++;
-      porAviso.set(id, item);
-    });
+  async function leerTodas(tabla, columnas) {
+    if (!ids.length) return [];
+    const filas = [];
+    const consulta = client.from(tabla).select(columnas).in("aviso_id", ids).order("id", { ascending: true });
+    for (let desde = 0; ; desde += 1000) {
+      const { data, error } = await consulta.range(desde, desde + 999);
+      if (error) throw error;
+      const bloque = data || [];
+      filas.push(...bloque);
+      if (bloque.length < 1000) break;
+    }
+    return filas;
   }
 
+  const [votos, comentarios] = await Promise.all([
+    leerTodas("votos", "id,aviso_id,tipo"),
+    leerTodas("comentarios", "id,aviso_id")
+  ]);
+  votos.forEach(v => {
+    const item = porAviso.get(String(v.aviso_id));
+    if (!item) return;
+    if (v.tipo === "positivo") item.positivos++;
+    if (v.tipo === "negativo") item.negativos++;
+  });
+  comentarios.forEach(c => {
+    const item = porAviso.get(String(c.aviso_id));
+    if (item) item.comentarios++;
+  });
+
+  const positivos = votos.filter(v => v.tipo === "positivo").length;
+  const negativos = votos.filter(v => v.tipo === "negativo").length;
+  const totalComentarios = comentarios.length;
   const vistas = lista.reduce((total, a) => total + (Number(a.vistas) || 0), 0);
   return {
     lista, porAviso, avisos: lista.length,
     activos: lista.filter(a => a.status === "activo").length,
-    vistas, positivos, negativos, comentarios,
-    interacciones: positivos + negativos + comentarios
+    vistas, positivos, negativos, comentarios: totalComentarios,
+    interacciones: positivos + negativos + totalComentarios
   };
 }
 
@@ -158,7 +167,9 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
                 <p>Un resumen de tu participación.</p>
               </div>
               <div class="perfil-stats">
-                <div class="perfil-stat"><strong>${valor(p.avisos_publicados, "0")}</strong><span>Avisos publicados</span></div>
+                <div class="perfil-stat"><strong id="perfil-avisos-publicados">…</strong><span>Avisos publicados</span></div>
+                <div class="perfil-stat"><strong id="perfil-vistas">…</strong><span>Vistas</span></div>
+                <div class="perfil-stat"><strong id="perfil-interacciones">…</strong><span>Interacciones</span></div>
                 <div class="perfil-stat"><strong>${valor(p.puntos_confianza, "0")}</strong><span>Puntos de confianza</span></div>
                 <div class="perfil-stat"><strong>${valor(p.reportes_recibidos, "0")}</strong><span>Reportes recibidos</span></div>
               </div>
@@ -190,6 +201,13 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
           const metricas = await obtenerMetricasPublicacionesUsuario(client, auth.user.id);
           data.avisos_publicados = metricas.avisos;
           mostrarPerfil(data);
+          const mostrarMetrica = (id, valor) => {
+            const nodo = document.getElementById(id);
+            if (nodo) nodo.textContent = Number(valor || 0).toLocaleString("es-MX");
+          };
+          mostrarMetrica("perfil-avisos-publicados", metricas.avisos);
+          mostrarMetrica("perfil-vistas", metricas.vistas);
+          mostrarMetrica("perfil-interacciones", metricas.interacciones);
           const nuevoEstado = document.getElementById("perfil-estado-guardado");
           if (nuevoEstado) nuevoEstado.textContent = "Cambios guardados.";
           if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
@@ -231,6 +249,13 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
         const metricas = await obtenerMetricasPublicacionesUsuario(client, authData.user.id);
         data.avisos_publicados = metricas.avisos;
         mostrarPerfil(data);
+        const mostrarMetrica = (id, valor) => {
+          const nodo = document.getElementById(id);
+          if (nodo) nodo.textContent = Number(valor || 0).toLocaleString("es-MX");
+        };
+        mostrarMetrica("perfil-avisos-publicados", metricas.avisos);
+        mostrarMetrica("perfil-vistas", metricas.vistas);
+        mostrarMetrica("perfil-interacciones", metricas.interacciones);
         const local = JSON.parse(localStorage.getItem("usuario") || "{}");
         local.nombre = data.nombre; local.telefono = data.telefono;
         localStorage.setItem("usuario", JSON.stringify(local));
