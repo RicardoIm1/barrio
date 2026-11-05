@@ -881,6 +881,7 @@ async function cargarAvisosParaAdmin() {
 
     todosLosAvisos = avisos.map((aviso) => ({
       id: aviso.id,
+      created_by: aviso.created_by || null,
       titulo: aviso.titulo || "Sin título",
       contenido: aviso.contenido || "",
       categoria: aviso.categoria || "varios",
@@ -981,11 +982,25 @@ async function cargarAvisosParaAdmin() {
 
     console.log(`✅ Cargados ${todosLosAvisos.length} avisos con estadísticas`);
     renderizarTablaAvisos();
+    procesarAvisoSolicitado();
   } catch (error) {
     console.error("❌ Error:", error);
     if (tbody)
       tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || "Error de conexión"}</td></tr>`;
   }
+}
+
+function procesarAvisoSolicitado() {
+  const parametros = new URLSearchParams(window.location.search);
+  const id = String(parametros.get("editar") || "").trim();
+  if (!id) return;
+  const aviso = todosLosAvisos.find((item) => String(item.id) === id);
+  if (!aviso) notificarAdmin("No se encontró el aviso solicitado o no tienes acceso para editarlo.", "error");
+  else if (typeof window.editarAviso === "function") window.editarAviso(id);
+  else { notificarAdmin("El editor todavía no está disponible. Recarga el panel e inténtalo de nuevo.", "error"); return; }
+  parametros.delete("editar");
+  const query = parametros.toString();
+  window.history.replaceState({}, "", window.location.pathname + (query ? "?" + query : "") + window.location.hash);
 }
 
 function renderizarTablaAvisos() {

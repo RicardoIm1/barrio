@@ -70,7 +70,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase.js?v=20260904-1"></script>
   <script src="/js/api.js?v=20260904-2"></script>
-  <script src="/js/ui.js?v=20260904-1"></script>
+  <script src="/js/ui.js?v=20261105-2"></script>
   <script src="/js/auth.js?v=20260904-1"></script>
 
   <script>
@@ -102,7 +102,7 @@
         await UI.cargarHeader();
       } else {
         try {
-          const res = await fetch('/common/header.html');
+          const res = await fetch('/common/header.html?v=20261105-2');
           const html = await res.text();
           const header = document.getElementById('header-container');
           if (header) header.innerHTML = html;
