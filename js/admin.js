@@ -65,6 +65,10 @@ function confirmarAdmin(mensaje) {
         <div class="campo"><label>Estado</label><div>${p.activo === false ? "Inactivo" : "Activo"}</div></div>
         <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div>
         <div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
+        <div class="campo"><label>Puntos de confianza</label><div>${escapar(p.puntos_confianza ?? 0)}</div></div>
+        <div class="campo"><label>Nivel</label><div>${escapar(p.nivel || "Sin nivel")}</div></div>
+        <div class="campo"><label>Avisos publicados</label><div>${escapar(p.avisos_publicados ?? 0)}</div></div>
+        <div class="campo"><label>Reportes recibidos</label><div>${escapar(p.reportes_recibidos ?? 0)}</div></div>
         <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px">
           <button class="boton" type="submit">Guardar cambios</button><span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
         </div>
