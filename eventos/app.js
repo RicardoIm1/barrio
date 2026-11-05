@@ -338,21 +338,36 @@ btnVerChecklist.addEventListener('click', () => {
 // --- ITINERARIO CRUD ---
 async function cargarItinerario() {
     const tbody = document.getElementById('tablaItinerario');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999; padding: 2rem;">Cargando itinerario...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding: 2rem;">Cargando itinerario...</td></tr>`;
     try {
+        // Ordenamos por fecha y luego por hora
         const { data, error } = await supabaseClient.schema('piscis').from('planning_evento')
-            .select('*').eq('evento_id', eventoActualId).order('hora_inicio', { ascending: true });
+            .select('*').eq('evento_id', eventoActualId)
+            .order('fecha_actividad', { ascending: true })
+            .order('hora_inicio', { ascending: true });
+        
         if (error) throw error;
         tbody.innerHTML = '';
+        
         if (data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#999;">No hay actividades en el itinerario.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999;">No hay actividades en el itinerario.</td></tr>`;
             return;
         }
+        
         data.forEach(item => {
             const hora = item.hora_inicio ? item.hora_inicio.substring(0, 5) : '--:--';
+            
+            // Formateamos la fecha dd/mm/yyyy
+            let fechaFmt = '-';
+            if (item.fecha_actividad) {
+                const p = item.fecha_actividad.split('-');
+                if (p.length === 3) fechaFmt = `${p[2]}/${p[1]}/${p[0]}`;
+            }
+
             const claseTachado = item.completado ? 'text-tachado' : '';
             tbody.innerHTML += `
                 <tr>
+                    <td>${fechaFmt}</td>
                     <td><strong>${hora}</strong></td>
                     <td class="${claseTachado}">${item.titulo}</td>
                     <td>${item.responsable || '-'}</td>
@@ -362,7 +377,9 @@ async function cargarItinerario() {
                     </td>
                 </tr>`;
         });
-    } catch (error) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error al cargar.</td></tr>`; }
+    } catch (error) { 
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error al cargar.</td></tr>`; 
+    }
 }
 
 document.getElementById('btnNuevoItinerario').addEventListener('click', () => {
