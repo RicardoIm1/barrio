@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: '2', nombre: 'Carlos Mendoza', whatsapp: '+52 55 8765 4321', estado: 'pendiente' },
     ];
 
+    const { data } = await supabase
+        .schema('piscis')
+        .from('planning_evento')
+        .select('*')
+        .eq('evento_id', eventoId)
+        .order('hora_inicio', { ascending: true });
+
     // 2. Seleccionamos todos los botones de la tabla
     const botonesEnviar = document.querySelectorAll('.btn-sm');
 
