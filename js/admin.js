@@ -44,45 +44,52 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     positivos: 0, negativos: 0, comentarios: 0
   }]));
   const ids = lista.map(a => a.id);
-
-  async function leerTodas(tabla, columnas) {
-    if (!ids.length) return [];
-    const filas = [];
-    const consulta = client.from(tabla).select(columnas).in("aviso_id", ids).order("id", { ascending: true });
-    for (let desde = 0; ; desde += 1000) {
-      const { data, error } = await consulta.range(desde, desde + 999);
-      if (error) throw error;
-      const bloque = data || [];
-      filas.push(...bloque);
-      if (bloque.length < 1000) break;
-    }
-    return filas;
+  if (!ids.length) {
+    return {
+      lista, porAviso, avisos: 0, activos: 0, vistas: 0,
+      positivos: 0, negativos: 0, comentarios: 0, interacciones: 0
+    };
   }
 
-  const [votos, comentarios] = await Promise.all([
-    leerTodas("votos", "id,aviso_id,tipo"),
-    leerTodas("comentarios", "id,aviso_id")
+  // El RPC es la misma fuente de votos que utiliza la vista pública del aviso.
+  const [votosPorAviso, comentariosResult] = await Promise.all([
+    Promise.all(lista.map(async aviso => {
+      const { data, error } = await client.rpc("obtener_votos_aviso", {
+        p_aviso_id: aviso.id
+      });
+      if (error) throw error;
+      const conteo = typeof data === "string" ? JSON.parse(data) : (data || {});
+      return {
+        id: String(aviso.id),
+        positivos: Number(conteo.positivos || 0),
+        negativos: Number(conteo.negativos || 0)
+      };
+    })),
+    client.from("comentarios").select("aviso_id").in("aviso_id", ids)
   ]);
-  votos.forEach(v => {
-    const item = porAviso.get(String(v.aviso_id));
-    if (!item) return;
-    if (v.tipo === "positivo") item.positivos++;
-    if (v.tipo === "negativo") item.negativos++;
+  if (comentariosResult.error) throw comentariosResult.error;
+
+  votosPorAviso.forEach(v => {
+    const item = porAviso.get(v.id);
+    if (item) {
+      item.positivos = v.positivos;
+      item.negativos = v.negativos;
+    }
   });
-  comentarios.forEach(c => {
+  (comentariosResult.data || []).forEach(c => {
     const item = porAviso.get(String(c.aviso_id));
     if (item) item.comentarios++;
   });
 
-  const positivos = votos.filter(v => v.tipo === "positivo").length;
-  const negativos = votos.filter(v => v.tipo === "negativo").length;
-  const totalComentarios = comentarios.length;
+  const positivos = votosPorAviso.reduce((suma, v) => suma + v.positivos, 0);
+  const negativos = votosPorAviso.reduce((suma, v) => suma + v.negativos, 0);
+  const comentarios = (comentariosResult.data || []).length;
   const vistas = lista.reduce((total, a) => total + (Number(a.vistas) || 0), 0);
   return {
     lista, porAviso, avisos: lista.length,
     activos: lista.filter(a => a.status === "activo").length,
-    vistas, positivos, negativos, comentarios: totalComentarios,
-    interacciones: positivos + negativos + totalComentarios
+    vistas, positivos, negativos, comentarios,
+    interacciones: positivos + negativos + comentarios
   };
 }
 
@@ -1264,7 +1271,7 @@ function renderizarTablaAvisos() {
       const votosNeg = numeroEstadistica(
         aviso.votos_negativos ?? aviso.dislikes ?? aviso.puntuacion_negativa,
       );
-      const totalVotos = votosPos + votosNeg;
+      const totalInteracciones = comentarios + votosPos + votosNeg;
       let fechaFormateada = "Sin fecha";
       if (aviso.created_at) {
         try {
@@ -1284,7 +1291,7 @@ function renderizarTablaAvisos() {
             <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : "N/A"}..</td>
             <td data-label="Imagen" style="text-align: center;">${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : "📷"}</td>
             <td data-label="Título"><strong>${escapeHTML(aviso.titulo || "Sin título")}</strong><br>
-                <div style="font-size: 0.7rem; margin-top: 5px;"><span title="Vistas">🙉 ${vistas}</span><span style="margin-left: 8px;" title="Comentarios">💬 ${comentarios}</span><span style="margin-left: 8px;" title="Votos positivos">👍 ${votosPos}</span><span style="margin-left: 8px;" title="Votos negativos">👎 ${votosNeg}</span>${totalVotos > 0 ? `<span style="margin-left: 8px;" title="Total de votos">📊 ${totalVotos}</span>` : ""}</div>
+                <div style="font-size: 0.7rem; margin-top: 5px;"><span title="Vistas">🙉 ${vistas}</span><span style="margin-left: 8px;" title="Comentarios">💬 ${comentarios}</span><span style="margin-left: 8px;" title="Votos positivos">👍 ${votosPos}</span><span style="margin-left: 8px;" title="Votos negativos">👎 ${votosNeg}</span>${totalInteracciones > 0 ? `<span style="margin-left: 8px;" title="Interacciones (comentarios + votos)">📊 ${totalInteracciones}</span>` : ""}</div>
                 <small style="display: block; margin-top: 4px;">📢 ${escapeHTML(String(aviso.categoria || aviso.category || "varios").toUpperCase())}</small>${aviso.video_url ? "<small>🎥 Video</small>" : ""}</td>
             <td data-label="Publicó"><strong>👤 ${escapeHTML(nombreAutor)}</strong><br><small>🕒 ${fechaFormateada}</small>${aviso.email ? `<br><small>📧 ${escapeHTML(aviso.email)}</small>` : ""}</td>
             <td data-label="Estado">${esAdmin ? `<select class="select-estado ${estado}" onclick="event.stopPropagation()" onchange="event.stopPropagation(); cambiarEstadoAviso('${aviso.id}', this.value)"><option value="pendiente" ${estado === "pendiente" ? "selected" : ""}>⏳ Pendiente</option><option value="activo" ${estado === "activo" ? "selected" : ""}>🟢 Activo</option><option value="rechazado" ${estado === "rechazado" ? "selected" : ""}>🔴 Rechazado</option></select>` : `<span class="badge-estado badge-${estado}">${estadoTexto}</span>`}</td>
