@@ -177,6 +177,8 @@ function confirmarAdmin(mensaje) {
           resultado?.error || "Supabase rechazó la creación del aviso.",
         );
       console.log("✅ CREAR AVISO: registro creado:", resultado.data);
+      // El aviso ya quedó guardado: sus archivos dejan de ser provisionales.
+      window.__elBarrioMultimediaPendienteNuevo = [];
       notificarAdmin("✅ Aviso publicado correctamente");
       const form = document.getElementById("form-aviso");
       if (form) form.reset();
@@ -1174,7 +1176,11 @@ window.eliminarAviso = async function (id) {
     if (resultado && resultado.success) {
       todosLosAvisos = todosLosAvisos.filter((a) => a.id != id);
       renderizarTablaAvisos();
-      notificarAdmin("✅ Aviso eliminado");
+      if (resultado.mediaEliminada === false) {
+        notificarAdmin("Aviso eliminado, pero quedó pendiente borrar su archivo: " + (resultado.advertenciaMedia || "error de Storage"));
+      } else {
+        notificarAdmin("✅ Aviso eliminado y multimedia retirada de Storage");
+      }
     } else throw new Error(resultado?.error || "Error al eliminar");
   } catch (error) {
     console.error("Error:", error);
@@ -1741,6 +1747,12 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     });
     if (uploadError) throw uploadError;
 
+    // En un aviso nuevo el archivo queda provisional hasta guardar la publicación.
+    if (modo === "nuevo") {
+      window.__elBarrioMultimediaPendienteNuevo = window.__elBarrioMultimediaPendienteNuevo || [];
+      window.__elBarrioMultimediaPendienteNuevo.push(ruta);
+    }
+
     const { data: publicData } = client.storage.from(multimediaConfig.bucket).getPublicUrl(ruta);
     const url = publicData?.publicUrl;
     if (!url) throw new Error("Supabase no devolvió la URL pública del archivo.");
@@ -1767,6 +1779,39 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     if (elementos.input) elementos.input.value = "";
   }
 }
+window.__elBarrioMultimediaPendienteNuevo = window.__elBarrioMultimediaPendienteNuevo || [];
+
+async function limpiarMultimediaPendienteNuevo() {
+  const rutas = [...new Set(window.__elBarrioMultimediaPendienteNuevo || [])];
+  if (!rutas.length) return true;
+  try {
+    const client = await obtenerClienteMultimedia();
+    const { error } = await client.storage.from(multimediaConfig.bucket).remove(rutas);
+    if (error) throw error;
+    window.__elBarrioMultimediaPendienteNuevo = [];
+    console.log("Multimedia provisional eliminada:", rutas);
+    return true;
+  } catch (error) {
+    console.error("No se pudo limpiar la multimedia provisional:", error);
+    notificarAdmin("No se pudo limpiar un archivo provisional de Storage: " + (error?.message || error));
+    return false;
+  }
+}
+
+document.getElementById("cancelar")?.addEventListener("click", async () => {
+  const form = document.getElementById("form-aviso");
+  const boton = document.getElementById("cancelar");
+  if (boton) { boton.disabled = true; boton.textContent = "Limpiando…"; }
+  const limpio = await limpiarMultimediaPendienteNuevo();
+  if (form) form.reset();
+  const vista = document.getElementById("vista-previa-multimedia");
+  if (vista) vista.innerHTML = "";
+  const input = document.getElementById("archivo-multimedia");
+  if (input) input.value = "";
+  if (boton) { boton.disabled = false; boton.textContent = "Cancelar"; }
+  if (limpio) notificarAdmin("Formulario cancelado. No quedó multimedia provisional en Storage.");
+});
+
 function conectarControlesMultimedia(config) {
   const { input, botonImagen, botonVideo, vista, campoImagen, campoVideo, modo } = config;
   if (!input || !botonImagen || !botonVideo || !vista || !campoImagen || !campoVideo) return;
