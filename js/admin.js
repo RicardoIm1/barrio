@@ -46,24 +46,62 @@ function confirmarAdmin(mensaje) {
       timeZone: EL_BARRIO_TIME_ZONE,
     });
   };
+  const categoriasPerfil = [
+    ["urgente","Urgente"],["escuelas","Escuelas"],["servicios","Servicios"],
+    ["comercios","Comercios"],["eventos","Eventos"],["gobierno","Gobierno"],["varios","Varios"]
+  ];
   function mostrarPerfil(p) {
     const contenedor = document.getElementById("perfil-info");
     if (!contenedor) return;
     p = p || {};
-    const nombre = p.nombre || p.name || "Usuario",
-      email = p.email || "No disponible",
-      rol = p.rol || "usuario",
-      telefono = p.telefono || "No registrado";
-    const categorias = Array.isArray(p.categorias)
-      ? p.categorias.join(", ")
-      : p.categorias || "No registradas";
-    contenedor.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
-        <div class="campo"><label>Nombre</label><div>${escapar(nombre)}</div></div><div class="campo"><label>Correo electrónico</label><div>${escapar(email)}</div></div>
-        <div class="campo"><label>Rol</label><div>${escapar(rol)}</div></div><div class="campo"><label>Teléfono</label><div>${escapar(telefono)}</div></div>
-        <div class="campo"><label>Categorías</label><div>${escapar(categorias)}</div></div><div class="campo"><label>Estado</label><div>${p.activo === false ? "Inactivo" : "Activo"}</div></div>
-        <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div><div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
-        <div class="campo"><label>Puntos de confianza</label><div>${escapar(p.puntos_confianza ?? 0)}</div></div><div class="campo"><label>Nivel</label><div>${escapar(p.nivel || "Sin nivel")}</div></div>
-        <div class="campo"><label>Avisos publicados</label><div>${escapar(p.avisos_publicados ?? 0)}</div></div><div class="campo"><label>Reportes recibidos</label><div>${escapar(p.reportes_recibidos ?? 0)}</div></div></div>`;
+    const categorias = Array.isArray(p.categorias) ? p.categorias.join(", ") : (p.categorias || "todas");
+    contenedor.innerHTML = `
+      <form id="form-mi-perfil" class="perfil-edicion" style="max-width:720px">
+        <div class="campo"><label for="perfil-nombre">Nombre</label><input id="perfil-nombre" name="nombre" type="text" maxlength="100" required value="${escapar(p.nombre || p.name || "")}"></div>
+        <div class="campo"><label for="perfil-email">Correo electrónico</label><input id="perfil-email" type="email" value="${escapar(p.email || "")}" readonly disabled><small>El correo de acceso no se modifica desde este formulario.</small></div>
+        <div class="campo"><label for="perfil-telefono">Teléfono</label><input id="perfil-telefono" name="telefono" type="tel" maxlength="30" value="${escapar(p.telefono || "")}" placeholder="Tu número de contacto"></div>
+        <div class="campo"><label>Rol</label><div>${escapar(p.rol || "usuario")}</div></div>
+        <div class="campo"><label>Categorías permitidas</label><div>${escapar(categorias)}</div></div>
+        <div class="campo"><label>Estado</label><div>${p.activo === false ? "Inactivo" : "Activo"}</div></div>
+        <div class="campo"><label>Fecha de registro</label><div>${escapar(formatearFecha(p.fecha_registro))}</div></div>
+        <div class="campo"><label>Último acceso</label><div>${escapar(formatearFecha(p.ultimo_acceso))}</div></div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px">
+          <button class="boton" type="submit">Guardar cambios</button><span id="perfil-estado-guardado" role="status" aria-live="polite"></span>
+        </div>
+      </form>`;
+    const form = document.getElementById("form-mi-perfil");
+    if (form && form.dataset.init !== "1") {
+      form.dataset.init = "1";
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const estado = document.getElementById("perfil-estado-guardado");
+        const nombre = form.elements.nombre.value.trim();
+        const telefono = form.elements.telefono.value.trim();
+        if (!nombre) { estado.textContent = "El nombre es obligatorio."; return; }
+        const boton = form.querySelector('button[type="submit"]');
+        boton.disabled = true; estado.textContent = "Guardando…";
+        try {
+          const client = await window.obtenerSupabaseClient();
+          const { data: auth, error: authError } = await client.auth.getUser();
+          if (authError || !auth?.user?.id) throw authError || new Error("Sesión no disponible.");
+          const { data, error } = await client.from("usuarios").update({ nombre, telefono }).eq("id", auth.user.id)
+            .select("id,email,nombre,rol,categorias,activo,telefono,fecha_registro,ultimo_acceso").single();
+          if (error) throw error;
+          const local = JSON.parse(localStorage.getItem("usuario") || "{}");
+          local.nombre = data.nombre; local.telefono = data.telefono;
+          localStorage.setItem("usuario", JSON.stringify(local));
+          mostrarPerfil(data);
+          estado.textContent = "Cambios guardados.";
+          if (typeof window.inicializarHeaderAuth === "function") window.inicializarHeaderAuth();
+        } catch (error) {
+          console.error("Error guardando perfil:", error);
+          estado.textContent = error.message || "No se pudieron guardar los cambios.";
+        } finally {
+          const actual = document.querySelector('#form-mi-perfil button[type="submit"]');
+          if (actual) actual.disabled = false;
+        }
+      });
+    }
   }
   async function cargarPerfil() {
     const contenedor = document.getElementById("perfil-info");
