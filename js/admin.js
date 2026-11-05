@@ -1706,6 +1706,7 @@ async function comprimirVideoEnNavegador(file, elementos) {
 async function subirMultimediaSupabase(file, tipo, modo, elementos) {
   if (!file || elementos.ocupado) return;
   elementos.ocupado = true;
+  if (modo === "nuevo") window.__elBarrioSubidaNuevaEnCurso = true;
   const btn = elementos.boton;
   const textoOriginal = btn?.textContent;
   try {
@@ -1775,6 +1776,7 @@ async function subirMultimediaSupabase(file, tipo, modo, elementos) {
     else notificarAdmin("No se pudo subir el archivo a Supabase: " + mensaje);
   } finally {
     elementos.ocupado = false;
+    if (modo === "nuevo") window.__elBarrioSubidaNuevaEnCurso = false;
     if (btn) { btn.disabled = false; btn.textContent = textoOriginal || (tipo === "imagen" ? "Imagen" : "Video"); }
     if (elementos.input) elementos.input.value = "";
   }
@@ -1799,6 +1801,10 @@ async function limpiarMultimediaPendienteNuevo() {
 }
 
 document.getElementById("cancelar")?.addEventListener("click", async () => {
+  if (window.__elBarrioSubidaNuevaEnCurso) {
+    notificarAdmin("Espera a que termine la carga del archivo antes de cancelar.");
+    return;
+  }
   const form = document.getElementById("form-aviso");
   const boton = document.getElementById("cancelar");
   if (boton) { boton.disabled = true; boton.textContent = "Limpiando…"; }
@@ -1828,7 +1834,11 @@ function conectarControlesMultimedia(config) {
   botonVideo.addEventListener("click", seleccionar("video", botonVideo, "video/mp4,video/webm,video/quicktime"));
   input.addEventListener("change", async () => {
     const file = input.files?.[0], tipo = input.dataset.tipoMultimedia;
-    if (!file || !tipo) return;
+    if (!file || !tipo || estado.ocupado) return;
+    if (modo === "nuevo") {
+      const limpio = await limpiarMultimediaPendienteNuevo();
+      if (!limpio) return;
+    }
     campoImagen.value = ""; campoVideo.value = "";
     await subirMultimediaSupabase(file, tipo, modo, estado);
   });
