@@ -689,97 +689,68 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     });
   }
 
-  function renderCategorias(avisos) {
-    const panel = document.getElementById("chartCategorias"),
-      cont = document.getElementById("chartBars"),
-      mini = document.getElementById("chartStatsMini");
+  function renderCategorias(categorias) {
+    const panel = document.getElementById("chartCategorias");
+    const cont = document.getElementById("chartBars");
+    const mini = document.getElementById("chartStatsMini");
     if (!panel || !cont) return;
-    const mapa = new Map();
-    avisos.forEach((a) => {
-      const c = String(a.categoria || "varios").trim() || "varios";
-      mapa.set(c, (mapa.get(c) || 0) + 1);
-    });
-    const arr = [...mapa.entries()].sort((a, b) => b[1] - a[1]);
-    const max = Math.max(1, ...arr.map((x) => x[1]));
-    cont.innerHTML = arr
-      .map(
-        ([categoria, cantidad]) =>
-          `<div class="bar-item"><span class="bar-label">${escapar(categoria)}</span><div class="bar-container"><div class="bar-fill" style="width:${(cantidad / max) * 100}%">${cantidad}</div></div><span class="bar-count">${cantidad}</span></div>`,
-      )
-      .join("");
+    const filas = Array.isArray(categorias) ? categorias : [];
+    const max = Math.max(1, ...filas.map(x => numero(x.total)));
+    cont.innerHTML = filas.map(x => {
+      const nombre = escapar(x.categoria || "Sin categoría");
+      const cantidad = numero(x.total);
+      return `<div class="bar-item"><span class="bar-label">${nombre}</span><div class="bar-container"><div class="bar-fill" style="width:${(cantidad / max) * 100}%">${cantidad}</div></div><span class="bar-count">${cantidad}</span></div>`;
+    }).join("");
     panel.style.display = "block";
-    if (mini)
-      mini.textContent = `${mapa.size} categorías con avisos · ${formatear(avisos.length)} avisos no eliminados`;
-    actualizar("totalCategorias", mapa.size);
+    if (mini) mini.textContent = `${filas.length} categorías con publicaciones activas`;
+    actualizar("totalCategorias", filas.length);
   }
 
-  function renderDiarios(usuarios, avisos) {
-    const fechas = fechas30(),
-      labels = fechas.map(etiqueta),
-      mapU = new Map(),
-      mapA = new Map();
-    usuarios.forEach((x) => {
-      if (x.fecha_registro) {
-        const k = clave(new Date(x.fecha_registro));
-        mapU.set(k, (mapU.get(k) || 0) + 1);
-      }
+  function renderDiarios(series) {
+    const datos = series || {};
+    const labelsCrudos = Array.isArray(datos.labels) ? datos.labels : [];
+    const labels = labelsCrudos.map(valor => {
+      const partes = String(valor).split("-");
+      return partes.length === 3 ? partes[2] + "/" + partes[1] : String(valor);
     });
-    avisos.forEach((x) => {
-      if (x.created_at) {
-        const k = clave(new Date(x.created_at));
-        mapA.set(k, (mapA.get(k) || 0) + 1);
-      }
-    });
-    const u = fechas.map((d) => mapU.get(clave(d)) || 0),
-      a = fechas.map((d) => mapA.get(clave(d)) || 0);
-    const panelU = document.getElementById("chartUsuariosDiarios"),
-      panelA = document.getElementById("chartAvisosDiarios");
+    const usuarios = Array.isArray(datos.usuarios) ? datos.usuarios.map(numero) : [];
+    const publicaciones = Array.isArray(datos.publicaciones) ? datos.publicaciones.map(numero) : [];
+    const sesiones = Array.isArray(datos.sesiones) ? datos.sesiones.map(numero) : [];
+    const paginas = Array.isArray(datos.paginas_vistas) ? datos.paginas_vistas.map(numero) : [];
+    const panelU = document.getElementById("chartUsuariosDiarios");
+    const panelA = document.getElementById("chartAvisosDiarios");
     if (panelU) {
       panelU.style.display = "block";
-      lineChart(document.getElementById("chartUsuariosCanvas"), labels, u);
+      lineChart(document.getElementById("chartUsuariosCanvas"), labels, usuarios);
       const s = document.getElementById("usuariosStats");
-      if (s)
-        s.textContent = `Total en periodo: ${formatear(u.reduce((s, v) => s + v, 0))}`;
+      if (s) s.textContent = `Total en periodo: ${formatear(usuarios.reduce((a,b) => a+b,0))}`;
     }
     if (panelA) {
       panelA.style.display = "block";
-      lineChart(document.getElementById("chartAvisosCanvas"), labels, a);
+      lineChart(document.getElementById("chartAvisosCanvas"), labels, publicaciones);
       const s = document.getElementById("avisosStats");
-      if (s)
-        s.textContent = `Total en periodo: ${formatear(a.reduce((s, v) => s + v, 0))}`;
+      if (s) s.textContent = `Total en periodo: ${formatear(publicaciones.reduce((a,b) => a+b,0))}`;
     }
     const conexiones = document.getElementById("chartConexionesDiarias");
-    if (conexiones) conexiones.style.display = "none";
+    if (conexiones) {
+      conexiones.style.display = "block";
+      lineChart(document.getElementById("chartConexionesCanvas"), labels, sesiones);
+      const s = document.getElementById("conexionesStats");
+      if (s) s.textContent = `Páginas vistas en el periodo: ${formatear(paginas.reduce((a,b) => a+b,0))}`;
+    }
   }
 
-  function renderOnlineUsers(usuariosOnline) {
-    const panel = document.getElementById("chartOnline"),
-      lista = document.getElementById("onlineUsersList"),
-      badge = document.getElementById("onlineCount");
+  function renderOnlineUsers(total) {
+    const panel = document.getElementById("chartOnline");
+    const lista = document.getElementById("onlineUsersList");
+    const badge = document.getElementById("onlineCount");
     if (!panel || !lista || !badge) return;
+    const cantidad = numero(total);
     panel.style.display = "block";
-    badge.textContent = `${usuariosOnline.length} ${usuariosOnline.length === 1 ? "conectado" : "conectados"}`;
-    if (!usuariosOnline.length) {
-      lista.innerHTML =
-        '<p style="color:#888;margin:0;padding:12px 0;">No hay usuarios conectados en este momento.</p>';
-      return;
-    }
-    lista.innerHTML = usuariosOnline
-      .map((u) => {
-        const nombre = escapar(u.nombre || "Usuario"),
-          email = escapar(u.email || ""),
-          fecha = u.ultima_actividad ? new Date(u.ultima_actividad) : null,
-          tiempo =
-            fecha && !Number.isNaN(fecha.getTime())
-              ? fecha.toLocaleTimeString("es-MX", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  timeZone: EL_BARRIO_TIME_ZONE,
-                })
-              : "ahora";
-        return `<div class="online-user-item"><div><strong style="color:#eee;">${nombre}</strong>${email ? `<div class="online-user-email">${email}</div>` : ""}</div><span class="online-user-time">● ${tiempo}</span></div>`;
-      })
-      .join("");
+    badge.textContent = `${formatear(cantidad)} ${cantidad === 1 ? "conectado" : "conectados"}`;
+    lista.textContent = cantidad
+      ? "Actividad detectada en los últimos 2 minutos. Las identidades no se muestran en este resumen."
+      : "No se detectan sesiones activas en los últimos 2 minutos.";
   }
 
   function actualizarResumen(totalUsuarios, avisosPeriodo) {
@@ -796,12 +767,11 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
 
   async function cargar() {
     const footer = document.querySelector(".dashboard-footer");
-    if (!footer || typeof getSupabaseClient !== "function") return;
-    if (cargando) return;
+    if (!footer || typeof getSupabaseClient !== "function" || cargando) return;
     try {
       await asegurarSesionAdmin();
     } catch (error) {
-      console.error("❌ Admin: sesión no lista para métricas:", error);
+      console.error("No hay sesión lista para consultar métricas:", error);
       const badge = document.getElementById("onlineCount");
       if (badge) badge.textContent = "No disponible";
       return;
@@ -809,92 +779,73 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     cargando = true;
     try {
       const client = await getSupabaseClient();
-      const [ur, ar, vr, or] = await Promise.all([
-        client
-          .from("usuarios")
-          .select("id,fecha_registro,ultimo_acceso")
-          .range(0, 9999),
-        client
-          .from("avisos")
-          .select("id,titulo,categoria,created_at,status,vistas")
-          .range(0, 9999),
-        client.rpc("obtener_resumen_votos_admin"),
-        client.rpc("obtener_usuarios_en_linea_admin"),
-      ]);
-      if (ur.error) throw ur.error;
-      if (ar.error) throw ar.error;
-      if (vr.error) throw vr.error;
-      if (or.error) throw or.error;
-      const usuarios = ur.data || [],
-        avisos = (ar.data || []).filter((a) => a.status !== "eliminado");
-      const votosRaw =
-          typeof vr.data === "string" ? JSON.parse(vr.data) : vr.data || {},
-        onlineRaw =
-          typeof or.data === "string" ? JSON.parse(or.data) : or.data || {};
-      const pos = numero(votosRaw.positivos),
-        neg = numero(votosRaw.negativos),
-        votos = numero(votosRaw.total ?? pos + neg);
-      const usuariosOnline = Array.isArray(onlineRaw)
-        ? onlineRaw
-        : Array.isArray(onlineRaw.usuarios)
-          ? onlineRaw.usuarios
-          : [];
-      const totalUsuarios = usuarios.length,
-        totalAvisos = avisos.length,
-        activos = avisos.filter((a) => a.status === "activo").length,
-        pendientes = avisos.filter((a) => a.status === "pendiente").length,
-        totalVistas = avisos.reduce((s, a) => s + numero(a.vistas), 0),
-        fechaCorte = Date.now() - DIAS * 24 * 60 * 60 * 1000,
-        avisosPeriodo = avisos.filter((a) => {
-          const d = new Date(a.created_at);
-          return !Number.isNaN(d.getTime()) && d.getTime() >= fechaCorte;
-        }).length;
+      const { data, error } = await client.rpc("obtener_metricas_dashboard");
+      if (error) throw error;
+      const metricas = typeof data === "string" ? JSON.parse(data) : (data || {});
+      const global = metricas.global || {};
+      const series = metricas.series || {};
+      const categorias = Array.isArray(metricas.categorias) ? metricas.categorias : [];
+      const totalUsuarios = numero(global.usuarios_registrados);
+      const totalAvisos = numero(global.publicaciones_totales);
+      const activos = numero(global.publicaciones_activas);
+      const pendientes = numero(global.publicaciones_pendientes);
+      const vistasPublicaciones = numero(global.vistas_publicaciones_acumuladas);
+      const interacciones = numero(global.likes) + numero(global.dislikes) + numero(global.comentarios);
+      const totalSesiones = numero(global.sesiones_hoy);
+      const paginasHoy = numero(global.paginas_vistas_hoy);
+      const publicacionesPeriodo = (series.publicaciones || []).reduce((s,v) => s + numero(v), 0);
+
       actualizar("totalAvisos", totalAvisos);
       actualizar("avisosActivos", activos);
       actualizar("avisosPendientes", pendientes);
-      actualizar("totalVisitas", totalVistas);
-      actualizar("totalInteracciones", votos);
+      actualizar("totalVisitas", vistasPublicaciones);
+      actualizar("totalInteracciones", interacciones);
       actualizar("totalUsuarios", totalUsuarios);
-      const card = document.getElementById("pendingCard");
-      if (card) card.style.display = pendientes > 0 ? "flex" : "none";
+      actualizar("totalSesionesHoy", totalSesiones);
+      actualizar("totalPaginasHoy", paginasHoy);
+      const pendientesCard = document.getElementById("pendingCard");
+      if (pendientesCard) pendientesCard.style.display = pendientes > 0 ? "flex" : "none";
+
       const cards = document.querySelectorAll(".dashboard-footer .stat-card");
-      cards.forEach((card) => {
-        const t = card.querySelector("h4"),
-          l = card.querySelector(".stat-label");
-        if (!t) return;
-        const txt = t.textContent.trim().toLowerCase();
-        if (txt === "interacciones" || txt === "votos registrados") {
-          t.textContent = "Votos registrados";
-          if (l) l.textContent = "positivos + negativos";
+      cards.forEach(card => {
+        const title = card.querySelector("h4");
+        const label = card.querySelector(".stat-label");
+        if (!title) return;
+        const value = title.textContent.trim().toLowerCase();
+        if (value === "total visitas" || value === "alcance") {
+          title.textContent = "Vistas de publicaciones";
+          if (label) label.textContent = "contador acumulado de avisos";
         }
-        if (txt === "total visitas" || txt === "alcance") {
-          t.textContent = "Alcance";
-          if (l) l.textContent = "vistas acumuladas";
+        if (value === "interacciones" || value === "votos registrados") {
+          title.textContent = "Interacciones";
+          if (label) label.textContent = "likes + dislikes + comentarios";
         }
       });
-      renderCategorias(avisos);
-      renderDiarios(usuarios, avisos);
-      renderOnlineUsers(usuariosOnline);
-      actualizarResumen(totalUsuarios, avisosPeriodo);
-      ultimoDatos = { usuarios, avisos, usuariosOnline };
-      console.log("📊 Dashboard admin actualizado:", {
-        totalUsuarios,
-        totalAvisos,
-        activos,
-        pendientes,
-        totalVistas,
-        pos,
-        neg,
-        votos,
-        usuariosOnline: usuariosOnline.length,
+
+      renderCategorias(categorias);
+      renderDiarios(series);
+      renderOnlineUsers(global.usuarios_conectados);
+      actualizarResumen(totalUsuarios, publicacionesPeriodo);
+      ultimoDatos = { series, categorias };
+      const fecha = document.getElementById("fechaActual");
+      if (fecha) {
+        const corte = metricas.generated_at ? new Date(metricas.generated_at) : new Date();
+        fecha.textContent = "Actualizado " + corte.toLocaleTimeString("es-MX", {
+          hour: "2-digit", minute: "2-digit", timeZone: EL_BARRIO_TIME_ZONE
+        });
+      }
+      console.log("Métricas unificadas actualizadas:", {
+        totalUsuarios, totalAvisos, activos, pendientes, vistasPublicaciones,
+        interacciones, totalSesiones, paginasHoy, conectados: numero(global.usuarios_conectados)
       });
     } catch (error) {
-      console.error(
-        "❌ No se pudieron cargar las métricas del panel admin:",
-        error,
-      );
+      console.error("No se pudieron cargar las métricas unificadas:", error);
       const badge = document.getElementById("onlineCount");
       if (badge) badge.textContent = "No disponible";
+      ["totalAvisos","avisosActivos","avisosPendientes","totalVisitas","totalInteracciones","totalUsuarios","totalSesionesHoy","totalPaginasHoy"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "No disponible";
+      });
     } finally {
       cargando = false;
     }
@@ -918,9 +869,8 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     iniciar();
     window.addEventListener("resize", () => {
       if (!ultimoDatos) return;
-      renderDiarios(ultimoDatos.usuarios, ultimoDatos.avisos);
-      renderCategorias(ultimoDatos.avisos);
-      renderOnlineUsers(ultimoDatos.usuariosOnline || []);
+      renderDiarios(ultimoDatos.series);
+      renderCategorias(ultimoDatos.categorias);
     });
   }
   if (document.readyState === "loading")
