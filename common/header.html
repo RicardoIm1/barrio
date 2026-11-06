@@ -60,14 +60,14 @@
     .buscador-input-header:focus { outline:none; border-color:#f5b042; background:white; box-shadow:0 0 0 2px rgba(245,176,66,.2); }
     .buscador-acciones-movil { display:none; align-items:center; gap:3px; flex:0 0 auto; }
     .buscador-acciones-movil button { width:30px; height:32px; border:1px solid #e5e7eb; border-radius:50%; background:#fff; color:#2c3e50; cursor:pointer; }
-    .header-acciones { order:5; display:none; position:absolute; top:calc(100% + 7px); right:12px; width:min(320px,calc(100vw - 24px)); padding:14px; flex-direction:column; align-items:stretch; gap:10px; border:1px solid rgba(255,255,255,.16); border-radius:16px; background:#2c3e50; box-shadow:0 16px 38px rgba(15,27,39,.24); z-index:10001; }
+    .header-acciones { order:5; display:none; position:absolute; top:calc(100% + 7px); right:12px; width:min(320px,calc(100vw - 24px)); padding:14px; flex-direction:column; align-items:stretch; gap:10px; border:1px solid rgba(212,160,67,.55); border-radius:18px; background:linear-gradient(145deg,#fffdf7 0%,#f2f7fb 100%); box-shadow:0 18px 42px rgba(35,55,75,.2),0 3px 10px rgba(212,160,67,.12); z-index:10001; color:#2c3e50; }
     .header-acciones.menu-open { display:flex !important; }
     .header-acciones .user-area { display:flex; flex-direction:column; align-items:stretch; gap:8px; }
-    .header-acciones .user-name { display:inline-flex !important; justify-content:flex-start; width:100%; min-height:42px; padding:10px 12px; border-radius:10px; color:#fff; cursor:pointer; white-space:normal; }
-    .header-acciones .btn-login,.header-acciones .btn-logout { justify-content:center; width:100%; min-height:42px; }
-    .header-menu-links { display:flex; flex-direction:column; gap:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,.16); }
-    .header-menu-links a { display:flex; align-items:center; min-height:42px; padding:9px 12px; border-radius:10px; color:#fff; text-decoration:none; font-size:.9rem; transition:background .18s ease; }
-    .header-menu-links a:hover,.header-menu-links a:focus-visible { background:rgba(255,255,255,.12); }
+    .header-acciones .user-name { display:inline-flex !important; justify-content:flex-start; width:100%; min-height:42px; padding:10px 12px; border-radius:11px; color:#2c3e50; background:rgba(125,172,191,.13); border:1px solid rgba(125,172,191,.22); cursor:pointer; white-space:normal; }
+    .header-acciones .btn-login,.header-acciones .btn-logout { justify-content:center; width:100%; min-height:42px; }\n    .header-acciones .btn-logout { color:#34495e !important; border:1px solid rgba(212,160,67,.65) !important; background:rgba(255,255,255,.78) !important; }
+    .header-menu-links { display:flex; flex-direction:column; gap:4px; padding-top:9px; border-top:1px solid rgba(212,160,67,.38); }
+    .header-menu-links a { display:flex; align-items:center; min-height:42px; padding:9px 12px; border-radius:11px; color:#34495e; text-decoration:none; font-size:.9rem; font-weight:600; transition:background .18s ease,transform .18s ease; }
+    .header-menu-links a:hover,.header-menu-links a:focus-visible { background:linear-gradient(90deg,rgba(245,176,66,.2),rgba(125,172,191,.13)); transform:translateX(2px); }
     .header-menu-toggle:focus-visible,.header-acciones a:focus-visible,.header-acciones .user-name:focus-visible { outline:3px solid #f5b042; outline-offset:3px; }
     .user-name.admin-link { cursor:pointer; }
     .notif-wrapper { position:relative; display:inline-block; }
