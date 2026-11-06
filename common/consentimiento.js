@@ -139,10 +139,10 @@
     root.innerHTML = `
       <section class="eb-privacy-panel" role="dialog" aria-modal="false" aria-labelledby="eb-privacy-title" hidden>
         <h2 class="eb-privacy-title" id="eb-privacy-title">Tu privacidad en El Barrio</h2>
-        <p class="eb-privacy-copy">Las funciones necesarias permiten operar el sitio. La analítica opcional de Google Analytics 4 solo se carga si la aceptas. Si la rechazas, no se inicia la etiqueta de analítica. Puedes cambiar tu decisión después.</p>
+        <p class="eb-privacy-copy">Las funciones necesarias permiten operar el sitio. La analítica opcional de Google Analytics 4 y las métricas internas agregadas de visitas y páginas vistas solo se activan si la aceptas. Si la rechazas, no se registra actividad analítica. Puedes cambiar tu decisión después.</p>
         <div class="eb-privacy-options" hidden>
           <label><input type="checkbox" checked disabled> <span><strong>Necesarias</strong><br>Requeridas para funciones básicas y seguridad.</span></label>
-          <label><input id="eb-privacy-analytics" type="checkbox"> <span><strong>Analítica</strong><br>Permite medir visitas mediante Google Analytics 4. Es opcional y puedes cambiar tu decisión desde «Privacidad».</span></label>
+          <label><input id="eb-privacy-analytics" type="checkbox"> <span><strong>Analítica</strong><br>Permite medir visitas con Google Analytics 4 y métricas internas agregadas de El Barrio. Es opcional y puedes cambiar tu decisión desde «Privacidad».</span></label>
         </div>
         <div class="eb-privacy-actions">
           <button class="eb-accept" type="button" data-eb-action="accept">Aceptar analítica</button>
