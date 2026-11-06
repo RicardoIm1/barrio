@@ -631,3 +631,29 @@
 .aviso-card:has(> .aviso-imagen) .share-post-btn,.aviso-card:has(> .aviso-video) .share-post-btn{background:rgba(20,30,40,.58);border-color:rgba(255,255,255,.48);color:#fff;backdrop-filter:blur(8px)}
 .aviso-card:has(> .aviso-imagen) .share-post-btn:hover,.aviso-card:has(> .aviso-video) .share-post-btn:hover{background:rgba(20,30,40,.82);border-color:#fff}
 @media(max-width:600px){.share-post-btn{min-height:30px;padding:5px 10px;font-size:.72rem}}
+
+
+/* Video de portada: asegurar dimensionado y capa de reproducción en escritorio. */
+@media (min-width: 769px) {
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) > .aviso-video {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background: #172331 !important;
+    z-index: 0 !important;
+  }
+  .aviso-card.tarjeta-moderna:has(> .aviso-video) > .aviso-video > video {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+    background: transparent !important;
+    z-index: 0 !important;
+  }
+}
