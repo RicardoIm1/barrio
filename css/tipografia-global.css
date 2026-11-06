@@ -1,0 +1,36 @@
+/* El Barrio · sistema tipográfico global
+   Cuerpo y datos: Inter | Encabezados y jerarquía: Manrope
+*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --barrio-font-body: 'Inter', sans-serif;
+  --barrio-font-heading: 'Manrope', sans-serif;
+}
+
+/* Texto general, controles, contenido editorial y tablas */
+html,
+body,
+body *:not(i):not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fad):not(.fat):not([class*="fa-"]) {
+  font-family: var(--barrio-font-body) !important;
+}
+
+/* Jerarquía visual: títulos, encabezados de tabla y rótulos estructurales */
+h1, h2, h3, h4, h5, h6,
+th, caption, legend,
+.page-title, .section-title, .card-title, .modal-title,
+.panel-title, .table-title, .dashboard-title,
+[class~="titulo"], [class~="titulo-seccion"] {
+  font-family: var(--barrio-font-heading) !important;
+}
+
+/* Mantener legibles los datos tabulares sin cambiar su tamaño ni alineación */
+td, th, .numeric, .numero, .metric-value, .stat-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Los iconos tipográficos conservan la fuente de su biblioteca */
+i.fa, i.fas, i.far, i.fab, i.fal, i.fad, i.fat,
+i[class*="fa-"], [class*="fa-"]::before, [class*="fa-"]::after {
+  font-family: inherit !important;
+}
