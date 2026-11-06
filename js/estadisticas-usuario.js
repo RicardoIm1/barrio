@@ -162,7 +162,7 @@
         const usuario=obtenerUsuario();
         if(!esUsuarioNormal(usuario))return;
         instalarEstilos();
-        const footer=document.querySelector('.dashboard-footer');
+        const footer=document.querySelector('.dashboard-footer .dashboard-shell') || document.querySelector('.dashboard-footer');
         if(!footer)return;
         crearContenedor(usuario,footer);
         try {
