@@ -15,7 +15,7 @@
   function consentGranted() {
     try {
       const choice = JSON.parse(localStorage.getItem(CONSENT_KEY) || "null");
-      return choice?.version === 1 && choice?.necessary === true && choice?.analytics === true;
+      return choice?.version === 2 && choice?.necessary === true && choice?.analytics === true;
     } catch (_) {
       return false;
     }
