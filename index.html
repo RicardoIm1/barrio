@@ -916,8 +916,8 @@
               const videoOriginal = aviso.video_url.trim();
               // Cloudinary entrega MOV como MP4 compatible sin modificar el original.
               let videoRenderUrl = videoOriginal;
-              if (/res\\.cloudinary\\.com\\//i.test(videoOriginal) && /\\.mov(?:[?#]|$)/i.test(videoOriginal)) {
-                videoRenderUrl = videoOriginal.replace('/video/upload/', '/video/upload/f_mp4/').replace(/\\.mov(?=([?#]|$))/i, '.mp4');
+              if (/res\.cloudinary\.com\//i.test(videoOriginal) && /\.mov(?:[?#]|$)/i.test(videoOriginal)) {
+                videoRenderUrl = videoOriginal.replace('/video/upload/', '/video/upload/f_mp4/').replace(/\.mov(?=([?#]|$))/i, '.mp4');
               }
               const videoSeguro = escapeHtml(videoRenderUrl);
               const esYouTube =
