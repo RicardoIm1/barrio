@@ -718,14 +718,14 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       : "No se detectan sesiones activas en los últimos 2 minutos.";
   }
 
-  function actualizarResumen(totalUsuarios, avisosPeriodo) {
+  function actualizarResumen(totalUsuarios, avisosPeriodo, usuariosPeriodo) {
     const resumen = document.getElementById("statsSummary");
     if (!resumen) return;
     resumen.style.display = "flex";
     const promU = document.getElementById("promUsuarios"),
       promA = document.getElementById("promAvisos"),
       totalU = document.getElementById("totalUsuarios");
-    if (promU) promU.textContent = (totalUsuarios / DIAS).toFixed(1);
+    if (promU) promU.textContent = (numero(usuariosPeriodo) / DIAS).toFixed(1);
     if (promA) promA.textContent = (avisosPeriodo / DIAS).toFixed(1);
     if (totalU) totalU.textContent = formatear(totalUsuarios);
   }
@@ -759,6 +759,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       const totalSesiones = numero(global.sesiones_hoy);
       const paginasHoy = numero(global.paginas_vistas_hoy);
       const publicacionesPeriodo = (series.publicaciones || []).reduce((s,v) => s + numero(v), 0);
+      const registrosPeriodo = (series.usuarios || []).reduce((s,v) => s + numero(v), 0);
 
       actualizar("totalAvisos", totalAvisos);
       actualizar("avisosActivos", activos);
@@ -791,7 +792,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       renderCategorias(categorias);
       renderDiarios(series);
       renderOnlineUsers(global.usuarios_conectados);
-      actualizarResumen(totalUsuarios, publicacionesPeriodo);
+      actualizarResumen(totalUsuarios, publicacionesPeriodo, registrosPeriodo);
       ultimoDatos = { series, categorias };
       const fecha = document.getElementById("fechaActual");
       if (fecha) {
