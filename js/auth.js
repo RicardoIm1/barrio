@@ -11,6 +11,7 @@ let votarAvisoOriginal = null;
 
 async function obtenerSupabaseClient() {
   if (window.__elBarrioGetSupabaseClient) return await window.__elBarrioGetSupabaseClient();
+  if (typeof window.getSupabaseClient === 'function') return await window.getSupabaseClient();
   if (typeof supabaseClient !== 'undefined' && supabaseClient) return supabaseClient;
   if (window.__elBarrioSupabaseClient) return window.__elBarrioSupabaseClient;
   throw new Error('Cliente Supabase no disponible');
