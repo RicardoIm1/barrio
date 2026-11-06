@@ -11,7 +11,8 @@
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/estilo.css">
-  <link rel="stylesheet" href="/css/index2.css">
+  <link rel="stylesheet" href="/css/index2.css?v=20261106-4">
+  <script src="/common/header-atmosfera.js?v=20261106-1" defer></script>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <meta name="description"
@@ -533,25 +534,16 @@
 
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/ui.js?v=20261105-2"></script>
 
   <script>
-    // Cargar header y footer
+    // Header compartido y footer de esta página
     document.addEventListener('DOMContentLoaded', function () {
-      // Header
-      fetch('/common/header.html')
-        .then(res => {
-          if (!res.ok) throw new Error('Header no encontrado');
-          return res.text();
-        })
-        .then(html => {
-          document.getElementById('header-container').innerHTML = html;
-          setTimeout(() => {
-            if (typeof window.inicializarHeaderAuth === 'function') {
-              window.inicializarHeaderAuth();
-            }
-          }, 100);
-        })
-        .catch(err => console.error('Error cargando header:', err));
+      if (window.UI?.cargarHeader) {
+        window.UI.cargarHeader();
+      } else {
+        console.error('No se pudo inicializar el header compartido: js/ui.js no está disponible.');
+      }
 
       // Footer
       fetch('/common/footer.html')
