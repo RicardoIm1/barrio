@@ -801,6 +801,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       actualizar("totalVisitas", vistasPublicaciones);
       actualizar("totalInteracciones", interacciones);
       actualizar("totalUsuarios", totalUsuarios);
+      actualizar("totalUsuariosCard", totalUsuarios);
       actualizar("totalSesionesHoy", totalSesiones);
       actualizar("totalPaginasHoy", paginasHoy);
       const pendientesCard = document.getElementById("pendingCard");
@@ -1495,7 +1496,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 if (typeof UI !== "undefined" && UI.cargarHeader) UI.cargarHeader();
-fetch("/common/footer-admin.html?v=20260903-2")
+fetch("/common/footer-admin.html?v=20261106-1")
   .then((response) => (response.ok ? response.text() : Promise.reject()))
   .then((data) => {
     const footerContainer = document.getElementById("footer-container");
