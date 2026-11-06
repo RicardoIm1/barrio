@@ -44,22 +44,11 @@
     }
   }
 
-  async function accessToken() {
-    try {
-      if (typeof window.getSupabaseClient !== "function") return PUBLISHABLE_KEY;
-      const client = await window.getSupabaseClient();
-      const { data } = await client.auth.getSession();
-      return data?.session?.access_token || PUBLISHABLE_KEY;
-    } catch (_) {
-      return PUBLISHABLE_KEY;
-    }
-  }
-
   async function recordPage() {
     if (pageRecorded || !consentGranted()) return;
     pageRecorded = true;
     try {
-      const token = await accessToken();
+      const token = PUBLISHABLE_KEY;
       const response = await fetch(PROJECT_URL + "/rest/v1/rpc/registrar_visita_sitio", {
         method: "POST",
         headers: {
