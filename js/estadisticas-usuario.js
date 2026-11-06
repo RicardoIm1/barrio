@@ -62,6 +62,7 @@
     if (window.__ELBARRIO_ESTADISTICAS_USUARIO__) return;
     if (!/\/admin\.html$/i.test(window.location.pathname)) return;
     window.__ELBARRIO_ESTADISTICAS_USUARIO__ = true;
+    let cargaEnCurso = false;
 
     const numero = v => {
         const n = Number(v);
@@ -165,6 +166,8 @@
         const footer=document.querySelector('.dashboard-footer .dashboard-shell') || document.querySelector('.dashboard-footer');
         if(!footer)return;
         crearContenedor(usuario,footer);
+        if (cargaEnCurso) return;
+        cargaEnCurso = true;
         try {
             const client=await (typeof window.getSupabaseClient==='function'?window.getSupabaseClient():window.supabaseClient);
             if(!client)throw new Error('Cliente Supabase no disponible');
@@ -202,6 +205,8 @@
             console.error('❌ Estadísticas personales:',error);
             const tbody=document.getElementById('eu-tabla-cuerpo');
             if(tbody)tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
+        } finally {
+            cargaEnCurso = false;
         }
     }
     function iniciar() {
@@ -211,6 +216,12 @@
         const intentar = () => {
             if (!document.querySelector('.dashboard-footer')) return false;
             cargar();
+            if (!window.__elBarrioPersonalMetricsTimer) {
+                window.__elBarrioPersonalMetricsTimer = window.setInterval(() => {
+                    if (document.visibilityState === 'visible') cargar();
+                }, 45000);
+                window.addEventListener('focus', cargar);
+            }
             return true;
         };
         if (intentar()) return;
