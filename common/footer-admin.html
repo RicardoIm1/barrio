@@ -16,8 +16,8 @@
         <article class="stat-card"><span class="stat-icon">📰</span><div class="stat-info"><h4>Publicaciones</h4><strong class="stat-number" id="totalAvisos">—</strong><span class="stat-label">no eliminadas</span></div></article>
         <article class="stat-card"><span class="stat-icon">✓</span><div class="stat-info"><h4>Publicaciones activas</h4><strong class="stat-number" id="avisosActivos">—</strong><span class="stat-label">visibles en la plataforma</span></div></article>
         <article class="stat-card pending-card" id="pendingCard" style="display:none"><span class="stat-icon">◷</span><div class="stat-info"><h4>Pendientes</h4><strong class="stat-number" id="avisosPendientes">—</strong><span class="stat-label">por aprobar</span></div></article>
-        <article class="stat-card"><span class="stat-icon">◉</span><div class="stat-info"><h4>Sesiones hoy</h4><strong class="stat-number" id="totalSesionesHoy">—</strong><span class="stat-label">sesiones registradas hoy</span></div></article>
-        <article class="stat-card"><span class="stat-icon">↗</span><div class="stat-info"><h4>Páginas vistas hoy</h4><strong class="stat-number" id="totalPaginasHoy">—</strong><span class="stat-label">cargas de página registradas</span></div></article>
+        <article class="stat-card"><span class="stat-icon">◉</span><div class="stat-info"><h4>Sesiones hoy</h4><strong class="stat-number" id="totalSesionesHoy">—</strong><span class="stat-label">sesiones con consentimiento hoy</span></div></article>
+        <article class="stat-card"><span class="stat-icon">↗</span><div class="stat-info"><h4>Páginas vistas hoy</h4><strong class="stat-number" id="totalPaginasHoy">—</strong><span class="stat-label">cargas con consentimiento</span></div></article>
         <article class="stat-card"><span class="stat-icon">◌</span><div class="stat-info"><h4>Vistas de publicaciones</h4><strong class="stat-number" id="totalVisitas">—</strong><span class="stat-label">contador acumulado de avisos</span></div></article>
         <article class="stat-card"><span class="stat-icon">♡</span><div class="stat-info"><h4>Interacciones</h4><strong class="stat-number" id="totalInteracciones">—</strong><span class="stat-label">likes, dislikes y comentarios</span></div></article>
         <article class="stat-card"><span class="stat-icon">▦</span><div class="stat-info"><h4>Categorías activas</h4><strong class="stat-number" id="totalCategorias">—</strong><span class="stat-label">con publicaciones</span></div></article>
@@ -29,7 +29,7 @@
       <div class="dashboard-charts-grid">
         <article class="dashboard-chart" id="chartUsuariosDiarios"><div class="chart-header"><h4>Registros de usuarios por día</h4></div><div class="temporal-chart-container"><canvas id="chartUsuariosCanvas" width="600" height="210"></canvas></div><div class="chart-stats-mini" id="usuariosStats">—</div></article>
         <article class="dashboard-chart" id="chartAvisosDiarios"><div class="chart-header"><h4>Publicaciones activadas por día</h4></div><div class="temporal-chart-container"><canvas id="chartAvisosCanvas" width="600" height="210"></canvas></div><div class="chart-stats-mini" id="avisosStats">—</div></article>
-        <article class="dashboard-chart" id="chartConexionesDiarias"><div class="chart-header"><h4>Visitas (sesiones) por día</h4></div><div class="temporal-chart-container"><canvas id="chartConexionesCanvas" width="600" height="210"></canvas></div><div class="chart-stats-mini" id="conexionesStats">—</div></article>
+        <article class="dashboard-chart" id="chartConexionesDiarias"><div class="chart-header"><h4>Visitas (sesiones con consentimiento) por día</h4></div><div class="temporal-chart-container"><canvas id="chartConexionesCanvas" width="600" height="210"></canvas></div><div class="chart-stats-mini" id="conexionesStats">—</div></article>
         <article class="dashboard-chart" id="chartCategorias"><div class="chart-header"><h4>Publicaciones activas por categoría</h4><button class="chart-toggle" type="button" onclick="toggleChartView()">Vista detallada</button></div><div class="chart-bars" id="chartBars"></div><div class="chart-stats-mini" id="chartStatsMini">—</div></article>
       </div>
     </section>
@@ -44,7 +44,7 @@
       <div class="summary-item"><span class="summary-label">Promedio diario de publicaciones activadas</span><strong class="summary-value" id="promAvisos">—</strong></div>
       <div class="summary-item"><span class="summary-label">Usuarios registrados en total</span><strong class="summary-value" id="totalUsuarios">—</strong></div>
     </section>
-    <p class="dashboard-footnote">Las sesiones cuentan una visita por pestaña y día. Las páginas vistas cuentan cada ruta cargada. Las vistas de publicaciones son un contador independiente.</p>
+    <p class="dashboard-footnote">La medición de tráfico solo incluye sesiones con consentimiento de analítica. Una sesión cuenta una visita por pestaña y día; las páginas vistas cuentan cada ruta cargada. Las vistas de publicaciones son un contador independiente.</p>
   </div>
 </footer>
 
