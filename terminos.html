@@ -533,7 +533,7 @@
 
   <div id="footer-container"></div>
 
-  <script src="/js/api.js"></script>
+  <script src="/js/api.js?v=20261106-2"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/ui.js?v=20261105-2"></script>
 
@@ -622,7 +622,9 @@
             .checkbox-group label { display: block; }
           </style>
           </head>
-          <body>${orderContent.outerHTML}</body>
+          <body>${orderContent.outerHTML}  <script src="/common/consentimiento.js?v=20261106-1" defer></script>
+  <script src="/js/metricas-trafico.js?v=20261106-1" defer></script>
+</body>
           </html>
         `);
         ventana.document.close();
