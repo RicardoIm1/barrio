@@ -701,7 +701,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       conexiones.style.display = "block";
       lineChart(document.getElementById("chartConexionesCanvas"), labels, sesiones);
       const s = document.getElementById("conexionesStats");
-      if (s) s.textContent = `Páginas vistas en el periodo: ${formatear(paginas.reduce((a,b) => a+b,0))}`;
+      if (s) s.textContent = `Sesiones: ${formatear(sesiones.reduce((a,b) => a+b,0))} · páginas vistas: ${formatear(paginas.reduce((a,b) => a+b,0))}`;
     }
   }
 
@@ -808,7 +808,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       console.error("No se pudieron cargar las métricas unificadas:", error);
       const badge = document.getElementById("onlineCount");
       if (badge) badge.textContent = "No disponible";
-      ["totalAvisos","avisosActivos","avisosPendientes","totalVisitas","totalInteracciones","totalUsuarios","totalUsuariosCard","totalSesionesHoy","totalPaginasHoy","totalCategorias"].forEach(id => {
+      ["totalAvisos","avisosActivos","avisosPendientes","totalVisitas","totalInteracciones","totalUsuarios","totalUsuariosCard","totalSesionesHoy","totalPaginasHoy","totalCategorias","promUsuarios","promAvisos"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = "No disponible";
       });
