@@ -1060,65 +1060,41 @@ async function cargarAvisosParaAdmin() {
       email: aviso.email || aviso.autor_email || aviso.created_by_email,
     }));
 
-    // Completar estadísticas con las fuentes reales de Supabase.
-    // LISTAR_TODOS_AVISOS devuelve la fila de avisos, pero los votos viven en su RPC
-    // y los comentarios en su propia tabla; no deben suponerse iguales a cero.
+    // Los contadores de cada publicación se obtienen de la misma función usada por index y aviso.
     try {
       const client = await getSupabaseClient();
-      const ids = todosLosAvisos.map((a) => a.id).filter(Boolean);
-      if (ids.length) {
-        const comentariosPorAviso = new Map();
-        try {
-          const { data: comentariosData, error: comentariosError } = await client
-            .from("comentarios")
-            .select("aviso_id")
-            .in("aviso_id", ids);
-          if (comentariosError) throw comentariosError;
-          (comentariosData || []).forEach((comentario) => {
-            const id = String(comentario.aviso_id);
-            comentariosPorAviso.set(id, (comentariosPorAviso.get(id) || 0) + 1);
-          });
-        } catch (errorComentarios) {
-          console.warn("No se pudieron completar los comentarios de los avisos:", errorComentarios);
-        }
-
-        const resultadosVotos = await Promise.allSettled(
-          todosLosAvisos.map(async (aviso) => {
-            const { data, error } = await client.rpc("obtener_votos_aviso", {
-              p_aviso_id: aviso.id,
-            });
-            if (error) throw error;
-            const votos = typeof data === "string" ? JSON.parse(data) : (data || {});
-            return {
-              id: String(aviso.id),
-              positivos: Number(votos.positivos || 0),
-              negativos: Number(votos.negativos || 0),
-            };
-          }),
-        );
-        const votosPorAviso = new Map();
-        resultadosVotos.forEach((resultado) => {
-          if (resultado.status === "fulfilled")
-            votosPorAviso.set(resultado.value.id, resultado.value);
-          else
-            console.warn("No se pudieron completar los votos de un aviso:", resultado.reason);
+      const ids = todosLosAvisos
+        .filter(aviso => aviso.status !== "eliminado")
+        .map(aviso => aviso.id)
+        .filter(Boolean);
+      const resumenPorAviso = new Map();
+      for (let i = 0; i < ids.length; i += 500) {
+        const { data, error } = await client.rpc("obtener_resumen_interacciones_avisos", {
+          p_aviso_ids: ids.slice(i, i + 500)
         });
-
-        todosLosAvisos = todosLosAvisos.map((aviso) => {
-          const votos = votosPorAviso.get(String(aviso.id));
-          return {
-            ...aviso,
-            vistas: Number(aviso.vistas ?? aviso.visitas ?? 0) || 0,
-            comentarios_count: comentariosPorAviso.has(String(aviso.id))
-              ? comentariosPorAviso.get(String(aviso.id))
-              : Number(aviso.comentarios_count ?? aviso.total_comentarios ?? 0) || 0,
-            votos_positivos: votos ? votos.positivos : Number(aviso.votos_positivos ?? aviso.likes ?? 0) || 0,
-            votos_negativos: votos ? votos.negativos : Number(aviso.votos_negativos ?? aviso.dislikes ?? 0) || 0,
-          };
-        });
+        if (error) throw error;
+        const resumen = typeof data === "string" ? JSON.parse(data) : (data || {});
+        Object.entries(resumen).forEach(([id, valores]) => resumenPorAviso.set(String(id), valores));
       }
+      todosLosAvisos = todosLosAvisos.map(aviso => {
+        const resumen = resumenPorAviso.get(String(aviso.id));
+        if (!resumen) return aviso;
+        const likes = Number(resumen.likes || 0);
+        const dislikes = Number(resumen.dislikes || 0);
+        return {
+          ...aviso,
+          vistas: Number(resumen.vistas ?? aviso.vistas ?? 0),
+          comentarios_count: Number(resumen.comentarios || 0),
+          votos_positivos: likes,
+          votos_negativos: dislikes
+        };
+      });
     } catch (errorEstadisticas) {
-      console.warn("Se mostrarán las estadísticas disponibles en los avisos:", errorEstadisticas);
+      console.error("No se pudieron confirmar las métricas de las publicaciones:", errorEstadisticas);
+      todosLosAvisos = todosLosAvisos.map(aviso => ({
+        ...aviso,
+        metricas_disponibles: aviso.status === "eliminado" ? true : false
+      }));
     }
 
     console.log(`✅ Cargados ${todosLosAvisos.length} avisos con estadísticas`);
