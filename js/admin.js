@@ -1613,7 +1613,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
     } catch(error) {
       console.error("No se pudo cargar la ficha estadística del usuario:",error);
       document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">No se pudieron cargar las estadísticas: '+esc(error.message||error)+'</td></tr>';
-      ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="—";});
+      ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-comentarios","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="—";});
     }
   }
   window.verFichaUsuarioAdmin=abrirFicha;
