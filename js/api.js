@@ -71,6 +71,38 @@ async function getSupabaseClient() {
   }
 }
 
+let metricasDashboardCache = null;
+let metricasDashboardCacheAt = 0;
+let metricasDashboardPending = null;
+
+async function obtenerMetricasDashboard(opciones = {}) {
+  const forzar = opciones === true || opciones?.force === true;
+  if (metricasDashboardPending) return metricasDashboardPending;
+  if (!forzar && metricasDashboardCache && Date.now() - metricasDashboardCacheAt < 8000) {
+    return metricasDashboardCache;
+  }
+
+  const solicitud = (async () => {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.rpc('obtener_metricas_dashboard');
+    if (error) throw error;
+    const resultado = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!resultado || typeof resultado !== 'object') {
+      throw new Error('La respuesta de métricas no tiene un formato válido');
+    }
+    metricasDashboardCache = resultado;
+    metricasDashboardCacheAt = Date.now();
+    return resultado;
+  })();
+
+  metricasDashboardPending = solicitud;
+  try {
+    return await solicitud;
+  } finally {
+    if (metricasDashboardPending === solicitud) metricasDashboardPending = null;
+  }
+}
+
 function respuestaOK(data = null, extra = {}) {
   return { success: true, data, ...extra };
 }
@@ -443,9 +475,8 @@ async function supabasePeticion(accion, datos = {}) {
 
     case 'ESTADISTICAS_AVANZADAS':
     case 'OBTENER_METRICAS_DASHBOARD': {
-      const { data, error } = await client.rpc('obtener_metricas_dashboard');
-      if (error) throw error;
-      return respuestaOK(data || {});
+      const metricas = await obtenerMetricasDashboard();
+      return respuestaOK(metricas);
     }
 
     case 'REGISTRAR_VISITA_SITIO': {
@@ -538,6 +569,7 @@ class API {
 
 window.API = API;
 window.getSupabaseClient = getSupabaseClient;
+window.obtenerMetricasDashboard = obtenerMetricasDashboard;
 
 API.listarPublicos = async function (filtros = {}, paginacion = {}) {
   const limiteSolicitado = Number(paginacion?.limite) || 1000;
