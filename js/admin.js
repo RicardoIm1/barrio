@@ -31,64 +31,29 @@ function confirmarAdmin(mensaje) {
 }
 
 async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
-  const { data: avisos, error: avisosError } = await client
-    .from("avisos")
-    .select("id,titulo,status,created_at,vistas")
-    .eq("created_by", usuarioId)
-    .neq("status", "eliminado")
-    .order("created_at", { ascending: false });
-  if (avisosError) throw avisosError;
-
-  const lista = avisos || [];
-  const porAviso = new Map(lista.map(a => [String(a.id), {
-    positivos: 0, negativos: 0, comentarios: 0
+  const { data, error } = await client.rpc("obtener_metricas_publicaciones_usuario", {
+    p_usuario_id: usuarioId
+  });
+  if (error) throw error;
+  const resultado = typeof data === "string" ? JSON.parse(data) : (data || {});
+  const lista = Array.isArray(resultado.avisos) ? resultado.avisos : [];
+  const porAviso = new Map(lista.map(aviso => [String(aviso.id), {
+    positivos: Number(aviso.likes || 0),
+    negativos: Number(aviso.dislikes || 0),
+    comentarios: Number(aviso.comentarios || 0)
   }]));
-  const ids = lista.map(a => a.id);
-  if (!ids.length) {
-    return {
-      lista, porAviso, avisos: 0, activos: 0, vistas: 0,
-      positivos: 0, negativos: 0, comentarios: 0, interacciones: 0
-    };
-  }
-
-  // El RPC es la misma fuente de votos que utiliza la vista pública del aviso.
-  const [votosPorAviso, comentariosResult] = await Promise.all([
-    Promise.all(lista.map(async aviso => {
-      const { data, error } = await client.rpc("obtener_votos_aviso", {
-        p_aviso_id: aviso.id
-      });
-      if (error) throw error;
-      const conteo = typeof data === "string" ? JSON.parse(data) : (data || {});
-      return {
-        id: String(aviso.id),
-        positivos: Number(conteo.positivos || 0),
-        negativos: Number(conteo.negativos || 0)
-      };
-    })),
-    client.from("comentarios").select("aviso_id").in("aviso_id", ids)
-  ]);
-  if (comentariosResult.error) throw comentariosResult.error;
-
-  votosPorAviso.forEach(v => {
-    const item = porAviso.get(v.id);
-    if (item) {
-      item.positivos = v.positivos;
-      item.negativos = v.negativos;
-    }
-  });
-  (comentariosResult.data || []).forEach(c => {
-    const item = porAviso.get(String(c.aviso_id));
-    if (item) item.comentarios++;
-  });
-
-  const positivos = votosPorAviso.reduce((suma, v) => suma + v.positivos, 0);
-  const negativos = votosPorAviso.reduce((suma, v) => suma + v.negativos, 0);
-  const comentarios = (comentariosResult.data || []).length;
-  const vistas = lista.reduce((total, a) => total + (Number(a.vistas) || 0), 0);
+  const positivos = Number(resultado.likes || 0);
+  const negativos = Number(resultado.dislikes || 0);
+  const comentarios = Number(resultado.comentarios || 0);
   return {
-    lista, porAviso, avisos: lista.length,
-    activos: lista.filter(a => a.status === "activo").length,
-    vistas, positivos, negativos, comentarios,
+    lista,
+    porAviso,
+    avisos: Number(resultado.publicaciones || 0),
+    activos: Number(resultado.publicaciones_activas || 0),
+    vistas: Number(resultado.vistas || 0),
+    positivos,
+    negativos,
+    comentarios,
     interacciones: positivos + negativos + comentarios
   };
 }
