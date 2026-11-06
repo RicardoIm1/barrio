@@ -18,6 +18,11 @@
     const actualizar = function () {
       const cielo = obtenerCielo(new Date());
       if (header.dataset.cielo !== cielo) header.dataset.cielo = cielo;
+      const esAdmin = window.location.pathname === "/admin.html" || window.location.pathname.endsWith("/admin.html");
+      if (esAdmin) {
+        header.dataset.adminDay = "true";
+        header.style.setProperty("background", "linear-gradient(180deg, #9fc8e2 0%, #d4e6ed 72%, #edf1ef 100%)", "important");
+      }
       header.setAttribute("aria-label", "Encabezado de El Barrio");
     };
 
