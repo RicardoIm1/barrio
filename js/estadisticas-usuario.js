@@ -131,13 +131,13 @@
         section.innerHTML = `
             <div class="eu-cabecera"><div><h2>Mis estadísticas</h2><p class="eu-sub">Rendimiento de los avisos publicados por ${escapar(usuario.nombre || 'usuario')}</p></div></div>
             <div class="eu-grid">
-                <div class="eu-card"><span class="eu-label">Mis avisos</span><strong class="eu-value" id="eu-total-avisos">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Avisos activos</span><strong class="eu-value" id="eu-activos">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Vistas totales</span><strong class="eu-value" id="eu-vistas">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Votos positivos</span><strong class="eu-value" id="eu-positivos">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Votos negativos</span><strong class="eu-value" id="eu-negativos">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Comentarios</span><strong class="eu-value" id="eu-comentarios">0</strong></div>
-                <div class="eu-card"><span class="eu-label">Interacciones</span><strong class="eu-value" id="eu-interacciones">0</strong></div>
+                <div class="eu-card"><span class="eu-label">Mis avisos</span><strong class="eu-value" id="eu-total-avisos">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Avisos activos</span><strong class="eu-value" id="eu-activos">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Vistas totales</span><strong class="eu-value" id="eu-vistas">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Votos positivos</span><strong class="eu-value" id="eu-positivos">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Votos negativos</span><strong class="eu-value" id="eu-negativos">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Comentarios</span><strong class="eu-value" id="eu-comentarios">—</strong></div>
+                <div class="eu-card"><span class="eu-label">Interacciones</span><strong class="eu-value" id="eu-interacciones">—</strong></div>
             </div>
             <div class="eu-panel"><h3>Publicaciones de los últimos 30 días</h3><div class="eu-chart-wrap"><canvas id="eu-chart"></canvas></div></div>
             <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th>Aviso</th><th>Estado</th><th class="eu-num">Vistas</th><th class="eu-num">👍</th><th class="eu-num">👎</th><th class="eu-num">Comentarios</th><th class="eu-num">Interacciones</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="7" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
@@ -204,6 +204,10 @@
             }).join('');
         } catch(error){
             console.error('❌ Estadísticas personales:',error);
+            ['eu-total-avisos','eu-activos','eu-vistas','eu-positivos','eu-negativos','eu-comentarios','eu-interacciones'].forEach(id=>{
+                const el=document.getElementById(id);
+                if(el)el.textContent='No disponible';
+            });
             const tbody=document.getElementById('eu-tabla-cuerpo');
             if(tbody)tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
         } finally {
