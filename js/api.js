@@ -449,32 +449,20 @@ async function supabasePeticion(accion, datos = {}) {
       return respuestaOK(data);
     }
 
-    case 'ESTADISTICAS_AVANZADAS': {
-      const { data: usuarios, error: errorUsuarios } = await client.from('usuarios').select('id, fecha_registro, ultimo_acceso').order('fecha_registro', { ascending: true }).range(0, 999);
-      if (errorUsuarios) throw errorUsuarios;
-      const { data: avisos, error: errorAvisos } = await client.from('avisos').select('id, created_at, status').order('created_at', { ascending: true }).range(0, 999);
-      if (errorAvisos) throw errorAvisos;
-      const hoy = new Date();
-      const claveDia = valor => { const d = new Date(valor); return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10); };
-      const labels = [], usuariosPorDia = [], avisosPorDia = [];
-      for (let i = 29; i >= 0; i--) {
-        const d = new Date(hoy); d.setDate(d.getDate() - i);
-        const key = d.toISOString().slice(0, 10);
-        labels.push(key);
-        usuariosPorDia.push((usuarios || []).filter(u => claveDia(u.fecha_registro) === key).length);
-        avisosPorDia.push((avisos || []).filter(a => claveDia(a.created_at) === key).length);
-      }
-      const activos = (avisos || []).filter(a => a.status === 'activo').length;
-      const pendientes = (avisos || []).filter(a => a.status === 'pendiente').length;
-      const promedioUsuarios = usuariosPorDia.length ? (usuariosPorDia.reduce((a, b) => a + b, 0) / usuariosPorDia.length).toFixed(1) : 0;
-      const promedioAvisos = avisosPorDia.length ? (avisosPorDia.reduce((a, b) => a + b, 0) / avisosPorDia.length).toFixed(1) : 0;
-      return respuestaOK({
-        resumen: { promedioDiarioUsuarios: Number(promedioUsuarios), promedioDiarioAvisos: Number(promedioAvisos), totalUsuarios: (usuarios || []).length, totalAvisos: (avisos || []).length, activos, pendientes },
-        usuarios: { labels, datos: usuariosPorDia },
-        avisos: { labels, datos: avisosPorDia },
-        conexiones: { labels, datos: [] },
-        enLinea: { total: 0, usuarios: [] }
+    case 'ESTADISTICAS_AVANZADAS':
+    case 'OBTENER_METRICAS_DASHBOARD': {
+      const { data, error } = await client.rpc('obtener_metricas_dashboard');
+      if (error) throw error;
+      return respuestaOK(data || {});
+    }
+
+    case 'REGISTRAR_VISITA_SITIO': {
+      const { data, error } = await client.rpc('registrar_visita_sitio', {
+        p_pagina: String(datos?.pagina || '/').slice(0, 180),
+        p_session_id: String(datos?.session_id || '')
       });
+      if (error) throw error;
+      return respuestaOK(data || {});
     }
 
     default:
