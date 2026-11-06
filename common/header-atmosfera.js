@@ -2,7 +2,7 @@
 (function () {
   function obtenerCielo(fecha) {
     // El panel administrativo conserva siempre la variante diurna.
-    if (window.location.pathname.replace(/\\/+$/, "") === "/admin.html") return "dia";
+    if (window.location.pathname === "/admin.html" || window.location.pathname.endsWith("/admin.html")) return "dia";
     const hora = fecha.getHours() + fecha.getMinutes() / 60;
     if (hora >= 6 && hora < 9) return "amanecer";
     if (hora >= 9 && hora < 17) return "dia";
