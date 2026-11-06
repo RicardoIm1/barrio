@@ -675,3 +675,16 @@
 /* El botón de compartir ocupa la esquina superior derecha; no altera WhatsApp. */
 .card-share-row{top:14px !important;right:14px !important;bottom:auto !important;left:auto !important;}
 .card-contenido-moderno{padding-bottom:0 !important;}
+
+/* Portada: recuperar aire inferior en tarjetas para móviles y tabletas. */
+@media (max-width: 767px) {
+  .aviso-card.tarjeta-moderna .card-contenido-moderno {
+    padding: 20px 20px 36px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .aviso-card.tarjeta-moderna .card-contenido-moderno {
+    padding: 22px 22px 38px !important;
+  }
+}
