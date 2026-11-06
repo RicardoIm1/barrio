@@ -95,27 +95,29 @@
         const style = document.createElement('style');
         style.id = 'estilos-estadisticas-usuario';
         style.textContent = `
-            .estadisticas-usuario-footer { width:100%;margin:1rem 0 0;padding:1rem 0 0;border-top:1px solid rgba(255,255,255,.12); }
-            .estadisticas-usuario-footer .eu-cabecera { display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem; }
-            .estadisticas-usuario-footer h2 { margin:0 0 .25rem;font-size:1.2rem; }
-            .estadisticas-usuario-footer .eu-sub { margin:0;opacity:.75;font-size:.8rem; }
-            .estadisticas-usuario-footer .eu-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.65rem;margin-bottom:1rem; }
-            .estadisticas-usuario-footer .eu-card { padding:.8rem;border-radius:.7rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1); }
-            .estadisticas-usuario-footer .eu-label { display:block;font-size:.68rem;opacity:.7;margin-bottom:.2rem;text-transform:uppercase;letter-spacing:.03em; }
-            .estadisticas-usuario-footer .eu-value { display:block;font-size:1.25rem;font-weight:700; }
-            .estadisticas-usuario-footer .eu-panel { margin-top:.75rem;padding:.8rem;border-radius:.7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08); }
-            .estadisticas-usuario-footer .eu-panel h3 { margin:0 0 .6rem;font-size:.9rem; }
-            .estadisticas-usuario-footer .eu-chart-wrap { width:100%;overflow:hidden; }
-            .estadisticas-usuario-footer canvas { display:block;width:100%;height:170px; }
-            .estadisticas-usuario-footer .eu-tabla-wrap { overflow-x:auto; }
-            .estadisticas-usuario-footer table { width:100%;border-collapse:collapse;font-size:.76rem; }
-            .estadisticas-usuario-footer th { text-align:left;background:rgba(255,255,255,.08);padding:.55rem;white-space:nowrap; }
-            .estadisticas-usuario-footer td { padding:.55rem;border-top:1px solid rgba(255,255,255,.08);vertical-align:middle; }
-            .estadisticas-usuario-footer .eu-num { text-align:right;white-space:nowrap; }
-            .estadisticas-usuario-footer .eu-estado { font-size:.68rem;font-weight:600;padding:.18rem .45rem;border-radius:999px;background:rgba(40,167,69,.18); }
-            .estadisticas-usuario-footer .eu-estado.pendiente { background:rgba(245,176,66,.18); }
-            .estadisticas-usuario-footer .eu-vacio { opacity:.7;padding:1rem 0;text-align:center; }
-            @media (max-width:600px) { .estadisticas-usuario-footer { padding-top:.8rem; } .estadisticas-usuario-footer .eu-grid { grid-template-columns:repeat(2,1fr); } .estadisticas-usuario-footer .eu-value { font-size:1.1rem; } }
+            .estadisticas-usuario-footer{width:100%;margin:1.35rem 0 0;padding:1.25rem 0 0;border-top:1px solid rgba(44,62,80,.14);color:#2c3e50}
+            .estadisticas-usuario-footer .eu-cabecera{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+            .estadisticas-usuario-footer h2{margin:0 0 .25rem;color:#2c3e50;font:750 1.05rem Manrope,sans-serif}
+            .estadisticas-usuario-footer .eu-sub{margin:0;color:#718092;font-size:.78rem}
+            .estadisticas-usuario-footer .eu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.65rem;margin-bottom:1rem}
+            .estadisticas-usuario-footer .eu-card{min-width:0;padding:.8rem;border-radius:.75rem;background:rgba(255,255,255,.9);border:1px solid #e0e8ee;box-shadow:0 3px 12px rgba(35,55,75,.035)}
+            .estadisticas-usuario-footer .eu-label{display:block;color:#718092;font-size:.65rem;margin-bottom:.25rem;text-transform:uppercase;letter-spacing:.035em}
+            .estadisticas-usuario-footer .eu-value{display:block;color:#2c3e50;font:800 1.22rem/1.2 Manrope,sans-serif;font-variant-numeric:tabular-nums}
+            .estadisticas-usuario-footer .eu-panel{margin-top:.75rem;padding:.9rem;border-radius:.8rem;background:rgba(255,255,255,.88);border:1px solid #e0e8ee}
+            .estadisticas-usuario-footer .eu-panel h3{margin:0 0 .65rem;color:#34495e;font:750 .82rem Manrope,sans-serif}
+            .estadisticas-usuario-footer .eu-chart-wrap{width:100%;overflow:hidden}
+            .estadisticas-usuario-footer canvas{display:block;width:100%;height:170px}
+            .estadisticas-usuario-footer .eu-tabla-wrap{overflow-x:auto}
+            .estadisticas-usuario-footer table{width:100%;border-collapse:collapse;font-size:.74rem;color:#40566b}
+            .estadisticas-usuario-footer th{text-align:left;background:#edf3f7;color:#52697d;padding:.55rem;white-space:nowrap;font-weight:700}
+            .estadisticas-usuario-footer td{padding:.55rem;border-top:1px solid #e8edf2;vertical-align:middle}
+            .estadisticas-usuario-footer tbody tr:hover{background:#f7fafc}
+            .estadisticas-usuario-footer .eu-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+            .estadisticas-usuario-footer .eu-estado{font-size:.66rem;font-weight:700;padding:.18rem .45rem;border-radius:999px;background:#e5f3e9;color:#287346}
+            .estadisticas-usuario-footer .eu-estado.pendiente{background:#fff3d8;color:#8b641f}
+            .estadisticas-usuario-footer .eu-estado.rechazado{background:#fbe9e7;color:#a33b32}
+            .estadisticas-usuario-footer .eu-vacio{color:#718092;padding:1rem 0;text-align:center}
+            @media(max-width:600px){.estadisticas-usuario-footer{padding-top:.9rem}.estadisticas-usuario-footer .eu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.estadisticas-usuario-footer .eu-card{padding:.7rem}.estadisticas-usuario-footer .eu-value{font-size:1.08rem}}
         `;
         document.head.appendChild(style);
     }
@@ -139,7 +141,9 @@
             </div>
             <div class="eu-panel"><h3>Publicaciones de los últimos 30 días</h3><div class="eu-chart-wrap"><canvas id="eu-chart"></canvas></div></div>
             <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th>Aviso</th><th>Estado</th><th class="eu-num">Vistas</th><th class="eu-num">👍</th><th class="eu-num">👎</th><th class="eu-num">Comentarios</th><th class="eu-num">Interacciones</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="7" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
-        footer.appendChild(section);
+        const nota = footer.querySelector('.dashboard-footnote');
+        if (nota) footer.insertBefore(section, nota);
+        else footer.appendChild(section);
         return section;
     }
 
@@ -154,9 +158,9 @@
         for(let i=29;i>=0;i--){const d=new Date(hoy);d.setUTCDate(hoy.getUTCDate()-i);dias.push(d);}
         const conteo=new Map();avisos.forEach(a=>{const k=fechaClave(a.created_at);if(k)conteo.set(k,(conteo.get(k)||0)+1);});
         const valores=dias.map(d=>conteo.get(fechaClave(d))||0),max=Math.max(1,...valores),pad={l:36,r:12,t:12,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
-        ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=4;i++){const y=pad.t+ch-ch*i/4;ctx.strokeStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='rgba(255,255,255,.65)';ctx.fillText(String(Math.round(max*i/4)),pad.l-6,y);}
+        ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=4;i++){const y=pad.t+ch-ch*i/4;ctx.strokeStyle='rgba(44,62,80,.12)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#718092';ctx.fillText(String(Math.round(max*i/4)),pad.l-6,y);}
         const puntos=valores.map((v,i)=>({x:pad.l+cw*i/(dias.length-1),y:pad.t+ch-(v/max)*ch}));ctx.strokeStyle='#f5b042';ctx.lineWidth=3;ctx.beginPath();puntos.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.fillStyle='#f5b042';puntos.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();});
-        ctx.fillStyle='rgba(255,255,255,.65)';ctx.textAlign='center';ctx.textBaseline='top';dias.forEach((d,i)=>{if(i%5===0||i===dias.length-1){const x=pad.l+cw*i/(dias.length-1);ctx.fillText(d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',timeZone:'UTC'}),x,h-pad.b+7);}});
+        ctx.fillStyle='#718092';ctx.textAlign='center';ctx.textBaseline='top';dias.forEach((d,i)=>{if(i%5===0||i===dias.length-1){const x=pad.l+cw*i/(dias.length-1);ctx.fillText(d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',timeZone:'UTC'}),x,h-pad.b+7);}});
     }
 
     async function cargar() {
@@ -169,11 +173,8 @@
         if (cargaEnCurso) return;
         cargaEnCurso = true;
         try {
-            const client=await (typeof window.getSupabaseClient==='function'?window.getSupabaseClient():window.supabaseClient);
-            if(!client)throw new Error('Cliente Supabase no disponible');
-            const {data,error}=await client.rpc('obtener_metricas_dashboard');
-            if(error)throw error;
-            const metricas=typeof data==='string'?JSON.parse(data):(data||{});
+            if(typeof window.obtenerMetricasDashboard!=='function')throw new Error('Servicio central de métricas no disponible');
+            const metricas=await window.obtenerMetricasDashboard();
             const personal=metricas.personal||{};
             const lista=Array.isArray(personal.avisos)?personal.avisos:[];
             const positivos=numero(personal.likes);
