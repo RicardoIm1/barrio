@@ -28,9 +28,3 @@ th, caption, legend,
 td, th, .numeric, .numero, .metric-value, .stat-value {
   font-variant-numeric: tabular-nums;
 }
-
-/* Los iconos tipográficos conservan la fuente de su biblioteca */
-i.fa, i.fas, i.far, i.fab, i.fal, i.fad, i.fat,
-i[class*="fa-"], [class*="fa-"]::before, [class*="fa-"]::after {
-  font-family: inherit !important;
-}
