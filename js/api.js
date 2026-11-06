@@ -159,16 +159,13 @@ async function supabasePeticion(accion, datos = {}) {
       if (error) throw error;
       if (!data) return respuestaOK(null);
 
-      let positivos = 0, negativos = 0;
-      try {
-        const { data: votosData, error: votosError } = await client.rpc('obtener_votos_aviso', { p_aviso_id: id });
-        if (votosError) throw votosError;
-        const votos = typeof votosData === 'string' ? JSON.parse(votosData) : (votosData || {});
-        positivos = Number(votos.positivos || 0);
-        negativos = Number(votos.negativos || 0);
-      } catch (errorVotos) {
-        console.warn('No se pudieron cargar los acumulados de votos:', errorVotos);
-      }
+      const { data: resumenRaw, error: resumenError } = await client.rpc('obtener_resumen_interacciones_avisos', {
+        p_aviso_ids: [id]
+      });
+      if (resumenError) throw resumenError;
+      const resumen = typeof resumenRaw === 'string' ? JSON.parse(resumenRaw) : (resumenRaw || {});
+      const conteo = resumen[id];
+      if (!conteo) throw new Error('No se pudo confirmar el resumen de interacciones de esta publicación');
 
       let aviso = normalizarAviso(data);
       try {
@@ -181,7 +178,17 @@ async function supabasePeticion(accion, datos = {}) {
           }
         }
       } catch (_) {}
-      return respuestaOK({ ...aviso, likes: positivos, dislikes: negativos, votos_positivos: positivos, votos_negativos: negativos });
+      const likes = Number(conteo.likes || 0);
+      const dislikes = Number(conteo.dislikes || 0);
+      return respuestaOK({
+        ...aviso,
+        vistas: Number(conteo.vistas ?? aviso.vistas ?? 0),
+        likes,
+        dislikes,
+        votos_positivos: likes,
+        votos_negativos: dislikes,
+        comentarios_count: Number(conteo.comentarios || 0)
+      });
     }
 
     case 'REGISTRAR_VISTA': {
@@ -199,50 +206,35 @@ async function supabasePeticion(accion, datos = {}) {
         .from('avisos')
         .select('*', { count: 'exact' })
         .eq('status', 'activo')
+        .order('published_at', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false });
       if (datos?.categoria && datos.categoria !== 'todos') query = query.eq('categoria', datos.categoria);
       const pagina = Math.max(1, Number(datos?.pagina) || 1);
-      const limite = Math.min(1000, Math.max(1, Number(datos?.limite) || 200));
+      const limite = Math.min(500, Math.max(1, Number(datos?.limite) || 200));
       const desde = (pagina - 1) * limite;
       query = query.range(desde, desde + limite - 1);
       const { data, error, count } = await query;
       if (error) throw error;
       const avisos = normalizarAvisos(data);
-      // Los votos se consultan mediante el RPC de acumulados.
-      // Una lectura directa de "votos" puede devolver [] por RLS sin error y mostrar ceros falsos.
       if (avisos.length) {
         const ids = avisos.map(a => a.id).filter(Boolean);
-        await Promise.all(avisos.map(async aviso => {
-          try {
-            const { data: raw, error: rpcError } = await client.rpc('obtener_votos_aviso', { p_aviso_id: aviso.id });
-            if (rpcError) throw rpcError;
-            const conteo = typeof raw === 'string' ? JSON.parse(raw) : (raw || {});
-            aviso.votos_positivos = Number(conteo.positivos ?? 0);
-            aviso.votos_negativos = Number(conteo.negativos ?? 0);
-          } catch (errorVotos) {
-            console.warn('No se pudieron obtener los votos reales del aviso:', aviso.id, errorVotos);
-          }
-        }));
-
-        // Los comentarios se cuentan desde los registros visibles. Si RLS oculta filas,
-        // ese resultado no debe asumirse automáticamente como un conteo global confiable.
-        try {
-          const { data: comentarios, error: errorComentarios } = await client
-            .from('comentarios').select('aviso_id').in('aviso_id', ids);
-          if (errorComentarios) throw errorComentarios;
-          if (Array.isArray(comentarios)) {
-            const conteosComentarios = new Map();
-            comentarios.forEach(comentario => {
-              const id = String(comentario.aviso_id);
-              conteosComentarios.set(id, (conteosComentarios.get(id) || 0) + 1);
-            });
-            avisos.forEach(aviso => {
-              aviso.comentarios_count = conteosComentarios.get(String(aviso.id)) || 0;
-            });
-          }
-        } catch (errorComentarios) {
-          console.warn('No se pudo confirmar el conteo global de comentarios por las políticas de acceso:', errorComentarios);
-        }
+        const { data: resumenRaw, error: resumenError } = await client.rpc('obtener_resumen_interacciones_avisos', {
+          p_aviso_ids: ids
+        });
+        if (resumenError) throw resumenError;
+        const resumen = typeof resumenRaw === 'string' ? JSON.parse(resumenRaw) : (resumenRaw || {});
+        avisos.forEach(aviso => {
+          const conteo = resumen[String(aviso.id)];
+          if (!conteo) throw new Error('No se pudo confirmar el resumen de interacciones de una publicación');
+          const likes = Number(conteo.likes || 0);
+          const dislikes = Number(conteo.dislikes || 0);
+          aviso.vistas = Number(conteo.vistas ?? aviso.vistas ?? 0);
+          aviso.likes = likes;
+          aviso.dislikes = dislikes;
+          aviso.votos_positivos = likes;
+          aviso.votos_negativos = dislikes;
+          aviso.comentarios_count = Number(conteo.comentarios || 0);
+        });
       }
       return respuestaOK({ datos: avisos, total: count ?? avisos.length });
     }
