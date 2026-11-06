@@ -114,6 +114,13 @@
         .logo-texto h1 { font-size:.94rem; }
         .header-menu-toggle { flex-basis:38px; width:38px; height:38px; }
     }
+
+    /* El panel administrativo mantiene siempre el cielo diurno, incluso si
+       otro módulo aísla o retira hojas de estilo compartidas. */
+    .header[data-admin-day="true"]::before { opacity:.12 !important; }
+    .header[data-admin-day="true"]::after { opacity:.3 !important; }
+    .header[data-admin-day="true"] { background:linear-gradient(180deg,#9fc8e2 0%,#d4e6ed 72%,#edf1ef 100%) !important; }
+
 </style>
 <script src="/js/push.js"></script>
 <script>
