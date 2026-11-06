@@ -670,3 +670,8 @@
 .share-post-btn svg{display:block;}
 .share-post-btn:hover{background:rgba(20,30,40,.88) !important;border-color:#fff !important;transform:translateY(-2px);}
 .card-contenido-moderno{padding-bottom:62px !important;}
+
+
+/* El botón de compartir ocupa la esquina superior derecha; no altera WhatsApp. */
+.card-share-row{top:14px !important;right:14px !important;bottom:auto !important;left:auto !important;}
+.card-contenido-moderno{padding-bottom:0 !important;}
