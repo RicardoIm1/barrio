@@ -750,6 +750,8 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       const global = metricas.global || {};
       const series = metricas.series || {};
       const categorias = Array.isArray(metricas.categorias) ? metricas.categorias : [];
+      const roleBadge = document.getElementById("userRoleBadge");
+      if (roleBadge) roleBadge.textContent = String(metricas.role || "usuario").toLowerCase() === "admin" ? "Administrador" : "Usuario";
       const totalUsuarios = numero(global.usuarios_registrados);
       const totalAvisos = numero(global.publicaciones_totales);
       const activos = numero(global.publicaciones_activas);
