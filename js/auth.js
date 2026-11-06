@@ -5,6 +5,8 @@ const EL_BARRIO_SUPABASE_KEY = 'sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN';
 
 let presenciaVisibilityHandler = null;
 let presenciaActivityHandler = null;
+let presenciaIntervalo = null;
+let ultimaPresenciaRegistrada = 0;
 let moderacionChannel = null;
 let moderacionIniciada = false;
 let votarAvisoOriginal = null;
@@ -189,19 +191,46 @@ async function cerrarPresencia() {
 }
 
 function detenerPresencia() {
+  if (presenciaIntervalo) {
+    clearInterval(presenciaIntervalo);
+    presenciaIntervalo = null;
+  }
   if (presenciaVisibilityHandler) {
     document.removeEventListener('visibilitychange', presenciaVisibilityHandler);
     presenciaVisibilityHandler = null;
   }
   if (presenciaActivityHandler) {
-    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento => document.removeEventListener(evento, presenciaActivityHandler, true));
+    ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento =>
+      document.removeEventListener(evento, presenciaActivityHandler, true)
+    );
     presenciaActivityHandler = null;
   }
 }
 
 async function iniciarPresencia() {
   detenerPresencia();
-  return await registrarPresencia();
+  const registrarSiCorresponde = async (forzar = false) => {
+    const ahora = Date.now();
+    if (!forzar && ahora - ultimaPresenciaRegistrada < 20000) return;
+    const ok = await registrarPresencia();
+    if (ok) ultimaPresenciaRegistrada = Date.now();
+  };
+
+  await registrarSiCorresponde(true);
+  presenciaIntervalo = window.setInterval(() => {
+    registrarSiCorresponde(true);
+  }, 45000);
+
+  presenciaActivityHandler = () => registrarSiCorresponde(false);
+  ['pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(evento =>
+    document.addEventListener(evento, presenciaActivityHandler, { capture: true, passive: true })
+  );
+
+  presenciaVisibilityHandler = () => {
+    if (!document.hidden) registrarSiCorresponde(true);
+  };
+  document.addEventListener('visibilitychange', presenciaVisibilityHandler);
+  return true;
 }
 
 async function construirUsuario(client, user) {
