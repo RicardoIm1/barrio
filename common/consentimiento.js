@@ -5,7 +5,7 @@
 (() => {
   "use strict";
   const KEY = "elbarrio_cookie_consent";
-  const VERSION = 1;
+  const VERSION = 2;
   const GA_ID = "G-B1D6RRTT0C";
   const GA_DISABLE_KEY = "ga-disable-" + GA_ID;
   const CONSENT_DENIED = {
