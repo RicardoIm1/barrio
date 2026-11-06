@@ -1156,17 +1156,12 @@ function renderizarTablaAvisos() {
         const n = Number(valor);
         return Number.isFinite(n) && n >= 0 ? n : 0;
       };
-      const vistas = numeroEstadistica(aviso.vistas ?? aviso.visitas);
-      const comentarios = numeroEstadistica(
-        aviso.comentarios_count ?? aviso.total_comentarios,
-      );
-      const votosPos = numeroEstadistica(
-        aviso.votos_positivos ?? aviso.likes ?? aviso.puntuacion_positiva,
-      );
-      const votosNeg = numeroEstadistica(
-        aviso.votos_negativos ?? aviso.dislikes ?? aviso.puntuacion_negativa,
-      );
-      const totalInteracciones = comentarios + votosPos + votosNeg;
+      const metricasOk = aviso.metricas_disponibles !== false;
+      const vistas = metricasOk ? numeroEstadistica(aviso.vistas ?? aviso.visitas) : "—";
+      const comentarios = metricasOk ? numeroEstadistica(aviso.comentarios_count ?? aviso.total_comentarios) : "—";
+      const votosPos = metricasOk ? numeroEstadistica(aviso.votos_positivos ?? aviso.likes ?? aviso.puntuacion_positiva) : "—";
+      const votosNeg = metricasOk ? numeroEstadistica(aviso.votos_negativos ?? aviso.dislikes ?? aviso.puntuacion_negativa) : "—";
+      const totalInteracciones = metricasOk ? comentarios + votosPos + votosNeg : "—";
       let fechaFormateada = "Sin fecha";
       if (aviso.created_at) {
         try {
@@ -1510,7 +1505,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       '<div class="fu-admin-actions"><button type="submit">Guardar perfil</button><span id="fu-admin-status" role="status" aria-live="polite"></span></div></form></section>'+
       '<section class="fu-section"><h3>Estadísticas de sus publicaciones</h3><div class="fu-stats">'+
       '<div class="fu-stat"><span>Publicaciones</span><strong id="fu-total">…</strong></div><div class="fu-stat"><span>Avisos activos</span><strong id="fu-activos">…</strong></div><div class="fu-stat"><span>Vistas totales</span><strong id="fu-vistas">…</strong></div>'+
-      '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
+      '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Comentarios</span><strong id="fu-comentarios">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
       '<div class="fu-box"><h4>Publicaciones de los últimos 30 días</h4><canvas id="fu-chart" class="fu-chart"></canvas></div>'+
       '<div class="fu-box"><h4>Rendimiento por aviso</h4><div class="fu-table-wrap"><table class="fu-table"><thead><tr><th>Aviso</th><th>Estado</th><th class="fu-num">Vistas</th><th class="fu-num">👍</th><th class="fu-num">👎</th><th class="fu-num">Interacciones</th></tr></thead><tbody id="fu-avisos"><tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr></tbody></table></div></div></section></section>';
     document.body.appendChild(modal);
@@ -1597,7 +1592,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
         document.getElementById("fu-admin-status").textContent="";
       }
     }
-    ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="…";});
+    ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-comentarios","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="…";});
     document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr>';
     modal.style.display="flex";document.body.style.overflow="hidden";
     try {
@@ -1605,7 +1600,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       if(!client)throw new Error("No está disponible la conexión con Supabase.");
       const metricas = await obtenerMetricasPublicacionesUsuario(client, id);
       const lista = metricas.lista;
-      [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
+      [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-comentarios",metricas.comentarios],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
       dibujarGrafica(lista);
       const tbody=document.getElementById("fu-avisos");
       if(!lista.length) tbody.innerHTML='<tr><td colspan="6" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
