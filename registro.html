@@ -291,8 +291,6 @@
     </div>
   </main>
 
-  <div id="footer-container"></div>
-
   <script src="/js/api.js"></script>
   <script src="/js/auth.js"></script>
   <script src="/js/ui.js?v=20261105-2"></script>
@@ -313,47 +311,12 @@
         });
       }
 
-      // Header compartido: conserva el mismo comportamiento de sesión y menú en todas las páginas.
+      // Header compartido: misma identidad visual, sesión y menú que el resto del sitio.
       if (window.UI?.cargarHeader) {
         window.UI.cargarHeader();
       } else {
-        fetch('/common/header.html?v=20261105-2')
-          .then(res => {
-            if (!res.ok) throw new Error('Header no encontrado');
-            return res.text();
-          })
-          .then(html => {
-            const headerContainer = document.getElementById('header-container');
-            headerContainer.innerHTML = html;
-            if (window.UI?.inicializarMenuMovil) window.UI.inicializarMenuMovil(headerContainer);
-          })
-          .catch(err => console.error('Error cargando header:', err));
+        console.error('No se pudo inicializar el header compartido: js/ui.js no está disponible.');
       }
-
-      // Footer 
-      fetch('/common/footer.html')
-        .then(response => {
-          if (!response.ok) throw new Error('Footer no encontrado');
-          return response.text();
-        })
-        .then(data => {
-          const footerContainer = document.getElementById('footer-container');
-          if (footerContainer) {
-            footerContainer.innerHTML = data;
-            const yearSpan = footerContainer.querySelector('#copyright-year');
-            if (yearSpan) {
-              yearSpan.innerHTML = `&copy; ${new Date().getFullYear()} - Barrio. Todos los derechos reservados.`;
-            }
-            const scripts = footerContainer.querySelectorAll('script');
-            scripts.forEach(oldScript => {
-              const newScript = document.createElement('script');
-              newScript.textContent = oldScript.textContent;
-              document.body.appendChild(newScript);
-              oldScript.remove();
-            });
-          }
-        })
-        .catch(error => console.error('Error cargando el footer:', error));
 
       // Configurar el formulario de registro
       const oficioSelect = document.getElementById('oficio');
