@@ -87,7 +87,7 @@
     function obtenerUsuario() {
         try { const raw = localStorage.getItem('usuario'); return raw ? JSON.parse(raw) : null; } catch (_) { return null; }
     }
-    function esUsuarioNormal(usuario) { return !!usuario && usuario.rol !== 'admin' && usuario.rol !== 'moderador'; }
+    function esUsuarioNormal(usuario) { return !!usuario && !!usuario.id; }
 
     function instalarEstilos() {
         if (document.getElementById('estilos-estadisticas-usuario')) return;
@@ -136,7 +136,7 @@
                 <div class="eu-card"><span class="eu-label">Interacciones</span><strong class="eu-value" id="eu-interacciones">0</strong></div>
             </div>
             <div class="eu-panel"><h3>Publicaciones de los últimos 30 días</h3><div class="eu-chart-wrap"><canvas id="eu-chart"></canvas></div></div>
-            <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th>Aviso</th><th>Estado</th><th class="eu-num">Vistas</th><th class="eu-num">👍</th><th class="eu-num">👎</th><th class="eu-num">Interacciones</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="6" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
+            <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th>Aviso</th><th>Estado</th><th class="eu-num">Vistas</th><th class="eu-num">👍</th><th class="eu-num">👎</th><th class="eu-num">Comentarios</th><th class="eu-num">Interacciones</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="7" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
         footer.appendChild(section);
         return section;
     }
@@ -158,18 +158,49 @@
     }
 
     async function cargar() {
-        const usuario=obtenerUsuario();if(!esUsuarioNormal(usuario)||!usuario.id)return;
-        instalarEstilos();const footer=document.querySelector('.dashboard-footer');if(!footer)return;crearContenedor(usuario,footer);
+        const usuario=obtenerUsuario();
+        if(!esUsuarioNormal(usuario))return;
+        instalarEstilos();
+        const footer=document.querySelector('.dashboard-footer');
+        if(!footer)return;
+        crearContenedor(usuario,footer);
         try {
-            const client=await (typeof window.getSupabaseClient==='function'?window.getSupabaseClient():window.supabaseClient);if(!client)throw new Error('Cliente Supabase no disponible');
-            const {data:avisos,error}=await client.from('avisos').select('id,titulo,status,created_at,vistas').eq('created_by',usuario.id).neq('status','eliminado').order('created_at',{ascending:false});if(error)throw error;
-            const lista=avisos||[];let positivos=0,negativos=0;const votosPorAviso=new Map();
-            if(lista.length){const ids=lista.map(a=>a.id);const {data:votos,error:errorVotos}=await client.from('votos').select('aviso_id,tipo').in('aviso_id',ids);if(!errorVotos){(votos||[]).forEach(v=>{const actual=votosPorAviso.get(v.aviso_id)||{positivos:0,negativos:0};if(v.tipo==='positivo'){actual.positivos++;positivos++;}if(v.tipo==='negativo'){actual.negativos++;negativos++;}votosPorAviso.set(v.aviso_id,actual);});}else console.warn('No se pudieron cargar los votos de los avisos propios:',errorVotos);}
-            const vistas=lista.reduce((sum,a)=>sum+numero(a.vistas),0),activos=lista.filter(a=>a.status==='activo').length,interacciones=positivos+negativos;
-            document.getElementById('eu-total-avisos').textContent=formatoNumero(lista.length);document.getElementById('eu-activos').textContent=formatoNumero(activos);document.getElementById('eu-vistas').textContent=formatoNumero(vistas);document.getElementById('eu-positivos').textContent=formatoNumero(positivos);document.getElementById('eu-negativos').textContent=formatoNumero(negativos);document.getElementById('eu-interacciones').textContent=formatoNumero(interacciones);
-            dibujarGrafica(lista);const tbody=document.getElementById('eu-tabla-cuerpo');if(!lista.length){tbody.innerHTML='<tr><td colspan="6" class="eu-vacio">Todavía no tienes avisos publicados.</td></tr>';return;}
-            tbody.innerHTML=lista.map(a=>{const v=votosPorAviso.get(a.id)||{positivos:0,negativos:0},vistasAviso=numero(a.vistas),inter=v.positivos+v.negativos,estado=a.status||'pendiente',textoEstado=estado==='activo'?'Activo':estado==='rechazado'?'Rechazado':'Pendiente';return `<tr><td><strong>${escapar(a.titulo||'Sin título')}</strong></td><td><span class="eu-estado ${estado}">${textoEstado}</span></td><td class="eu-num">${formatoNumero(vistasAviso)}</td><td class="eu-num">${formatoNumero(v.positivos)}</td><td class="eu-num">${formatoNumero(v.negativos)}</td><td class="eu-num">${formatoNumero(inter)}</td></tr>`;}).join('');
-        } catch(error){console.error('❌ Estadísticas personales:',error);const tbody=document.getElementById('eu-tabla-cuerpo');if(tbody)tbody.innerHTML='<tr><td colspan="6" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';}
+            const client=await (typeof window.getSupabaseClient==='function'?window.getSupabaseClient():window.supabaseClient);
+            if(!client)throw new Error('Cliente Supabase no disponible');
+            const {data,error}=await client.rpc('obtener_metricas_dashboard');
+            if(error)throw error;
+            const metricas=typeof data==='string'?JSON.parse(data):(data||{});
+            const personal=metricas.personal||{};
+            const lista=Array.isArray(personal.avisos)?personal.avisos:[];
+            const positivos=numero(personal.likes);
+            const negativos=numero(personal.dislikes);
+            const comentarios=numero(personal.comentarios);
+            const vistas=numero(personal.vistas);
+            const interacciones=positivos+negativos+comentarios;
+            document.getElementById('eu-total-avisos').textContent=formatoNumero(personal.publicaciones);
+            document.getElementById('eu-activos').textContent=formatoNumero(personal.publicaciones_activas);
+            document.getElementById('eu-vistas').textContent=formatoNumero(vistas);
+            document.getElementById('eu-positivos').textContent=formatoNumero(positivos);
+            document.getElementById('eu-negativos').textContent=formatoNumero(negativos);
+            document.getElementById('eu-interacciones').textContent=formatoNumero(interacciones);
+            dibujarGrafica(lista);
+            const tbody=document.getElementById('eu-tabla-cuerpo');
+            if(!lista.length){
+                tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">Todavía no tienes publicaciones.</td></tr>';
+                return;
+            }
+            tbody.innerHTML=lista.map(a=>{
+                const likes=numero(a.likes),dislikes=numero(a.dislikes),comentariosAviso=numero(a.comentarios);
+                const inter=likes+dislikes+comentariosAviso;
+                const estado=a.status||'pendiente';
+                const textoEstado=estado==='activo'?'Activo':estado==='rechazado'?'Rechazado':'Pendiente';
+                return `<tr><td><strong>${escapar(a.titulo||'Sin título')}</strong></td><td><span class="eu-estado ${estado}">${textoEstado}</span></td><td class="eu-num">${formatoNumero(a.vistas)}</td><td class="eu-num">${formatoNumero(likes)}</td><td class="eu-num">${formatoNumero(dislikes)}</td><td class="eu-num">${formatoNumero(comentariosAviso)}</td><td class="eu-num">${formatoNumero(inter)}</td></tr>`;
+            }).join('');
+        } catch(error){
+            console.error('❌ Estadísticas personales:',error);
+            const tbody=document.getElementById('eu-tabla-cuerpo');
+            if(tbody)tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
+        }
     }
     function iniciar(){if(!document.body)return;const usuario=obtenerUsuario();if(!esUsuarioNormal(usuario))return;setTimeout(cargar,500);}
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar,{once:true});else iniciar();
