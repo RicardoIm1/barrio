@@ -582,42 +582,4 @@ API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
 })();
 
 
-(function iniciarMetricasDeTrafico() {
-  if (window.__elBarrioMetricasTrafico) return;
-  window.__elBarrioMetricasTrafico = true;
-  function sesion() {
-    try {
-      let id = sessionStorage.getItem('elbarrio_session_id');
-      if (!id) {
-        id = typeof crypto.randomUUID === 'function'
-          ? crypto.randomUUID()
-          : ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-              (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-        sessionStorage.setItem('elbarrio_session_id', id);
-      }
-      return id;
-    } catch (_) {
-      return typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : String(Date.now()) + '-' + String(Math.random());
-    }
-  }
-  async function registrar() {
-    try {
-      const client = await getSupabaseClient();
-      const { error } = await client.rpc('registrar_visita_sitio', {
-        p_pagina: location.pathname || '/',
-        p_session_id: sesion()
-      });
-      if (error) throw error;
-    } catch (error) {
-      console.warn('No se pudo registrar la visita:', error?.message || error);
-    }
-  }
-  const iniciar = () => {
-    if ('requestIdleCallback' in window) requestIdleCallback(registrar, { timeout: 2500 });
-    else setTimeout(registrar, 800);
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar, { once: true });
-  else iniciar();
-})();
-
 console.log('✅ API de El Barrio: Supabase exclusivo, sin Google Apps Script');
