@@ -133,6 +133,7 @@
                 <div class="eu-card"><span class="eu-label">Vistas totales</span><strong class="eu-value" id="eu-vistas">0</strong></div>
                 <div class="eu-card"><span class="eu-label">Votos positivos</span><strong class="eu-value" id="eu-positivos">0</strong></div>
                 <div class="eu-card"><span class="eu-label">Votos negativos</span><strong class="eu-value" id="eu-negativos">0</strong></div>
+                <div class="eu-card"><span class="eu-label">Comentarios</span><strong class="eu-value" id="eu-comentarios">0</strong></div>
                 <div class="eu-card"><span class="eu-label">Interacciones</span><strong class="eu-value" id="eu-interacciones">0</strong></div>
             </div>
             <div class="eu-panel"><h3>Publicaciones de los últimos 30 días</h3><div class="eu-chart-wrap"><canvas id="eu-chart"></canvas></div></div>
@@ -182,6 +183,7 @@
             document.getElementById('eu-vistas').textContent=formatoNumero(vistas);
             document.getElementById('eu-positivos').textContent=formatoNumero(positivos);
             document.getElementById('eu-negativos').textContent=formatoNumero(negativos);
+            document.getElementById('eu-comentarios').textContent=formatoNumero(comentarios);
             document.getElementById('eu-interacciones').textContent=formatoNumero(interacciones);
             dibujarGrafica(lista);
             const tbody=document.getElementById('eu-tabla-cuerpo');
