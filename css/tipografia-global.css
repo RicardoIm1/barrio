@@ -9,9 +9,7 @@
 }
 
 /* Texto general, controles, contenido editorial y tablas */
-html,
-body,
-body *:not(i):not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fad):not(.fat):not([class*="fa-"]) {
+:where(body, body *:not(i):not(.fa):not(.fas):not(.far):not(.fab):not(.fal):not(.fad):not(.fat):not([class*="fa-"])) {
   font-family: var(--barrio-font-body) !important;
 }
 
