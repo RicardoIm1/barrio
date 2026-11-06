@@ -743,10 +743,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     }
     cargando = true;
     try {
-      const client = await getSupabaseClient();
-      const { data, error } = await client.rpc("obtener_metricas_dashboard");
-      if (error) throw error;
-      const metricas = typeof data === "string" ? JSON.parse(data) : (data || {});
+      const metricas = await window.obtenerMetricasDashboard({ force: true });
       const global = metricas.global || {};
       const series = metricas.series || {};
       const categorias = Array.isArray(metricas.categorias) ? metricas.categorias : [];
@@ -811,10 +808,16 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       console.error("No se pudieron cargar las métricas unificadas:", error);
       const badge = document.getElementById("onlineCount");
       if (badge) badge.textContent = "No disponible";
-      ["totalAvisos","avisosActivos","avisosPendientes","totalVisitas","totalInteracciones","totalUsuarios","totalSesionesHoy","totalPaginasHoy"].forEach(id => {
+      ["totalAvisos","avisosActivos","avisosPendientes","totalVisitas","totalInteracciones","totalUsuarios","totalUsuariosCard","totalSesionesHoy","totalPaginasHoy","totalCategorias"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.textContent = "No disponible";
       });
+      ["usuariosStats","avisosStats","conexionesStats","chartStatsMini"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "No disponible";
+      });
+      const fechaEstado = document.getElementById("fechaActual");
+      if (fechaEstado) fechaEstado.textContent = "No se pudo actualizar la medición";
     } finally {
       cargando = false;
     }
@@ -825,7 +828,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     if (!contenedor) return;
     const iniciar = () => {
       if (!document.querySelector(".dashboard-footer")) return;
-      if (!timer) timer = setInterval(cargar, 15000);
+      if (!timer) timer = setInterval(cargar, 30000);
       cargar();
     };
     const obs = new MutationObserver(() => {
