@@ -1435,7 +1435,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 if (typeof UI !== "undefined" && UI.cargarHeader) UI.cargarHeader();
-fetch("/common/footer-admin.html?v=20261106-2")
+fetch("/common/footer-admin.html?v=20261106-3")
   .then((response) => (response.ok ? response.text() : Promise.reject()))
   .then((data) => {
     const footerContainer = document.getElementById("footer-container");
