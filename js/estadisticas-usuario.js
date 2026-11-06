@@ -202,6 +202,21 @@
             if(tbody)tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
         }
     }
-    function iniciar(){if(!document.body)return;const usuario=obtenerUsuario();if(!esUsuarioNormal(usuario))return;setTimeout(cargar,500);}
+    function iniciar() {
+        const usuario = obtenerUsuario();
+        if (!document.body || !esUsuarioNormal(usuario)) return;
+        instalarEstilos();
+        const intentar = () => {
+            if (!document.querySelector('.dashboard-footer')) return false;
+            cargar();
+            return true;
+        };
+        if (intentar()) return;
+        const observador = new MutationObserver(() => {
+            if (intentar()) observador.disconnect();
+        });
+        observador.observe(document.body, { childList: true, subtree: true });
+        window.setTimeout(() => observador.disconnect(), 15000);
+    }
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',iniciar,{once:true});else iniciar();
 })();
