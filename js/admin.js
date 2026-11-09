@@ -274,6 +274,83 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
   else instalar();
 })();
 
+/* Actualización local de la fila: evita recargar la página o reconstruir toda la tabla. */
+function animarCambioAdmin(elemento) {
+  if (!elemento) return;
+  elemento.classList.remove("eb-record-update");
+  void elemento.offsetWidth;
+  elemento.classList.add("eb-record-update");
+  setTimeout(() => elemento.classList.remove("eb-record-update"), 850);
+}
+
+function actualizarFilaAvisoAdmin(aviso) {
+  if (!aviso?.id) return false;
+  const fila = Array.from(document.querySelectorAll("#tabla-avisos-cuerpo tr[data-id]"))
+    .find((nodo) => String(nodo.dataset.id) === String(aviso.id));
+  if (!fila) return false;
+
+  const imagen = fila.querySelector('td[data-label="Imagen"]');
+  if (imagen && Object.prototype.hasOwnProperty.call(aviso, "imagen_url")) {
+    if (aviso.imagen_url) {
+      const img = document.createElement("img");
+      img.src = aviso.imagen_url;
+      img.alt = "Imagen del aviso";
+      img.loading = "lazy";
+      img.style.cssText = "width:40px;height:40px;object-fit:cover;border-radius:4px;";
+      img.onerror = () => { img.style.display = "none"; };
+      imagen.replaceChildren(img);
+    } else {
+      imagen.textContent = "📷";
+    }
+  }
+
+  const titulo = fila.querySelector('td[data-label="Título"] strong');
+  if (titulo && Object.prototype.hasOwnProperty.call(aviso, "titulo")) {
+    titulo.textContent = aviso.titulo || "Sin título";
+  }
+
+  const celdaTitulo = fila.querySelector('td[data-label="Título"]');
+  if (celdaTitulo && Object.prototype.hasOwnProperty.call(aviso, "video_url")) {
+    let video = Array.from(celdaTitulo.querySelectorAll("small"))
+      .find((nodo) => nodo.textContent.includes("Video"));
+    if (aviso.video_url && !video) {
+      video = document.createElement("small");
+      video.textContent = "🎥 Video";
+      celdaTitulo.appendChild(video);
+    } else if (!aviso.video_url && video) {
+      video.remove();
+    }
+  }
+
+  const esActivo = (valor) => valor === true || valor === "TRUE" || valor === "true" || valor === 1 || valor === "1";
+  const idSeguro = JSON.stringify(String(aviso.id));
+  const urgente = Object.prototype.hasOwnProperty.call(aviso, "urgente") ? esActivo(aviso.urgente) : null;
+  const destacado = Object.prototype.hasOwnProperty.call(aviso, "destacado") ? esActivo(aviso.destacado) : null;
+
+  const botonUrgente = Array.from(fila.querySelectorAll("button"))
+    .find((boton) => (boton.getAttribute("onclick") || "").includes("cambiarUrgente("));
+  if (botonUrgente && urgente !== null) {
+    const etiqueta = urgente ? "Quitar urgente" : "Marcar urgente";
+    botonUrgente.classList.toggle("accion-activa", urgente);
+    botonUrgente.title = etiqueta;
+    botonUrgente.setAttribute("aria-label", etiqueta);
+    botonUrgente.setAttribute("onclick", "event.stopPropagation(); cambiarUrgente(" + idSeguro + ", " + (!urgente) + ")");
+  }
+
+  const botonDestacado = Array.from(fila.querySelectorAll("button"))
+    .find((boton) => (boton.getAttribute("onclick") || "").includes("cambiarDestacado("));
+  if (botonDestacado && destacado !== null) {
+    const etiqueta = destacado ? "Quitar destacado" : "Destacar aviso";
+    botonDestacado.classList.toggle("accion-activa", destacado);
+    botonDestacado.title = etiqueta;
+    botonDestacado.setAttribute("aria-label", etiqueta);
+    botonDestacado.setAttribute("onclick", "event.stopPropagation(); cambiarDestacado(" + idSeguro + ", " + (!destacado) + ")");
+  }
+
+  animarCambioAdmin(fila);
+  return true;
+}
+
 (function inicializarCreacionAviso() {
   const categoriasPublicables = [
     ["urgente","⚠️ URGENTE"],["escuelas","🏫 ESCUELAS"],["servicios","🛠️ SERVICIOS"],
@@ -365,10 +442,18 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
       console.log("✅ CREAR AVISO: registro creado:", resultado.data);
       // El aviso ya quedó guardado: sus archivos dejan de ser provisionales.
       window.__elBarrioMultimediaPendienteNuevo = [];
-      notificarAdmin("✅ Aviso publicado correctamente");
+      const nuevoAviso = resultado.data;
+      if (nuevoAviso?.id && Array.isArray(todosLosAvisos)) {
+        const existente = todosLosAvisos.findIndex((aviso) => String(aviso.id) === String(nuevoAviso.id));
+        if (existente >= 0) todosLosAvisos[existente] = { ...todosLosAvisos[existente], ...nuevoAviso };
+        else todosLosAvisos.unshift(nuevoAviso);
+        if (typeof renderizarTablaAvisos === "function") renderizarTablaAvisos();
+      } else if (typeof cargarAvisosParaAdmin === "function") {
+        await cargarAvisosParaAdmin();
+      }
       const form = document.getElementById("form-aviso");
       if (form) form.reset();
-      window.location.reload();
+      notificarAdmin("✅ Aviso publicado correctamente");
     } catch (error) {
       console.error("❌ CREAR AVISO: error:", error);
       notificarAdmin("❌ No se pudo publicar el aviso: " + (error?.message || error));
@@ -438,10 +523,17 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
             throw new Error(
               resultado?.error || "No se pudo actualizar el aviso.",
             );
-          notificarAdmin("✅ Aviso actualizado correctamente");
+          const actualizado = resultado.data || { id, ...datos };
+          const indice = Array.isArray(todosLosAvisos)
+            ? todosLosAvisos.findIndex((aviso) => String(aviso.id) === String(id))
+            : -1;
+          if (indice >= 0) {
+            todosLosAvisos[indice] = { ...todosLosAvisos[indice], ...actualizado };
+          }
+          actualizarFilaAvisoAdmin(actualizado);
           const modal = document.getElementById("modal-editar");
           if (modal) modal.style.display = "none";
-          location.reload();
+          notificarAdmin("✅ Aviso actualizado correctamente");
         } catch (error) {
           console.error("❌ ACTUALIZAR AVISO:", error);
           notificarAdmin("❌ Error al actualizar: " + (error?.message || error));
