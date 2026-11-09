@@ -515,7 +515,11 @@ class API {
       telefono: String(datos?.telefono || '').trim(),
       direccion: String(datos?.direccion || '').trim(),
       categorias: String(datos?.categorias || '').trim(),
-      rol: 'usuario'
+      rol: 'usuario',
+      privacy_notice_ack: datos?.privacyNoticeAck === true,
+      privacy_notice_version: String(datos?.privacyNoticeVersion || ''),
+      commitment_accept: datos?.commitmentAccept === true,
+      commitment_version: String(datos?.commitmentVersion || '')
     };
 
     const { data, error } = await client.auth.signUp({ email, password, options: { data: metadata } });
