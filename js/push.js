@@ -87,22 +87,38 @@
     }
 
     const client = await obtenerCliente();
+    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    const authenticatedUserId = sessionData?.session?.user?.id;
+
+    if (sessionError || !accessToken || !authenticatedUserId) {
+      throw sessionError || new Error("No hay una sesión autenticada para registrar las notificaciones");
+    }
+    if (String(authenticatedUserId) !== String(usuarioId)) {
+      throw new Error("La cuenta activa cambió. Vuelve a iniciar sesión para sincronizar las notificaciones.");
+    }
 
     const payload = {
-      usuario_id: usuarioId,
       endpoint: subscription.endpoint,
       p256dh: bufferABase64(keys.p256dh),
       auth: bufferABase64(keys.auth),
       user_agent: navigator.userAgent,
-      activo: true,
-      updated_at: new Date().toISOString(),
     };
 
-    const { error } = await client
-      .from("push_subscriptions")
-      .upsert(payload, { onConflict: "usuario_id,endpoint" });
+    const response = await fetch("https://gnjaumpjerbbwlkcgxqa.supabase.co/functions/v1/register-push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_x01F_xzyh5b-sZdwhKh6FQ_OzQVxMpN",
+        "Authorization": "Bearer " + accessToken,
+      },
+      body: JSON.stringify(payload),
+    });
 
-    if (error) throw error;
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.error || "No se pudo asociar este navegador a tu cuenta");
+    }
 
     return true;
   }
