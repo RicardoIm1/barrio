@@ -6,7 +6,7 @@
 
   const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const duration = reduceMotion ? 0 : 180;
-  const recordSelector = '.aviso-card, .tarjeta-moderna, .mas-aviso-item, .comment-item, [data-record-id], tr[data-id]';
+  const recordSelector = '.aviso-card, .tarjeta-moderna, .mas-aviso-item, .comment-item, .aviso-paper, #aviso-container, [data-record-id], tr[data-id]';
   let pendingAction = null;
   let pendingTimer = null;
 
