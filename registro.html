@@ -370,10 +370,15 @@
         </div>
 
         <div class="checkbox-acuerdo">
-          <input type="checkbox" id="acepto">
-          <label>
-            Acepto el <strong><a href="/confianza.html" target="_blank">Compromiso de Confianza
-                Vecinal</a></strong>
+          <input type="checkbox" id="aceptoPrivacidad" required>
+          <label for="aceptoPrivacidad">
+            Confirmo que tuve a mi disposición y leí el <strong><a href="/privacidad.html" target="_blank" rel="noopener">Aviso de Privacidad Integral</a></strong>.
+          </label>
+        </div>
+        <div class="checkbox-acuerdo">
+          <input type="checkbox" id="acepto" required>
+          <label for="acepto">
+            Acepto el <strong><a href="/confianza.html" target="_blank" rel="noopener">Compromiso de Confianza Vecinal</a></strong>.
           </label>
         </div>
 
@@ -384,8 +389,8 @@
 
   <script src="/js/api.js?v=20261106-6"></script>
   <script src="/common/header-atmosfera.js?v=20261109-4"></script>
-  <script src="/js/ui.js?v=20261105-2"></script>
-  <script src="/js/auth.js?v=20261106-2"></script>
+  <script src="/js/ui.js?v=20261109-privacy1"></script>
+  <script src="/js/auth.js?v=20261109-privacy1"></script>
 
   <script>
     // Cargar header y footer
@@ -457,6 +462,11 @@
             return;
           }
 
+          if (!document.getElementById('aceptoPrivacidad').checked) {
+            mostrarMensaje('Debes confirmar que tuviste a disposición el Aviso de Privacidad Integral');
+            return;
+          }
+
           if (!document.getElementById('acepto').checked) {
             mostrarMensaje('Debes aceptar el Compromiso de Confianza Vecinal');
             return;
@@ -473,7 +483,11 @@
               telefono: telefono,
               rol: 'usuario',
               categorias: oficio,
-              direccion: direccion
+              direccion: direccion,
+              privacyNoticeAck: true,
+              privacyNoticeVersion: '1.0',
+              commitmentAccept: true,
+              commitmentVersion: '1.0'
             });
 
             // ✅ Nuevo código
