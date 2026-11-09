@@ -1,8 +1,6 @@
 /* Atmósfera horaria compartida para el encabezado de El Barrio. */
 (function () {
   function obtenerCielo(fecha) {
-    // El panel administrativo conserva siempre la variante diurna.
-    if (window.location.pathname === "/admin.html" || window.location.pathname.endsWith("/admin.html")) return "dia";
     const hora = fecha.getHours() + fecha.getMinutes() / 60;
     if (hora >= 6 && hora < 9) return "amanecer";
     if (hora >= 9 && hora < 17) return "dia";
@@ -18,12 +16,6 @@
     const actualizar = function () {
       const cielo = obtenerCielo(new Date());
       if (header.dataset.cielo !== cielo) header.dataset.cielo = cielo;
-      const esAdmin = window.location.pathname === "/admin.html" || window.location.pathname.endsWith("/admin.html");
-      if (esAdmin) {
-        header.dataset.adminDay = "true";
-      } else {
-        delete header.dataset.adminDay;
-      }
       header.setAttribute("aria-label", "Encabezado de El Barrio");
     };
 
