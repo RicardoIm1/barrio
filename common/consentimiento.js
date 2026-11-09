@@ -36,7 +36,7 @@
       window[GA_DISABLE_KEY] = false;
       window.gtag("consent", "update", CONSENT_GRANTED);
       window.gtag("event", "page_view", {
-        page_location: window.location.href,
+        page_location: window.location.origin + window.location.pathname,
         page_title: document.title
       });
       return;
@@ -59,7 +59,7 @@
         window[GA_DISABLE_KEY] = false;
         window.gtag("consent", "update", CONSENT_GRANTED);
         window.gtag("event", "page_view", {
-          page_location: window.location.href,
+          page_location: window.location.origin + window.location.pathname,
           page_title: document.title
         });
       } else {
