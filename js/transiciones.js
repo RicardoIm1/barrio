@@ -10,6 +10,26 @@
   let pendingAction = null;
   let pendingTimer = null;
 
+  function ensureTransitionStyles() {
+    if (document.querySelector('link[href*="/css/estilo.css"]') || document.getElementById('eb-transition-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'eb-transition-styles';
+    style.textContent = `
+      @keyframes eb-page-enter { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+      @keyframes eb-page-leave { from { opacity:1; } to { opacity:0; } }
+      @keyframes eb-record-enter { from { opacity:0; transform:translateY(12px) scale(.992); } to { opacity:1; transform:translateY(0) scale(1); } }
+      @keyframes eb-record-update { 0% { box-shadow:0 0 0 0 rgba(212,160,67,0); } 35% { box-shadow:0 0 0 3px rgba(212,160,67,.22); } 100% { box-shadow:0 0 0 0 rgba(212,160,67,0); } }
+      @keyframes eb-screen-enter { from { opacity:.55; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+      body.eb-page-enter { animation:eb-page-enter .34s cubic-bezier(.2,.65,.3,1) both; }
+      body.eb-page-leave { animation:eb-page-leave .18s ease both; pointer-events:none; }
+      .eb-record-enter { animation:eb-record-enter .38s cubic-bezier(.2,.65,.3,1) both; animation-delay:var(--eb-enter-delay,0ms); }
+      .eb-record-update { animation:eb-record-update .72s ease-out both; }
+      .eb-screen-enter { animation:eb-screen-enter .26s ease-out both; }
+      @media (prefers-reduced-motion:reduce) { body.eb-page-enter,body.eb-page-leave,.eb-record-enter,.eb-record-update,.eb-screen-enter { animation:none!important; transition:none!important; } }
+    `;
+    document.head.appendChild(style);
+  }
+
   function animate(element, className) {
     if (!element || reduceMotion || !element.isConnected) return;
     element.classList.remove(className);
@@ -19,6 +39,7 @@
   }
 
   function beginPage() {
+    ensureTransitionStyles();
     if (reduceMotion) return;
     document.documentElement.classList.add('eb-transitions-enabled');
     document.body.classList.add('eb-page-enter');
