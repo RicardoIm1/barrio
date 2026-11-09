@@ -1022,9 +1022,14 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         if (resultado && resultado.success) {
+          const actualizado = resultado.data || { id, ...datos };
+          const indice = Array.isArray(todosLosAvisos)
+            ? todosLosAvisos.findIndex((aviso) => String(aviso.id) === String(id))
+            : -1;
+          if (indice >= 0) todosLosAvisos[indice] = { ...todosLosAvisos[indice], ...actualizado };
+          actualizarFilaAvisoAdmin(actualizado);
           notificarAdmin("✅ Aviso actualizado correctamente");
           modal.style.display = "none";
-          location.reload();
         } else {
           notificarAdmin("❌ Error: " + (resultado.error || "No se pudo actualizar"));
         }
