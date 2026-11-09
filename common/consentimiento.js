@@ -150,7 +150,7 @@
           <button class="eb-config" type="button" data-eb-action="configure">Configurar</button>
           <button class="eb-config" type="button" data-eb-action="save" hidden>Guardar selección</button>
           <a class="eb-privacy-link" href="/cookies.html">Política de cookies</a>
-          <a class="eb-privacy-link" href="/confianza.html">Privacidad</a>
+          <a class="eb-privacy-link" href="/privacidad.html">Aviso de privacidad</a>
         </div>
       </section>
       <button class="eb-privacy-manage" type="button" data-eb-action="manage">Privacidad</button>
