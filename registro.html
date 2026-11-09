@@ -12,7 +12,6 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/estilo.css">
   <link rel="stylesheet" href="/css/index2.css?v=20261106-4">
-  <script src="/common/header-atmosfera.js?v=20261106-3" defer></script>
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
@@ -196,14 +195,116 @@
         font-size: 1.4rem;
       }
     }
+
+    /* La página de registro comparte el mismo marco y alineación que login.html. */
+    html, body { min-height: 100%; }
+    body.registro-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    body.registro-page #header-container {
+      flex: 0 0 auto;
+      width: 100%;
+    }
+    body.registro-page .registro-main {
+      flex: 1 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: clamp(1rem, 2.5vh, 2rem) 1rem;
+      box-sizing: border-box;
+    }
+    body.registro-page .registro-container {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+    }
+    body.registro-page .registro-content {
+      width: 100%;
+      margin: 0;
+      padding: 2rem;
+      background: #fff;
+      border: 1px solid var(--color-borde);
+      border-radius: 1rem;
+      box-sizing: border-box;
+    }
+    body.registro-page .campo input,
+    body.registro-page .campo select,
+    body.registro-page .campo textarea {
+      box-sizing: border-box;
+      min-height: 2.9rem;
+    }
+    body.registro-page .registro-password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    body.registro-page .registro-password-wrapper input {
+      flex: 1;
+      padding-right: 3rem;
+    }
+    body.registro-page .toggle-password {
+      position: absolute;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #666;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color .2s ease;
+    }
+    body.registro-page .toggle-password:hover {
+      color: var(--color-acento, #3498db);
+    }
+    body.registro-page .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      min-height: 3.1rem;
+      padding: .95rem 1rem;
+      border: 0;
+      border-radius: .85rem;
+      background: linear-gradient(135deg, var(--color-verde), #1e4620);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(43,122,43,.18);
+      transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+    body.registro-page .btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--color-verde), #1e4620);
+      box-shadow: 0 14px 30px rgba(43,122,43,.28);
+    }
+    body.registro-page .btn:active { transform: translateY(0); }
+    body.registro-page .btn:disabled {
+      opacity: .7;
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+    }
+    @media (max-width: 600px) {
+      body.registro-page .registro-main { padding: 1rem .75rem; }
+      body.registro-page .registro-content { padding: 1.5rem; }
+    }
   </style>
   <link rel="stylesheet" href="/css/tipografia-global.css?v=20261106-1">
 </head>
 
-<body>
+<body class="registro-page">
   <div id="header-container"></div>
 
-  <main class="contenedor">
+  <main class="contenedor registro-main">
     <div class="registro-container">
 
       <div class="registro-content" id="formularioRegistro">
@@ -223,22 +324,9 @@
         <div class="campo">
           <label>Contraseña *</label>
 
-          <div style="position: relative;">
+          <div class="registro-password-wrapper">
             <input type="password" id="password" placeholder="Mínimo 6 caracteres">
-
-            <button type="button" id="togglePassword" style="
-        position:absolute;
-        right:10px;
-        top:50%;
-        transform:translateY(-50%);
-        background:none;
-        border:none;
-        cursor:pointer;
-        font-size:0.85rem;
-        color:#2b7a2b;
-      ">
-              🙉
-            </button>
+            <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">🙉</button>
           </div>
         </div>
 
@@ -294,12 +382,13 @@
   </main>
 
   <script src="/js/api.js?v=20261106-6"></script>
-  <script src="/js/auth.js?v=20261106-2"></script>
+  <script src="/common/header-atmosfera.js?v=20261109-4"></script>
   <script src="/js/ui.js?v=20261105-2"></script>
+  <script src="/js/auth.js?v=20261106-2"></script>
 
   <script>
     // Cargar header y footer
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', async function () {
 
       //hacer visible la contraseña
       const passwordInput = document.getElementById('password');
@@ -315,7 +404,7 @@
 
       // Header compartido: misma identidad visual, sesión y menú que el resto del sitio.
       if (window.UI?.cargarHeader) {
-        window.UI.cargarHeader();
+        await window.UI.cargarHeader();
       } else {
         console.error('No se pudo inicializar el header compartido: js/ui.js no está disponible.');
       }
