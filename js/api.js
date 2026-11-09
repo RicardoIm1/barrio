@@ -518,8 +518,10 @@ class API {
       rol: 'usuario',
       privacy_notice_ack: datos?.privacyNoticeAck === true,
       privacy_notice_version: String(datos?.privacyNoticeVersion || ''),
+      privacy_notice_blob_sha: String(datos?.privacyNoticeBlobSha || ''),
       commitment_accept: datos?.commitmentAccept === true,
-      commitment_version: String(datos?.commitmentVersion || '')
+      commitment_version: String(datos?.commitmentVersion || ''),
+      commitment_blob_sha: String(datos?.commitmentBlobSha || '')
     };
 
     const { data, error } = await client.auth.signUp({ email, password, options: { data: metadata } });
