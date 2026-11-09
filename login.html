@@ -12,7 +12,30 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#2c3e50">
   <style>
-    .login-container { max-width: 500px; margin: 0; }
+    /* Inicio de sesión: header compartido arriba y formulario centrado en el espacio disponible. */
+    html, body { min-height: 100%; }
+    body.login-page {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+    body.login-page #header-container,
+    body.login-page #footer-container { flex: 0 0 auto; width: 100%; }
+    body.login-page .login-main {
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: clamp(1rem, 3vh, 2.25rem) 1rem;
+      box-sizing: border-box;
+    }
+    body.login-page .login-container { width: 100%; max-width: 500px; margin: 0 auto; }
+    body.login-page .login-content { margin-bottom: 0; }
     .login-header { text-align:center; margin-bottom:2rem; padding:2rem 1rem; background:linear-gradient(135deg,#1e4620,#2b7a2b); border-radius:1rem; color:white; }
     .login-header h1 { font-size:1.8rem; margin-bottom:.5rem; }
     .login-header p { font-size:.9rem; opacity:.9; }
@@ -42,9 +65,9 @@
   <link rel="stylesheet" href="/css/tipografia-global.css?v=20261106-1">
 </head>
 
-<body>
+<body class="login-page">
   <div id="header-container"></div>
-  <main class="contenedor-chico">
+  <main class="contenedor-chico login-main">
     <div class="login-container">
       <div class="login-content">
         <div id="mensaje-container"></div>
@@ -71,6 +94,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase.js?v=20260904-1"></script>
   <script src="/js/api.js?v=20261106-6"></script>
+  <script src="/common/header-atmosfera.js?v=20261109-4"></script>
   <script src="/js/ui.js?v=20261105-2"></script>
   <script src="/js/auth.js?v=20261106-2"></script>
 
