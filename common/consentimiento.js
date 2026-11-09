@@ -22,6 +22,16 @@
   };
   let gaScriptRequested = false;
 
+  function safePageReferrer() {
+    try {
+      if (!document.referrer) return "";
+      const referrer = new URL(document.referrer);
+      return referrer.origin + referrer.pathname;
+    } catch (_) {
+      return "";
+    }
+  }
+
   function applyAnalyticsConsent(allowed) {
     window[GA_DISABLE_KEY] = !allowed;
 
@@ -60,6 +70,7 @@
         window.gtag("consent", "update", CONSENT_GRANTED);
         window.gtag("event", "page_view", {
           page_location: window.location.origin + window.location.pathname,
+          page_referrer: safePageReferrer(),
           page_title: document.title
         });
       } else {
