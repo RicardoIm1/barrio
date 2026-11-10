@@ -81,6 +81,7 @@ create table if not exists public.pagos_promocion (
   reportado_at timestamptz not null default now(),
   revisado_at timestamptz,
   revisado_por uuid references public.usuarios(id) on delete restrict,
+  -- Pago verificado: activacion + 7 dias. Pago observado/rechazado: revision + 7 dias.
   comprobante_eliminar_despues_de timestamptz,
   comprobante_eliminado_at timestamptz,
   retencion_suspendida boolean not null default false,
@@ -195,7 +196,8 @@ commit;
 -- 2. La unicidad de promociones vigentes por aviso/tipo queda respaldada por indice
 --    unico parcial; la RPC debe bloquear el aviso y marcar expiraciones antes de insertar.
 -- 3. El indice de pagos permite un solo pago verificado por solicitud; los intentos observados/rechazados se conservan.
--- 4. El plazo de borrado del comprobante verificado se fija al activar: activada_at + interval '7 days'.
--- 4. Regla aprobada: cancelar por RPC solo en pendiente_revision/requiere_ajustes; propietario únicamente, con bloqueo transaccional y bitácora.
--- 5. La RPC cancelar_solicitud_promocion aún debe implementarse y probarse.
--- 6. No crear el bucket privado ni cron/Edge Function en esta migracion.
+-- 4. Comprobante verificado: activada_at + interval '7 days'. Observado/rechazado: revisado_at + interval '7 days'.
+--    La retencion suspendida bloquea el borrado hasta resolver la incidencia.
+-- 5. Regla aprobada: cancelar por RPC solo en pendiente_revision/requiere_ajustes; propietario únicamente, con bloqueo transaccional y bitácora.
+-- 6. La RPC cancelar_solicitud_promocion aún debe implementarse y probarse.
+-- 7. No crear el bucket privado ni cron/Edge Function en esta migracion.
