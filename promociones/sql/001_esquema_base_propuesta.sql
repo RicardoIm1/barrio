@@ -43,7 +43,14 @@ create table if not exists public.solicitudes_promocion (
   updated_at timestamptz not null default now(),
   submitted_at timestamptz not null default now(),
   reviewed_at timestamptz,
-  reviewed_by uuid references public.usuarios(id) on delete restrict
+  reviewed_by uuid references public.usuarios(id) on delete restrict,
+  cancelled_at timestamptz,
+  cancelled_by uuid references public.usuarios(id) on delete restrict,
+  cancellation_reason text,
+  check (
+    (estado = 'cancelada' and cancelled_at is not null and cancelled_by is not null)
+    or (estado <> 'cancelada' and cancelled_at is null and cancelled_by is null)
+  )
 );
 
 create table if not exists public.solicitud_promocion_items (
@@ -176,5 +183,6 @@ commit;
 -- 2. La unicidad de promociones vigentes por aviso/tipo debe garantizarse en servidor
 --    con bloqueo transaccional y una restriccion/indice compatible con el ciclo de vida.
 -- 3. El plazo de borrado del comprobante se fija al activar: activada_at + interval '7 days'.
--- 4. La politica de cancelacion por el usuario antes de aprobacion sigue pendiente de decision.
--- 5. No crear el bucket privado ni cron/Edge Function en esta migracion.
+-- 4. Regla aprobada: cancelar por RPC solo en pendiente_revision/requiere_ajustes; propietario únicamente, con bloqueo transaccional y bitácora.
+-- 5. La RPC cancelar_solicitud_promocion aún debe implementarse y probarse.
+-- 6. No crear el bucket privado ni cron/Edge Function en esta migracion.
