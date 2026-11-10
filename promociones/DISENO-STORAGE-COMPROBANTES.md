@@ -64,17 +64,18 @@ Las políticas deben ser específicas por operación. Si la lectura se permite e
 - La eliminación del objeto no borra fila de pago, referencia, importe, actor, fechas ni eventos de auditoría.
 - No ejecutar DELETE SQL directo sobre `storage.objects`.
 
-## 6. Restricciones de carga propuestas para decidir
+## 6. Restricciones de carga aprobadas
 
-Valores iniciales recomendados:
-- Tamaño máximo: **5 MB por comprobante**.
+El usuario aprobó expresamente los siguientes límites para cada intento de pago:
+- Tamaño máximo: **5 MB por archivo**.
 - MIME permitidos: `image/jpeg`, `image/png`, `image/webp` y `application/pdf`.
-- Rechazar SVG, HTML, ejecutables, archivos comprimidos y formatos no incluidos expresamente.
-- No aceptar archivos múltiples para un mismo intento de pago.
-- Verificar MIME real y firma del archivo en servidor; el MIME informado por el navegador no es suficiente.
+- Un solo archivo por intento de pago.
+- No se permite sobrescribir un objeto existente (`upsert: false`); cada nuevo intento crea una ruta/objeto independiente.
+- Rechazar SVG, HTML, ejecutables, archivos comprimidos y cualquier formato no incluido expresamente.
+- Validar en servidor el MIME real, la firma del archivo y el tamaño. El nombre, extensión y MIME declarados por el navegador no son evidencia suficiente.
 - No convertir automáticamente el comprobante ni alterar la evidencia original.
 
-Estos límites son una recomendación pendiente de aprobación; no se fijan todavía en un bucket real.
+La interfaz debe reflejar estos límites, pero la validación de servidor y las restricciones del bucket son la autoridad. La aprobación define el diseño; todavía no configura ni crea el bucket real.
 
 ## 7. Matriz de pruebas
 
@@ -86,7 +87,7 @@ Estos límites son una recomendación pendiente de aprobación; no se fijan toda
 6. Moderador no obtiene acceso administrativo.
 7. Administrador activo puede descargar solo para revisión autorizada.
 8. No se permite sobrescribir un comprobante existente.
-9. No se permite cargar un MIME o tamaño no autorizado.
+9. No se permite cargar un MIME no autorizado ni archivos mayores de 5 MB; se rechaza un segundo archivo para el mismo intento.
 10. No existe permiso directo de UPDATE o DELETE para el cliente.
 11. La URL firmada expira y no se persiste.
 12. El borrado automático usa Storage API y conserva auditoría.
