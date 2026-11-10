@@ -6,7 +6,7 @@ const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const CLEANUP_SECRET = Deno.env.get('PROMOCIONES_CLEANUP_SECRET') ?? '';
 const BUCKET = 'comprobantes-promociones';
 const BATCH_SIZE = 20;
-const MAX_BATCHES = 20;
+const MAX_BATCHES = 5;
 
 function response(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
