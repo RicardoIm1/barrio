@@ -126,8 +126,6 @@ function normalizarAvisos(avisos) {
 
 async function enriquecerNombresAutores(avisos) {
   const client = await getSupabaseClient();
-  const { data: sessionData, error: sessionError } = await client.auth.getSession();
-  if (sessionError || !sessionData?.session?.user?.id) return (avisos || []).map(normalizarAviso);
   const ids = [...new Set((avisos || []).map(a => a?.created_by).filter(Boolean))];
   const nombres = new Map();
 
@@ -202,25 +200,7 @@ async function supabasePeticion(accion, datos = {}) {
       if (!conteo) throw new Error('No se pudo confirmar el resumen de interacciones de esta publicación');
 
       let aviso = normalizarAviso(data);
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      const sesionAutenticada = !sessionError && !!sessionData?.session?.user?.id;
-      if (!sesionAutenticada) {
-        [
-          'nombre_autor', 'nombre_usuario', 'usuario_nombre', 'autor_nombre',
-          'nombre_completo', 'nombre', 'publicado_por', 'autor'
-        ].forEach(campo => {
-          if (Object.prototype.hasOwnProperty.call(aviso, campo)) aviso[campo] = null;
-        });
-        if (aviso.usuario && typeof aviso.usuario === 'object') {
-          aviso.usuario = { ...aviso.usuario, nombre: null, nombre_completo: null };
-        }
-        if (aviso.usuarios && typeof aviso.usuarios === 'object') {
-          aviso.usuarios = { ...aviso.usuarios, nombre: null, nombre_completo: null };
-        }
-        if (aviso.autor && typeof aviso.autor === 'object') {
-          aviso.autor = { ...aviso.autor, nombre: null, nombre_completo: null };
-        }
-      } else if (aviso?.created_by) {
+      if (aviso?.created_by) {
         const { data: nombre, error: nombreError } = await client.rpc('obtener_nombre_autor', { p_usuario_id: aviso.created_by });
         if (!nombreError && nombre) {
           aviso.nombre_autor = String(nombre).trim();
@@ -265,28 +245,6 @@ async function supabasePeticion(accion, datos = {}) {
       const { data, error, count } = await query;
       if (error) throw error;
       const avisos = normalizarAvisos(data);
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      const sesionAutenticada = !sessionError && !!sessionData?.session?.user?.id;
-      if (!sesionAutenticada) {
-        const camposIdentidad = [
-          'nombre_autor', 'nombre_usuario', 'usuario_nombre', 'autor_nombre',
-          'nombre_completo', 'nombre', 'publicado_por', 'autor'
-        ];
-        avisos.forEach(aviso => {
-          camposIdentidad.forEach(campo => {
-            if (Object.prototype.hasOwnProperty.call(aviso, campo)) aviso[campo] = null;
-          });
-          if (aviso.usuario && typeof aviso.usuario === 'object') {
-            aviso.usuario = { ...aviso.usuario, nombre: null, nombre_completo: null };
-          }
-          if (aviso.usuarios && typeof aviso.usuarios === 'object') {
-            aviso.usuarios = { ...aviso.usuarios, nombre: null, nombre_completo: null };
-          }
-          if (aviso.autor && typeof aviso.autor === 'object') {
-            aviso.autor = { ...aviso.autor, nombre: null, nombre_completo: null };
-          }
-        });
-      }
       if (avisos.length) {
         const ids = avisos.map(a => a.id).filter(Boolean);
         const { data: resumenRaw, error: resumenError } = await client.rpc('obtener_resumen_interacciones_avisos', {
@@ -464,12 +422,6 @@ async function supabasePeticion(accion, datos = {}) {
     case 'LISTAR_COMENTARIOS': {
       const avisoId = String(datos?.avisoId || datos?.aviso_id || '').trim();
       if (!avisoId) throw new Error('ID de aviso no proporcionado para listar comentarios');
-
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!sessionData?.session?.user?.id) {
-        throw new Error('Debes iniciar sesión para consultar los comentarios');
-      }
 
       const { data, error } = await client
         .from('comentarios')
