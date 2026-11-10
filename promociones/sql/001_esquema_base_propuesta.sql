@@ -147,6 +147,18 @@ create index if not exists idx_pagos_promocion_retencion
   where comprobante_eliminado_at is null and comprobante_path is not null;
 create index if not exists idx_promociones_activas_aviso_tipo_estado
   on public.promociones_activas (aviso_id, tipo, estado, vence_at);
+
+-- Defensa final contra dos promociones simultaneas del mismo tipo y aviso.
+-- La RPC de activacion debe bloquear primero la fila de public.avisos y
+-- marcar vencidas las filas cuyo vence_at <= now() antes de insertar.
+create unique index if not exists uq_promociones_activas_aviso_tipo_vigente
+  on public.promociones_activas (aviso_id, tipo)
+  where estado in ('programada', 'activa');
+
+-- Solo puede existir un pago verificado por solicitud.
+create unique index if not exists uq_pagos_promocion_un_verificado
+  on public.pagos_promocion (solicitud_id)
+  where estado = 'verificado';
 create index if not exists idx_eventos_promocion_solicitud
   on public.eventos_promocion (solicitud_id, created_at desc);
 
@@ -180,9 +192,10 @@ commit;
 
 -- NOTAS PARA LA SIGUIENTE REVISION:
 -- 1. Las funciones RPC aun no estan incluidas.
--- 2. La unicidad de promociones vigentes por aviso/tipo debe garantizarse en servidor
---    con bloqueo transaccional y una restriccion/indice compatible con el ciclo de vida.
--- 3. El plazo de borrado del comprobante se fija al activar: activada_at + interval '7 days'.
+-- 2. La unicidad de promociones vigentes por aviso/tipo queda respaldada por indice
+--    unico parcial; la RPC debe bloquear el aviso y marcar expiraciones antes de insertar.
+-- 3. El indice de pagos permite un solo pago verificado por solicitud; los intentos observados/rechazados se conservan.
+-- 4. El plazo de borrado del comprobante verificado se fija al activar: activada_at + interval '7 days'.
 -- 4. Regla aprobada: cancelar por RPC solo en pendiente_revision/requiere_ajustes; propietario únicamente, con bloqueo transaccional y bitácora.
 -- 5. La RPC cancelar_solicitud_promocion aún debe implementarse y probarse.
 -- 6. No crear el bucket privado ni cron/Edge Function en esta migracion.
