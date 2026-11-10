@@ -17,6 +17,9 @@ Permitir que una persona solicite promocionar uno de sus avisos mediante los pro
 ## Catálogo comercial
 Consultar CATALOGO-COMERCIAL.md para precios y duraciones iniciales: Destacado $299 MXN por 30 días, Urgente $99 MXN por 7 días y paquete combinado $398 MXN con ambas duraciones independientes. El paquete combinado no tiene descuento de lanzamiento.
 
+## Diseño de datos y estados
+Consultar [DISENO-DATOS-Y-ESTADOS.md](./DISENO-DATOS-Y-ESTADOS.md) para la propuesta de entidades, reglas de acceso, estados, transiciones y funciones servidor. Es un diseño para revisión; todavía no hay migraciones ni cambios en Supabase.
+
 ## Modelo funcional previsto
 1. El propietario elige uno de sus avisos y solicita Destacado, Urgente o ambos.
 2. Elige un paquete y consulta precio, duración y condiciones.
