@@ -711,21 +711,23 @@ function actualizarFilaAvisoAdmin(aviso) {
     const pad = { l: 42, r: 18, t: 20, b: 38 },
       cw = w - pad.l - pad.r,
       ch = h - pad.t - pad.b,
-      max = Math.max(1, ...values),
-      steps = 4;
+      maxValor = Math.max(0, ...values),
+      steps = Math.max(1, Math.min(4, maxValor)),
+      step = maxValor <= 4 ? 1 : Math.ceil(maxValor / 4),
+      max = Math.max(1, step * steps);
     ctx.font = "11px system-ui";
     ctx.textAlign = "right";
     ctx.textBaseline = "middle";
     for (let i = 0; i <= steps; i++) {
       const y = pad.t + ch - (ch * i) / steps,
-        v = (max * i) / steps;
+        v = step * i;
       ctx.strokeStyle = "rgba(255,255,255,.10)";
       ctx.beginPath();
       ctx.moveTo(pad.l, y);
       ctx.lineTo(w - pad.r, y);
       ctx.stroke();
       ctx.fillStyle = "#888";
-      ctx.fillText(Math.round(v).toLocaleString("es-MX"), pad.l - 7, y);
+      ctx.fillText(v.toLocaleString("es-MX"), pad.l - 7, y);
     }
     const pts = values.map((v, i) => {
       const x =
