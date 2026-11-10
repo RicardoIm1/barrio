@@ -82,10 +82,12 @@ Campos conceptuales:
 - `importe_centavos_reportado`: entero positivo.
 - `moneda`: `MXN`.
 - `comprobante_path`: ruta interna del objeto en bucket privado; nunca URL pública.
-- `estado`: `reportado`, `observado`, `verificado` o `rechazado`.
+- `estado_pago`: `pendiente`, `reportado`, `observado`, `verificado` o `rechazado`.
+- `estado_carga`: `pendiente_carga`, `validando`, `validado`, `invalido`, `error` o `expirada`.
 - `referencia_operacion`: texto opcional.
 - `observacion_admin`: texto de respuesta.
-- `reportado_at`, `revisado_at`, `revisado_por`.
+- `reservado_at`, `reserva_expira_at`, `cargado_at`, `validado_at`, `reportado_at`, `revisado_at`, `revisado_por`.
+- `mime_declarado`, `mime_detectado`, `bytes_comprobante` y `sha256` para auditoría técnica de carga.
 
 Cada nuevo comprobante crea un registro. No se reemplaza el comprobante anterior ni se elimina evidencia de auditoría. La verificación compara el importe reportado contra el total aprobado y requiere acción administrativa.
 
@@ -289,3 +291,8 @@ La tarea correrá una vez al día. El archivo será elegible al cumplirse las 16
 ### Condición de activación
 
 Este diseño no crea ni habilita todavía extensiones, cron jobs, secretos, Edge Functions, buckets o políticas. Primero deben existir y aprobarse el esquema definitivo de promociones, el bucket privado y las reglas de retención. Después se implementará en una rama/entorno de prueba, se ejecutarán las pruebas anteriores y se solicitará autorización específica antes de desplegar o activar el cron en producción.
+
+
+## 12. Correspondencia con el borrador SQL revisado
+
+La propuesta SQL actual separa `estado_pago` de `estado_carga`, modela la reserva de 30 minutos y conserva MIME declarado/detectado, tamaño y hash SHA-256. Incluye relaciones compuestas para impedir que una promoción o evento se vincule accidentalmente a un componente, pago o aviso de otra solicitud. Las tablas quedan con RLS habilitado y sin grants directos a los roles API o `service_role`. Las RPC, policies y pruebas de integración siguen pendientes; los nombres y contratos deberán alinearse con este esquema antes de escribirlas.
