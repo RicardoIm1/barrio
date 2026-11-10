@@ -292,7 +292,7 @@ begin
     raise exception 'Se requiere administrador activo' using errcode = '42501';
   end if;
 
-  if p_decision not in ('aprobar', 'solicitar_ajustes', 'rechazar') then
+  if p_decision is null or p_decision not in ('aprobar', 'solicitar_ajustes', 'rechazar') then
     raise exception 'Decisión administrativa no válida' using errcode = '22023';
   end if;
 
