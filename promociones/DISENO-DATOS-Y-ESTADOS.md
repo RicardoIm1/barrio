@@ -133,7 +133,9 @@ Los clientes no tienen permiso de UPDATE o DELETE sobre la bitácora. Las funcio
 | `requiere_ajustes` | Usuario reenvía | `pendiente_revision` | Usuario |
 | `pendiente_revision` | Aprobar | `aprobada_pendiente_pago` | Admin |
 | `pendiente_revision` | Rechazar | `rechazada` | Admin |
+| `pendiente_revision` | Cancelar solicitud | `cancelada` | Propietario |
 | `requiere_ajustes` | Rechazar | `rechazada` | Admin |
+| `requiere_ajustes` | Cancelar solicitud | `cancelada` | Propietario |
 | `aprobada_pendiente_pago` | Usuario reporta pago | `pago_reportado` | Usuario |
 | `pago_reportado` | Pago observado | `pago_observado` | Admin |
 | `pago_observado` | Usuario reporta nuevo comprobante | `pago_reportado` | Usuario |
@@ -170,6 +172,8 @@ El estado de la solicitud no debe impedir que el componente destacado siga activ
 13. No permitir solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente de ese tipo. Se permite una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación se ejecuta en servidor dentro de la transacción de solicitud y vuelve a comprobarse al activar.
 14. Destacado y Urgente pueden coexistir en el mismo aviso, porque son componentes distintos con vigencias independientes.
 15. Toda transición debe insertar evento en bitácora dentro de la misma transacción.
+16. El propietario puede cancelar su solicitud únicamente mientras esté en `pendiente_revision` o `requiere_ajustes`. La operación debe comprobar `auth.uid()` contra `solicitante_id`, bloquear la fila durante la transición, marcar `cancelada`, guardar actor/fecha/motivo y registrar `solicitud_cancelada_por_usuario` en la bitácora.
+17. La cancelación del usuario no está disponible después de la aprobación ni después de reportar un pago. En esos casos, cualquier cierre o devolución requiere revisión y decisión administrativa; no se elimina evidencia ni se presupone reembolso.
 
 ## 5. Acceso y RLS propuestos
 - `promocion_productos`: lectura de productos activos para usuarios; escritura solo por administrador mediante función protegida.
@@ -196,6 +200,7 @@ Las políticas deben diseñarse evitando policies PERMISSIVE superpuestas que am
 ## 7. RPCs previstas
 - `solicitar_promocion(aviso_id, productos[])`: valida sesión, propiedad, estado del aviso, catálogo, duplicados y calcula total; crea cabecera, items y evento.
 - `revisar_solicitud_promocion(solicitud_id, decision, nota)`: solo admin; permite aprobar, pedir ajustes o rechazar.
+- `cancelar_solicitud_promocion(solicitud_id, motivo)`: propietario autenticado; solo acepta estados `pendiente_revision` y `requiere_ajustes`, con bloqueo transaccional y evento de auditoría.
 - `reportar_pago_promocion(solicitud_id, importe, comprobante_path, referencia)`: valida propietario y estado; registra intento y evento.
 - `revisar_pago_promocion(pago_id, decision, nota)`: solo admin; observa, rechaza o verifica importe y evidencia.
 - `activar_promocion(solicitud_id)`: solo admin; exige pago verificado, aviso activo, ausencia de traslape y crea componentes con sus fechas de vigencia. Si el aviso ya no está activo, no crea promociones y deriva la solicitud a `revision_administrativa`.
@@ -207,16 +212,22 @@ Todas las funciones SECURITY DEFINER deberán fijar `search_path`, cualificar no
 1. **Regla aprobada:** no se permite solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente. Se permitirá una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación debe ejecutarse en servidor dentro de la transacción de solicitud y volver a comprobarse al activar, para evitar solicitudes simultáneas o carreras.
 2. **Regla aprobada:** si un aviso se elimina o deja de estar activo después de reportar el pago y antes de activar la promoción, se bloquea la activación y el caso pasa a revisión administrativa. Se conservan solicitud, pagos, comprobantes e historial. No se presume reembolso ni cancelación; el administrador debe resolver el caso y registrar su decisión.
 3. **Regla aprobada:** conservar el archivo binario del comprobante durante 7 días naturales desde la activación de la promoción y eliminarlo automáticamente al vencer el plazo. Si existe una incidencia o controversia pendiente, suspender el borrado hasta su resolución. Conservar permanentemente los metadatos de auditoría, aunque el archivo se haya eliminado. Antes de habilitar cargas reales, definir e implementar el proceso automatizado de borrado mediante Storage API y las excepciones por retención.
-4. ¿Se permitirá al usuario cancelar una solicitud antes de la aprobación? Recomendación: sí, mientras esté pendiente de revisión o ajustes.
+4. **Regla aprobada:** el propietario puede cancelar su solicitud mientras esté en `pendiente_revision` o `requiere_ajustes`. Después de la aprobación o del reporte de pago no hay cancelación unilateral; esos casos requieren resolución administrativa.
 
-## 9. Fuera de alcance
+## 9. Cancelación voluntaria de solicitudes
+
+La cancelación voluntaria se limita a dos estados: `pendiente_revision` y `requiere_ajustes`. El usuario autenticado solo puede cancelar solicitudes propias. La función RPC debe bloquear la fila con `SELECT ... FOR UPDATE`, validar el estado en ese mismo punto y ejecutar la transición dentro de una transacción. Si otra operación administrativa ganó la carrera y cambió el estado a aprobado, la cancelación se rechaza sin modificar datos.
+
+La cancelación registra `cancelled_at`, `cancelled_by`, motivo opcional y un evento append-only. No borra la solicitud, sus componentes ni su historial. Una solicitud cancelada no puede reabrirse ni reutilizarse; el usuario deberá crear una nueva si procede. No se admiten cancelaciones unilaterales después de aprobar o reportar pago.
+
+## 10. Fuera de alcance
 - No se ha creado ni ejecutado SQL.
 - No se han creado tablas, funciones, políticas, buckets ni cron jobs.
 - No se ha modificado `admin.html`, `js/admin.js`, la portada ni los flags actuales.
 - No se ha reutilizado ni alterado `campanas_destacado`.
 - No se ha conectado una pasarela de pago.
 
-## 10. Diseño operativo del borrado automático de comprobantes
+## 11. Diseño operativo del borrado automático de comprobantes
 
 ### Arquitectura elegida para implementar después de aprobar el esquema
 
