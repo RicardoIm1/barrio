@@ -394,6 +394,32 @@
       });
   }
 
+  async function abrirConversacionDesdeNotificacion() {
+    const params = new URLSearchParams(window.location.search);
+    const remitenteId = params.get('mensaje');
+    if (!remitenteId) return;
+
+    const { data, error } = await client.rpc('obtener_conversaciones_privadas');
+    if (error) {
+      console.warn('No se pudo abrir la conversación desde la notificación:', error);
+      return;
+    }
+
+    // Solo se acepta un remitente que ya figure en la bandeja del usuario autenticado.
+    const conversacion = (data || []).find(item => item.usuario_id === remitenteId);
+    if (!conversacion) return;
+
+    params.delete('mensaje');
+    const query = params.toString();
+    const nuevaUrl = window.location.pathname + (query ? '?' + query : '') + window.location.hash;
+    window.history.replaceState({}, '', nuevaUrl);
+
+    await abrirConversacion({
+      id: conversacion.usuario_id,
+      nombre: conversacion.nombre || 'Conversación'
+    });
+  }
+
   async function iniciar() {
     estilos();
     if (!(await obtenerSesion())) {
@@ -404,6 +430,7 @@
     instalarBotonBandeja();
     instalarRealtime();
     await cargarUsuariosConectados();
+    await abrirConversacionDesdeNotificacion();
     if (intervalo) clearInterval(intervalo);
     intervalo = window.setInterval(() => {
       if (!document.hidden) { cargarUsuariosConectados(); actualizarContadorNoLeidos(); }
