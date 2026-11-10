@@ -57,7 +57,9 @@ Las políticas deben ser específicas por operación. Si la lectura se permite e
 
 - Usuarios y administradores no borran objetos directamente desde el navegador.
 - El borrado automático lo realiza una Edge Function dedicada en servidor mediante Storage API.
-- La Edge Function comprueba el vencimiento individual, que no exista retención suspendida y que no haya controversia, incidencia o revisión administrativa pendiente.
+- La Edge Function de limpieza se ejecuta una vez al día y comprueba el vencimiento individual, que no exista retención suspendida y que no haya controversia, incidencia o revisión administrativa pendiente.
+- Las reservas de carga incompletas vencen a los 30 minutos de su creación. La limpieza diaria cierra las reservas vencidas no validadas y elimina por Storage API cualquier objeto huérfano asociado. El vencimiento de la autorización ocurre a los 30 minutos; el borrado físico puede esperar al siguiente ciclo diario.
+- La limpieza de reservas es idempotente y no alcanza objetos validados ni comprobantes sujetos a revisión o retención.
 - Comprobante verificado: eliminación elegible 7 días naturales después de la activación.
 - Comprobante observado o rechazado: eliminación elegible 7 días naturales después de la decisión administrativa.
 - Al liberar una retención suspendida, el archivo ya vencido vuelve a ser elegible en el siguiente ciclo.
@@ -95,7 +97,9 @@ La secuencia detallada de reserva de intento, carga directa al bucket, validaci�
 10. No existe permiso directo de UPDATE o DELETE para el cliente.
 11. La URL firmada expira y no se persiste.
 12. El borrado automático usa Storage API y conserva auditoría.
-13. El bucket `media` y sus políticas permanecen sin cambios.
+13. Las reservas incompletas dejan de autorizar carga o validación a los 30 minutos.
+14. La limpieza diaria elimina solo reservas vencidas no validadas y objetos huérfanos asociados mediante Storage API.
+15. El bucket `media` y sus políticas permanecen sin cambios.
 
 ## 9. Decisiones de privacidad aprobadas
 
@@ -103,6 +107,7 @@ La secuencia detallada de reserva de intento, carga directa al bucket, validaci�
 - El usuario únicamente consulta el estado de su solicitud/pago.
 - Solo el administrador activo puede obtener acceso temporal al archivo para verificarlo.
 - No se integrará antivirus externo en la primera versión; la validación de formato no se presentará como análisis antimalware.
+- Las reservas de carga incompletas vencen a los 30 minutos y se limpian una vez al día.
 
 ## 10. Límites
 
