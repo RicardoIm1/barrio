@@ -1,0 +1,21 @@
+SALUDABLEMENTE | DEMOSTRACIÓN DE INTERFAZ
+
+Archivos:
+- index.html
+- styles.css
+- app.js
+
+Cómo abrir:
+1. Descomprime el paquete.
+2. Abre index.html en un navegador moderno.
+
+IMPORTANTE:
+Esta es únicamente una demostración visual. No conecta con Supabase ni con otra base de datos.
+No guarda ni transmite datos, no cifra información y no debe utilizarse con datos reales de pacientes.
+Los datos ingresados sólo se utilizan temporalmente en la página para mostrar la vista previa.
+
+Antes de una puesta en operación se requiere diseñar y probar autenticación, gestión de claves,
+cifrado real, controles de acceso, respaldos, recuperación, aviso de privacidad y consentimiento.
+La codificación Base64 NO es cifrado. Un diseño de cifrado en navegador tampoco garantiza por sí
+solo cumplimiento legal ni elimina la responsabilidad de quien determina los fines y medios del
+tratamiento de datos personales.

@@ -1,177 +1,167 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaludableMente - Registro Cifrado</title>
-    <style>
-        body { font-family: sans-serif; background: #f4f7f6; color: #333; padding: 20px; }
-        .container { max-width: 600px; background: white; padding: 30px; margin: 0 auto; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h2, h3 { text-align: center; color: #00796b; }
-        .campo { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input[type="text"], input[type="date"], input[type="number"], select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        .llave-secreta { background: #e0f2f1; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #b2dfdb; }
-        button { background: #00796b; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; }
-        button:hover { background: #004d40; }
-        .legal { font-size: 12px; color: #666; margin-top: 15px; text-align: justify; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#edf3f7">
+  <title>SaludableMente | Registro de pacientes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
 
-<div class="container">
-    <h2>SaludableMente</h2>
-    <h3>Datos de Identificación del Paciente</h3>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="SaludableMente, inicio">
+        <span class="brand-mark"><span></span><span></span><span></span></span>
+        <span><strong>Saludable</strong><small>MENTE</small></span>
+      </a>
 
-    <!-- Llave de cifrado del especialista -->
-    <div class="llave-secreta">
-        <label for="masterKey">Clave de Descifrado del Especialista:</label>
-        <input type="password" id="masterKey" placeholder="Introduce la contraseña para cifrar/descifrar este expediente" required>
-    </div>
+      <div class="side-label">ESPACIO PROFESIONAL</div>
+      <nav class="side-nav" aria-label="Navegación principal">
+        <a class="nav-item active" href="#registro"><span class="nav-icon">＋</span><span>Nuevo paciente</span></a>
+        <a class="nav-item muted" href="#registro" data-demo-link><span class="nav-icon">▤</span><span>Directorio</span><em>Próximamente</em></a>
+        <a class="nav-item muted" href="#registro" data-demo-link><span class="nav-icon">◷</span><span>Seguimiento</span><em>Próximamente</em></a>
+      </nav>
 
-    <form id="formularioPaciente">
-        <div class="campo">
-            <label for="nombre">Nombre Completo (Empezando por apellidos):</label>
-            <input type="text" id="nombre" required>
+      <div class="sidebar-bottom">
+        <div class="privacy-card">
+          <span class="privacy-icon">✳</span>
+          <strong>Un espacio privado</strong>
+          <p>Diseñado para acompañar tu práctica profesional con orden y claridad.</p>
+        </div>
+        <div class="profile">
+          <div class="avatar">PS</div>
+          <div><strong>Espacio profesional</strong><small>Cuenta personal</small></div>
+          <span class="profile-dots">•••</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="main-panel" id="registro">
+      <header class="topbar">
+        <div class="breadcrumb">Pacientes <span>/</span> <strong>Nuevo registro</strong></div>
+        <div class="topbar-right"><span class="secure-indicator"><i></i> Vista de demostración</span><button class="help-button" type="button" id="helpBtn" aria-label="Ayuda">?</button></div>
+      </header>
+
+      <div class="content">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">GESTIÓN DE PACIENTES</div>
+            <h1>Un primer paso,<br><span>con toda la atención.</span></h1>
+            <p class="intro">Registra la información básica y mantén los datos importantes organizados en un solo lugar.</p>
+          </div>
+          <div class="heading-art" aria-hidden="true">
+            <div class="art-orbit orbit-a"></div><div class="art-orbit orbit-b"></div>
+            <div class="art-center">✳</div><span class="art-dot dot-a"></span><span class="art-dot dot-b"></span>
+          </div>
         </div>
 
-        <div class="campo" style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="lugarNacimiento">Lugar de Nacimiento:</label>
-                <input type="text" id="lugarNacimiento">
-            </div>
-            <div style="flex: 1;">
-                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
-                <input type="date" id="fechaNacimiento">
-            </div>
+        <div class="progress-row">
+          <div class="progress-copy"><span class="progress-number">01</span><div><strong>Registro de paciente</strong><small>Información de identificación</small></div></div>
+          <div class="progress-track"><span></span></div>
+          <span class="step-count">PASO 1 DE 1</span>
         </div>
 
-        <div class="campo" style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="edad">Edad:</label>
-                <input type="number" id="edad">
+        <form id="patientForm" novalidate>
+          <section class="form-card">
+            <div class="section-heading">
+              <div class="section-icon">01</div>
+              <div><h2>Identificación</h2><p>Comencemos con los datos principales.</p></div>
+              <span class="section-tag">Datos básicos</span>
             </div>
-            <div style="flex: 1;">
-                <label for="sexo">Sexo Biológico:</label>
-                <select id="sexo">
-                    <option value="">Selecciona...</option>
-                    <option value="H">Hombre</option>
-                    <option value="M">Mujer</option>
-                </select>
+            <div class="field-grid">
+              <label class="field full"><span>Nombre completo <b>*</b></span><input id="nombre" name="nombre" autocomplete="name" placeholder="Apellidos y nombre(s)" required></label>
+              <label class="field"><span>Número de expediente</span><div class="input-with-icon"><input id="expediente" name="expediente" placeholder="Se asignará al guardar" disabled><span>✦</span></div><small>Identificador interno automático en una versión funcional.</small></label>
+              <label class="field"><span>Fecha de nacimiento</span><input type="date" id="nacimiento" name="nacimiento"><small id="ageHint">La edad se calculará automáticamente.</small></label>
+              <label class="field"><span>Lugar de nacimiento</span><input name="lugarNacimiento" placeholder="Ciudad, estado"></label>
+              <label class="field"><span>Edad</span><input id="edad" placeholder="Calculada automáticamente" disabled></label>
             </div>
-        </div>
+          </section>
 
-        <div class="campo" style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label for="genero">Género:</label>
-                <input type="text" id="genero">
+          <section class="form-card">
+            <div class="section-heading">
+              <div class="section-icon">02</div>
+              <div><h2>Información general</h2><p>Campos opcionales sujetos a las necesidades de atención.</p></div>
             </div>
-            <div style="flex: 1;">
-                <label for="religion">Religión:</label>
-                <input type="text" id="religion">
+            <div class="field-grid">
+              <label class="field"><span>Sexo biológico</span><select name="sexo"><option value="">Seleccionar</option><option>Femenino</option><option>Masculino</option><option>Intersexual</option><option>Prefiere no responder</option></select></label>
+              <label class="field"><span>Género</span><input name="genero" placeholder="Especificar, si corresponde"></label>
+              <label class="field"><span>Escolaridad</span><select name="escolaridad"><option value="">Seleccionar</option><option>Sin escolaridad</option><option>Primaria</option><option>Secundaria</option><option>Preparatoria / Bachillerato</option><option>Licenciatura</option><option>Posgrado</option><option>Otra</option></select></label>
+              <label class="field"><span>Ocupación</span><input name="ocupacion" placeholder="Ocupación actual"></label>
+              <label class="field full"><span>Religión <small class="inline-note">Campo opcional</small></span><input name="religion" placeholder="Sólo si es pertinente para la atención"></label>
             </div>
-        </div>
+            <div class="sensitive-note"><span>◇</span><p>Algunos datos de esta sección pueden ser sensibles. En una versión operativa se definirán su finalidad y la base legal para recabarlos antes de habilitar su captura.</p></div>
+          </section>
 
-        <div class="campo">
-            <label for="telefono">Número Telefónico:</label>
-            <input type="text" id="telefono">
-        </div>
+          <section class="form-card">
+            <div class="section-heading">
+              <div class="section-icon">03</div>
+              <div><h2>Contacto y domicilio</h2><p>Información para mantener comunicación con el paciente.</p></div>
+            </div>
+            <div class="field-grid">
+              <label class="field"><span>Teléfono principal</span><input name="telefono" type="tel" autocomplete="tel" placeholder="10 dígitos"></label>
+              <label class="field"><span>Ciudad</span><input name="ciudad" placeholder="Ciudad"></label>
+              <label class="field"><span>Calle y número</span><input name="calle" autocomplete="street-address" placeholder="Calle, número exterior e interior"></label>
+              <label class="field"><span>Colonia</span><input name="colonia" placeholder="Colonia"></label>
+              <label class="field full"><span>Referencias del domicilio</span><input name="referencias" placeholder="Indicaciones para ubicar el domicilio"></label>
+            </div>
+          </section>
 
-        <p class="legal">
-            * Nota técnica y legal: Al presionar "Guardar", toda la información de este formulario se cifrará localmente mediante AES-GCM antes de ser transmitida a la base de datos. Ningún tercero ni el proveedor de la nube podrá leer los expedientes.
-        </p>
+          <section class="form-card">
+            <div class="section-heading">
+              <div class="section-icon">04</div>
+              <div><h2>Contactos de emergencia</h2><p>Personas a quienes contactar en caso necesario.</p></div>
+              <span class="section-tag">Opcional</span>
+            </div>
+            <div class="emergency-block">
+              <div class="emergency-title"><span>Contacto 1</span><small>Primer contacto</small></div>
+              <div class="field-grid">
+                <label class="field"><span>Nombre completo</span><input name="emergencia1Nombre" placeholder="Nombre y apellidos"></label>
+                <label class="field"><span>Parentesco o relación</span><input name="emergencia1Parentesco" placeholder="Ej. madre, pareja, amistad"></label>
+                <label class="field"><span>Teléfono</span><input name="emergencia1Telefono" type="tel" placeholder="Número telefónico"></label>
+              </div>
+            </div>
+            <div class="emergency-block second">
+              <div class="emergency-title"><span>Contacto 2</span><small>Contacto alternativo</small></div>
+              <div class="field-grid">
+                <label class="field"><span>Nombre completo</span><input name="emergencia2Nombre" placeholder="Nombre y apellidos"></label>
+                <label class="field"><span>Parentesco o relación</span><input name="emergencia2Parentesco" placeholder="Ej. padre, familiar, amistad"></label>
+                <label class="field"><span>Teléfono</span><input name="emergencia2Telefono" type="tel" placeholder="Número telefónico"></label>
+              </div>
+            </div>
+          </section>
 
-        <button type="submit">Cifrar y Guardar Expediente</button>
-    </form>
-</div>
+          <div class="form-footer">
+            <p><span class="required-mark">*</span> Campos obligatorios. Esta demostración no almacena ni transmite información.</p>
+            <div class="form-actions"><button type="reset" class="btn btn-quiet">Limpiar</button><button type="submit" class="btn btn-primary">Vista previa del registro <span>→</span></button></div>
+          </div>
+        </form>
 
-<script>
-// --- MOTOR DE CRIPTOGRAFÍA NATIVA (WEB CRYPTO API) ---
+        <footer class="page-footer"><span>SaludableMente</span><span>Una herramienta para una atención más organizada.</span></footer>
+      </div>
+    </section>
+  </main>
 
-// Genera una llave criptográfica real a partir de la contraseña escrita por la psicóloga
-async function generarLlave(contrasena) {
-    const enc = new TextEncoder();
-    const materialLlave = await window.crypto.subtle.importKey(
-        "raw", 
-        enc.encode(contrasena), 
-        { name: "PBKDF2" }, 
-        false, 
-        ["deriveKey"]
-    );
-    return window.crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: enc.encode("sal-fija-de-saludablemente"), // Sal estática para recrear la misma llave siempre
-            iterations: 100000,
-            hash: "SHA-256"
-        },
-        materialLlave,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["encrypt", "decrypt"]
-    );
-}
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="previewDialog" class="preview-dialog">
+    <div class="dialog-head"><div><span class="eyebrow">VISTA PREVIA</span><h2>Registro preparado</h2></div><button class="close-dialog" id="closeDialog" aria-label="Cerrar">×</button></div>
+    <p class="dialog-intro">Así se vería el resumen del paciente. En esta demostración los datos permanecen únicamente en esta sesión del navegador.</p>
+    <div class="preview-summary" id="previewSummary"></div>
+    <div class="dialog-actions"><button class="btn btn-quiet" id="editBtn">Seguir editando</button><button class="btn btn-primary" id="doneBtn">Entendido</button></div>
+  </dialog>
 
-// Función principal para cifrar texto plano
-async function cifrarTexto(textoPlano, contrasena) {
-    if (!textoPlano) return "";
-    const llave = await generarLlave(contrasena);
-    const enc = new TextEncoder();
-    const iv = window.crypto.getRandomValues(new Uint8Array(12)); // Vector de inicialización único por registro
-    
-    const cifrado = await window.crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: iv },
-        llave,
-        enc.encode(textoPlano)
-    );
+  <dialog id="helpDialog" class="preview-dialog help-dialog">
+    <div class="dialog-head"><div><span class="eyebrow">SALUDABLEMENTE</span><h2>Una demostración, no un sistema activo</h2></div><button class="close-dialog" id="closeHelp" aria-label="Cerrar">×</button></div>
+    <p class="dialog-intro">Esta interfaz ilustra cómo podría funcionar el registro de pacientes. No tiene conexión con una base de datos, no cifra información y no debe utilizarse con datos reales.</p>
+    <div class="help-points"><p><b>Diseño adaptable:</b> puede utilizarse desde computadora, tableta o celular.</p><p><b>Próximo paso:</b> definir campos, aviso de privacidad, consentimiento, controles de acceso y almacenamiento seguro antes de ponerla en operación.</p></div>
+    <div class="dialog-actions"><button class="btn btn-primary" id="closeHelpBottom">Cerrar</button></div>
+  </dialog>
 
-    // Unimos el IV y el texto cifrado en una sola cadena Base64 estable para guardarla en la base de datos
-    const bufferCompleto = new Uint8Array(iv.byteLength + cifrado.byteLength);
-    bufferCompleto.set(new Uint8Array(iv), 0);
-    bufferCompleto.set(new Uint8Array(cifrado), iv.byteLength);
-    
-    return btoa(String.fromCharCode.apply(null, bufferCompleto));
-}
-
-// --- MANEJO DEL FORMULARIO ---
-document.getElementById('formularioPaciente').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const contraseñaMaestra = document.getElementById('masterKey').value;
-    if (!contraseñaMaestra) {
-        alert("Por favor, introduce la Clave de Descifrado del Especialista.");
-        return;
-    }
-
-    // Estructuramos el JSON original con los inputs reales de SaludableMente
-    const expedientePlano = {
-        nombre: document.getElementById('nombre').value,
-        lugar_nacimiento: document.getElementById('lugarNacimiento').value,
-        fecha_nacimiento: document.getElementById('fechaNacimiento').value,
-        edad: document.getElementById('edad').value,
-        sexo: document.getElementById('sexo').value,
-        genero: document.getElementById('genero').value,
-        religion: document.getElementById('religion').value,
-        telefono: document.getElementById('telefono').value
-    };
-
-    try {
-        // Convertimos todo el objeto a texto y lo ciframos completo en un solo bloque
-        const textoJson = JSON.stringify(expedientePlano);
-        const bloqueCifrado = await cifrarTexto(textoJson, contraseñaMaestra);
-
-        // Este es el payload final ultra simplificado que enviarás a tu tabla de Supabase
-        const payloadParaSupabase = {
-            payload_cifrado: bloqueCifrado
-        };
-
-        console.log("Objeto listo para insertar en Supabase:", payloadParaSupabase);
-        alert("¡Éxito! El expediente ha sido cifrado localmente de forma segura. Revisa la consola.");
-        
-        // Aquí harías tu llamado normal: 
-        // await supabase.from('expedientes').insert([payloadParaSupabase]);
-
-    </form>
-</div>
+  <script src="app.js"></script>
 </body>
 </html>
