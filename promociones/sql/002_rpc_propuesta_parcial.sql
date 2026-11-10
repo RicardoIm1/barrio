@@ -525,7 +525,7 @@ declare
   v_solicitudes_vencidas integer := 0;
 begin
   -- Impide dos ejecuciones simultáneas del mismo proceso de vencimiento.
-  if not pg_catalog.pg_try_advisory_xact_lock(7311042026, 1) then
+  if not pg_catalog.pg_try_advisory_xact_lock(73110420261::bigint) then
     return jsonb_build_object('omitido', true, 'motivo', 'ejecucion_en_curso');
   end if;
 
