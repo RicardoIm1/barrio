@@ -220,9 +220,11 @@
       input.value = '';
       await cargarMensajes();
     } catch (error) {
-      console.warn('No se pudo enviar el mensaje privado:', error);
-      if (typeof window.mostrarError === 'function') window.mostrarError('No se pudo enviar el mensaje. Intenta nuevamente.');
-      else alert('No se pudo enviar el mensaje. Intenta nuevamente.');
+      console.error('No se pudo enviar el mensaje privado:', error);
+      const detalle = error?.message || error?.details || 'Error desconocido';
+      const aviso = 'No se pudo enviar el mensaje: ' + detalle;
+      if (typeof window.mostrarError === 'function') window.mostrarError(aviso);
+      else alert(aviso);
     } finally {
       enviando = false;
       button.disabled = false;
