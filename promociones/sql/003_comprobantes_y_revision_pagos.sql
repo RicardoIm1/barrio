@@ -676,6 +676,13 @@ revoke all on function public.obtener_ruta_comprobante_admin(uuid)
 revoke all on function private.puede_cargar_comprobante_promocion(text, text)
   from public, anon, authenticated, service_role;
 
+-- La policy de INSERT se evalúa como authenticated. Este helper SECURITY
+-- DEFINER es el único punto privado que necesita invocar el rol cliente.
+-- No concede acceso directo a las tablas comerciales.
+grant usage on schema private to authenticated;
+grant execute on function private.puede_cargar_comprobante_promocion(text, text)
+  to authenticated;
+
 grant execute on function public.reservar_comprobante_promocion(uuid, integer, text, text)
   to authenticated;
 grant execute on function public.iniciar_validacion_comprobante(uuid)
