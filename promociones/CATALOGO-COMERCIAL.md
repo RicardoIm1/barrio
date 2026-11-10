@@ -46,17 +46,17 @@ Propuesta comercial inicial aprobada para documentar y validar. No está conecta
 - pago_verificado: pago comprobado, pendiente de activación.
 - activa: promoción activada por administración.
 - vencida: terminó la vigencia de todos sus componentes.
-- cancelada: cancelada conforme a una decisión administrativa registrada.
+- cancelada: cancelada por el propietario antes de la aprobación (`pendiente_revision` o `requiere_ajustes`) o, en escenarios posteriores, mediante resolución administrativa registrada.
 
 Los estados son una propuesta de dominio; antes de implementarlos se revisarán transiciones válidas, concurrencia, reintentos y auditoría.
 
 ## Decisiones pendientes antes de cobrar
 - Datos bancarios y titular de la cuenta receptora.
 - Política de comprobantes, formatos y tamaño máximo.
-- Política de cancelación, reembolso y solicitudes duplicadas.
+- Política de reembolso para casos posteriores a la aprobación o al reporte de pago.
 - Tratamiento fiscal y emisión de comprobantes fiscales, si aplica.
 - Texto final de términos y condiciones mostrado al usuario.
-- Si se permitirán varias promociones simultáneas para el mismo aviso y cómo se resolverán traslapes.
+- Regla aprobada: no se permite otra promoción del mismo tipo mientras exista una vigente para el mismo aviso; Destacado y Urgente sí pueden coexistir.
 - Canal de notificación al usuario cuando se apruebe, observe o active su solicitud.
 
 ## Límites técnicos
