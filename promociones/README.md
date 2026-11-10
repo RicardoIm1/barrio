@@ -70,7 +70,7 @@ Consulta [`DISENO-RPCS-Y-CONCURRENCIA.md`](./DISENO-RPCS-Y-CONCURRENCIA.md) para
 
 ## Storage privado de comprobantes
 
-Consulta [`DISENO-STORAGE-COMPROBANTES.md`](./DISENO-STORAGE-COMPROBANTES.md) para el bucket privado, rutas, permisos de carga/lectura, retención y pruebas. Los límites de archivo están aprobados: máximo 5 MB, MIME JPEG/PNG/WebP/PDF, un archivo por intento y sin sobrescritura. Su configuración real sigue pendiente de implementación y pruebas.
+Consulta [`DISENO-STORAGE-COMPROBANTES.md`](./DISENO-STORAGE-COMPROBANTES.md) para el bucket privado, rutas, permisos, retención y pruebas. Los límites aprobados son 5,000,000 bytes por archivo, MIME JPEG/PNG/WebP/PDF, un archivo por intento y sin sobrescritura. El usuario únicamente consulta el estado del pago; el administrador activo accede temporalmente al comprobante para verificarlo. No se integrará antivirus externo en la primera versión. La configuración real sigue pendiente de implementación y pruebas.
 
 
 ## Flujo de carga y validación de comprobantes
