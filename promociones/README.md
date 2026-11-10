@@ -14,6 +14,9 @@ Permitir que una persona solicite promocionar uno de sus avisos mediante los pro
 - No reutilizar ni eliminar `campanas_destacado` sin una decisión explícita basada en su uso real.
 - No modificar la tabla de avisos, su contenido, métricas, comentarios, reacciones o medios para representar una promoción.
 
+## Catálogo comercial
+Consultar CATALOGO-COMERCIAL.md para precios y duraciones iniciales: Destacado $299 MXN por 30 días, Urgente $99 MXN por 7 días y paquete combinado $398 MXN con ambas duraciones independientes. El paquete combinado no tiene descuento de lanzamiento.
+
 ## Modelo funcional previsto
 1. El propietario elige uno de sus avisos y solicita Destacado, Urgente o ambos.
 2. Elige un paquete y consulta precio, duración y condiciones.
