@@ -13,6 +13,22 @@ function plainText(value) {
   return String(value ?? '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function videoPoster(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  const youtube = raw.match(/(?:youtu\\.be\\/|youtube(?:-nocookie)?\\.com\\/(?:watch\\?.*v=|embed\\/|shorts\\/))([\\w-]{11})/i);
+  if (youtube) return 'https://i.ytimg.com/vi/' + youtube[1] + '/hqdefault.jpg';
+  if (/res\\.cloudinary\\.com\\//i.test(raw) && /\\/video\\/upload\\//i.test(raw)) {
+    return raw.replace('/video/upload/', '/video/upload/so_0,f_jpg/').replace(/\\.(mp4|mov|webm|m4v)(?=([?#]|$))/i, '.jpg');
+  }
+  return '';
+}
+function versionedImage(value, version) {
+  const image = String(value || '');
+  if (!image || !version) return image;
+  try { const parsed = new URL(image); parsed.searchParams.set('v', String(version)); return parsed.href; }
+  catch (_) { return image; }
+}
 function absoluteImage(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return 'https://elbarrio.me/icons/logo-elbarrio.png';
@@ -29,7 +45,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600');
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
 
   const id = String(req.query?.id ?? '').trim();
   if (!id || id.length > 80) {
@@ -41,7 +57,7 @@ module.exports = async function handler(req, res) {
     const endpoint = new URL('/rest/v1/avisos', SUPABASE_URL);
     endpoint.searchParams.set('id', 'eq.' + id);
     endpoint.searchParams.set('status', 'eq.activo');
-    endpoint.searchParams.set('select', 'id,titulo,contenido,categoria,imagen_url,created_at');
+    endpoint.searchParams.set('select', 'id,titulo,contenido,categoria,imagen_url,video_url,created_at,updated_at');
     endpoint.searchParams.set('limit', '1');
 
     const response = await fetch(endpoint.toString(), {
@@ -61,7 +77,9 @@ module.exports = async function handler(req, res) {
 
     const title = plainText(post.titulo || 'Aviso de El Barrio').slice(0, 180);
     const description = plainText(post.contenido || 'Conoce esta publicación en El Barrio.').slice(0, 260);
-    const image = absoluteImage(post.imagen_url);
+    const version = post.updated_at || post.created_at || '';
+    const imageSource = post.imagen_url || videoPoster(post.video_url) || 'https://elbarrio.me/img/banner-elbarrio2.webp';
+    const image = absoluteImage(versionedImage(imageSource, version));
     const target = 'https://elbarrio.me/aviso.html?id=' + encodeURIComponent(post.id);
     const safeTarget = escapeHtml(target);
     const safeTitle = escapeHtml(title);
