@@ -81,9 +81,10 @@ Un índice único parcial sobre pagos con estado `verificado` refuerza la regla 
 
 #### `activar_promocion(p_solicitud_id uuid)`
 1. Exige administrador activo.
-2. Bloquea la solicitud.
-3. Exige estado `pago_verificado` y un pago verificado.
-4. Bloquea la fila del aviso con `SELECT ... FOR UPDATE`.
+2. Lee preliminarmente `aviso_id` desde la solicitud, sin conservar bloqueo.
+3. Bloquea la fila del aviso con `SELECT ... FOR UPDATE`.
+4. Bloquea la solicitud con `SELECT ... FOR UPDATE`.
+5. Revalida que la solicitud siga asociada al mismo aviso, que conserve estado `pago_verificado` y que exista un pago verificado.
 5. Revalida que el aviso siga en estado `activo`.
 6. Si el aviso ya no está activo, cambia la solicitud a `revision_administrativa`, registra el evento y no crea promociones.
 7. Marca como vencidas las promociones del mismo aviso/tipo cuyo `vence_at <= now()`.
@@ -106,11 +107,14 @@ Función interna no expuesta como RPC pública. Se ejecuta por Cron con permisos
 ## 3. Orden de bloqueo para evitar deadlocks
 
 Para operaciones que necesitan ambas entidades, adoptar un orden fijo:
-1. Fila de `public.avisos` cuando la operación requiere serializar el ciclo comercial de un aviso.
-2. Fila de `public.solicitudes_promocion`.
-3. Filas de pagos o componentes en orden determinista por UUID.
+1. Obtener preliminarmente el `aviso_id` sin conservar bloqueo.
+2. Fila de `public.avisos` con `SELECT ... FOR UPDATE`.
+3. Fila de `public.solicitudes_promocion` con `SELECT ... FOR UPDATE`.
+4. Filas de pagos o componentes en orden determinista por UUID.
 
-Para cancelar y revisar una solicitud, ambas operaciones bloquean primero la misma fila de solicitud. Para crear/activar promociones, bloquear primero el aviso y luego la solicitud. Si una operación necesita ambas, debe respetar el orden global y no invertirlo.
+La lectura preliminar solo sirve para localizar el aviso. Después de adquirir los bloqueos se debe volver a validar la relación, el propietario, el estado y las condiciones de negocio. En particular, `activar_promocion` debe bloquear aviso → solicitud, nunca solicitud → aviso.
+
+Las operaciones que solo necesitan la solicitud, como cancelar o revisar, pueden bloquear directamente esa fila, pero no deben intentar adquirir después el bloqueo del aviso. Si una operación futura necesita ambas entidades, debe respetar siempre el orden global y no invertirlo.
 
 Las funciones deben ser transaccionales, idempotentes cuando corresponda y usar restricciones únicas como defensa final. No se debe confiar en una consulta previa sin bloqueo.
 
