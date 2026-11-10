@@ -197,7 +197,7 @@ Las políticas deben diseñarse evitando policies PERMISSIVE superpuestas que am
 Todas las funciones SECURITY DEFINER deberán fijar `search_path`, cualificar nombres de objetos, revocar EXECUTE de `PUBLIC` y otorgar permisos solo a roles necesarios. La función admin reutiliza `private.es_admin()` como validación del rol administrativo real.
 
 ## 8. Preguntas que bloquean la migración
-1. ¿Se permitirá solicitar otra promoción del mismo tipo mientras una anterior sigue activa? Recomendación: no; permitir una nueva solicitud cuando haya vencido la vigente.
+1. **Regla aprobada:** no se permite solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente. Se permitirá una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación debe ejecutarse en servidor dentro de la transacción de solicitud y volver a comprobarse al activar, para evitar solicitudes simultáneas o carreras.
 2. ¿Qué política se aplicará si un aviso se elimina mientras una solicitud está en revisión o después de pagar? Recomendación: bloquear activación, revisión manual y no perder el historial.
 3. ¿Cuánto tiempo se conservarán los comprobantes y quién puede eliminarlos? Debe decidirse antes de habilitar cargas reales.
 4. ¿Se permitirá al usuario cancelar una solicitud antes de la aprobación? Recomendación: sí, mientras esté pendiente de revisión o ajustes.
