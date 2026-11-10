@@ -30,7 +30,7 @@
       #chartOnline .presence-copy{min-width:0;flex:1}
       #chartOnline .presence-copy>div{min-width:0}
       #onlineUsersList{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
-      .eb-online-user{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.82);color:#34495e;font:600 12px/1.2 inherit;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
+      .eb-online-user{display:inline-flex;align-items:center;gap:7px;max-width:100%;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.82);color:#34495e;font-family:inherit;font-size:12px;font-weight:600;line-height:1.2;cursor:pointer;transition:background .18s,border-color .18s,transform .18s}
       .eb-online-user:hover{background:#fff8e9;border-color:#d4a043;transform:translateY(-1px)}
       .eb-online-user:focus-visible,.eb-inbox-button:focus-visible,.eb-chat-close:focus-visible,.eb-chat-send:focus-visible{outline:3px solid rgba(52,152,219,.35);outline-offset:2px}
       .eb-online-user:disabled{cursor:default;opacity:.65;transform:none}
@@ -58,7 +58,7 @@
       .eb-chat-bubble.mine{align-self:flex-end;background:#eaf3f8;border-color:#d2e3ee}
       .eb-chat-time{display:block;margin-top:5px;color:#82909b;font-size:10px;text-align:right}
       .eb-chat-compose{display:flex;align-items:flex-end;gap:9px;padding:12px;border-top:1px solid #e0e8ed;background:#fff}
-      .eb-chat-compose textarea{flex:1;min-height:42px;max-height:110px;resize:vertical;padding:10px 12px;border:1px solid #d7e1e8;border-radius:12px;font:13px/1.4 inherit;color:#34495e}
+      .eb-chat-compose textarea{flex:1;min-height:42px;max-height:110px;resize:vertical;padding:10px 12px;border:1px solid #d7e1e8;border-radius:12px;font-family:inherit;font-size:13px;line-height:1.4;color:#34495e}
       .eb-chat-send{padding:10px 15px;border:0;border-radius:11px;background:#2c3e50;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
       .eb-chat-send:disabled{opacity:.5;cursor:wait}
       .eb-chat-note{padding:8px 14px;color:#82909b;text-align:center;font-size:10px}
@@ -221,8 +221,8 @@
       await cargarMensajes();
     } catch (error) {
       console.warn('No se pudo enviar el mensaje privado:', error);
-      window.ElBarrioUI?.mostrarError?.('No se pudo enviar el mensaje. Intenta nuevamente.');
-      if (!window.ElBarrioUI?.mostrarError) alert('No se pudo enviar el mensaje. Intenta nuevamente.');
+      if (typeof window.mostrarError === 'function') window.mostrarError('No se pudo enviar el mensaje. Intenta nuevamente.');
+      else alert('No se pudo enviar el mensaje. Intenta nuevamente.');
     } finally {
       enviando = false;
       button.disabled = false;
