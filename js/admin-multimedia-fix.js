@@ -41,7 +41,7 @@
         if (!cont || !url) return;
         cont.innerHTML = tipo === 'imagen'
             ? `<img src="${url}" alt="Vista previa" style="max-width:100%;max-height:220px;border-radius:10px;object-fit:contain;">`
-            : `<video src="${url}" controls playsinline style="max-width:100%;max-height:220px;border-radius:10px;"></video>`;
+            : `<video src="${url}" controls playsinline preload="metadata" class="eb-video-standard" style="max-width:100%;max-height:220px;border-radius:10px;"></video>`;
     }
 
     async function subirArchivo(file, tipo) {
