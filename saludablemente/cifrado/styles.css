@@ -635,3 +635,46 @@ form .field-hint {
     padding: 10px !important;
   }
 }
+
+
+/* Distribución compacta dentro de cada sección */
+form .form-section .form-grid,
+form .form-section .fields-grid,
+form fieldset .form-grid,
+form fieldset .fields-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Los títulos de sección ocupan toda la fila */
+form .form-section > h3,
+form fieldset > legend {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  form .form-section .form-grid,
+  form .form-section .fields-grid,
+  form fieldset .form-grid,
+  form fieldset .fields-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  form .form-section .form-grid,
+  form .form-section .fields-grid,
+  form fieldset .form-grid,
+  form fieldset .fields-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  form .form-section .form-grid,
+  form .form-section .fields-grid,
+  form fieldset .form-grid,
+  form fieldset .fields-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
