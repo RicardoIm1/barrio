@@ -215,3 +215,64 @@ Todas las funciones SECURITY DEFINER deberán fijar `search_path`, cualificar no
 - No se ha modificado `admin.html`, `js/admin.js`, la portada ni los flags actuales.
 - No se ha reutilizado ni alterado `campanas_destacado`.
 - No se ha conectado una pasarela de pago.
+
+## 10. Diseño operativo del borrado automático de comprobantes
+
+### Arquitectura elegida para implementar después de aprobar el esquema
+
+Se propone un proceso diario con **Supabase Cron + pg_net + Edge Function dedicada**, porque la eliminación del archivo debe pasar por la Storage API y no por SQL directo sobre `storage.objects`.
+
+Flujo previsto:
+
+1. `pg_cron` ejecuta una tarea diaria.
+2. La tarea invoca por HTTPS una Edge Function exclusiva para retención de comprobantes, mediante `pg_net`.
+3. La función valida un secreto de ejecución dedicado y utiliza credenciales privilegiadas guardadas únicamente como secretos del entorno de Edge Functions.
+4. La función obtiene un lote pequeño de comprobantes cuyo plazo de retención ya venció y que no tengan una retención legal/administrativa activa.
+5. Antes de borrar, vuelve a comprobar que el caso no esté en revisión administrativa ni tenga una incidencia abierta.
+6. El archivo se elimina usando `supabase.storage.from(bucket).remove([path])`.
+7. Solo después de confirmar la eliminación, se marca el comprobante como eliminado y se agrega un evento de auditoría.
+8. Si falla Storage o la actualización de metadatos, el registro no se marca como eliminado. El siguiente ciclo reintenta de forma idempotente y deja constancia del error.
+
+### Datos de control necesarios
+
+La implementación deberá incorporar, como mínimo, campos o una entidad equivalente para:
+
+- Fecha límite de eliminación: calculada como activación + 7 días naturales.
+- Fecha efectiva de eliminación del archivo.
+- Indicador de retención suspendida y motivo.
+- Actor y fecha de liberación de una retención.
+- Estado del último intento y detalle técnico saneado del error, sin guardar secretos.
+- Identificador/ruta interna del objeto, nunca una URL pública.
+
+La suspensión de retención debe ser explícita, auditable y reversible únicamente por un administrador autorizado. Además de revisar el indicador, el proceso debe comprobar el estado de la solicitud para no borrar comprobantes vinculados a `revision_administrativa`.
+
+### Seguridad del ejecutor
+
+- La Edge Function no acepta rutas ni IDs arbitrarios enviados por el solicitante HTTP.
+- El endpoint solo procesa lotes seleccionados desde la base de datos.
+- El secreto que autoriza la invocación se guarda en Supabase Vault y en los secretos de la función; nunca en el repositorio ni en el navegador.
+- La credencial privilegiada para Storage permanece exclusivamente en el entorno servidor.
+- No se devuelve al invocador información personal, rutas completas ni datos bancarios.
+- La función debe limitar el tamaño del lote, registrar conteos y resultados por lote, y evitar ejecuciones concurrentes sobre el mismo comprobante.
+- La función no modifica `avisos`, `admin.html`, `js/admin.js`, los flags administrativos ni el bucket `media`.
+
+### Frecuencia y tolerancia operativa
+
+La tarea correrá una vez al día. El archivo será elegible al cumplirse las 168 horas desde la activación y se eliminará en el siguiente ciclo exitoso. Por la frecuencia diaria, la eliminación efectiva podrá ocurrir dentro de las 24 horas posteriores al vencimiento del plazo. Si se requiere una ventana más estricta, deberá aumentarse la frecuencia del cron.
+
+### Pruebas de aceptación antes de producción
+
+1. Un comprobante con menos de 7 días desde la activación no se elimina.
+2. Un comprobante que ya cumplió 7 días y no tiene retención se elimina mediante Storage API.
+3. Un comprobante con retención suspendida permanece en Storage aunque haya vencido su plazo.
+4. Un comprobante ligado a una solicitud en `revision_administrativa` no se elimina.
+5. Al liberar una retención, el comprobante vencido vuelve a ser elegible en el siguiente ciclo.
+6. Un error de Storage no marca el archivo como eliminado y permite reintento.
+7. Repetir el proceso no duplica eventos ni altera registros ya procesados.
+8. La eliminación del archivo no borra el registro de pago ni sus metadatos de auditoría.
+9. Una invocación sin el secreto correcto es rechazada.
+10. No hay escrituras en `avisos`, `campanas_destacado` ni en el bucket `media`.
+
+### Condición de activación
+
+Este diseño no crea ni habilita todavía extensiones, cron jobs, secretos, Edge Functions, buckets o políticas. Primero deben existir y aprobarse el esquema definitivo de promociones, el bucket privado y las reglas de retención. Después se implementará en una rama/entorno de prueba, se ejecutarán las pruebas anteriores y se solicitará autorización específica antes de desplegar o activar el cron en producción.
