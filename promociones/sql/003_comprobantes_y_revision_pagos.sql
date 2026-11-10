@@ -117,13 +117,28 @@ begin
      and estado_carga in ('pendiente_carga', 'error')
      and reserva_expira_at <= now();
 
+  -- Recuperación de validaciones abandonadas. Una validación reciente nunca
+  -- se pisa; una antigua se vuelve reintentable o expirada según su reserva.
+  update public.pagos_promocion
+     set estado_carga = case
+           when reserva_expira_at <= now() then 'expirada'
+           else 'error'
+         end,
+         updated_at = now()
+   where solicitud_id = p_solicitud_id
+     and estado_pago = 'pendiente'
+     and estado_carga = 'validando'
+     and updated_at <= now() - interval '5 minutes';
+
   if exists (
     select 1
       from public.pagos_promocion as p
      where p.solicitud_id = p_solicitud_id
        and p.estado_pago = 'pendiente'
-       and p.estado_carga in ('pendiente_carga', 'validando')
-       and p.reserva_expira_at > now()
+       and (
+         (p.estado_carga = 'pendiente_carga' and p.reserva_expira_at > now())
+         or (p.estado_carga = 'validando' and p.updated_at > now() - interval '5 minutes')
+       )
   ) then
     raise exception 'Ya existe un intento de carga vigente para esta solicitud' using errcode = '23505';
   end if;
@@ -221,8 +236,12 @@ begin
   end if;
 
   if v_pago.estado_pago <> 'pendiente'
-     or v_pago.estado_carga not in ('pendiente_carga', 'error')
+     or v_pago.estado_carga not in ('pendiente_carga', 'error', 'validando')
      or v_pago.reserva_expira_at <= now()
+     or (
+       v_pago.estado_carga = 'validando'
+       and v_pago.updated_at > now() - interval '5 minutes'
+     )
      or v_solicitud.estado not in ('aprobada_pendiente_pago', 'pago_observado') then
     raise exception 'La reserva expiró o ya no admite validación' using errcode = '22023';
   end if;
@@ -278,7 +297,7 @@ begin
     raise exception 'Operación exclusiva del servicio de validación' using errcode = '42501';
   end if;
 
-  if p_resultado not in ('valido', 'invalido', 'error') then
+  if p_resultado is null or p_resultado not in ('valido', 'invalido', 'error') then
     raise exception 'Resultado de validación no permitido' using errcode = '22023';
   end if;
 
@@ -379,7 +398,7 @@ begin
        when 'invalido' then 'comprobante_invalido'
        else 'error_validacion_comprobante'
      end,
-     'pendiente_carga', v_estado_carga,
+     v_pago.estado_carga, v_estado_carga,
      jsonb_build_object('codigo', coalesce(p_codigo, 'sin_codigo'),
                         'bytes_observados', p_bytes));
 
