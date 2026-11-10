@@ -60,6 +60,12 @@ begin
     raise exception 'El comprobante ya fue eliminado' using errcode = '22023';
   end if;
 
+  -- La reclamación de limpieza actúa como una ventana breve de exclusión:
+  -- no se permite suspender mientras Storage API procesa el objeto.
+  if v_pago.ultimo_intento_borrado_at > now() - interval '15 minutes' then
+    raise exception 'La limpieza de este comprobante está en curso; vuelve a intentar en unos minutos' using errcode = '55P03';
+  end if;
+
   if v_pago.retencion_suspendida then
     return jsonb_build_object('pago_id', p_pago_id, 'retencion_suspendida', true, 'idempotente', true);
   end if;
