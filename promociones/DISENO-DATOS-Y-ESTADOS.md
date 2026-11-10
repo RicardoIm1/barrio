@@ -138,8 +138,11 @@ Los clientes no tienen permiso de UPDATE o DELETE sobre la bitácora. Las funcio
 | `pago_reportado` | Pago observado | `pago_observado` | Admin |
 | `pago_observado` | Usuario reporta nuevo comprobante | `pago_reportado` | Usuario |
 | `pago_reportado` | Verificar pago | `pago_verificado` | Admin |
-| `pago_verificado` | Activar componentes | `activa` | Admin |
+| `pago_verificado` | Activar componentes, si el aviso sigue activo y supera validaciones | `activa` | Admin |
+| `pago_verificado` | Aviso eliminado o no activo al intentar activar | `revision_administrativa` | Sistema / admin |
 | `activa` | Vencen todos los componentes | `vencida` | Sistema |
+
+`revision_administrativa` es un estado de excepción: bloquea la activación automática y exige una resolución explícita del administrador. No implica por sí mismo reembolso, cancelación ni pérdida del pago reportado o verificado. La decisión y su fundamento deben quedar en la bitácora.
 
 Rechazos de pago no deben confundirse con rechazo editorial. Si un comprobante es inválido o el importe no coincide, el pago se marca observado o rechazado y la solicitud permanece sin activar, con una transición explícita que permita corregir o cerrar el caso.
 
@@ -163,9 +166,10 @@ El estado de la solicitud no debe impedir que el componente destacado siga activ
 9. Activar es transaccional: todas las filas de componentes que se activan en esa acción deben crearse correctamente o no crearse ninguna.
 10. Una operación repetida no puede duplicar solicitudes, pagos verificados ni promociones activas. Usar restricciones únicas e idempotencia en las funciones RPC.
 11. La expiración de una promoción no modifica `public.avisos.status`, sus métricas ni los campos `urgente` y `destacado`.
-12. Si el aviso se elimina o deja de estar activo antes de la activación, la activación debe bloquearse y requerir revisión administrativa.
-13. No permitir activar dos promociones vigentes del mismo tipo para el mismo aviso sin una política de traslapes aprobada.
-14. Toda transición debe insertar evento en bitácora dentro de la misma transacción.
+12. Si el aviso se elimina o deja de estar activo antes de la activación, la activación se bloquea. Si ya existe un pago reportado o verificado, la solicitud pasa a `revision_administrativa`, conserva todos sus registros y comprobantes, y requiere resolución expresa del administrador. No se ejecuta reembolso, cancelación ni eliminación de evidencia de forma automática.
+13. No permitir solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente de ese tipo. Se permite una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación se ejecuta en servidor dentro de la transacción de solicitud y vuelve a comprobarse al activar.
+14. Destacado y Urgente pueden coexistir en el mismo aviso, porque son componentes distintos con vigencias independientes.
+15. Toda transición debe insertar evento en bitácora dentro de la misma transacción.
 
 ## 5. Acceso y RLS propuestos
 - `promocion_productos`: lectura de productos activos para usuarios; escritura solo por administrador mediante función protegida.
@@ -191,14 +195,14 @@ Las políticas deben diseñarse evitando policies PERMISSIVE superpuestas que am
 - `revisar_solicitud_promocion(solicitud_id, decision, nota)`: solo admin; permite aprobar, pedir ajustes o rechazar.
 - `reportar_pago_promocion(solicitud_id, importe, comprobante_path, referencia)`: valida propietario y estado; registra intento y evento.
 - `revisar_pago_promocion(pago_id, decision, nota)`: solo admin; observa, rechaza o verifica importe y evidencia.
-- `activar_promocion(solicitud_id)`: solo admin; exige pago verificado, aviso activo, ausencia de traslape y crea componentes con sus fechas de vigencia.
+- `activar_promocion(solicitud_id)`: solo admin; exige pago verificado, aviso activo, ausencia de traslape y crea componentes con sus fechas de vigencia. Si el aviso ya no está activo, no crea promociones y deriva la solicitud a `revision_administrativa`.
 - `vencer_promociones()`: función de sistema idempotente que marca vencidos los componentes cuyo `vence_at` ya pasó y cierra la solicitud cuando todos sus componentes terminaron.
 
 Todas las funciones SECURITY DEFINER deberán fijar `search_path`, cualificar nombres de objetos, revocar EXECUTE de `PUBLIC` y otorgar permisos solo a roles necesarios. La función admin reutiliza `private.es_admin()` como validación del rol administrativo real.
 
 ## 8. Preguntas que bloquean la migración
 1. **Regla aprobada:** no se permite solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente. Se permitirá una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación debe ejecutarse en servidor dentro de la transacción de solicitud y volver a comprobarse al activar, para evitar solicitudes simultáneas o carreras.
-2. ¿Qué política se aplicará si un aviso se elimina mientras una solicitud está en revisión o después de pagar? Recomendación: bloquear activación, revisión manual y no perder el historial.
+2. **Regla aprobada:** si un aviso se elimina o deja de estar activo después de reportar el pago y antes de activar la promoción, se bloquea la activación y el caso pasa a revisión administrativa. Se conservan solicitud, pagos, comprobantes e historial. No se presume reembolso ni cancelación; el administrador debe resolver el caso y registrar su decisión.
 3. ¿Cuánto tiempo se conservarán los comprobantes y quién puede eliminarlos? Debe decidirse antes de habilitar cargas reales.
 4. ¿Se permitirá al usuario cancelar una solicitud antes de la aprobación? Recomendación: sí, mientras esté pendiente de revisión o ajustes.
 
