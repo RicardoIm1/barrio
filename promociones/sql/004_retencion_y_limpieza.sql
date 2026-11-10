@@ -193,6 +193,7 @@ begin
      where p.estado_pago = 'pendiente'
        and p.estado_carga in ('pendiente_carga', 'error', 'validando')
        and p.reserva_expira_at <= now()
+       and not p.retencion_suspendida
        and (p.estado_carga <> 'validando'
             or p.updated_at <= now() - interval '5 minutes')
     returning p.id, p.solicitud_id
@@ -225,15 +226,33 @@ begin
          p.ultimo_intento_borrado_at is null
          or p.ultimo_intento_borrado_at <= now() - interval '20 hours'
        )
-     order by coalesce(p.comprobante_eliminar_despues_de, p.reserva_expira_at), p.id
-     for update skip locked
+    union
+    -- Los CTE de escritura comparten snapshot; incluir explícitamente las
+    -- reservas recién expiradas para limpiarlas en este mismo ciclo.
+    select rv.id
+      from reservas_vencidas as rv
+     where not exists (
+       select 1
+         from public.pagos_promocion as p2
+        where p2.id = rv.id
+          and (p2.retencion_suspendida
+               or p2.ultimo_intento_borrado_at > now() - interval '20 hours')
+     )
+  ),
+  candidatas_ordenadas as (
+    select p.id,
+           coalesce(p.comprobante_eliminar_despues_de, p.reserva_expira_at) as fecha_orden
+      from public.pagos_promocion as p
+      join candidatas as c on c.id = p.id
+     order by fecha_orden, p.id
+     for update of p skip locked
      limit v_limit
   ),
   reclamadas as (
     update public.pagos_promocion as p
        set ultimo_intento_borrado_at = now(),
            updated_at = now()
-      from candidatas as c
+      from candidatas_ordenadas as c
      where p.id = c.id
     returning
       p.id,
