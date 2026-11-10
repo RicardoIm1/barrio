@@ -1741,7 +1741,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
           const a=item.aviso,v=item.datos;
           const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
           const imagen=imagenesPorAviso.get(String(a.id));
-          const miniatura=imagen&&/^https?:\\/\\//i.test(imagen)?'<img class="fu-aviso-thumb" src="'+esc(imagen)+'" alt="Imagen de '+esc(a.titulo||"aviso")+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">':'<span class="fu-aviso-placeholder" aria-hidden="true">▧</span>';
+          const miniatura=imagen&&(imagen.startsWith("https://")||imagen.startsWith("http://"))?'<img class="fu-aviso-thumb" src="'+esc(imagen)+'" alt="Imagen de '+esc(a.titulo||"aviso")+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">':'<span class="fu-aviso-placeholder" aria-hidden="true">▧</span>';
           return '<tr><td><div class="fu-aviso-cell">'+miniatura+'<div><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></div></div></td><td>'+esc(label)+'</td><td class="fu-num"><strong>'+item.efectividad.toFixed(1)+'%</strong></td><td class="fu-num">'+fmt(item.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(item.interacciones)+'</td></tr>';
         }).join("");
       }
