@@ -76,3 +76,8 @@ Consulta [`DISENO-STORAGE-COMPROBANTES.md`](./DISENO-STORAGE-COMPROBANTES.md) pa
 ## Flujo de carga y validación de comprobantes
 
 Consulta [DISENO-CARGA-VALIDACION.md](./DISENO-CARGA-VALIDACION.md) para la secuencia de reserva, carga privada, validación de contenido en servidor, recuperación de fallos y pruebas. Se aprobó el límite exacto de 5,000,000 bytes y que el usuario no descargue el comprobante, sino que consulte el estado del pago. No se contratará análisis antimalware externo en la primera versión. Es diseño únicamente; no se han creado funciones ni políticas. Las reservas incompletas vencen a los 30 minutos y una limpieza automática diaria retirará las reservas vencidas no validadas y sus objetos huérfanos mediante Storage API.
+
+
+## Auditoría de Storage y Data API
+
+Consulta [AUDITORIA-STORAGE-DATA-API.md](./AUDITORIA-STORAGE-DATA-API.md) para los resultados de inspección de solo lectura. Se observó un único bucket público `media` con límite de 10 MiB; el límite global configurado no pudo verificarse mediante SQL. También se identificaron privilegios por defecto amplios para tablas, funciones y secuencias nuevas en `public`, por lo que la futura migración deberá revocarlos expresamente y conceder solo permisos mínimos. No se modificó Supabase.
