@@ -284,7 +284,7 @@
       abrirModal();
       await mostrarBandeja();
     });
-    panel.append(button);
+    panel.querySelector('.presence-copy > div')?.append(button);
   }
 
   function instalarRealtime() {
