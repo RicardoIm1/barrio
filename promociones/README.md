@@ -81,3 +81,8 @@ Consulta [DISENO-CARGA-VALIDACION.md](./DISENO-CARGA-VALIDACION.md) para la secu
 ## Auditoría de Storage y Data API
 
 Consulta [AUDITORIA-STORAGE-DATA-API.md](./AUDITORIA-STORAGE-DATA-API.md) para los resultados de inspección de solo lectura. Se observó un único bucket público `media` con límite de 10 MiB; el límite global configurado no pudo verificarse mediante SQL. También se identificaron privilegios por defecto amplios para tablas, funciones y secuencias nuevas en `public`, por lo que la futura migración deberá revocarlos expresamente y conceder solo permisos mínimos. No se modificó Supabase.
+
+
+## Revisión de permisos y concurrencia
+
+Consulta [REVISION-PERMISOS-Y-CONCURRENCIA.md](./REVISION-PERMISOS-Y-CONCURRENCIA.md) para los hallazgos del borrador SQL, el orden obligatorio de bloqueo y los requisitos de privilegios mínimos. Se corrigió el diseño documental de activación para bloquear aviso → solicitud. No se ejecutó SQL ni se modificó Supabase.
