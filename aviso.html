@@ -77,6 +77,7 @@ body{padding-top:4rem!important}
 @media(max-width:600px){#editar-aviso-panel{padding:15px}.editar-aviso-grid{grid-template-columns:1fr}.editar-aviso-campo.ancho{grid-column:auto}.mas-avisos{padding:17px}.mas-aviso-item{grid-template-columns:68px minmax(0,1fr);gap:10px;padding:9px}.mas-aviso-item img,.mas-aviso-item video,.mas-aviso-item iframe,.mas-aviso-item-sin-imagen{width:68px;height:62px}.mas-aviso-video{width:68px;height:62px}.editar-aviso-acciones button{flex:1}}
 
 .share-post-btn-detail{width:36px;height:36px;min-width:36px;padding:0;border-radius:50%;background:#f8fafb;border-color:#dce3e9;color:var(--primary)}.share-post-btn-detail:hover{background:#fff7e6;border-color:var(--gold)}
+.stats-row .stat-item{font-family:inherit;font-size:10pt;font-weight:400}.stats-row .interacciones-stat{font-weight:400}
 </style>
   <link rel="stylesheet" href="/css/tipografia-global.css?v=20261106-1">
 </head>
@@ -91,7 +92,7 @@ body{padding-top:4rem!important}
 <script>
 const AVISO_ID=new URLSearchParams(location.search).get('id');
 const WHATSAPP_EL_BARRIO='523222654110';
-let avisoActual=null,usuarioActual=null,usuarioAuth=null,masAvisosCursor=null,masAvisosCargando=false,masAvisosFin=false,masAvisosObserver=null;
+let avisoActual=null,usuarioActual=null,usuarioAuth=null,masAvisosOffset=0,masAvisosCargando=false,masAvisosFin=false,masAvisosObserver=null;
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
 function fecha(v){if(!v)return '';const texto=String(v).trim();const valorUTC=/(?:Z|[+-]\d{2}:?\d{2})$/i.test(texto)?texto:texto+'Z';const d=new Date(valorUTC);return Number.isNaN(d.getTime())?texto:d.toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short',timeZone:'America/Bahia_Banderas'})}
 function url(v){const s=String(v??'').trim();return /^https?:\/\//i.test(s)||s.startsWith('/')||s.startsWith('./')?s:''}
@@ -210,21 +211,21 @@ function bloquePatrocinados(){return '<section class="patrocinados" aria-labelle
 function bloqueMasAvisos(autor){return '<section class="mas-avisos" id="mas-avisos"><h2>Más avisos de '+esc(autor)+'</h2><p class="mas-avisos-intro">Publicaciones anteriores de este usuario, de la más reciente a la más antigua.</p><div class="mas-avisos-lista" id="mas-avisos-lista"></div><div id="mas-avisos-sentinel">Buscando publicaciones anteriores…</div></section>'}
 
 function iniciarMasAvisos(a){
- masAvisosCursor=a.created_at||null;masAvisosCargando=false;masAvisosFin=false;masAvisosObserver?.disconnect();
- const sent=document.getElementById('mas-avisos-sentinel');if(!sent)return;if(!masAvisosCursor){sent.textContent='No hay fecha para ordenar las publicaciones.';return}
+ masAvisosOffset=0;masAvisosCargando=false;masAvisosFin=false;masAvisosObserver?.disconnect();
+ const sent=document.getElementById('mas-avisos-sentinel');if(!sent)return
  if('IntersectionObserver'in window){masAvisosObserver=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))cargarMasAvisos()},{rootMargin:'220px'});masAvisosObserver.observe(sent)}
  else sent.innerHTML='<button class="stat-item" type="button" onclick="cargarMasAvisos()">Cargar más avisos</button>';
  cargarMasAvisos();
 }
 async function cargarMasAvisos(){
- if(masAvisosCargando||masAvisosFin||!avisoActual?.created_by||!masAvisosCursor)return;
+ if(masAvisosCargando||masAvisosFin||!avisoActual?.created_by)return;
  masAvisosCargando=true;const sent=document.getElementById('mas-avisos-sentinel');
  try{
-  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,video_url,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').lt('created_at',masAvisosCursor).order('created_at',{ascending:false}).limit(6);
+  const c=await getSharedClient(),r=await c.from('avisos').select('id,titulo,created_at,imagen_url,video_url,created_by,status').eq('created_by',avisoActual.created_by).eq('status','activo').order('created_at',{ascending:false}).range(masAvisosOffset,masAvisosOffset+5);
   if(r.error)throw r.error;const items=r.data||[],list=document.getElementById('mas-avisos-lista');
   if(!items.length){masAvisosFin=true;if(sent)sent.textContent=list?.children.length?'Ya viste las publicaciones anteriores.':'No hay más avisos publicados por este usuario.';masAvisosObserver?.disconnect();return}
   for(const x of items){if(String(x.id)===String(AVISO_ID))continue;const link=document.createElement('a');link.className='mas-aviso-item';link.href='/aviso.html?id='+encodeURIComponent(x.id);const im=url(x.imagen_url||x.imagen),vid=url(x.video_url||x.video);let thumb='';if(vid){const embed=yt(vid);if(embed){const videoId=embed.split('/').pop();thumb='<span class="mas-aviso-video"><iframe src="'+esc(embed)+'?autoplay=1&mute=1&loop=1&playlist='+encodeURIComponent(videoId)+'&playsinline=1&controls=0&modestbranding=1" title="Vista previa del video" loading="lazy" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe><span class="mas-aviso-play">▶</span></span>'}else{thumb='<span class="mas-aviso-video"><video autoplay muted loop playsinline preload="metadata"><source src="'+esc(vid)+'" type="video/mp4"></video><span class="mas-aviso-play">▶</span></span>'}}else if(im){thumb='<img src="'+esc(im)+'" alt="" loading="lazy" decoding="async">'}else{thumb='<span class="mas-aviso-item-sin-imagen">EL BARRIO</span>'}link.innerHTML=thumb+'<span><strong>'+esc(x.titulo||'Aviso')+'</strong><small>'+esc(fecha(x.created_at))+'</small></span>';list.appendChild(link)}
-  masAvisosCursor=items[items.length-1].created_at;
+  masAvisosOffset+=items.length;
   if(items.length<6){masAvisosFin=true;if(sent)sent.textContent='No hay más publicaciones anteriores.';masAvisosObserver?.disconnect()}else if(sent)sent.textContent='Desplázate para ver publicaciones más antiguas…';
  }catch(err){console.warn('Más avisos:',err);if(sent)sent.textContent='No se pudieron cargar más avisos. Intenta desplazarte de nuevo.'}
  finally{masAvisosCargando=false}
