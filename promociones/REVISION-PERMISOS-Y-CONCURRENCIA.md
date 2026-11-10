@@ -103,3 +103,20 @@ Se reemplazó el borrador SQL inicial por una propuesta más estricta en `sql/00
 - No se alteraron default privileges globales ni objetos existentes.
 
 **Verificación:** se revisó el texto y sus relaciones a nivel estático. No se ejecutó en PostgreSQL, no se creó una rama de base de datos Supabase y no se probó contra un motor real. La propuesta no debe considerarse sintáctica ni operacionalmente validada hasta probarla en una base aislada con los roles y extensiones del proyecto.
+
+
+## 8. Verificación estática realizada
+
+Se recuperó el archivo desde GitHub después de actualizarlo y se comprobaron automáticamente estas condiciones:
+
+- Paréntesis balanceados.
+- Seis instrucciones de creación de tabla.
+- RLS habilitado en las seis tablas.
+- Ausencia de `CREATE TABLE IF NOT EXISTS`.
+- Revocación explícita de privilegios de las seis tablas a `PUBLIC`, `anon`, `authenticated` y `service_role`.
+- Separación de `estado_pago` y `estado_carga`.
+- Ausencia de instrucciones que alteren `public.avisos`.
+- Ausencia de escrituras sobre el esquema `storage`.
+- Bloque transaccional `BEGIN/COMMIT`.
+
+Los nueve controles estáticos pasaron. Esto detecta errores estructurales básicos, pero **no equivale a validar la sintaxis y ejecución en PostgreSQL**. Aún faltan una prueba real en una base aislada, comprobación de permisos efectivos y pruebas de RPC/RLS/Storage. No se ejecutó ninguna instrucción SQL contra el proyecto conectado.
