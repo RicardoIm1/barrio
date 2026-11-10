@@ -67,3 +67,7 @@ La rama `main` y el administrador actual constituyen la referencia funcional. Si
 ## Diseño de RPC y concurrencia
 
 Consulta [`DISENO-RPCS-Y-CONCURRENCIA.md`](./DISENO-RPCS-Y-CONCURRENCIA.md) para los contratos de las funciones, controles de acceso, concurrencia y matriz de pruebas.
+
+## Storage privado de comprobantes
+
+Consulta [`DISENO-STORAGE-COMPROBANTES.md`](./DISENO-STORAGE-COMPROBANTES.md) para el bucket privado, rutas, permisos de carga/lectura, retención y pruebas. Los límites de archivo están propuestos, pendientes de aprobación.
