@@ -71,3 +71,8 @@ Consulta [`DISENO-RPCS-Y-CONCURRENCIA.md`](./DISENO-RPCS-Y-CONCURRENCIA.md) para
 ## Storage privado de comprobantes
 
 Consulta [`DISENO-STORAGE-COMPROBANTES.md`](./DISENO-STORAGE-COMPROBANTES.md) para el bucket privado, rutas, permisos de carga/lectura, retención y pruebas. Los límites de archivo están aprobados: máximo 5 MB, MIME JPEG/PNG/WebP/PDF, un archivo por intento y sin sobrescritura. Su configuración real sigue pendiente de implementación y pruebas.
+
+
+## Flujo de carga y validación de comprobantes
+
+Consulta [DISENO-CARGA-VALIDACION.md](./DISENO-CARGA-VALIDACION.md) para la secuencia de reserva, carga privada, validación de contenido en servidor, recuperación de fallos y pruebas. Es diseño únicamente; no se han creado funciones ni políticas.
