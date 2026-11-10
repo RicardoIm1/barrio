@@ -598,7 +598,7 @@ API.listar = async function (coleccion, filtros = {}, paginacion = {}) {
     if (!document.getElementById('estadisticas-usuario') && !localStorage.getItem('usuario')) return;
     if (document.querySelector('script[data-el-barrio-estadisticas-usuario="1"]')) return;
     const script = document.createElement('script');
-    script.src = '/js/estadisticas-usuario.js?v=20261106-4';
+    script.src = '/js/estadisticas-usuario.js?v=20261110-1';
     script.async = true;
     script.dataset.elBarrioEstadisticasUsuario = '1';
     script.onerror = () => console.warn('No se pudo cargar el módulo de estadísticas personales.');
