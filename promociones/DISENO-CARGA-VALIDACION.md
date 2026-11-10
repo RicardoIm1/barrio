@@ -34,7 +34,7 @@ Componentes:
 - Policy de Storage INSERT: autoriza exclusivamente la ruta reservada para el usuario y el intento concreto.
 - Edge Function de validación: descarga el objeto desde Storage, inspecciona contenido real y confirma o invalida la carga.
 - RPC/operación interna de finalización: registra metadatos validados y cambia el estado de carga de forma idempotente.
-- RPC de consulta/URL firmada: autoriza la lectura del archivo al propietario o a un administrador activo.
+- Operación administrativa de consulta/URL firmada: autoriza al administrador activo a visualizar o descargar temporalmente el comprobante para validar el pago. El usuario no recibe URL ni permiso de descarga.
 
 No se expondrá `service_role` ni una clave secreta en HTML, JavaScript, repositorio o navegador.
 
@@ -109,13 +109,13 @@ La duración exacta de una reserva pendiente y la frecuencia de limpieza quedan 
 ## 6. Acceso y privacidad
 
 - Anónimo: sin carga, listado ni descarga.
-- Usuario: puede iniciar carga y consultar el estado de sus propios intentos.
-- Usuario: solo puede descargar comprobantes de sus propias solicitudes, según la regla de acceso que se implemente.
-- Administrador activo: puede consultar comprobantes para revisión comercial, previa validación de rol en servidor.
+- Usuario: puede iniciar la carga y consultar únicamente el estado de sus propios intentos y pagos. No puede descargar ni volver a abrir el comprobante después de enviarlo.
+- Administrador activo: puede visualizar o descargar temporalmente el comprobante para revisión comercial, previa validación de rol en servidor.
 - Moderador: no recibe acceso administrativo automáticamente.
 - No se permite SELECT general para listar todo el bucket.
 - No se conceden UPDATE ni DELETE directos a clientes.
-- Las descargas se entregan mediante Storage autenticado o URL firmada de vida corta, emitida tras comprobar autorización. La URL no se guarda en tablas, logs ni bitácora.
+- La lectura administrativa se entrega mediante URL firmada de vida corta, emitida tras comprobar autorización. La URL no se guarda en tablas, logs ni bitácora.
+- No se genera URL firmada ni permiso de lectura para el usuario propietario. Su pantalla muestra estado del pago y, cuando corresponda, el resultado de la revisión.
 - La interfaz administrativa debe evitar incrustar el archivo como contenido activo; preferir descarga controlada. Las URLs firmadas no deben compartirse ni persistirse.
 
 Las políticas de Storage se diseñarán por operación y con autorización sobre el intento exacto. Se revisarán junto con las policies existentes para evitar que una policy PERMISSIVE adicional abra acceso por combinación OR.
@@ -142,7 +142,7 @@ No registrar el contenido del comprobante, URLs firmadas, tokens, claves ni dato
 ## 8. Pruebas de aceptación
 
 1. Usuario no autenticado no puede reservar ni cargar.
-2. Usuario A no puede reservar, cargar, validar ni descargar para usuario B.
+2. Usuario A no puede reservar, cargar ni validar para usuario B; tampoco puede descargar comprobantes propios o ajenos.
 3. Cambiar el UUID de ruta no permite escribir en otro intento.
 4. La carga rechaza un objeto de más de 5,000,000 bytes.
 5. Se rechaza MIME no incluido aunque el usuario cambie la extensión.
@@ -154,7 +154,7 @@ No registrar el contenido del comprobante, URLs firmadas, tokens, claves ni dato
 11. Un error temporal permite reintentar sin crear pagos duplicados.
 12. El usuario no puede invocar la validación con ID de intento ajeno.
 13. Moderador no obtiene acceso administrativo.
-14. La descarga requiere autorización y la URL firmada expira.
+14. Solo el administrador activo puede obtener una URL firmada temporal; el usuario propietario no puede descargar el comprobante.
 15. El borrado de inválidos/huérfanos usa Storage API.
 16. La retención aprobada de siete días y sus excepciones siguen vigentes.
 17. El bucket `media`, sus cuotas, policies y triggers permanecen intactos.
@@ -163,8 +163,8 @@ No registrar el contenido del comprobante, URLs firmadas, tokens, claves ni dato
 ## 9. Decisiones pendientes antes de implementar
 
 - Definir el tiempo de vigencia de una reserva de carga incompleta y la frecuencia del proceso de limpieza.
-- Confirmar si el usuario podrá descargar su propio comprobante después de reportarlo o únicamente consultar su estado. El diseño actual de datos permite lectura del propietario, pero debe quedar como decisión explícita de privacidad.
-- Definir si se integrará análisis antimalware externo. La validación de firmas y estructura no sustituye ese análisis.
+- Decisión aprobada: el usuario únicamente consulta el estado de su pago; no descarga ni vuelve a abrir el comprobante. El administrador activo conserva acceso temporal para verificarlo.
+- Decisión de alcance: no integrar un servicio antimalware externo en esta primera versión para reducir costos y dependencias. La validación de tamaño, MIME y firma binaria es una comprobación de formato, no un análisis antivirus ni una garantía de ausencia de malware.
 - Revisar el límite global de Storage del proyecto: el bucket puede fijar 5 MB, pero no superar el límite global configurado.
 - Confirmar los grants de Data API y RLS para las tablas nuevas; no asumir que crear una tabla en `public` la expone automáticamente.
 
