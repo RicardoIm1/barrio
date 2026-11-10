@@ -26,7 +26,7 @@ Ejemplo ilustrativo, no una ruta real:
 Reglas:
 - El primer segmento debe ser exactamente el UUID del usuario autenticado.
 - El segundo debe corresponder a una solicitud propiedad de ese usuario.
-- El nombre del archivo será un UUID generado por el cliente o servidor, no el nombre original enviado por el usuario.
+- El nombre del archivo será un UUID generado por el servidor, no el nombre original enviado por el usuario.
 - La extensión se deriva del MIME validado, no se confía en la extensión declarada.
 - No incluir nombres, correos, teléfonos, CLABE, referencias bancarias ni otros datos personales en la ruta.
 - No permitir sobrescritura (upsert: false); cada intento de pago crea un objeto nuevo.
@@ -67,7 +67,7 @@ Las políticas deben ser específicas por operación. Si la lectura se permite e
 ## 6. Restricciones de carga aprobadas
 
 El usuario aprobó expresamente los siguientes límites para cada intento de pago:
-- Tamaño máximo: **5 MB por archivo**.
+- Tamaño máximo: **5,000,000 bytes por archivo (5 MB decimales)**.
 - MIME permitidos: `image/jpeg`, `image/png`, `image/webp` y `application/pdf`.
 - Un solo archivo por intento de pago.
 - No se permite sobrescribir un objeto existente (`upsert: false`); cada nuevo intento crea una ruta/objeto independiente.
@@ -91,7 +91,7 @@ La secuencia detallada de reserva de intento, carga directa al bucket, validaci�
 6. Moderador no obtiene acceso administrativo.
 7. Administrador activo puede descargar solo para revisión autorizada mediante URL firmada temporal.
 8. No se permite sobrescribir un comprobante existente.
-9. No se permite cargar un MIME no autorizado ni archivos mayores de 5 MB; se rechaza un segundo archivo para el mismo intento.
+9. No se permite cargar un MIME no autorizado ni archivos mayores de 5,000,000 bytes; se rechaza un segundo archivo para el mismo intento.
 10. No existe permiso directo de UPDATE o DELETE para el cliente.
 11. La URL firmada expira y no se persiste.
 12. El borrado automático usa Storage API y conserva auditoría.
