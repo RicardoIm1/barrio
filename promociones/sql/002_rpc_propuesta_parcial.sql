@@ -524,6 +524,11 @@ declare
   v_promociones_vencidas integer := 0;
   v_solicitudes_vencidas integer := 0;
 begin
+  -- Impide dos ejecuciones simultáneas del mismo proceso de vencimiento.
+  if not pg_catalog.pg_try_advisory_xact_lock(7311042026, 1) then
+    return jsonb_build_object('omitido', true, 'motivo', 'ejecucion_en_curso');
+  end if;
+
   for v_promocion in
     select pa.id, pa.solicitud_id, pa.tipo
       from public.promociones_activas as pa
@@ -562,12 +567,6 @@ begin
        )
        and not exists (
          select 1
-           from public.promociones_activas as pa
-          where pa.solicitud_id = s.id
-            and pa.estado in ('programada', 'activa')
-       )
-       and not exists (
-         select 1
            from public.solicitud_promocion_items as i
           where i.solicitud_id = s.id
             and not exists (
@@ -577,34 +576,30 @@ begin
                  and pa.estado = 'vencida'
             )
        )
+     order by s.id
      for update
+  ),
+  actualizadas as (
+    update public.solicitudes_promocion as s
+       set estado = 'vencida',
+           updated_at = now()
+      from candidatas as c
+     where s.id = c.id
+       and s.estado = 'activa'
+    returning s.id
   )
-  update public.solicitudes_promocion as s
-     set estado = 'vencida',
-         updated_at = now()
-    from candidatas as c
-   where s.id = c.id
-  returning s.id;
+  insert into public.eventos_promocion
+    (solicitud_id, actor_tipo, evento, estado_anterior, estado_nuevo, detalle)
+  select a.id, 'sistema', 'solicitud_vencida', 'activa', 'vencida',
+         jsonb_build_object('motivo', 'todos_los_componentes_vencidos')
+    from actualizadas as a;
 
   get diagnostics v_solicitudes_vencidas = row_count;
 
-  insert into public.eventos_promocion
-    (solicitud_id, actor_tipo, evento, estado_anterior, estado_nuevo, detalle)
-  select s.id, 'sistema', 'solicitud_vencida', 'activa', 'vencida',
-         jsonb_build_object('motivo', 'todos_los_componentes_vencidos')
-    from public.solicitudes_promocion as s
-   where s.estado = 'vencida'
-     and s.updated_at >= now() - interval '2 seconds'
-     and not exists (
-       select 1 from public.eventos_promocion as e
-        where e.solicitud_id = s.id
-          and e.evento = 'solicitud_vencida'
-          and e.created_at >= now() - interval '2 seconds'
-     );
-
   return jsonb_build_object(
     'promociones_vencidas', v_promociones_vencidas,
-    'solicitudes_vencidas', v_solicitudes_vencidas
+    'solicitudes_vencidas', v_solicitudes_vencidas,
+    'omitido', false
   );
 end;
 $$;
