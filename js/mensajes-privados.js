@@ -36,7 +36,7 @@
       .eb-online-user:disabled{cursor:default;opacity:.65;transform:none}
       .eb-online-dot{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#2b9a68}
       .eb-online-self{background:#f3f6f8}
-      .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}
+      .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}\n      .eb-messages-guide{display:inline-flex;align-items:center;gap:5px;margin:10px 0 0 7px;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.72);color:#527083;font-size:11px;font-weight:600;text-decoration:none;transition:background .18s,border-color .18s}\n      .eb-messages-guide:hover{background:#edf5f8;border-color:#9bb9c8;color:#2c5368}\n      .eb-messages-guide:focus-visible{outline:3px solid rgba(52,152,219,.35);outline-offset:2px}
       .eb-chat-overlay[hidden]{display:none!important}
       .eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(25,39,52,.56);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
       .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:1px solid rgba(255,255,255,.82);border-radius:22px;background:linear-gradient(155deg,#fff 0%,#f8fafb 58%,#f2f6f8 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate}
