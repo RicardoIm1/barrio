@@ -7,7 +7,7 @@ Diseño técnico propuesto para revisión. No contiene migraciones ejecutables n
 
 Se propone separar la superficie pública de API de las funciones privilegiadas:
 
-- Funciones internas en el esquema no expuesto `private`, con `SECURITY DEFINER`, `SET search_path = ''`, nombres de tablas y funciones cualificados y validaciones explícitas de identidad.
+- Funciones internas en el esquema no expuesto `private`. Preferir `SECURITY INVOKER` cuando los permisos lo permitan; usar `SECURITY DEFINER` solo para operaciones que deban atravesar la ausencia de grants directos, siempre con `SET search_path = ''`, nombres cualificados y validaciones explícitas de identidad.
 - RPC públicas deliberadas y delgadas en `public`, con `SECURITY DEFINER` solo si deben operar sobre tablas sin grants directos al cliente. Cada una debe fijar `search_path = ''`, validar `auth.uid()` y autorización dentro del cuerpo, y delegar en lógica interna. Preferir `SECURITY INVOKER` cuando los grants permitan hacerlo sin abrir tablas al navegador.
 - `EXECUTE` revocado expresamente de `PUBLIC`, `anon` y `authenticated` en todas las funciones nuevas; concedido solo a los roles que deban invocar cada RPC. No asumir que el esquema privado por sí solo elimina privilegios de ejecución.
 - El esquema `private` no se expone en la API REST.
@@ -15,7 +15,7 @@ Se propone separar la superficie pública de API de las funciones privilegiadas:
 - La función administrativa valida `private.es_admin()` y no considera a moderadores como administradores.
 - Las funciones de sistema, como vencimiento, no reciben permisos de ejecución de `anon` ni `authenticated`; solo se ejecutan desde el mecanismo programado autorizado.
 
-La razón para no publicar funciones `SECURITY DEFINER` directamente es reducir la superficie de privilegios elevados expuesta por PostgREST. La capa pública debe ser mínima y la función interna debe validar cada operación.
+La capa pública contiene únicamente RPC de negocio deliberadas. Una RPC pública `SECURITY DEFINER` solo se admite cuando sea necesaria para operar sin grants directos sobre las tablas; debe revocar EXECUTE a `PUBLIC` y `anon`, concederlo solo a `authenticated` o al rol servidor que corresponda, fijar `search_path = ''` y validar autorización en el cuerpo. Las funciones internas privilegiadas no se exponen como endpoints independientes.
 
 ## 2. RPC previstas y contratos
 
