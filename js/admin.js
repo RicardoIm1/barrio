@@ -1598,7 +1598,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       '#modal-ficha-usuario .fu-stat span{display:block;font-size:.66rem;color:#728394;text-transform:uppercase}#modal-ficha-usuario .fu-stat strong{display:block;margin-top:4px;font-size:1.18rem;color:#29465d}'+
       '#modal-ficha-usuario .fu-box{margin-top:12px;padding:14px;border:1px solid #e2eaf1;border-radius:14px;background:#fff}#modal-ficha-usuario .fu-box h4{margin:0 0 10px;font-size:.9rem;color:#344f65}'+
       '#modal-ficha-usuario .fu-chart{display:block;width:100%;height:170px}#modal-ficha-usuario .fu-table-wrap{overflow-x:auto}#modal-ficha-usuario .fu-table{width:100%;border-collapse:collapse;font-size:.78rem}'+
-      '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
+      '#modal-ficha-usuario .fu-table th{text-align:left;white-space:nowrap;background:#edf2f6;padding:9px}#modal-ficha-usuario .fu-table td{padding:9px;border-top:1px solid #e8edf2}#modal-ficha-usuario .fu-aviso-cell{display:flex;align-items:center;gap:10px;min-width:190px}#modal-ficha-usuario .fu-aviso-thumb{display:block;width:48px;height:48px;flex:0 0 48px;object-fit:cover;border-radius:9px;background:#edf2f6;border:1px solid #e2eaf1}#modal-ficha-usuario .fu-aviso-placeholder{display:grid;place-items:center;width:48px;height:48px;flex:0 0 48px;border-radius:9px;background:#edf2f6;color:#8293a2;font-size:18px}#modal-ficha-usuario .fu-num{text-align:right;white-space:nowrap}#modal-ficha-usuario .fu-muted{color:#728394;padding:16px 4px}'+
       '#modal-ficha-usuario .fu-admin-form{padding:10px;border:1px solid #dfe7ee;border-radius:13px;background:#fff;font-size:.82rem}#modal-ficha-usuario .fu-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#modal-ficha-usuario .fu-admin-grid label{display:grid;gap:5px;font-weight:600;color:#536779}#modal-ficha-usuario .fu-admin-form select{width:100%;padding:8px;border:1px solid #d6e0e8;border-radius:8px;background:#fff;font:inherit}#modal-ficha-usuario .fu-admin-form fieldset{margin:12px 0 0;padding:10px;border:1px solid #e1e8ef;border-radius:9px}#modal-ficha-usuario .fu-admin-form legend{padding:0 5px;font-weight:600}#modal-ficha-usuario .fu-categorias{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}#modal-ficha-usuario .fu-categorias label{display:flex;align-items:center;gap:6px}#modal-ficha-usuario .fu-admin-actions{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}#modal-ficha-usuario .fu-admin-actions button{border:0;border-radius:9px;background:#2c3e50;color:#fff;padding:9px 14px;font:600 .82rem system-ui;cursor:pointer}'+
       '@media(max-width:620px){#modal-ficha-usuario .fu-fields,#modal-ficha-usuario .fu-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#modal-ficha-usuario .fu-panel{border-radius:14px;padding:14px}}@media(max-width:380px){#modal-ficha-usuario .fu-fields{grid-template-columns:1fr}#modal-ficha-usuario .fu-admin-grid{grid-template-columns:1fr}}';
     document.head.appendChild(st);
@@ -1712,6 +1712,19 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       if(!client)throw new Error("No está disponible la conexión con Supabase.");
       const metricas = await obtenerMetricasPublicacionesUsuario(client, id);
       const lista = metricas.lista;
+      const imagenesPorAviso = new Map();
+      if (lista.length) {
+        try {
+          const ids = lista.map(function(a){return a.id;}).filter(Boolean);
+          if (ids.length) {
+            const {data:imagenes,error:errorImagenes}=await client.from("avisos").select("id,imagen_url").in("id",ids);
+            if (errorImagenes) throw errorImagenes;
+            (imagenes||[]).forEach(function(item){if(item.imagen_url) imagenesPorAviso.set(String(item.id),item.imagen_url);});
+          }
+        } catch(errorImagenes) {
+          console.warn("No se pudieron recuperar las miniaturas de los avisos:",errorImagenes);
+        }
+      }
       [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-comentarios",metricas.comentarios],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
       dibujarGrafica(lista);
       const tbody=document.getElementById("fu-avisos");
@@ -1727,7 +1740,9 @@ console.log("✅ Script de administración cargado - Conectado a API real");
         tbody.innerHTML=ordenados.map(function(item){
           const a=item.aviso,v=item.datos;
           const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
-          return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></td><td>'+esc(label)+'</td><td class="fu-num"><strong>'+item.efectividad.toFixed(1)+'%</strong></td><td class="fu-num">'+fmt(item.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(item.interacciones)+'</td></tr>';
+          const imagen=imagenesPorAviso.get(String(a.id));
+          const miniatura=imagen&&/^https?:\\/\\//i.test(imagen)?'<img class="fu-aviso-thumb" src="'+esc(imagen)+'" alt="Imagen de '+esc(a.titulo||"aviso")+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">':'<span class="fu-aviso-placeholder" aria-hidden="true">▧</span>';
+          return '<tr><td><div class="fu-aviso-cell">'+miniatura+'<div><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></div></div></td><td>'+esc(label)+'</td><td class="fu-num"><strong>'+item.efectividad.toFixed(1)+'%</strong></td><td class="fu-num">'+fmt(item.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(item.interacciones)+'</td></tr>';
         }).join("");
       }
     } catch(error) {
