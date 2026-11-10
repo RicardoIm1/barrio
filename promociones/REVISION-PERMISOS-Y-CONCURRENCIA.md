@@ -87,3 +87,19 @@ La retención del comprobante verificado se calcula desde la activación + 7 dí
 ## Conclusión
 
 El borrador es una base de modelado, no una migración lista para ejecutar. Los dos bloqueos principales antes de implementarlo son: corregir el orden de bloqueo de activación y diseñar una matriz explícita de privilegios por objeto y función. Después debe construirse una migración versionada que falle ante drift, y probarse en un entorno aislado con cada rol relevante.
+
+
+## 7. Resultado de la revisión del esquema
+
+Se reemplazó el borrador SQL inicial por una propuesta más estricta en `sql/001_esquema_base_propuesta.sql`:
+
+- Se eliminaron `IF NOT EXISTS` para que una estructura preexistente inesperada provoque error en vez de ocultar drift.
+- Se revocaron privilegios directos a `PUBLIC`, `anon`, `authenticated` y `service_role` en las seis tablas nuevas.
+- RLS se habilita en cada tabla. No se crean policies hasta definir RPC y lecturas seguras.
+- Se separaron `estado_pago` y `estado_carga` para representar reserva, validación y revisión sin confundir una carga incompleta con un pago reportado.
+- Se añadieron metadatos de validación: MIME declarado/detectado, bytes, hash SHA-256 y reserva con expiración de 30 minutos.
+- Se añadieron claves foráneas compuestas para reforzar la consistencia entre aviso, solicitud, componente, pago, promoción y bitácora.
+- Se mantuvieron snapshots de catálogo, unicidad de promociones vigentes por aviso/tipo y un único pago verificado por solicitud.
+- No se alteraron default privileges globales ni objetos existentes.
+
+**Verificación:** se revisó el texto y sus relaciones a nivel estático. No se ejecutó en PostgreSQL, no se creó una rama de base de datos Supabase y no se probó contra un motor real. La propuesta no debe considerarse sintáctica ni operacionalmente validada hasta probarla en una base aislada con los roles y extensiones del proyecto.
