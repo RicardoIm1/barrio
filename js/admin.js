@@ -241,6 +241,17 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
 })();
 
 (function inicializarPestanasAdmin() {
+  function resaltarCrearAvisoTrasLogin() {
+    const boton=document.querySelector('#admin-tabs .filtro[data-tab="nuevo"]');
+    if(!boton || sessionStorage.getItem("elbarrio_resaltar_crear_aviso")!=="1") return;
+    sessionStorage.removeItem("elbarrio_resaltar_crear_aviso");
+    const estilos=document.createElement("style");
+    estilos.id="estilo-resaltar-crear-aviso";
+    estilos.textContent='#admin-tabs .filtro.crear-aviso-destacado{background:#fff4d8!important;color:#75500d!important;border:2px solid #d4a043!important;box-shadow:0 0 0 3px rgba(212,160,67,.18),0 5px 16px rgba(160,112,25,.18)!important;animation:crearAvisoPulso 1.25s ease-in-out 3} @keyframes crearAvisoPulso{0%,100%{transform:scale(1);box-shadow:0 0 0 2px rgba(212,160,67,.12)}50%{transform:scale(1.07);box-shadow:0 0 0 6px rgba(212,160,67,.24)}}';
+    document.head.appendChild(estilos);
+    boton.classList.add("crear-aviso-destacado");
+    boton.addEventListener("click",function(){boton.classList.remove("crear-aviso-destacado");},{once:true});
+  }
   function activarPestana(tabName) {
     const botones = document.querySelectorAll("#admin-tabs .filtro[data-tab]"),
       paneles = document.querySelectorAll(".tab");
@@ -266,6 +277,7 @@ async function obtenerMetricasPublicacionesUsuario(client, usuarioId) {
     });
     const inicial = contenedor.querySelector(".filtro.activo[data-tab]");
     if (inicial) activarPestana(inicial.dataset.tab);
+    resaltarCrearAvisoTrasLogin();
     console.log("✅ Navegación de pestañas admin instalada.");
     return true;
   }
@@ -1607,7 +1619,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       '<div class="fu-stat"><span>Publicaciones</span><strong id="fu-total">…</strong></div><div class="fu-stat"><span>Avisos activos</span><strong id="fu-activos">…</strong></div><div class="fu-stat"><span>Vistas totales</span><strong id="fu-vistas">…</strong></div>'+
       '<div class="fu-stat"><span>Votos positivos</span><strong id="fu-positivos">…</strong></div><div class="fu-stat"><span>Votos negativos</span><strong id="fu-negativos">…</strong></div><div class="fu-stat"><span>Comentarios</span><strong id="fu-comentarios">…</strong></div><div class="fu-stat"><span>Interacciones</span><strong id="fu-interacciones">…</strong></div></div>'+
       '<div class="fu-box"><h4>Publicaciones de los últimos 30 días</h4><canvas id="fu-chart" class="fu-chart"></canvas></div>'+
-      '<div class="fu-box"><h4>Rendimiento por aviso</h4><div class="fu-table-wrap"><table class="fu-table"><thead><tr><th>Aviso</th><th>Estado</th><th class="fu-num">Vistas</th><th class="fu-num">👍</th><th class="fu-num">👎</th><th class="fu-num">Interacciones</th></tr></thead><tbody id="fu-avisos"><tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr></tbody></table></div></div></section></section>';
+      '<div class="fu-box"><h4>Rendimiento por aviso</h4><div class="fu-table-wrap"><table class="fu-table"><thead><tr><th>Aviso</th><th>Estado</th><th class="fu-num">Efectividad</th><th class="fu-num">Vistas</th><th class="fu-num">👍</th><th class="fu-num">👎</th><th class="fu-num">Interacciones</th></tr></thead><tbody id="fu-avisos"><tr><td colspan="6" class="fu-muted">Cargando estadísticas…</td></tr></tbody></table></div></div></section></section>';
     document.body.appendChild(modal);
     const cerrar=function(){modal.style.display="none";document.body.style.overflow="";};
     modal.querySelector("#fu-cerrar").addEventListener("click",cerrar);
@@ -1703,16 +1715,24 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-comentarios",metricas.comentarios],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
       dibujarGrafica(lista);
       const tbody=document.getElementById("fu-avisos");
-      if(!lista.length) tbody.innerHTML='<tr><td colspan="6" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
-      else tbody.innerHTML=lista.map(function(a){
-        const v=metricas.porAviso.get(String(a.id))||{positivos:0,negativos:0,comentarios:0};
-        const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
-        const interacciones=v.positivos+v.negativos+v.comentarios;
-        return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></td><td>'+esc(label)+'</td><td class="fu-num">'+fmt(a.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(interacciones)+'</td></tr>';
-      }).join("");
+      if(!lista.length) tbody.innerHTML='<tr><td colspan="7" class="fu-muted">Este usuario todavía no tiene publicaciones.</td></tr>';
+      else {
+        const ordenados=lista.map(function(a){
+          const v=metricas.porAviso.get(String(a.id))||{positivos:0,negativos:0,comentarios:0};
+          const vistas=Math.max(0,Number(a.vistas)||0);
+          const interacciones=v.positivos+v.negativos+v.comentarios;
+          const efectividad=vistas>0?((v.positivos+v.comentarios)/vistas)*100:0;
+          return {aviso:a,datos:v,vistas:vistas,interacciones:interacciones,efectividad:efectividad};
+        }).sort(function(a,b){return b.efectividad-a.efectividad || b.interacciones-a.interacciones || b.vistas-a.vistas;});
+        tbody.innerHTML=ordenados.map(function(item){
+          const a=item.aviso,v=item.datos;
+          const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
+          return '<tr><td><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></td><td>'+esc(label)+'</td><td class="fu-num"><strong>'+item.efectividad.toFixed(1)+'%</strong></td><td class="fu-num">'+fmt(item.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(item.interacciones)+'</td></tr>';
+        }).join("");
+      }
     } catch(error) {
       console.error("No se pudo cargar la ficha estadística del usuario:",error);
-      document.getElementById("fu-avisos").innerHTML='<tr><td colspan="6" class="fu-muted">No se pudieron cargar las estadísticas: '+esc(error.message||error)+'</td></tr>';
+      document.getElementById("fu-avisos").innerHTML='<tr><td colspan="7" class="fu-muted">No se pudieron cargar las estadísticas: '+esc(error.message||error)+'</td></tr>';
       ["fu-total","fu-activos","fu-vistas","fu-positivos","fu-negativos","fu-comentarios","fu-interacciones"].forEach(function(k){document.getElementById(k).textContent="—";});
     }
   }
