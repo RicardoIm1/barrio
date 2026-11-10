@@ -86,3 +86,8 @@ Consulta [AUDITORIA-STORAGE-DATA-API.md](./AUDITORIA-STORAGE-DATA-API.md) para l
 ## Revisión de permisos y concurrencia
 
 Consulta [REVISION-PERMISOS-Y-CONCURRENCIA.md](./REVISION-PERMISOS-Y-CONCURRENCIA.md) para los hallazgos del borrador SQL, el orden obligatorio de bloqueo y los requisitos de privilegios mínimos. Se corrigió el diseño documental de activación para bloquear aviso → solicitud. No se ejecutó SQL ni se modificó Supabase.
+
+
+## Esquema SQL revisado
+
+El archivo [001_esquema_base_propuesta.sql](./sql/001_esquema_base_propuesta.sql) fue endurecido como propuesta documental: seis tablas, relaciones compuestas para evitar referencias cruzadas, separación entre estado del pago y estado de carga, retención y RLS desde la creación, y revocaciones explícitas a `PUBLIC`, `anon`, `authenticated` y `service_role`. No incluye RPC, policies, bucket ni tareas programadas. No se ha ejecutado ni probado contra una base aislada; no es una migración lista para producción.
