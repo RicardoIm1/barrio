@@ -202,16 +202,31 @@ async function supabasePeticion(accion, datos = {}) {
       if (!conteo) throw new Error('No se pudo confirmar el resumen de interacciones de esta publicación');
 
       let aviso = normalizarAviso(data);
-      try {
-        const { data: sessionData } = await client.auth.getSession();
-        if (sessionData?.session?.user?.id && aviso?.created_by) {
-          const { data: nombre, error: nombreError } = await client.rpc('obtener_nombre_autor', { p_usuario_id: aviso.created_by });
-          if (!nombreError && nombre) {
-            aviso.nombre_autor = String(nombre).trim();
-            aviso.usuario_nombre = String(nombre).trim();
-          }
+      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      const sesionAutenticada = !sessionError && !!sessionData?.session?.user?.id;
+      if (!sesionAutenticada) {
+        [
+          'nombre_autor', 'nombre_usuario', 'usuario_nombre', 'autor_nombre',
+          'nombre_completo', 'nombre', 'publicado_por', 'autor'
+        ].forEach(campo => {
+          if (Object.prototype.hasOwnProperty.call(aviso, campo)) aviso[campo] = null;
+        });
+        if (aviso.usuario && typeof aviso.usuario === 'object') {
+          aviso.usuario = { ...aviso.usuario, nombre: null, nombre_completo: null };
         }
-      } catch (_) {}
+        if (aviso.usuarios && typeof aviso.usuarios === 'object') {
+          aviso.usuarios = { ...aviso.usuarios, nombre: null, nombre_completo: null };
+        }
+        if (aviso.autor && typeof aviso.autor === 'object') {
+          aviso.autor = { ...aviso.autor, nombre: null, nombre_completo: null };
+        }
+      } else if (aviso?.created_by) {
+        const { data: nombre, error: nombreError } = await client.rpc('obtener_nombre_autor', { p_usuario_id: aviso.created_by });
+        if (!nombreError && nombre) {
+          aviso.nombre_autor = String(nombre).trim();
+          aviso.usuario_nombre = String(nombre).trim();
+        }
+      }
       const likes = Number(conteo.likes || 0);
       const dislikes = Number(conteo.dislikes || 0);
       return respuestaOK({
