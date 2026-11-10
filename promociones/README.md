@@ -113,3 +113,16 @@ Se agregó una propuesta de ciclo privado de comprobantes:
 Incluye reserva de carga de 30 minutos, policy de inserción para la ruta reservada, validación de firma/tamaño/MIME y SHA-256 en Edge Function, revisión administrativa y URL firmada de 90 segundos solo para administrador activo.
 
 **No se ha desplegado ni ejecutado.** El bucket privado debe crearse manualmente en Dashboard y el ciclo de limpieza/retención automatizada sigue pendiente. No habilitar contratación real hasta completar limpieza, pruebas y validación en entorno aislado. El bucket `media` y la administración existente permanecen fuera de alcance.
+
+
+## Retención y limpieza
+
+Se agregó la propuesta de retención y limpieza automatizada:
+
+- `sql/004_retencion_y_limpieza.sql`
+- `supabase/functions/limpiar-comprobantes-promocion/index.ts`
+- `ESTADO-RETENCION-Y-LIMPIEZA.md`
+
+Incluye suspensión/liberación administrativa de retención, reclamación idempotente de objetos elegibles y borrado por Storage API. La Edge Function exige un secreto de ejecución y se limita a 100 objetos por corrida.
+
+El Cron diario, Vault, secretos, bucket privado y despliegue siguen pendientes. No se ha ejecutado ni desplegado nada en Supabase.
