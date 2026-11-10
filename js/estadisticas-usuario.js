@@ -116,6 +116,10 @@
             .estadisticas-usuario-footer .eu-estado{font-size:.66rem;font-weight:700;padding:.18rem .45rem;border-radius:999px;background:#e5f3e9;color:#287346}
             .estadisticas-usuario-footer .eu-estado.pendiente{background:#fff3d8;color:#8b641f}
             .estadisticas-usuario-footer .eu-estado.rechazado{background:#fbe9e7;color:#a33b32}
+            .estadisticas-usuario-footer .eu-aviso-cell{display:flex;align-items:center;gap:.65rem;min-width:220px}
+            .estadisticas-usuario-footer .eu-miniatura{width:46px;height:46px;flex:0 0 46px;object-fit:cover;border-radius:8px;border:1px solid #dce5ec;background:#f1f5f8}
+            .estadisticas-usuario-footer .eu-miniatura-vacia{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:8px;background:#edf3f7;color:#8193a3;font-size:1.15rem}
+            .estadisticas-usuario-footer th[title]{text-align:center;font-size:1rem}
             .estadisticas-usuario-footer .eu-vacio{color:#718092;padding:1rem 0;text-align:center}
             @media(max-width:600px){.estadisticas-usuario-footer{padding-top:.9rem}.estadisticas-usuario-footer .eu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.estadisticas-usuario-footer .eu-card{padding:.7rem}.estadisticas-usuario-footer .eu-value{font-size:1.08rem}}
         `;
@@ -140,7 +144,7 @@
                 <div class="eu-card"><span class="eu-label">Interacciones</span><strong class="eu-value" id="eu-interacciones">—</strong></div>
             </div>
             <div class="eu-panel"><h3>Publicaciones de los últimos 30 días</h3><div class="eu-chart-wrap"><canvas id="eu-chart"></canvas></div></div>
-            <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th>Aviso</th><th>Estado</th><th class="eu-num">Vistas</th><th class="eu-num">👍</th><th class="eu-num">👎</th><th class="eu-num">Comentarios</th><th class="eu-num">Interacciones</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="7" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
+            <div class="eu-panel"><h3>Rendimiento por aviso</h3><div class="eu-tabla-wrap"><table><thead><tr><th scope="col" title="Aviso" aria-label="Aviso">📣</th><th scope="col" title="Estado" aria-label="Estado">🚦</th><th scope="col" class="eu-num" title="Efectividad" aria-label="Efectividad">🎯</th><th scope="col" class="eu-num" title="Vistas" aria-label="Vistas">👁️</th><th scope="col" class="eu-num" title="Votos positivos" aria-label="Votos positivos">👍</th><th scope="col" class="eu-num" title="Votos negativos" aria-label="Votos negativos">👎</th><th scope="col" class="eu-num" title="Comentarios" aria-label="Comentarios">💬</th><th scope="col" class="eu-num" title="Interacciones" aria-label="Interacciones">⚡</th></tr></thead><tbody id="eu-tabla-cuerpo"><tr><td colspan="8" class="eu-vacio">Cargando estadísticas...</td></tr></tbody></table></div></div>`;
         const nota = footer.querySelector('.dashboard-footnote');
         if (nota) footer.insertBefore(section, nota);
         else footer.appendChild(section);
@@ -157,8 +161,8 @@
         const dias=[],hoy=new Date(Date.UTC(partesHoy[0],partesHoy[1]-1,partesHoy[2]));
         for(let i=29;i>=0;i--){const d=new Date(hoy);d.setUTCDate(hoy.getUTCDate()-i);dias.push(d);}
         const conteo=new Map();avisos.forEach(a=>{const k=fechaClave(a.created_at);if(k)conteo.set(k,(conteo.get(k)||0)+1);});
-        const valores=dias.map(d=>conteo.get(fechaClave(d))||0),max=Math.max(1,...valores),pad={l:36,r:12,t:12,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
-        ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=4;i++){const y=pad.t+ch-ch*i/4;ctx.strokeStyle='rgba(44,62,80,.12)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#718092';ctx.fillText(String(Math.round(max*i/4)),pad.l-6,y);}
+        const valores=dias.map(d=>conteo.get(fechaClave(d))||0),maxValor=Math.max(0,...valores),pasos=Math.max(1,Math.min(4,maxValor)),salto=maxValor<=4?1:Math.ceil(maxValor/4),max=Math.max(1,salto*pasos),pad={l:36,r:12,t:12,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+        ctx.font='10px system-ui';ctx.textAlign='right';ctx.textBaseline='middle';for(let i=0;i<=pasos;i++){const y=pad.t+ch-ch*i/pasos,valor=salto*i;ctx.strokeStyle='rgba(44,62,80,.12)';ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();ctx.fillStyle='#718092';ctx.fillText(String(valor),pad.l-6,y);}
         const puntos=valores.map((v,i)=>({x:pad.l+cw*i/(dias.length-1),y:pad.t+ch-(v/max)*ch}));ctx.strokeStyle='#f5b042';ctx.lineWidth=3;ctx.beginPath();puntos.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.fillStyle='#f5b042';puntos.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,3,0,Math.PI*2);ctx.fill();});
         ctx.fillStyle='#718092';ctx.textAlign='center';ctx.textBaseline='top';dias.forEach((d,i)=>{if(i%5===0||i===dias.length-1){const x=pad.l+cw*i/(dias.length-1);ctx.fillText(d.toLocaleDateString('es-MX',{day:'2-digit',month:'2-digit',timeZone:'UTC'}),x,h-pad.b+7);}});
     }
@@ -195,12 +199,19 @@
                 tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">Todavía no tienes publicaciones.</td></tr>';
                 return;
             }
-            tbody.innerHTML=lista.map(a=>{
+            const ordenados=lista.map(a=>{
                 const likes=numero(a.likes),dislikes=numero(a.dislikes),comentariosAviso=numero(a.comentarios);
+                const vistasAviso=Math.max(0,numero(a.vistas));
                 const inter=likes+dislikes+comentariosAviso;
-                const estado=a.status||'pendiente';
+                const efectividad=vistasAviso>0?((likes+comentariosAviso)/vistasAviso)*100:0;
+                return {aviso:a,likes,dislikes,comentariosAviso,vistas:vistasAviso,inter,efectividad};
+            }).sort((a,b)=>b.efectividad-a.efectividad||b.inter-a.inter||b.vistas-a.vistas);
+            tbody.innerHTML=ordenados.map(item=>{
+                const a=item.aviso,estado=a.status||'pendiente';
                 const textoEstado=estado==='activo'?'Activo':estado==='rechazado'?'Rechazado':'Pendiente';
-                return `<tr><td><strong>${escapar(a.titulo||'Sin título')}</strong></td><td><span class="eu-estado ${estado}">${textoEstado}</span></td><td class="eu-num">${formatoNumero(a.vistas)}</td><td class="eu-num">${formatoNumero(likes)}</td><td class="eu-num">${formatoNumero(dislikes)}</td><td class="eu-num">${formatoNumero(comentariosAviso)}</td><td class="eu-num">${formatoNumero(inter)}</td></tr>`;
+                const url=typeof a.imagen_url==='string'?a.imagen_url.trim():'';
+                const miniatura=/^https?:\/\//i.test(url)?`<img class="eu-miniatura" src="${escapar(url)}" alt="Imagen de ${escapar(a.titulo||'aviso')}" loading="lazy" decoding="async" onerror="this.style.display='none'">`:'<span class="eu-miniatura-vacia" aria-hidden="true">▧</span>';
+                return `<tr><td><div class="eu-aviso-cell">${miniatura}<strong>${escapar(a.titulo||'Sin título')}</strong></div></td><td><span class="eu-estado ${escapar(estado)}">${textoEstado}</span></td><td class="eu-num"><strong>${item.efectividad.toFixed(1)}%</strong></td><td class="eu-num">${formatoNumero(item.vistas)}</td><td class="eu-num">${formatoNumero(item.likes)}</td><td class="eu-num">${formatoNumero(item.dislikes)}</td><td class="eu-num">${formatoNumero(item.comentariosAviso)}</td><td class="eu-num">${formatoNumero(item.inter)}</td></tr>`;
             }).join('');
         } catch(error){
             console.error('❌ Estadísticas personales:',error);
