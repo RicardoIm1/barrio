@@ -192,7 +192,7 @@ Las políticas deben diseñarse evitando policies PERMISSIVE superpuestas que am
 - Rutas bajo carpeta por usuario y solicitud, con UUIDs no controlados libremente por el cliente.
 - Validar propietario y solicitud en políticas de Storage y en RPC.
 - Lectura únicamente por propietario de la solicitud y admin activo.
-- Límites de tamaño y MIME explícitos; rechazar SVG y formatos ejecutables.
+- Límites aprobados por el usuario: máximo 5 MB por archivo; MIME `image/jpeg`, `image/png`, `image/webp` y `application/pdf`; un archivo por intento; sin sobrescritura. Rechazar SVG, HTML, ejecutables, comprimidos y formatos no autorizados. Validar MIME real, firma y tamaño en servidor. La configuración del bucket sigue pendiente.
 - El archivo binario del comprobante se conserva durante 7 días naturales contados desde la activación de la promoción (momento en que el administrador activa los componentes después de verificar el pago). El plazo no comienza al cargar el archivo, reportar el pago ni verificarlo si la promoción aún no se ha activado.
 - Al cumplirse los 7 días, el sistema elimina el archivo del bucket privado mediante Storage API. No se debe intentar borrarlo con DELETE directo sobre `storage.objects`, porque existe protección de borrado.
 - Si hay una incidencia, controversia, revisión administrativa o investigación pendiente, se suspende la eliminación del archivo hasta que el caso quede resuelto. La suspensión y la resolución deben quedar registradas en la bitácora.
