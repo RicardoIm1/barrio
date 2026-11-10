@@ -515,3 +515,173 @@ body {
     display: none;
   }
 }
+
+
+/* ==========================================================
+   SALUDABLEMENTE | RECUPERAR IDENTIDAD ROSADA
+   ========================================================== */
+
+:root {
+  --peach: #FDD7CB;
+  --peach-light: #fff0eb;
+  --peach-dark: #e9aa98;
+  --terracotta: #b97868;
+  --cream: #fff9f6;
+  --brown: #443936;
+}
+
+/* Fondo general */
+body {
+  background: #fff9f6;
+  color: #443936;
+}
+
+.ambient-one {
+  background: #FDD7CB;
+  opacity: .30;
+}
+
+.ambient-two {
+  background: #f4e6df;
+  opacity: .50;
+}
+
+/* Navegación */
+.sidebar {
+  background: rgba(255, 249, 246, .96);
+  border-right-color: #f0dfd8;
+}
+
+.brand-mark {
+  background: #FDD7CB;
+}
+
+.brand-mark span {
+  background: #b97868;
+}
+
+.nav-item.active {
+  background: #FDD7CB;
+  color: #684b43;
+  box-shadow: inset 3px 0 #b97868;
+}
+
+.nav-item.active .nav-icon {
+  background: rgba(255,255,255,.55);
+}
+
+/* Encabezado */
+.topbar {
+  background: rgba(255, 249, 246, .90);
+  border-color: #f0dfd8;
+}
+
+h1 {
+  color: #443936;
+}
+
+h1 span {
+  color: #b97868;
+}
+
+.art-center {
+  background: linear-gradient(145deg, #FDD7CB, #f9e9df);
+  color: #a66e60;
+  box-shadow: 0 12px 30px #d9a99b35;
+}
+
+/* Progreso */
+.progress-row {
+  background: #fff0eb;
+  border-color: #f0dcd4;
+}
+
+.progress-number {
+  color: #b97868;
+}
+
+.progress-track {
+  background: #f3e3dc;
+}
+
+.progress-track span {
+  background: #c68d7c;
+}
+
+/* Tarjetas */
+#patientForm > .form-card {
+  background: rgba(255, 253, 251, .97);
+  border-color: #efdcd4;
+  box-shadow: 0 7px 22px rgba(117,76,61,.055);
+}
+
+#patientForm .section-icon {
+  background: #fff0eb;
+  color: #b97868;
+}
+
+#patientForm .section-heading h2 {
+  color: #57443d;
+}
+
+#patientForm .section-tag {
+  background: #fff0eb;
+  color: #a57769;
+}
+
+/* Campos */
+#patientForm input,
+#patientForm select {
+  background: #fffcfa;
+  border-color: #ead6ce;
+  color: #594840;
+}
+
+#patientForm input:focus,
+#patientForm select:focus {
+  border-color: #dca99a;
+  box-shadow: 0 0 0 3px #FDD7CB66;
+  background: #fff;
+}
+
+#patientForm input:disabled {
+  background: #f8eee9;
+  color: #ad9990;
+}
+
+#patientForm input::placeholder {
+  color: #c0aea7;
+}
+
+/* Nota de privacidad */
+#patientForm .sensitive-note {
+  background: #fff5ed;
+  border-color: #f1dfd4;
+}
+
+#patientForm .emergency-block {
+  background: #fffcfa;
+  border-color: #f1e2dc;
+}
+
+/* Botones */
+#patientForm .btn-primary {
+  background: #b97868;
+  color: white;
+}
+
+#patientForm .btn-primary:hover {
+  background: #9f6558;
+}
+
+#patientForm .btn-quiet {
+  background: #fffaf7;
+  color: #94786e;
+  border-color: #ecded7;
+}
+
+/* Pie */
+.page-footer {
+  border-color: #efdfd8;
+  color: #a58f85;
+}
