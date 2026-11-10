@@ -162,6 +162,7 @@
           console.log('Usuario logueado:', usuario);
 
           if (typeof window.actualizarHeaderSesion === 'function') window.actualizarHeaderSesion();
+          sessionStorage.setItem('elbarrio_resaltar_crear_aviso', '1');
           window.location.href = '/admin.html';
         } catch (error) {
           console.error('Error login:', error);
