@@ -62,3 +62,8 @@ La rama `main` y el administrador actual constituyen la referencia funcional. Si
 - Cambios en `admin.html` o `js/admin.js`.
 - Cambios en la portada.
 - Cobros automáticos o pasarela de pago.
+
+
+## Diseño de RPC y concurrencia
+
+Consulta [`DISENO-RPCS-Y-CONCURRENCIA.md`](./DISENO-RPCS-Y-CONCURRENCIA.md) para los contratos de las funciones, controles de acceso, concurrencia y matriz de pruebas.
