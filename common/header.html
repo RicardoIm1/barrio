@@ -30,7 +30,8 @@
 
         <button type="button" class="header-menu-toggle" id="header-menu-toggle"
             aria-label="Abrir menú" aria-controls="header-acciones" aria-expanded="false">
-            <span></span><span></span><span></span>
+            <span class="header-menu-icon"><i></i><i></i><i></i></span>
+            <span class="header-menu-user-label" id="header-menu-user-label" aria-hidden="true"></span>
         </button>
 
         <div class="header-acciones" id="header-acciones">
@@ -49,11 +50,16 @@
 <style>
     .header-contenido { position:relative; display:flex; align-items:center; justify-content:space-between; gap:1rem; min-width:0; }
     .header-logo { order:1; display:flex; align-items:center; gap:10px; flex:0 1 auto; min-width:0; text-decoration:none; }
-    .header-menu-toggle { order:4; display:flex; flex:0 0 44px; width:44px; height:44px; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px; border:1px solid rgba(255,255,255,.28); border-radius:12px; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; z-index:12; }
-    .header-menu-toggle span { display:block; width:19px; height:2px; border-radius:2px; background:currentColor; transition:transform .2s ease,opacity .2s ease; }
-    .header-menu-toggle[aria-expanded="true"] span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-    .header-menu-toggle[aria-expanded="true"] span:nth-child(2) { opacity:0; }
-    .header-menu-toggle[aria-expanded="true"] span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .header-menu-toggle { order:4; display:flex; flex:0 0 44px; width:44px; height:44px; align-items:center; justify-content:center; padding:8px; border:1px solid rgba(255,255,255,.28); border-radius:12px; background:rgba(255,255,255,.12); color:#fff; cursor:pointer; z-index:12; }
+    .header-menu-icon { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; width:19px; flex:0 0 19px; }
+    .header-menu-icon i { display:block; width:19px; height:2px; border-radius:2px; background:currentColor; transition:transform .2s ease,opacity .2s ease; }
+    .header-menu-toggle[aria-expanded="true"] .header-menu-icon i:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .header-menu-toggle[aria-expanded="true"] .header-menu-icon i:nth-child(2) { opacity:0; }
+    .header-menu-toggle[aria-expanded="true"] .header-menu-icon i:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+    .header-menu-user-label { display:none; min-width:0; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.78rem; line-height:1; font-weight:650; }
+    .header-menu-toggle.has-auth-user { flex:0 1 auto; width:auto; max-width:170px; min-width:44px; gap:7px; padding:8px 11px; }
+    .header-menu-toggle.has-auth-user .header-menu-icon { display:none; }
+    .header-menu-toggle.has-auth-user .header-menu-user-label { display:block; }
     .header-buscador { order:2; display:none; flex:1 1 360px; width:100%; max-width:380px; min-width:0; margin:0 auto; }
     body.pagina-index .header-buscador { display:flex; }
     .buscador-input-header { width:100%; min-width:0; padding:9px 16px; border-radius:30px; border:1px solid #e5e7eb; background:#f9fafb; font-size:.9rem; }
@@ -107,12 +113,16 @@
         .logo-icon { width:36px; height:36px; }
         .logo-texto h1 { font-size:1.02rem; }
         .header-menu-toggle { flex-basis:40px; width:40px; height:40px; }
+        .header-menu-toggle.has-auth-user { max-width:112px; min-width:40px; padding:7px 9px; }
+        .header-menu-user-label { max-width:92px; font-size:.72rem; }
         .header-acciones { right:8px; width:min(300px,calc(100vw - 16px)); }
     }
     @media (max-width:340px) {
         .logo-icon { width:32px; height:32px; }
         .logo-texto h1 { font-size:.94rem; }
         .header-menu-toggle { flex-basis:38px; width:38px; height:38px; }
+        .header-menu-toggle.has-auth-user { max-width:76px; min-width:38px; padding:6px 7px; }
+        .header-menu-user-label { max-width:60px; font-size:.66rem; }
     }
 
 </style>
@@ -167,6 +177,25 @@
 
                 const esAdmin = usuario.rol === 'admin';
                 const nombreMostrar = usuario.nombre || usuario.email || 'Usuario';
+                const menuUserLabel = document.getElementById('header-menu-user-label');
+                const menuToggle = document.getElementById('header-menu-toggle');
+                if (menuUserLabel && menuToggle) {
+                    const partesNombre = String(nombreMostrar).trim().split(/\\s+/).filter(Boolean);
+                    const actualizarNombreMenu = () => {
+                        const ancho = window.innerWidth;
+                        let nombreCorto = nombreMostrar;
+                        if (ancho <= 340) nombreCorto = partesNombre[0] || 'Usuario';
+                        else if (ancho <= 420 && partesNombre.length > 1) nombreCorto = partesNombre[0] + ' ' + partesNombre[1].charAt(0) + '.';
+                        menuUserLabel.textContent = nombreCorto;
+                        menuUserLabel.title = nombreMostrar;
+                    };
+                    menuToggle.classList.add('has-auth-user');
+                    actualizarNombreMenu();
+                    if (!menuToggle.dataset.userLabelResize) {
+                        menuToggle.dataset.userLabelResize = '1';
+                        window.addEventListener('resize', actualizarNombreMenu, { passive: true });
+                    }
+                }
                 if (userNameSpan) {
                     userNameSpan.textContent = `👋 ${nombreMostrar}`;
                     userNameSpan.classList.add('admin-link');
@@ -198,6 +227,8 @@
                 loginLink.style.display = 'inline-flex';
                 userArea.style.display = 'none';
                 if (userNameSpan) userNameSpan.onclick = null;
+                const menuToggle = document.getElementById('header-menu-toggle');
+                if (menuToggle) menuToggle.classList.remove('has-auth-user');
             }
         }
 
