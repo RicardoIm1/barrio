@@ -16,10 +16,10 @@ function plainText(value) {
 function videoPoster(value) {
   const raw = String(value ?? '').trim();
   if (!raw) return '';
-  const youtube = raw.match(/(?:youtu\\.be\\/|youtube(?:-nocookie)?\\.com\\/(?:watch\\?.*v=|embed\\/|shorts\\/))([\\w-]{11})/i);
+  const youtube = raw.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?.*v=|embed\/|shorts\/))([\w-]{11})/i);
   if (youtube) return 'https://i.ytimg.com/vi/' + youtube[1] + '/hqdefault.jpg';
-  if (/res\\.cloudinary\\.com\\//i.test(raw) && /\\/video\\/upload\\//i.test(raw)) {
-    return raw.replace('/video/upload/', '/video/upload/so_0,f_jpg/').replace(/\\.(mp4|mov|webm|m4v)(?=([?#]|$))/i, '.jpg');
+  if (/res\.cloudinary\.com\//i.test(raw) && /\/video\/upload\//i.test(raw)) {
+    return raw.replace('/video/upload/', '/video/upload/so_0,f_jpg/').replace(/\.(mp4|mov|webm|m4v)(?=([?#]|$))/i, '.jpg');
   }
   return '';
 }
