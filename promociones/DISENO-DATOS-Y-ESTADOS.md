@@ -187,7 +187,10 @@ Las políticas deben diseñarse evitando policies PERMISSIVE superpuestas que am
 - Validar propietario y solicitud en políticas de Storage y en RPC.
 - Lectura únicamente por propietario de la solicitud y admin activo.
 - Límites de tamaño y MIME explícitos; rechazar SVG y formatos ejecutables.
-- Eliminar o retener comprobantes según una política de conservación aprobada; no borrar evidencia de forma automática sin definirla.
+- El archivo binario del comprobante se conserva durante 7 días naturales contados desde la activación de la promoción (momento en que el administrador activa los componentes después de verificar el pago). El plazo no comienza al cargar el archivo, reportar el pago ni verificarlo si la promoción aún no se ha activado.
+- Al cumplirse los 7 días, el sistema elimina el archivo del bucket privado mediante Storage API. No se debe intentar borrarlo con DELETE directo sobre `storage.objects`, porque existe protección de borrado.
+- Si hay una incidencia, controversia, revisión administrativa o investigación pendiente, se suspende la eliminación del archivo hasta que el caso quede resuelto. La suspensión y la resolución deben quedar registradas en la bitácora.
+- La eliminación del archivo no elimina el registro del pago ni los metadatos de auditoría: importe, moneda, referencia de operación, fecha de reporte, quién verificó el pago, cuándo se verificó y cuándo se activó la promoción permanecen conservados.
 - No alterar bucket `media`, sus policies ni su trigger de cuota.
 
 ## 7. RPCs previstas
@@ -203,7 +206,7 @@ Todas las funciones SECURITY DEFINER deberán fijar `search_path`, cualificar no
 ## 8. Preguntas que bloquean la migración
 1. **Regla aprobada:** no se permite solicitar otra promoción del mismo tipo para el mismo aviso mientras exista una promoción vigente. Se permitirá una nueva solicitud cuando la anterior haya vencido o haya sido cancelada definitivamente. La validación debe ejecutarse en servidor dentro de la transacción de solicitud y volver a comprobarse al activar, para evitar solicitudes simultáneas o carreras.
 2. **Regla aprobada:** si un aviso se elimina o deja de estar activo después de reportar el pago y antes de activar la promoción, se bloquea la activación y el caso pasa a revisión administrativa. Se conservan solicitud, pagos, comprobantes e historial. No se presume reembolso ni cancelación; el administrador debe resolver el caso y registrar su decisión.
-3. ¿Cuánto tiempo se conservarán los comprobantes y quién puede eliminarlos? Debe decidirse antes de habilitar cargas reales.
+3. **Regla aprobada:** conservar el archivo binario del comprobante durante 7 días naturales desde la activación de la promoción y eliminarlo automáticamente al vencer el plazo. Si existe una incidencia o controversia pendiente, suspender el borrado hasta su resolución. Conservar permanentemente los metadatos de auditoría, aunque el archivo se haya eliminado. Antes de habilitar cargas reales, definir e implementar el proceso automatizado de borrado mediante Storage API y las excepciones por retención.
 4. ¿Se permitirá al usuario cancelar una solicitud antes de la aprobación? Recomendación: sí, mientras esté pendiente de revisión o ajustes.
 
 ## 9. Fuera de alcance
