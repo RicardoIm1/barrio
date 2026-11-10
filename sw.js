@@ -76,6 +76,13 @@ self.addEventListener("notificationclick", function (event) {
           actual.href === objetivo.href ||
           actual.pathname === objetivo.pathname
         ) {
+          // Si ya hay un admin abierto, navegar a la conversación concreta del mensaje.
+          if (
+            event.notification.data?.tipo === "mensaje_privado" &&
+            actual.href !== objetivo.href
+          ) {
+            await ventana.navigate(destino);
+          }
           await ventana.focus();
           return;
         }
