@@ -15,6 +15,7 @@ create index if not exists mensajes_privados_destinatario_fecha_idx on public.me
 
 alter table public.mensajes_privados enable row level security;
 revoke all on public.mensajes_privados from anon, public;
+revoke update, delete, truncate, references, trigger on public.mensajes_privados from authenticated;
 grant select, insert on public.mensajes_privados to authenticated;
 
 drop policy if exists mensajes_privados_select_participantes on public.mensajes_privados;
