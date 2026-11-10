@@ -77,7 +77,11 @@ El usuario aprobó expresamente los siguientes límites para cada intento de pag
 
 La interfaz debe reflejar estos límites, pero la validación de servidor y las restricciones del bucket son la autoridad. La aprobación define el diseño; todavía no configura ni crea el bucket real.
 
-## 7. Matriz de pruebas
+## 7. Flujo de carga y validación
+
+La secuencia detallada de reserva de intento, carga directa al bucket, validación de firmas en Edge Function, finalización idempotente y recuperación de fallos se define en [DISENO-CARGA-VALIDACION.md](./DISENO-CARGA-VALIDACION.md). La policy de INSERT debe autorizar la ruta exacta reservada para el intento, no cualquier objeto bajo la carpeta del usuario. Un archivo no validado no debe ser visible para revisión administrativa.
+
+## 8. Matriz de pruebas
 
 1. Anónimo no puede cargar, listar ni descargar comprobantes.
 2. Usuario A no puede cargar a una ruta de usuario B.
@@ -93,7 +97,7 @@ La interfaz debe reflejar estos límites, pero la validación de servidor y las 
 12. El borrado automático usa Storage API y conserva auditoría.
 13. El bucket `media` y sus políticas permanecen sin cambios.
 
-## 8. Límites
+## 9. Límites
 
 - Este documento no crea bucket, policies, funciones auxiliares, Edge Functions ni secretos.
 - No modifica `storage.objects`, `storage.buckets`, bucket `media`, triggers ni policies existentes.
