@@ -62,7 +62,27 @@
       .eb-chat-bubble{position:relative;max-width:82%;padding:11px 14px;border:1px solid #e3eaf0;border-radius:16px 16px 16px 5px;background:#fff;color:#34495e;font-size:13px;line-height:1.5;overflow-wrap:anywhere;box-shadow:0 2px 7px rgba(44,62,80,.035)}
       .eb-chat-bubble.mine{align-self:flex-end;border-color:#d8e7f0;border-radius:16px 16px 5px 16px;background:linear-gradient(145deg,#edf5f9,#e6f0f6)}
       .eb-chat-time{display:block;margin-top:6px;color:#91a0ab;font-size:10px;text-align:right}
-      .eb-chat-compose{display:flex;align-items:flex-end;gap:10px;padding:13px 15px;border-top:1px solid #e5edf2;background:rgba(255,255,255,.94)}
+      .eb-chat-compose{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:11px 13px;border-top:1px solid #e5edf2;background:rgba(255,255,255,.96)}
+      .eb-chat-tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+      .eb-chat-tool{display:grid;place-items:center;min-width:31px;height:30px;padding:0 8px;border:1px solid #e1e9ee;border-radius:8px;background:#fff;color:#40576a;font:600 12px inherit;cursor:pointer}
+      .eb-chat-tool:hover{border-color:#b8ccd9;background:#f0f6f9}
+      .eb-chat-compose-row{display:flex;align-items:flex-end;gap:9px}
+      .eb-chat-compose-row textarea{flex:1;min-width:0}
+      .eb-chat-emoji-wrap{position:relative}
+      .eb-chat-emoji-picker{position:absolute;left:0;bottom:38px;z-index:5;display:grid;grid-template-columns:repeat(6,1fr);gap:3px;width:228px;padding:8px;border:1px solid #dce6ec;border-radius:13px;background:#fff;box-shadow:0 10px 30px rgba(35,55,70,.16)}
+      .eb-chat-emoji-picker[hidden]{display:none}
+      .eb-chat-emoji{display:grid;place-items:center;width:31px;height:31px;border:0;border-radius:7px;background:transparent;font-size:19px;cursor:pointer}
+      .eb-chat-emoji:hover{background:#eef4f7}
+      .eb-inbox-button{position:relative;display:inline-flex;align-items:center;gap:7px}
+      .eb-inbox-count{display:none;min-width:19px;height:19px;align-items:center;justify-content:center;padding:0 5px;border-radius:99px;background:#e67e22;color:#fff;font-size:10px;font-weight:800;line-height:1}
+      .eb-inbox-count.visible{display:inline-flex}
+      .eb-chat-rich strong{font-weight:750;color:#263d50}
+      .eb-chat-rich em{font-style:italic}
+      .eb-chat-rich u{text-decoration:underline;text-decoration-color:#d4a043;text-underline-offset:2px}
+      .eb-chat-rich s{text-decoration:line-through;color:#718092}
+      .eb-chat-rich code{padding:1px 4px;border-radius:4px;background:#eef2f5;font-family:ui-monospace,monospace;font-size:.92em}
+      .eb-chat-rich .eb-chat-list-line{display:block;padding-left:12px}
+      .eb-chat-compose textarea{flex:1;min-width:0;min-height:44px;max-height:116px;resize:vertical;padding:11px 14px;border:1px solid #dce5eb;border-radius:14px;background:#f9fbfc;color:#34495e;font-family:inherit;font-size:13px;line-height:1.45;transition:border-color .18s,box-shadow .18s,background .18s}
       .eb-chat-compose textarea{flex:1;min-width:0;min-height:44px;max-height:116px;resize:vertical;padding:11px 14px;border:1px solid #dce5eb;border-radius:14px;background:#f9fbfc;color:#34495e;font-family:inherit;font-size:13px;line-height:1.45;transition:border-color .18s,box-shadow .18s,background .18s}
       .eb-chat-compose textarea::placeholder{color:#9aa8b2}
       .eb-chat-compose textarea:focus{outline:none;border-color:#7dacbf;background:#fff;box-shadow:0 0 0 3px rgba(52,152,219,.10)}
@@ -71,7 +91,7 @@
       .eb-chat-send:disabled{opacity:.48;cursor:wait;box-shadow:none}
       .eb-chat-note{padding:9px 14px 11px;border-top:1px solid rgba(230,237,241,.65);background:#fff;color:#91a0ab;text-align:center;font-size:10px;letter-spacing:.1px}
       .eb-chat-close:focus-visible,.eb-chat-back:focus-visible,.eb-chat-send:focus-visible,.eb-chat-compose textarea:focus-visible,.eb-chat-contact:focus-visible{outline:3px solid rgba(52,152,219,.28);outline-offset:2px}
-      @media(max-width:520px){.eb-chat-overlay{padding:0;align-items:stretch}.eb-chat-modal{width:100%;height:100%;height:100dvh;max-height:100%;border:0;border-radius:0}.eb-chat-head{min-height:70px;padding:15px 16px}.eb-chat-body{padding:15px 13px}.eb-chat-compose{gap:8px;padding:10px}.eb-chat-compose textarea{font-size:16px}.eb-chat-send{padding:0 13px}}
+      @media(max-width:520px){.eb-chat-overlay{padding:0;align-items:stretch}.eb-chat-modal{width:100%;height:100%;height:100dvh;max-height:100%;border:0;border-radius:0}.eb-chat-head{min-height:70px;padding:15px 16px}.eb-chat-body{padding:15px 13px}.eb-chat-compose{gap:8px;padding:10px}.eb-chat-compose-row textarea{font-size:16px}.eb-chat-send{padding:0 13px}.eb-chat-emoji-picker{left:auto;right:0}}
       @media(prefers-reduced-motion:reduce){.eb-online-user,.eb-chat-close,.eb-chat-contact,.eb-chat-send{transition:none}}
     `;
     document.head.appendChild(style);
@@ -85,6 +105,47 @@
     if (error || !data?.user) return false;
     usuario = data.user;
     return true;
+  }
+
+
+  const emojis = ['😀','😃','😄','😁','😆','😊','🙂','😉','😍','🥰','😘','😎','🤔','😂','🤣','😭','🙌','👏','👍','👎','❤️','🧡','💛','💚','💙','💜','✨','🔥','🎉','🙏','🐶','🐱','🌻','☀️','🌈','☕'];
+  function aplicarFormato(tipo) {
+    const input = modal.querySelector('.eb-chat-compose textarea');
+    const marcas = {bold:['**','**'],italic:['*','*'],underline:['__','__'],strike:['~~','~~']};
+    const par = marcas[tipo]; if (!par) return;
+    const a=input.selectionStart,b=input.selectionEnd, seleccionado=input.value.slice(a,b);
+    input.setRangeText(par[0]+(seleccionado||'texto')+par[1],a,b,'select');
+    input.focus(); if(!seleccionado) input.setSelectionRange(a+par[0].length,a+par[0].length+5);
+  }
+  function renderContenido(texto) {
+    const escapeHtml=v=>String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    return String(texto||'').split('\n').map(linea=>{
+      let safe=escapeHtml(linea);
+      safe=safe.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/__(.+?)__/g,'<u>$1</u>').replace(/~~(.+?)~~/g,'<s>$1</s>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/\x60([^\x60]+)\x60/g,'<code>$1</code>');
+      if(/^\s*[-•]\s+/.test(linea)) safe='<span class="eb-chat-list-line">• '+safe.replace(/^\s*[-•]\s+/,'')+'</span>';
+      return safe;
+    }).join('<br>');
+  }
+  function actualizarContadorNoLeidos() {
+    if(!client||!usuario)return Promise.resolve();
+    return client.rpc('obtener_conversaciones_privadas').then(({data,error})=>{
+      if(error){console.warn('Contador de mensajes no leídos:',error);return;}
+      const total=(data||[]).reduce((sum,item)=>sum+Number(item.mensajes_no_leidos||0),0);
+      const badge=document.querySelector('.eb-inbox-count');
+      if(badge){badge.textContent=total>99?'99+':String(total);badge.classList.toggle('visible',total>0);badge.setAttribute('aria-label',total+' mensajes sin leer');}
+    }).catch(error=>console.warn('Contador de mensajes no leídos:',error));
+  }
+  function configurarEditor() {
+    const compose=modal.querySelector('.eb-chat-compose'), picker=compose.querySelector('.eb-chat-emoji-picker');
+    compose.querySelectorAll('[data-format]').forEach(button=>button.addEventListener('click',()=>aplicarFormato(button.dataset.format)));
+    const toggle=compose.querySelector('.eb-chat-emoji-toggle');
+    emojis.forEach(emoji=>{
+      const button=document.createElement('button');button.type='button';button.className='eb-chat-emoji';button.textContent=emoji;button.setAttribute('aria-label','Insertar '+emoji);
+      button.addEventListener('click',()=>{const input=compose.querySelector('textarea'),a=input.selectionStart,b=input.selectionEnd;input.setRangeText(emoji,a,b,'end');input.focus();picker.hidden=true;});
+      picker.append(button);
+    });
+    toggle.addEventListener('click',()=>{picker.hidden=!picker.hidden;});
+    document.addEventListener('click',event=>{if(!compose.contains(event.target))picker.hidden=true;});
   }
 
   function asegurarModal() {
@@ -101,12 +162,19 @@
         </header>
         <main class="eb-chat-body"></main>
         <form class="eb-chat-compose" hidden>
-          <textarea maxlength="2000" rows="1" placeholder="Escribe un mensaje…" aria-label="Escribe un mensaje"></textarea>
-          <button class="eb-chat-send" type="submit">Enviar</button>
+          <div class="eb-chat-tools" role="toolbar" aria-label="Formato del mensaje">
+            <button type="button" class="eb-chat-tool" data-format="bold" aria-label="Negritas" title="Negritas"><strong>B</strong></button>
+            <button type="button" class="eb-chat-tool" data-format="italic" aria-label="Cursiva" title="Cursiva"><em>I</em></button>
+            <button type="button" class="eb-chat-tool" data-format="underline" aria-label="Subrayado" title="Subrayado"><u>U</u></button>
+            <button type="button" class="eb-chat-tool" data-format="strike" aria-label="Tachado" title="Tachado"><s>S</s></button>
+            <div class="eb-chat-emoji-wrap"><button type="button" class="eb-chat-tool eb-chat-emoji-toggle" aria-label="Insertar emoji" title="Emojis">☺</button><div class="eb-chat-emoji-picker" hidden aria-label="Selector de emojis"></div></div>
+          </div>
+          <div class="eb-chat-compose-row"><textarea maxlength="2000" rows="2" placeholder="Escribe un mensaje…" aria-label="Escribe un mensaje"></textarea><button class="eb-chat-send" type="submit">Enviar</button></div>
         </form>
         <div class="eb-chat-note">Tus mensajes solo son visibles para ti y la persona destinataria.</div>
       </section>`;
     document.body.appendChild(modal);
+    configurarEditor();
     modal.querySelector('.eb-chat-close').addEventListener('click', cerrarModal);
     modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(); });
     modal.querySelector('.eb-chat-back').addEventListener('click', mostrarBandeja);
@@ -180,6 +248,7 @@
     modal.querySelector('.eb-chat-compose textarea').focus();
     await cargarMensajes();
     await client.rpc('marcar_mensajes_leidos', { p_remitente_id: peer.id });
+    await actualizarContadorNoLeidos();
   }
 
   async function cargarMensajes() {
@@ -199,7 +268,7 @@
     data.forEach(message => {
       const bubble = document.createElement('div');
       bubble.className = 'eb-chat-bubble' + (message.remitente_id === usuario.id ? ' mine' : '');
-      bubble.append(document.createTextNode(message.contenido));
+      const content=document.createElement('div'); content.className='eb-chat-rich'; content.innerHTML=renderContenido(message.contenido); bubble.append(content);
       const time = document.createElement('span');
       time.className = 'eb-chat-time';
       time.textContent = fecha(message.created_at);
@@ -290,12 +359,14 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'eb-inbox-button';
-    button.textContent = 'Mis mensajes';
+    button.append(document.createTextNode('Mis mensajes'));
+    const count=document.createElement('span');count.className='eb-inbox-count';count.setAttribute('aria-live','polite');button.append(count);
     button.addEventListener('click', async () => {
       abrirModal();
       await mostrarBandeja();
     });
     panel.querySelector('.presence-copy > div')?.append(button);
+    actualizarContadorNoLeidos();
   }
 
   function instalarRealtime() {
@@ -310,6 +381,7 @@
       } else if (modal && !modal.hidden && !peerActual) {
         mostrarBandeja();
       }
+      if (message.destinatario_id === usuario.id) actualizarContadorNoLeidos();
     };
     canal
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes_privados', filter: 'destinatario_id=eq.' + usuario.id }, actualizar)
@@ -331,7 +403,7 @@
     await cargarUsuariosConectados();
     if (intervalo) clearInterval(intervalo);
     intervalo = window.setInterval(() => {
-      if (!document.hidden) cargarUsuariosConectados();
+      if (!document.hidden) { cargarUsuariosConectados(); actualizarContadorNoLeidos(); }
     }, 20000);
   }
 
