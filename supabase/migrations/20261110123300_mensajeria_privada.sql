@@ -29,7 +29,7 @@ for insert to authenticated
 with check (
   (select auth.uid()) = remitente_id
   and destinatario_id <> (select auth.uid())
-  and exists (select 1 from public.usuarios u where u.id = destinatario_id and u.activo is true)
+  and destinatario_id <> (select auth.uid())
 );
 
 create or replace function public.obtener_usuarios_conectados()
