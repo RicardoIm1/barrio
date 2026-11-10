@@ -89,6 +89,8 @@ Campos conceptuales:
 
 Cada nuevo comprobante crea un registro. No se reemplaza el comprobante anterior ni se elimina evidencia de auditoría. La verificación compara el importe reportado contra el total aprobado y requiere acción administrativa.
 
+**Retención de archivos aprobada:** el comprobante del pago que se verifica y permite activar la promoción se conserva durante 7 días naturales desde la activación. Los comprobantes observados o rechazados se conservan durante 7 días naturales desde la decisión administrativa que los marcó en ese estado. Al vencer el plazo se elimina únicamente el archivo binario mediante Storage API; los metadatos y eventos permanecen. Una controversia, incidencia o revisión administrativa pendiente suspende el borrado hasta que quede resuelta. Cada archivo tiene su propio vencimiento de retención.
+
 ### E. `promociones_activas`
 Instancia de vigencia por componente. Una solicitud combinada genera dos filas.
 
