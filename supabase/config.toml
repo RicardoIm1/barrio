@@ -2,3 +2,6 @@ project_id = "gnjaumpjerbbwlkcgxqa"
 
 [functions.send-push]
 verify_jwt = false
+
+[functions.comprobantes-promocion]
+verify_jwt = true
