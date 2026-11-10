@@ -9,7 +9,7 @@ Propuesta técnica para revisión. No crea bucket ni políticas. No se ha ejecut
 - Visibilidad: **privado**.
 - No reutilizar el bucket público `media`.
 - No cambiar límites, MIME, policies ni triggers del bucket `media`.
-- Los objetos se descargan con sesión autorizada o URL firmada de duración breve. Nunca se genera URL pública.
+- Los objetos se consultan exclusivamente por el administrador activo mediante URL firmada de duración breve. El usuario que reportó el pago no puede descargarlos ni volver a abrirlos. Nunca se genera URL pública.
 
 Supabase Storage aplica RLS también a descargas en buckets privados. La URL firmada es un permiso temporal y no debe guardarse en tablas ni bitácora.
 
@@ -44,12 +44,12 @@ No se conceden permisos de UPDATE ni DELETE a usuarios autenticados. La carga se
 
 ## 4. Permisos de lectura y descarga
 
-- Usuario: solo puede consultar/descargar comprobantes ligados a sus propias solicitudes.
-- Administrador activo: puede consultar/descargar comprobantes para revisión comercial.
+- Usuario: puede consultar el estado de su pago, pero no consultar, listar ni descargar el archivo del comprobante.
+- Administrador activo: puede consultar/descargar temporalmente el comprobante para revisión comercial.
 - Moderador: sin acceso administrativo automático.
 - Anónimo: ningún permiso.
 - No se concede SELECT general que permita listar todo el bucket.
-- Las interfaces solicitan una URL firmada de corta duración mediante una operación que vuelve a validar propietario o administrador. La URL no se registra en eventos ni se persiste.
+- La consola administrativa solicita una URL firmada de corta duración mediante una operación que valida que el actor sea administrador activo. No se emiten URLs al propietario. La URL no se registra en eventos ni se persiste.
 
 Las políticas deben ser específicas por operación. Si la lectura se permite en `storage.objects`, debe restringirse al objeto concreto y a la identidad autorizada, no abrir listado de objetos del bucket.
 
@@ -85,11 +85,11 @@ La secuencia detallada de reserva de intento, carga directa al bucket, validaci�
 
 1. Anónimo no puede cargar, listar ni descargar comprobantes.
 2. Usuario A no puede cargar a una ruta de usuario B.
-3. Usuario A no puede descargar un comprobante de usuario B.
-4. Usuario A no puede consultar ni descargar un comprobante de otra solicitud propia que no esté autorizada, si la política de negocio restringe la fase de acceso.
+3. Ningún usuario puede descargar comprobantes, ni propios ni ajenos.
+4. El usuario propietario solo consulta el estado de su pago; no obtiene permisos de lectura de `storage.objects`.
 5. Usuario no puede cargar comprobante en solicitud rechazada, cancelada, activa o vencida.
 6. Moderador no obtiene acceso administrativo.
-7. Administrador activo puede descargar solo para revisión autorizada.
+7. Administrador activo puede descargar solo para revisión autorizada mediante URL firmada temporal.
 8. No se permite sobrescribir un comprobante existente.
 9. No se permite cargar un MIME no autorizado ni archivos mayores de 5 MB; se rechaza un segundo archivo para el mismo intento.
 10. No existe permiso directo de UPDATE o DELETE para el cliente.
@@ -97,7 +97,14 @@ La secuencia detallada de reserva de intento, carga directa al bucket, validaci�
 12. El borrado automático usa Storage API y conserva auditoría.
 13. El bucket `media` y sus políticas permanecen sin cambios.
 
-## 9. Límites
+## 9. Decisiones de privacidad aprobadas
+
+- El comprobante es evidencia temporal para validar el pago, no un documento descargable para el usuario.
+- El usuario únicamente consulta el estado de su solicitud/pago.
+- Solo el administrador activo puede obtener acceso temporal al archivo para verificarlo.
+- No se integrará antivirus externo en la primera versión; la validación de formato no se presentará como análisis antimalware.
+
+## 10. Límites
 
 - Este documento no crea bucket, policies, funciones auxiliares, Edge Functions ni secretos.
 - No modifica `storage.objects`, `storage.buckets`, bucket `media`, triggers ni policies existentes.
