@@ -185,7 +185,6 @@ begin
     raise exception 'Operación exclusiva del proceso de limpieza' using errcode = '42501';
   end if;
 
-  return query
   with reservas_vencidas as (
     update public.pagos_promocion as p
        set estado_carga = 'expirada',
@@ -197,16 +196,17 @@ begin
        and (p.estado_carga <> 'validando'
             or p.updated_at <= now() - interval '5 minutes')
     returning p.id, p.solicitud_id
-  ),
-  eventos_expiracion as (
-    insert into public.eventos_promocion
-      (solicitud_id, pago_id, actor_tipo, evento, estado_nuevo, detalle)
-    select r.solicitud_id, r.id, 'sistema', 'reserva_comprobante_expirada',
-           'expirada', jsonb_build_object('motivo', 'reserva_caducada')
-      from reservas_vencidas as r
-    returning id
-  ),
-  candidatas as (
+  )
+  insert into public.eventos_promocion
+    (solicitud_id, pago_id, actor_tipo, evento, estado_nuevo, detalle)
+  select r.solicitud_id, r.id, 'sistema', 'reserva_comprobante_expirada',
+         'expirada', jsonb_build_object('motivo', 'reserva_caducada')
+    from reservas_vencidas as r;
+
+  -- Segunda sentencia: ya puede ver las reservas que la sentencia anterior
+  -- acaba de marcar como expiradas.
+  return query
+  with candidatas as (
     select p.id
       from public.pagos_promocion as p
      where p.comprobante_eliminado_at is null
@@ -226,45 +226,24 @@ begin
          p.ultimo_intento_borrado_at is null
          or p.ultimo_intento_borrado_at <= now() - interval '20 hours'
        )
-    union
-    -- Los CTE de escritura comparten snapshot; incluir explícitamente las
-    -- reservas recién expiradas para limpiarlas en este mismo ciclo.
-    select rv.id
-      from reservas_vencidas as rv
-     where not exists (
-       select 1
-         from public.pagos_promocion as p2
-        where p2.id = rv.id
-          and (p2.retencion_suspendida
-               or p2.ultimo_intento_borrado_at > now() - interval '20 hours')
-     )
-  ),
-  candidatas_ordenadas as (
-    select p.id,
-           coalesce(p.comprobante_eliminar_despues_de, p.reserva_expira_at) as fecha_orden
-      from public.pagos_promocion as p
-      join candidatas as c on c.id = p.id
-     order by fecha_orden, p.id
-     for update of p skip locked
+     order by coalesce(p.comprobante_eliminar_despues_de, p.reserva_expira_at), p.id
+     for update skip locked
      limit v_limit
-  ),
-  reclamadas as (
-    update public.pagos_promocion as p
-       set ultimo_intento_borrado_at = now(),
-           updated_at = now()
-      from candidatas_ordenadas as c
-     where p.id = c.id
-    returning
-      p.id,
-      p.comprobante_path,
-      case
-        when p.estado_carga = 'invalido' then 'archivo_invalido'
-        when p.estado_carga = 'expirada' then 'reserva_expirada'
-        else 'retencion_vencida'
-      end as motivo
   )
-  select r.id, r.comprobante_path, r.motivo
-    from reclamadas as r;
+  update public.pagos_promocion as p
+     set ultimo_intento_borrado_at = now(),
+         updated_at = now()
+    from candidatas as c
+   where p.id = c.id
+  returning
+    p.id,
+    p.comprobante_path,
+    case
+      when p.estado_carga = 'invalido' then 'archivo_invalido'
+      when p.estado_carga = 'expirada' then 'reserva_expirada'
+      else 'retencion_vencida'
+    end as motivo;
+
 end;
 $$;
 
