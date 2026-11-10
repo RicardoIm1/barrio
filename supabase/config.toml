@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.comprobantes-promocion]
 verify_jwt = true
+
+[functions.limpiar-comprobantes-promocion]
+verify_jwt = false
