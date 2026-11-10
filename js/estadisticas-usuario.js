@@ -73,6 +73,7 @@
         d.textContent = v == null ? '' : String(v);
         return d.innerHTML;
     };
+    const escaparAtributo = valor => escapar(valor).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     const fechaClave = valor => {
         const d = new Date(valor);
         if (Number.isNaN(d.getTime())) return null;
@@ -196,7 +197,7 @@
             dibujarGrafica(lista);
             const tbody=document.getElementById('eu-tabla-cuerpo');
             if(!lista.length){
-                tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">Todavía no tienes publicaciones.</td></tr>';
+                tbody.innerHTML='<tr><td colspan="8" class="eu-vacio">Todavía no tienes publicaciones.</td></tr>';
                 return;
             }
             const ordenados=lista.map(a=>{
@@ -210,7 +211,7 @@
                 const a=item.aviso,estado=a.status||'pendiente';
                 const textoEstado=estado==='activo'?'Activo':estado==='rechazado'?'Rechazado':'Pendiente';
                 const url=typeof a.imagen_url==='string'?a.imagen_url.trim():'';
-                const miniatura=/^https?:\/\//i.test(url)?`<img class="eu-miniatura" src="${escapar(url)}" alt="Imagen de ${escapar(a.titulo||'aviso')}" loading="lazy" decoding="async" onerror="this.style.display='none'">`:'<span class="eu-miniatura-vacia" aria-hidden="true">▧</span>';
+                const miniatura=/^https?:\/\//i.test(url)?`<img class="eu-miniatura" src="${escaparAtributo(url)}" alt="Imagen de ${escaparAtributo(a.titulo||'aviso')}" loading="lazy" decoding="async" onerror="this.style.display='none'">`:'<span class="eu-miniatura-vacia" aria-hidden="true">▧</span>';
                 return `<tr><td><div class="eu-aviso-cell">${miniatura}<strong>${escapar(a.titulo||'Sin título')}</strong></div></td><td><span class="eu-estado ${escapar(estado)}">${textoEstado}</span></td><td class="eu-num"><strong>${item.efectividad.toFixed(1)}%</strong></td><td class="eu-num">${formatoNumero(item.vistas)}</td><td class="eu-num">${formatoNumero(item.likes)}</td><td class="eu-num">${formatoNumero(item.dislikes)}</td><td class="eu-num">${formatoNumero(item.comentariosAviso)}</td><td class="eu-num">${formatoNumero(item.inter)}</td></tr>`;
             }).join('');
         } catch(error){
@@ -220,7 +221,7 @@
                 if(el)el.textContent='No disponible';
             });
             const tbody=document.getElementById('eu-tabla-cuerpo');
-            if(tbody)tbody.innerHTML='<tr><td colspan="7" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
+            if(tbody)tbody.innerHTML='<tr><td colspan="8" class="eu-vacio">No se pudieron cargar las estadísticas.</td></tr>';
         } finally {
             cargaEnCurso = false;
         }
