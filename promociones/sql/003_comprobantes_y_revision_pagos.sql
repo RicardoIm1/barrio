@@ -109,26 +109,44 @@ begin
 
   -- Cerrar reservas abandonadas anteriores. Sus objetos, si existen, se
   -- eliminan por la Edge Function de limpieza, nunca mediante SQL.
-  update public.pagos_promocion
-     set estado_carga = 'expirada',
-         updated_at = now()
-   where solicitud_id = p_solicitud_id
-     and estado_pago = 'pendiente'
-     and estado_carga in ('pendiente_carga', 'error')
-     and reserva_expira_at <= now();
+  with reservas_vencidas as (
+    update public.pagos_promocion
+       set estado_carga = 'expirada',
+           updated_at = now()
+     where solicitud_id = p_solicitud_id
+       and estado_pago = 'pendiente'
+       and estado_carga in ('pendiente_carga', 'error')
+       and reserva_expira_at <= now()
+    returning id, solicitud_id
+  )
+  insert into public.eventos_promocion
+    (solicitud_id, pago_id, actor_tipo, evento, estado_anterior, estado_nuevo, detalle)
+  select solicitud_id, id, 'sistema', 'reserva_comprobante_expirada',
+         'pendiente_carga', 'expirada',
+         jsonb_build_object('motivo', 'reserva_mayor_a_30_minutos')
+    from reservas_vencidas;
 
   -- Recuperación de validaciones abandonadas. Una validación reciente nunca
   -- se pisa; una antigua se vuelve reintentable o expirada según su reserva.
-  update public.pagos_promocion
-     set estado_carga = case
-           when reserva_expira_at <= now() then 'expirada'
-           else 'error'
-         end,
-         updated_at = now()
-   where solicitud_id = p_solicitud_id
-     and estado_pago = 'pendiente'
-     and estado_carga = 'validando'
-     and updated_at <= now() - interval '5 minutes';
+  with validaciones_estancadas as (
+    update public.pagos_promocion
+       set estado_carga = case
+             when reserva_expira_at <= now() then 'expirada'
+             else 'error'
+           end,
+           updated_at = now()
+     where solicitud_id = p_solicitud_id
+       and estado_pago = 'pendiente'
+       and estado_carga = 'validando'
+       and updated_at <= now() - interval '5 minutes'
+    returning id, solicitud_id, estado_carga
+  )
+  insert into public.eventos_promocion
+    (solicitud_id, pago_id, actor_tipo, evento, estado_anterior, estado_nuevo, detalle)
+  select solicitud_id, id, 'sistema', 'validacion_comprobante_recuperada',
+         'validando', estado_carga,
+         jsonb_build_object('motivo', 'validacion_sin_respuesta')
+    from validaciones_estancadas;
 
   if exists (
     select 1
