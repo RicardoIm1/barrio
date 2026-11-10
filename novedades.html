@@ -5,55 +5,165 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#2c3e50">
   <title>Novedades | El Barrio</title>
-  <meta name="description" content="Conoce las novedades, mejoras y nuevas guías de El Barrio.">
+  <meta name="description" content="Descubre los mensajes privados, las alertas push y cómo instalar El Barrio en tu teléfono.">
   <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="/css/estilo.css">
   <link rel="stylesheet" href="/css/index2.css">
-    <script src="/common/header-atmosfera.js" defer></script>
-  <style>
-    .info-page { max-width:920px; margin:2.2rem auto 3rem; padding:0 1rem; }
-    .info-hero { padding:clamp(1.5rem,4vw,2.7rem); border-radius:22px; color:#fff; background:linear-gradient(135deg,#1e4620,#2c7da0); box-shadow:0 14px 34px rgba(31,65,75,.14); }
-    .info-kicker { margin:0 0 .65rem; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem; opacity:.82; }
-    .info-hero h1 { margin:0 0 .7rem; font-size:clamp(1.8rem,4vw,2.5rem); }
-    .info-hero p { max-width:680px; margin:0; line-height:1.65; color:rgba(255,255,255,.9); }
-    .novedad-card { margin-top:1.2rem; padding:clamp(1.2rem,3vw,1.8rem); background:#fff; border:1px solid #e7ebef; border-radius:18px; box-shadow:0 8px 24px rgba(30,50,65,.055); }
-    .novedad-meta { color:#2c7da0; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-    .novedad-card h2 { margin:.5rem 0 .6rem; color:#2c3e50; font-size:1.25rem; }
-    .novedad-card p { color:#59636d; line-height:1.7; margin:.5rem 0; }
-    .novedad-links { display:flex; flex-wrap:wrap; gap:.7rem; margin-top:1rem; }
-    .novedad-links a { display:inline-flex; align-items:center; padding:.65rem 1rem; border-radius:30px; background:#eef5f8; color:#245c73; text-decoration:none; font-weight:600; font-size:.88rem; }
-    .novedad-links a:hover { background:#dcecf2; }
-    .info-note { margin-top:1.3rem; padding:1rem 1.2rem; border-left:3px solid #d4a043; background:#fffaf0; border-radius:0 12px 12px 0; color:#59636d; line-height:1.6; }
-  </style>
+  <script src="/common/header-atmosfera.js" defer></script>
   <link rel="stylesheet" href="/css/tipografia-global.css?v=20261106-1">
+  <style>
+    .info-page{max-width:980px;margin:2.2rem auto 3.5rem;padding:0 1rem;color:#34495e}
+    .info-hero{position:relative;overflow:hidden;padding:clamp(1.6rem,4vw,2.8rem);border-radius:23px;color:#fff;background:linear-gradient(130deg,#243b4d 0%,#2c6175 58%,#367e86 100%);box-shadow:0 14px 34px rgba(31,65,75,.14)}
+    .info-hero:after{content:"";position:absolute;width:250px;height:250px;right:-75px;top:-105px;border:1px solid rgba(255,255,255,.14);border-radius:50%;box-shadow:0 0 0 25px rgba(255,255,255,.035),0 0 0 55px rgba(255,255,255,.025)}
+    .info-kicker{position:relative;margin:0 0 .65rem;text-transform:uppercase;letter-spacing:.13em;font-size:.72rem;opacity:.82}
+    .info-hero h1{position:relative;margin:0 0 .7rem;font-size:clamp(1.9rem,4vw,2.65rem);line-height:1.12}
+    .info-hero p{position:relative;max-width:720px;margin:0;line-height:1.7;color:rgba(255,255,255,.9)}
+    .novedad-card{margin-top:1.25rem;padding:clamp(1.2rem,3vw,1.9rem);background:#fff;border:1px solid #e6ebef;border-radius:19px;box-shadow:0 8px 24px rgba(30,50,65,.055)}
+    .novedad-meta{color:#28718b;font-size:.73rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase}
+    .novedad-card h2{margin:.48rem 0 .65rem;color:#2c3e50;font-size:clamp(1.2rem,2.5vw,1.48rem)}
+    .novedad-card h3{margin:1.2rem 0 .45rem;color:#34495e;font-size:1rem}
+    .novedad-card p,.novedad-card li{color:#596875;line-height:1.7;font-size:.95rem}
+    .novedad-card p{margin:.55rem 0}
+    .novedad-card ul,.novedad-card ol{padding-left:1.25rem;margin:.55rem 0}
+    .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:1.1rem}
+    .feature{padding:1rem;border:1px solid #e7edf1;border-radius:14px;background:linear-gradient(145deg,#fbfcfd,#f5f8fa)}
+    .feature strong{display:block;margin-bottom:.35rem;color:#34495e}
+    .feature p{margin:0;font-size:.88rem}
+    .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:1rem}
+    .step-panel{padding:1.1rem;border:1px solid #e4ebef;border-radius:15px;background:#f9fbfc}
+    .step-panel h3{display:flex;align-items:center;gap:8px;margin:0 0 .65rem;font-size:1rem}
+    .step-panel h3 span{display:grid;place-items:center;width:29px;height:29px;flex:0 0 29px;border-radius:50%;background:#e6f0f4;color:#2d687d;font-size:.8rem}
+    .step-panel ol{padding-left:1.2rem;margin:.4rem 0}
+    .step-panel li{margin:.35rem 0;font-size:.9rem}
+    .mini-note{margin-top:1rem;padding:1rem 1.1rem;border-left:3px solid #d4a043;border-radius:0 12px 12px 0;background:#fff9ed;color:#655b48;font-size:.9rem;line-height:1.65}
+    .privacy-note{border-left-color:#7dacbf;background:#f1f7fa;color:#526675}
+    .novedad-links{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1rem}
+    .novedad-links a{display:inline-flex;align-items:center;padding:.68rem 1rem;border-radius:30px;background:#edf4f7;color:#245c73;text-decoration:none;font-weight:700;font-size:.88rem;transition:background .18s}
+    .novedad-links a:hover{background:#dcecf2}
+    .faq{margin-top:.7rem;border-top:1px solid #e8edf0}
+    .faq details{padding:.85rem 0;border-bottom:1px solid #e8edf0}
+    .faq summary{color:#34495e;font-weight:700;cursor:pointer;line-height:1.5}
+    .faq details p{margin:.6rem 0 0}
+    .info-footnote{margin:1.35rem .2rem 0;color:#82909b;text-align:center;font-size:.82rem;line-height:1.6}
+    @media(max-width:640px){.info-page{margin:1.2rem auto 2.5rem}.feature-grid,.steps{grid-template-columns:1fr}.novedad-card{border-radius:16px}.info-hero{border-radius:18px}}
+  </style>
 </head>
 <body>
   <div id="header-container"></div>
   <main class="info-page">
     <section class="info-hero">
       <p class="info-kicker">El Barrio · Actualizaciones</p>
-      <h1>Novedades</h1>
-      <p>Un espacio para conocer los cambios, mejoras y nuevas herramientas que van dando forma a El Barrio. La idea es mantenerte al tanto, sin ruido y con información clara.</p>
+      <h1>Más cerca, incluso cuando no estás mirando.</h1>
+      <p>Ahora puedes conversar directamente con otras personas conectadas y recibir alertas de El Barrio en tu teléfono. Aquí te contamos cómo aprovechar estas herramientas y cómo instalar la plataforma como una app.</p>
     </section>
 
     <article class="novedad-card">
-      <div class="novedad-meta">Nueva experiencia de navegación</div>
-      <h2>Una entrada más sencilla a la información</h2>
-      <p>El encabezado reúne ahora la identidad de El Barrio, el buscador de avisos y un menú compacto. Desde ese menú puedes acceder a tu espacio de administración, consultar las novedades y aprender cómo funciona la plataforma.</p>
-      <p>También se incorporó una guía de uso que explica el recorrido para consultar avisos, elegir categorías, publicar y contactar a quien anuncia.</p>
+      <div class="novedad-meta">Nueva función · Mensajería privada</div>
+      <h2>Habla directamente con quien está conectado</h2>
+      <p>¿Viste un aviso que te interesa o quieres ponerte en contacto con alguien de la comunidad? En El Barrio ya puedes iniciar una conversación privada con otro usuario que aparezca conectado en ese momento.</p>
+      <div class="feature-grid">
+        <div class="feature"><strong>Conversaciones entre dos personas</strong><p>Los mensajes solo son visibles para quien los envía y quien los recibe.</p></div>
+        <div class="feature"><strong>Usuarios conectados ahora</strong><p>Desde tu panel puedes seleccionar a una persona disponible e iniciar el chat.</p></div>
+        <div class="feature"><strong>Formato y emojis</strong><p>Da formato al texto con negritas, cursivas, subrayado, tachado y listas sencillas. También puedes enviar emojis.</p></div>
+        <div class="feature"><strong>Contador de mensajes nuevos</strong><p>El botón «Mis mensajes» muestra cuántos mensajes tienes pendientes de leer.</p></div>
+      </div>
+      <h3>¿Cómo iniciar un mensaje?</h3>
+      <ol>
+        <li>Inicia sesión en El Barrio.</li>
+        <li>Entra a tu panel de administración y localiza «Usuarios conectados ahora».</li>
+        <li>Selecciona el nombre de la persona con quien deseas conversar.</li>
+        <li>Escribe tu mensaje, agrega formato o emojis y pulsa «Enviar».</li>
+        <li>Para volver a una conversación anterior, abre «Mis mensajes».</li>
+      </ol>
+      <p><strong>Importante:</strong> la mensajería está disponible únicamente para usuarios con sesión iniciada. Para comenzar una conversación nueva, la otra persona debe aparecer conectada.</p>
+    </article>
+
+    <article class="novedad-card">
+      <div class="novedad-meta">Mantente al tanto · Notificaciones push</div>
+      <h2>El Barrio puede avisarte aunque no tengas la página abierta</h2>
+      <p>Las alertas push permiten que el navegador o la app instalada muestre una notificación cuando El Barrio envía un aviso. Así puedes enterarte de novedades sin tener que entrar constantemente a revisar la página.</p>
+      <div class="feature-grid">
+        <div class="feature"><strong>Te mantienen al día</strong><p>Recibe avisos relevantes de la actividad de El Barrio directamente en tu dispositivo.</p></div>
+        <div class="feature"><strong>Acceso directo</strong><p>Al tocar una notificación puedes abrir El Barrio y consultar el contenido relacionado.</p></div>
+        <div class="feature"><strong>Menos revisiones manuales</strong><p>No necesitas mantener la página abierta para que el dispositivo pueda mostrar una alerta push.</p></div>
+        <div class="feature"><strong>Tú decides</strong><p>Las notificaciones dependen del permiso que otorgues al navegador o a la app instalada. Puedes cambiarlo desde los ajustes del dispositivo.</p></div>
+      </div>
+      <div class="mini-note">Las alertas push son distintas de los mensajes privados. Activar las notificaciones de El Barrio no significa que recibirás una alerta push por cada mensaje del chat. La entrega también depende de la conexión, los permisos y los ajustes de ahorro de batería del dispositivo.</div>
+    </article>
+
+    <article class="novedad-card">
+      <div class="novedad-meta">Guía rápida · Instala El Barrio en tu teléfono</div>
+      <h2>Agrega El Barrio a tu pantalla de inicio</h2>
+      <p>El Barrio es una aplicación web progresiva (PWA). Puedes agregarla a la pantalla de inicio para abrirla en una ventana propia, sin tener que buscar la dirección cada vez. Para recibir notificaciones push en iPhone o iPad, es necesario agregar primero la web a la pantalla de inicio y abrirla desde su icono.</p>
+      <div class="steps">
+        <section class="step-panel">
+          <h3><span>iOS</span> iPhone y iPad</h3>
+          <ol>
+            <li>Abre <strong>Safari</strong> y entra a <a href="https://elbarrio.me">elbarrio.me</a>.</li>
+            <li>Toca el botón <strong>Compartir</strong> (cuadro con flecha hacia arriba).</li>
+            <li>Desplázate y selecciona <strong>Agregar a pantalla de inicio</strong>.</li>
+            <li>Si aparece la opción, activa <strong>Abrir como app web</strong>. Después toca <strong>Agregar</strong>.</li>
+            <li>Busca el icono de El Barrio en tu pantalla de inicio y ábrelo desde ahí.</li>
+            <li>Inicia sesión. Cuando El Barrio solicite permiso para enviarte notificaciones, selecciona <strong>Permitir</strong>.</li>
+          </ol>
+          <p><strong>Requisito:</strong> las notificaciones web en iOS/iPadOS están disponibles desde la versión 16.4 y requieren que la web esté agregada a la pantalla de inicio.</p>
+        </section>
+        <section class="step-panel">
+          <h3><span>Android</span> Teléfonos y tabletas</h3>
+          <ol>
+            <li>Abre <strong>Chrome</strong> y visita <a href="https://elbarrio.me">elbarrio.me</a>.</li>
+            <li>Toca el menú de los tres puntos (⋮), en la parte superior.</li>
+            <li>Selecciona <strong>Instalar aplicación</strong> o <strong>Agregar a pantalla principal</strong>, según lo que muestre tu dispositivo.</li>
+            <li>Confirma la instalación y abre El Barrio desde el nuevo icono.</li>
+            <li>Inicia sesión. Si aparece la solicitud de notificaciones, toca <strong>Permitir</strong>.</li>
+          </ol>
+          <p>Los nombres de las opciones pueden variar ligeramente según la marca del teléfono y la versión de Android o Chrome.</p>
+        </section>
+      </div>
+      <h3>Si no aparece la solicitud de notificaciones</h3>
+      <ul>
+        <li>Comprueba que abriste El Barrio desde el icono instalado, especialmente en iPhone o iPad.</li>
+        <li>Revisa que las notificaciones estén permitidas para Safari o para la app web de El Barrio, según el sistema.</li>
+        <li>En Android, revisa los permisos de notificación de Chrome o de la app instalada.</li>
+        <li>Si antes elegiste «No permitir», cambia el permiso desde los ajustes del navegador o del dispositivo.</li>
+        <li>Verifica que no estén activos modos que silencien notificaciones, como No molestar o algún modo de concentración.</li>
+      </ul>
+      <div class="mini-note privacy-note">La instalación es gratuita y no descarga una app desde una tienda. Solo agrega un acceso de El Barrio a tu pantalla de inicio. Puedes quitarlo cuando quieras. Las notificaciones no sustituyen la consulta directa de la plataforma.</div>
+    </article>
+
+    <article class="novedad-card">
+      <div class="novedad-meta">Un par de recomendaciones</div>
+      <h2>Haz que la comunidad funcione mejor</h2>
+      <ul>
+        <li><strong>Mantén tu sesión iniciada</strong> cuando quieras consultar quién está conectado o utilizar los mensajes privados.</li>
+        <li><strong>Activa las alertas</strong> si quieres enterarte de novedades sin revisar El Barrio a cada rato.</li>
+        <li><strong>Comparte información útil y clara</strong>: una ubicación aproximada, horarios y datos concretos ayudan a que los avisos sean más útiles.</li>
+        <li><strong>Cuida tus datos personales</strong>: evita enviar contraseñas, datos bancarios o información sensible por mensajería.</li>
+        <li><strong>Consulta el aviso de privacidad</strong> para conocer el tratamiento de tus datos y los canales de contacto.</li>
+      </ul>
       <div class="novedad-links">
-        <a href="/como-funciona.html">Conocer cómo funciona →</a>
-        <a href="/index.html">Explorar avisos →</a>
+        <a href="/index.html">Explorar avisos</a>
+        <a href="/como-funciona.html">Cómo funciona El Barrio</a>
+        <a href="/privacidad.html">Aviso de privacidad</a>
       </div>
     </article>
 
-    <div class="info-note">
-      El Barrio es un proyecto en evolución. Esta página se actualizará cuando haya cambios relevantes en sus herramientas o en la forma de utilizarlas.
-    </div>
+    <article class="novedad-card">
+      <div class="novedad-meta">Preguntas frecuentes</div>
+      <h2>Antes de empezar</h2>
+      <div class="faq">
+        <details><summary>¿Necesito instalar El Barrio para consultar avisos?</summary><p>No. Puedes navegar desde el navegador. Agregarlo a la pantalla de inicio es opcional, aunque es necesario en iPhone o iPad para recibir notificaciones push web.</p></details>
+        <details><summary>¿Puedo escribirle a cualquier persona?</summary><p>La mensajería privada está disponible para usuarios autenticados. Para iniciar una conversación nueva, selecciona a alguien que aparezca en la lista de usuarios conectados.</p></details>
+        <details><summary>¿Las notificaciones llegan si cierro El Barrio?</summary><p>Las notificaciones push están diseñadas para mostrarse aunque no tengas la página abierta. Su entrega depende de los permisos del dispositivo, la conexión y las restricciones de batería o del sistema operativo.</p></details>
+        <details><summary>¿Puedo desactivar las alertas?</summary><p>Sí. Puedes retirar el permiso de notificaciones desde los ajustes del navegador o del dispositivo. Seguirás pudiendo entrar a El Barrio manualmente.</p></details>
+      </div>
+    </article>
+
+    <p class="info-footnote">El Barrio sigue evolucionando. Iremos documentando aquí las herramientas nuevas y los cambios importantes para que sepas qué puedes hacer y cómo aprovecharlo.</p>
   </main>
   <div id="footer-container"></div>
   <script src="/js/api.js?v=20261106-6"></script>
-<script src="/js/ui.js?v=20261110-1"></script>
+  <script src="/js/ui.js?v=20261110-1"></script>
   <script src="/js/auth.js?v=20261106-2"></script>
   <script src="/common/header-init.js"></script>
   <script>
@@ -66,8 +176,6 @@
       }
     });
   </script>
-  
-  
   <script src="/common/consentimiento.js?v=20261109-privacy1" defer></script>
   <script src="/js/metricas-trafico.js?v=20261106-4" defer></script>
   <script src="/js/transiciones.js?v=20261109-2"></script>
