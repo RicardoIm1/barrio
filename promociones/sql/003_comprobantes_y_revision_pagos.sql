@@ -122,7 +122,7 @@ begin
   insert into public.eventos_promocion
     (solicitud_id, pago_id, actor_tipo, evento, estado_anterior, estado_nuevo, detalle)
   select solicitud_id, id, 'sistema', 'reserva_comprobante_expirada',
-         'pendiente_carga', 'expirada',
+         null, 'expirada',
          jsonb_build_object('motivo', 'reserva_mayor_a_30_minutos')
     from reservas_vencidas;
 
