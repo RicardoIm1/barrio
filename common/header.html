@@ -180,7 +180,7 @@
                 const menuUserLabel = document.getElementById('header-menu-user-label');
                 const menuToggle = document.getElementById('header-menu-toggle');
                 if (menuUserLabel && menuToggle) {
-                    const partesNombre = String(nombreMostrar).trim().split(/\\s+/).filter(Boolean);
+                    const partesNombre = String(nombreMostrar).trim().split(/\s+/).filter(Boolean);
                     const actualizarNombreMenu = () => {
                         const ancho = window.innerWidth;
                         let nombreCorto = nombreMostrar;
