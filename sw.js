@@ -40,10 +40,15 @@ self.addEventListener("push", function (event) {
         aviso_id: datos.aviso_id || null,
         tipo: datos.tipo || null,
       },
-      actions: [
-        { action: "ver", title: "Ver aviso" },
-        { action: "ignorar", title: "Después" },
-      ],
+      actions: datos.tipo === "mensaje_privado"
+        ? [
+            { action: "ver", title: "Abrir chat" },
+            { action: "ignorar", title: "Después" },
+          ]
+        : [
+            { action: "ver", title: "Ver aviso" },
+            { action: "ignorar", title: "Después" },
+          ],
     };
 
     await self.registration.showNotification(titulo, opciones);
