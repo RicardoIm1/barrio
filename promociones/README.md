@@ -100,3 +100,16 @@ Se agregó una primera propuesta de funciones en `sql/002_rpc_propuesta_parcial.
 Incluye solicitud, reenvío, cancelación, revisión administrativa, activación y vencimiento. **No incluye aún el ciclo de comprobantes y pagos**, por lo que no está habilitada para contratación real ni debe ejecutarse en producción. Requiere validación PostgreSQL aislada y pruebas de permisos/concurrencia.
 
 La zona administrativa existente permanece protegida: no se modifican `admin.html`, `js/admin.js`, los flags de aviso ni el bucket `media`.
+
+
+## Comprobantes y revisión de pagos
+
+Se agregó una propuesta de ciclo privado de comprobantes:
+
+- `sql/003_comprobantes_y_revision_pagos.sql`
+- `supabase/functions/comprobantes-promocion/index.ts`
+- `ESTADO-IMPLEMENTACION-COMPROBANTES.md`
+
+Incluye reserva de carga de 30 minutos, policy de inserción para la ruta reservada, validación de firma/tamaño/MIME y SHA-256 en Edge Function, revisión administrativa y URL firmada de 90 segundos solo para administrador activo.
+
+**No se ha desplegado ni ejecutado.** El bucket privado debe crearse manualmente en Dashboard y el ciclo de limpieza/retención automatizada sigue pendiente. No habilitar contratación real hasta completar limpieza, pruebas y validación en entorno aislado. El bucket `media` y la administración existente permanecen fuera de alcance.
