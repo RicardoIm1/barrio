@@ -91,3 +91,12 @@ Consulta [REVISION-PERMISOS-Y-CONCURRENCIA.md](./REVISION-PERMISOS-Y-CONCURRENCI
 ## Esquema SQL revisado
 
 El archivo [001_esquema_base_propuesta.sql](./sql/001_esquema_base_propuesta.sql) fue endurecido como propuesta documental: seis tablas, relaciones compuestas para evitar referencias cruzadas, separación entre estado del pago y estado de carga, retención y RLS desde la creación, y revocaciones explícitas a `PUBLIC`, `anon`, `authenticated` y `service_role`. No incluye RPC, policies, bucket ni tareas programadas. No se ha ejecutado ni probado contra una base aislada; no es una migración lista para producción.
+
+
+## Estado de las RPC
+
+Se agregó una primera propuesta de funciones en `sql/002_rpc_propuesta_parcial.sql`, documentada en `ESTADO-IMPLEMENTACION-RPC.md`.
+
+Incluye solicitud, reenvío, cancelación, revisión administrativa, activación y vencimiento. **No incluye aún el ciclo de comprobantes y pagos**, por lo que no está habilitada para contratación real ni debe ejecutarse en producción. Requiere validación PostgreSQL aislada y pruebas de permisos/concurrencia.
+
+La zona administrativa existente permanece protegida: no se modifican `admin.html`, `js/admin.js`, los flags de aviso ni el bucket `media`.
