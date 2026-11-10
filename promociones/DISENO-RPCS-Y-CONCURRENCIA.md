@@ -54,6 +54,7 @@ La validación del aviso bloqueado serializa solicitudes concurrentes para el mi
 3. El path se valida en servidor; no se acepta una URL pública ni una ruta arbitraria.
 4. Crea un intento de pago y evento, sin sustituir reportes previos.
 5. No marca el pago como verificado ni activa la promoción.
+6. Cada intento conserva su propio comprobante y fecha de retención; el envío de un intento nuevo no elimina ni reinicia la retención del anterior.
 
 La subida del archivo es una operación de Storage separada, con policies propias. La RPC solo registra un objeto que ya existe y cuya ruta puede validar.
 
@@ -71,8 +72,9 @@ La decisión, nota, actor y timestamp quedan auditados. No modifica el aviso ori
 
 #### `revisar_pago_promocion(p_pago_id uuid, p_decision text, p_nota text)`
 Decisiones permitidas:
-- `observar`: pago pasa a `observado` y solicitud a `pago_observado`.
-- `rechazar`: pago pasa a `rechazado` y solicitud vuelve a `aprobada_pendiente_pago`, para permitir un nuevo intento.
+- `observar`: pago pasa a `observado` y solicitud a `pago_observado`; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
+- `rechazar`: pago pasa a `rechazado` y solicitud vuelve a `aprobada_pendiente_pago`, para permitir un nuevo intento; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
+- `verificar`: el comprobante verificado queda con vencimiento de retención `activada_at + interval '7 days'`, fijado al activar la promoción.
 - `verificar`: solo si el importe reportado coincide exactamente con el total aprobado y no existe otro pago verificado para la solicitud. Pago pasa a `verificado` y solicitud a `pago_verificado`.
 
 Un índice único parcial sobre pagos con estado `verificado` refuerza la regla de un único pago verificado por solicitud.
@@ -153,7 +155,7 @@ La RPC de activación debe marcar como vencidas las filas caducadas antes de ins
 
 ## 7. Decisiones aún por cerrar antes de migración
 
-1. Confirmar si los intentos de pago rechazados/observados conservan también sus archivos durante el mismo plazo de 7 días desde la activación o si tendrán una política de limpieza distinta. La regla aprobada de 7 días aplica claramente al comprobante del pago que permitió activar la promoción.
+1. **Regla aprobada:** comprobante verificado, 7 días naturales desde la activación; comprobantes observados o rechazados, 7 días naturales desde la decisión administrativa correspondiente. Retención suspendida durante controversia, incidencia o revisión administrativa pendiente.
 2. Definir límites definitivos de tamaño y tipos MIME aceptados para comprobantes.
 3. Definir si las notas internas del administrador se separan de las notas visibles al usuario en columnas distintas o mediante una respuesta pública separada.
 4. Definir mecanismo de lectura segura para el módulo del usuario y el panel comercial del administrador.
