@@ -1712,19 +1712,6 @@ console.log("✅ Script de administración cargado - Conectado a API real");
       if(!client)throw new Error("No está disponible la conexión con Supabase.");
       const metricas = await obtenerMetricasPublicacionesUsuario(client, id);
       const lista = metricas.lista;
-      const imagenesPorAviso = new Map();
-      if (lista.length) {
-        try {
-          const ids = lista.map(function(a){return a.id;}).filter(Boolean);
-          if (ids.length) {
-            const {data:imagenes,error:errorImagenes}=await client.from("avisos").select("id,imagen_url").in("id",ids);
-            if (errorImagenes) throw errorImagenes;
-            (imagenes||[]).forEach(function(item){if(item.imagen_url) imagenesPorAviso.set(String(item.id),item.imagen_url);});
-          }
-        } catch(errorImagenes) {
-          console.warn("No se pudieron recuperar las miniaturas de los avisos:",errorImagenes);
-        }
-      }
       [["fu-total",metricas.avisos],["fu-activos",metricas.activos],["fu-vistas",metricas.vistas],["fu-positivos",metricas.positivos],["fu-negativos",metricas.negativos],["fu-comentarios",metricas.comentarios],["fu-interacciones",metricas.interacciones]].forEach(function(p){document.getElementById(p[0]).textContent=fmt(p[1]);});
       dibujarGrafica(lista);
       const tbody=document.getElementById("fu-avisos");
@@ -1740,7 +1727,7 @@ console.log("✅ Script de administración cargado - Conectado a API real");
         tbody.innerHTML=ordenados.map(function(item){
           const a=item.aviso,v=item.datos;
           const estado=a.status||"pendiente", label=estado==="activo"?"Activo":estado==="rechazado"?"Rechazado":estado==="pendiente"?"Pendiente":estado;
-          const imagen=imagenesPorAviso.get(String(a.id));
+          const imagen=typeof a.imagen_url==="string"?a.imagen_url.trim():"";
           const miniatura=imagen&&(imagen.startsWith("https://")||imagen.startsWith("http://"))?'<img class="fu-aviso-thumb" src="'+esc(imagen)+'" alt="Imagen de '+esc(a.titulo||"aviso")+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">':'<span class="fu-aviso-placeholder" aria-hidden="true">▧</span>';
           return '<tr><td><div class="fu-aviso-cell">'+miniatura+'<div><strong>'+esc(a.titulo||"Sin título")+'</strong><br><small>'+fmt(v.comentarios)+' comentarios</small></div></div></td><td>'+esc(label)+'</td><td class="fu-num"><strong>'+item.efectividad.toFixed(1)+'%</strong></td><td class="fu-num">'+fmt(item.vistas)+'</td><td class="fu-num">'+fmt(v.positivos)+'</td><td class="fu-num">'+fmt(v.negativos)+'</td><td class="fu-num">'+fmt(item.interacciones)+'</td></tr>';
         }).join("");
