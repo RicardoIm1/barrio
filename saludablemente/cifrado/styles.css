@@ -444,3 +444,194 @@ h1 span {
     box-shadow: 0 5px 18px rgba(117,76,61,.035);
   }
 }
+
+
+/* ==========================================================
+   SALUDABLEMENTE | FORMULARIO COMPACTO
+   Objetivo: visualizar todos los campos en una sola pantalla
+   ========================================================== */
+
+:root {
+  --form-font: 14px;
+  --form-label: 13px;
+  --form-control-height: 36px;
+}
+
+/* Aprovechar mejor el espacio de trabajo */
+main,
+.main-content,
+.content,
+.page-content {
+  padding: 12px 18px !important;
+}
+
+/* Encabezados más contenidos */
+.page-heading {
+  margin-bottom: 12px !important;
+}
+
+.page-heading h1,
+.page-heading h2 {
+  font-size: clamp(21px, 2vw, 27px) !important;
+  line-height: 1.15;
+  margin-bottom: 5px !important;
+}
+
+.page-heading p {
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+}
+
+/* Contenedor principal del formulario */
+form {
+  gap: 9px !important;
+}
+
+/* Si existen secciones dentro del formulario,
+   se distribuyen en una cuadrícula común */
+form .form-section,
+form .form-group-section,
+form fieldset {
+  min-width: 0;
+  margin: 0 !important;
+  padding: 9px 11px !important;
+  border-radius: 12px;
+}
+
+/* Títulos de sección */
+form .form-section h3,
+form .form-group-section h3,
+form fieldset legend {
+  font-size: 13px !important;
+  font-weight: 700;
+  margin: 0 0 7px !important;
+  color: var(--terracotta, #b97868);
+}
+
+/* Distribución de campos */
+form .form-grid,
+form .fields-grid,
+form .form-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 12px !important;
+  align-items: end;
+}
+
+/* Campos individuales */
+form .form-group,
+form .field,
+form .input-group {
+  min-width: 0;
+  margin: 0 !important;
+}
+
+/* Etiquetas */
+form label {
+  display: block;
+  font-size: var(--form-label) !important;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px !important;
+  color: var(--brown, #443936);
+}
+
+/* Inputs y selectores */
+form input:not([type="checkbox"]):not([type="radio"]),
+form select,
+form textarea {
+  width: 100%;
+  min-width: 0;
+  height: var(--form-control-height);
+  min-height: var(--form-control-height);
+  box-sizing: border-box;
+  padding: 7px 10px !important;
+  font-family: inherit;
+  font-size: var(--form-font) !important;
+  line-height: 1.2;
+  border: 1px solid #ead6ce;
+  border-radius: 8px;
+  background: #fffdfb;
+  color: var(--brown, #443936);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+form textarea {
+  height: 55px;
+  min-height: 55px;
+  resize: vertical;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: var(--terracotta, #b97868);
+  box-shadow: 0 0 0 3px rgba(185, 120, 104, .12);
+}
+
+/* Campos que necesitan ocupar más espacio */
+form .full-width,
+form .field-full,
+form .form-group.full {
+  grid-column: 1 / -1;
+}
+
+/* Botones */
+form button,
+form .btn {
+  min-height: 36px;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  border-radius: 9px;
+}
+
+/* Reducir márgenes de mensajes y ayudas */
+form small,
+form .help-text,
+form .field-hint {
+  display: block;
+  font-size: 11px !important;
+  line-height: 1.25;
+  margin-top: 3px;
+}
+
+/* Pantallas medianas */
+@media (max-width: 1100px) {
+  form .form-grid,
+  form .fields-grid,
+  form .form-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Tabletas */
+@media (max-width: 760px) {
+  main,
+  .main-content,
+  .content,
+  .page-content {
+    padding: 10px !important;
+  }
+
+  form .form-grid,
+  form .fields-grid,
+  form .form-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Teléfonos */
+@media (max-width: 480px) {
+  form .form-grid,
+  form .fields-grid,
+  form .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  form .form-section,
+  form .form-group-section,
+  form fieldset {
+    padding: 10px !important;
+  }
+}
