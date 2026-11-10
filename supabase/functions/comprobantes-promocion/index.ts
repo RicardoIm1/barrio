@@ -294,6 +294,21 @@ Deno.serve(async (req: Request) => {
       return response({ success: false, error: 'El archivo no superó la validación y el registro quedó pendiente de recuperación.' }, 503, origin);
     }
 
+    // Registrar el borrado inmediato; si Storage API falló, la limpieza diaria
+    // conservará el intento como elegible y volverá a probar.
+    const { error: deletionRecordError } = await serviceClient.rpc(
+      'registrar_borrado_comprobante',
+      {
+        p_pago_id: paymentId,
+        p_exito: !removeError,
+        p_codigo_error: removeError ? 'storage_remove_failed' : null,
+      },
+    );
+
+    if (deletionRecordError) {
+      console.error('No fue posible registrar el resultado del borrado inmediato');
+    }
+
     return response({
       success: false,
       estado: 'invalido',
