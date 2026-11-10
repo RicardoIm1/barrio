@@ -104,7 +104,11 @@ La detección de firmas identifica formatos, pero no equivale a un antivirus ni 
 | Error temporal de Edge Function/Storage | `error` o pendiente recuperable | Permitir reintento idempotente; no crear otro pago automáticamente |
 | Reserva abandonada | pendiente vencido | Proceso de limpieza elimina objeto huérfano si existe y cierra la reserva |
 
-La duración exacta de una reserva pendiente y la frecuencia de limpieza quedan por definir antes de implementar. El proceso de limpieza nunca debe borrar un archivo validado ni un comprobante sujeto a retención administrativa.
+La reserva de carga incompleta tendrá una vigencia de **30 minutos desde su creación**. Al vencer, ya no podrá completarse ni validarse esa reserva. Un nuevo intento deberá generar otra reserva y una ruta nueva.
+
+La limpieza automática se ejecutará **una vez al día**. El proceso localizará reservas vencidas que sigan sin validarse, comprobará su estado y eliminará mediante Storage API cualquier objeto incompleto o huérfano asociado; después cerrará la reserva y registrará el resultado. Como la limpieza es diaria, un objeto abandonado podría permanecer en Storage hasta el siguiente ciclo, aunque la autorización de carga vence a los 30 minutos.
+
+La limpieza será idempotente y limitada a reservas vencidas no validadas. Nunca debe borrar un archivo validado, un comprobante sujeto a retención administrativa ni un objeto vinculado a una controversia, incidencia o revisión pendiente.
 
 ## 6. Acceso y privacidad
 
@@ -156,13 +160,15 @@ No registrar el contenido del comprobante, URLs firmadas, tokens, claves ni dato
 13. Moderador no obtiene acceso administrativo.
 14. Solo el administrador activo puede obtener una URL firmada temporal; el usuario propietario no puede descargar el comprobante.
 15. El borrado de inválidos/huérfanos usa Storage API.
-16. La retención aprobada de siete días y sus excepciones siguen vigentes.
-17. El bucket `media`, sus cuotas, policies y triggers permanecen intactos.
-18. No se modifican `admin.html`, `js/admin.js`, `public.avisos` ni `campanas_destacado`.
+16. Una reserva de carga deja de autorizar nuevas cargas o validaciones al cumplir 30 minutos.
+17. La limpieza diaria elimina únicamente reservas vencidas no validadas y sus objetos huérfanos mediante Storage API, de forma idempotente.
+18. La retención aprobada de siete días y sus excepciones siguen vigentes.
+19. El bucket `media`, sus cuotas, policies y triggers permanecen intactos.
+20. No se modifican `admin.html`, `js/admin.js`, `public.avisos` ni `campanas_destacado`.
 
 ## 9. Decisiones pendientes antes de implementar
 
-- Definir el tiempo de vigencia de una reserva de carga incompleta y la frecuencia del proceso de limpieza.
+- Decisión aprobada: reserva de carga incompleta válida durante 30 minutos desde su creación; limpieza automática diaria de reservas vencidas y objetos huérfanos no validados.
 - Decisión aprobada: el usuario únicamente consulta el estado de su pago; no descarga ni vuelve a abrir el comprobante. El administrador activo conserva acceso temporal para verificarlo.
 - Decisión de alcance: no integrar un servicio antimalware externo en esta primera versión para reducir costos y dependencias. La validación de tamaño, MIME y firma binaria es una comprobación de formato, no un análisis antivirus ni una garantía de ausencia de malware.
 - Revisar el límite global de Storage del proyecto: el bucket puede fijar 5 MB, pero no superar el límite global configurado.
