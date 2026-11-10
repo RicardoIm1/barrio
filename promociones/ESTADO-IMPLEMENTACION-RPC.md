@@ -88,3 +88,10 @@ Las promociones comerciales permanecen en sus propias tablas. La futura presenta
 - Scheduling Edge Functions: https://supabase.com/docs/guides/functions/schedule-functions
 
 La documentación vigente recomienda fijar `search_path` vacío en funciones `SECURITY DEFINER`, cualificar nombres, restringir explícitamente `EXECUTE` y usar Vault para credenciales de invocación programada. La implementación de Cron/Edge Function no forma parte de este archivo.
+
+
+## Siguiente capa: comprobantes y pagos
+
+El ciclo de carga y revisión se documenta ahora en `ESTADO-IMPLEMENTACION-COMPROBANTES.md`, con SQL separado `sql/003_comprobantes_y_revision_pagos.sql` y Edge Function `supabase/functions/comprobantes-promocion/index.ts`.
+
+Esta capa sigue siendo propuesta no desplegada. Las funciones de la primera entrega y las nuevas RPC deberán probarse juntas en una base aislada, especialmente los estados compartidos de solicitud y pago.
