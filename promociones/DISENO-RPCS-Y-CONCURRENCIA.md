@@ -8,8 +8,8 @@ Diseño técnico propuesto para revisión. No contiene migraciones ejecutables n
 Se propone separar la superficie pública de API de las funciones privilegiadas:
 
 - Funciones internas en el esquema no expuesto `private`, con `SECURITY DEFINER`, `SET search_path = ''`, nombres de tablas y funciones cualificados y validaciones explícitas de identidad.
-- Funciones RPC delgadas en `public`, con `SECURITY INVOKER`, que delegan en la función interna correspondiente.
-- `EXECUTE` revocado de `PUBLIC` y `anon`; concedido a `authenticated` únicamente para los wrappers que correspondan.
+- RPC públicas deliberadas y delgadas en `public`, con `SECURITY DEFINER` solo si deben operar sobre tablas sin grants directos al cliente. Cada una debe fijar `search_path = ''`, validar `auth.uid()` y autorización dentro del cuerpo, y delegar en lógica interna. Preferir `SECURITY INVOKER` cuando los grants permitan hacerlo sin abrir tablas al navegador.
+- `EXECUTE` revocado expresamente de `PUBLIC`, `anon` y `authenticated` en todas las funciones nuevas; concedido solo a los roles que deban invocar cada RPC. No asumir que el esquema privado por sí solo elimina privilegios de ejecución.
 - El esquema `private` no se expone en la API REST.
 - Cada función interna comprueba `auth.uid()` cuando la operación depende de un usuario. No se confía en IDs de usuario enviados por el navegador.
 - La función administrativa valida `private.es_admin()` y no considera a moderadores como administradores.
@@ -72,10 +72,10 @@ La decisión, nota, actor y timestamp quedan auditados. No modifica el aviso ori
 
 #### `revisar_pago_promocion(p_pago_id uuid, p_decision text, p_nota text)`
 Decisiones permitidas:
-- `observar`: pago pasa a `observado` y solicitud a `pago_observado`; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
-- `rechazar`: pago pasa a `rechazado` y solicitud vuelve a `aprobada_pendiente_pago`, para permitir un nuevo intento; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
-- `verificar`: el comprobante verificado queda con vencimiento de retención `activada_at + interval '7 days'`, fijado al activar la promoción.
-- `verificar`: solo si el importe reportado coincide exactamente con el total aprobado y no existe otro pago verificado para la solicitud. Pago pasa a `verificado` y solicitud a `pago_verificado`.
+- `observar`: pago pasa a `estado_pago='observado'` y solicitud a `pago_observado`; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
+- `rechazar`: pago pasa a `estado_pago='rechazado'` y solicitud vuelve a `aprobada_pendiente_pago`, para permitir un nuevo intento; fija `comprobante_eliminar_despues_de = revisado_at + interval '7 days'`.
+- `verificar`: solo si la carga está validada, el importe coincide exactamente con el total aprobado y no existe otro pago verificado para la solicitud. Pago pasa a `estado_pago='verificado'` y solicitud a `pago_verificado`.
+- El plazo del comprobante verificado se fija al activar la promoción: `activada_at + interval '7 days'`.
 
 Un índice único parcial sobre pagos con estado `verificado` refuerza la regla de un único pago verificado por solicitud.
 
@@ -131,7 +131,7 @@ La RPC de activación debe marcar como vencidas las filas caducadas antes de ins
 
 ## 5. Acceso a datos y RLS
 
-- Sin SELECT directo para `anon` ni `authenticated` sobre tablas comerciales en la primera migración.
+- Sin acceso directo para `PUBLIC`, `anon`, `authenticated` ni `service_role` sobre las tablas comerciales en el esquema base. Las credenciales privilegiadas no deben convertirse en un CRUD general del módulo.
 - Las lecturas de interfaz se diseñarán después con vistas seguras o RPC de lectura específicas, sin exponer notas internas, rutas privadas, referencias bancarias ni datos de auditoría reservados.
 - Si se usan vistas, verificar la semántica de RLS y utilizar `security_invoker = true` cuando corresponda a la versión de PostgreSQL.
 - No crear policies amplias sobre tablas comerciales ni policies permisivas que se combinen por OR.
