@@ -377,7 +377,10 @@
       if (!message) return;
       if (peerActual && (message.remitente_id === peerActual.id || message.destinatario_id === peerActual.id)) {
         cargarMensajes();
-        if (message.destinatario_id === usuario.id) client.rpc('marcar_mensajes_leidos', { p_remitente_id: peerActual.id });
+        if (message.destinatario_id === usuario.id) {
+          client.rpc('marcar_mensajes_leidos', { p_remitente_id: peerActual.id })
+            .then(() => actualizarContadorNoLeidos());
+        }
       } else if (modal && !modal.hidden && !peerActual) {
         mostrarBandeja();
       }
