@@ -819,9 +819,11 @@ function actualizarFilaAvisoAdmin(aviso) {
     const cantidad = numero(total);
     panel.style.display = "block";
     badge.textContent = `${formatear(cantidad)} ${cantidad === 1 ? "conectado" : "conectados"}`;
-    lista.textContent = cantidad
-      ? "Actividad detectada en los últimos 2 minutos. Las identidades no se muestran en este resumen."
-      : "No se detectan sesiones activas en los últimos 2 minutos.";
+    if (lista.dataset.mensajesDirectos !== "1") {
+      lista.textContent = cantidad
+        ? "Inicia sesión para consultar y contactar a los usuarios conectados."
+        : "No se detectan sesiones activas en los últimos 2 minutos.";
+    }
   }
 
   function actualizarResumen(totalUsuarios, avisosPeriodo, usuariosPeriodo) {
