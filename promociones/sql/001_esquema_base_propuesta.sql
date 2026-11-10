@@ -187,8 +187,16 @@ create table public.pagos_promocion (
         and sha256 is not null
       )
     ),
-  constraint ck_pago_reportado_carga
-    check (estado_pago not in ('reportado', 'observado', 'verificado', 'rechazado') or estado_carga = 'validado'),
+  constraint ck_pago_estado_carga
+    check (
+      (estado_pago = 'pendiente' and estado_carga <> 'validado')
+      or (estado_pago in ('reportado', 'observado', 'verificado', 'rechazado') and estado_carga = 'validado')
+    ),
+  constraint ck_pago_observado_rechazado_retencion
+    check (
+      estado_pago not in ('observado', 'rechazado')
+      or comprobante_eliminar_despues_de is not null
+    ),
   constraint ck_pago_revision
     check (
       estado_pago not in ('observado', 'verificado', 'rechazado')
