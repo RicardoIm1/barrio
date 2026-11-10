@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Datos de salud · Lo que implica pasar de la libreta al software</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#fafaf7;
+    --ink:#111110;
+    --muted:#6b6b66;
+    --line:#e3e3dc;
+    --accent:#1a4d3a;
+    --accent-soft:#e8f0eb;
+    --warn:#8a3a1a;
+    --warn-soft:#f7ece5;
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-weight:400;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(250,250,247,.85);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 0;font-size:13px;
+  }
+  .brand{font-weight:600;letter-spacing:-.01em}
+  .brand span{color:var(--accent)}
+  .nav-links{display:flex;gap:22px;flex-wrap:wrap}
+  .nav-links a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  @media(max-width:700px){.nav-links{display:none}}
+
+  /* ---------- HERO ---------- */
+  header.hero{padding:110px 0 80px;border-bottom:1px solid var(--line)}
+  .kicker{
+    font-family:var(--mono);font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:28px;
+  }
+  h1{
+    font-size:clamp(2.4rem,6vw,4.6rem);
+    font-weight:800;letter-spacing:-.035em;line-height:1.02;
+    max-width:15ch;
+  }
+  h1 em{font-style:normal;color:var(--accent)}
+  .hero p.lead{
+    margin-top:32px;font-size:clamp(1.05rem,2vw,1.35rem);
+    color:var(--muted);max-width:60ch;font-weight:300;
+  }
+  .tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .tag{
+    font-family:var(--mono);font-size:12px;padding:6px 12px;
+    border:1px solid var(--line);border-radius:100px;color:var(--muted);
+  }
+  .hero-note{
+    margin-top:56px;padding-top:28px;border-top:1px solid var(--line);
+    font-size:15px;color:var(--muted);max-width:62ch;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:88px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;gap:14px;align-items:baseline;margin-bottom:44px}
+  .sec-num{
+    font-family:var(--mono);font-size:12px;color:var(--accent);
+    letter-spacing:.1em;white-space:nowrap;
+  }
+  h2{
+    font-size:clamp(1.7rem,3.4vw,2.6rem);
+    font-weight:700;letter-spacing:-.025em;line-height:1.12;
+    max-width:22ch;
+  }
+  .sec-intro{
+    font-size:1.05rem;color:var(--muted);max-width:65ch;
+    margin-bottom:48px;font-weight:300;
+  }
+
+  /* ---------- GRID CARDS ---------- */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:28px;transition:transform .25s,border-color .25s;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#c9c9c0}
+  .card h3{
+    font-size:1.15rem;font-weight:600;letter-spacing:-.01em;margin-bottom:12px;
+  }
+  .card p{font-size:.95rem;color:var(--muted);font-weight:300}
+  .card .num{
+    font-family:var(--mono);font-size:12px;color:var(--accent);
+    display:block;margin-bottom:14px;
+  }
+
+  /* ---------- CHECKLIST ---------- */
+  .checklist{display:grid;gap:0}
+  .check-item{
+    display:grid;grid-template-columns:44px 1fr;gap:20px;
+    padding:28px 0;border-top:1px solid var(--line);align-items:start;
+  }
+  .check-item:last-child{border-bottom:1px solid var(--line)}
+  .check-box{
+    width:22px;height:22px;border:2px solid var(--accent);border-radius:6px;
+    margin-top:3px;position:relative;
+  }
+  .check-box::after{
+    content:"";position:absolute;left:5px;top:2px;width:8px;height:12px;
+    border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);
+    transform:rotate(45deg);
+  }
+  .check-item h3{font-size:1.1rem;font-weight:600;margin-bottom:8px;letter-spacing:-.01em}
+  .check-item p{font-size:.95rem;color:var(--muted);font-weight:300;max-width:68ch}
+  .check-item .law{
+    font-family:var(--mono);font-size:11.5px;color:var(--accent);
+    display:inline-block;margin-top:10px;background:var(--accent-soft);
+    padding:3px 9px;border-radius:100px;
+  }
+
+  /* ---------- WARN BOX ---------- */
+  .warn{
+    background:var(--warn-soft);border:1px solid #e6cdbd;border-radius:14px;
+    padding:28px 30px;margin-top:40px;
+  }
+  .warn .warn-title{
+    font-family:var(--mono);font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--warn);margin-bottom:12px;
+  }
+  .warn p{font-size:.98rem;color:#5a3a2a;font-weight:400;max-width:70ch}
+
+  /* ---------- DUAL (DOS FRENTES) ---------- */
+  .dual{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  .dual-col{padding:34px}
+  .dual-col:first-child{border-right:1px solid var(--line)}
+  .dual-col h3{font-size:1.2rem;font-weight:600;margin-bottom:6px;letter-spacing:-.01em}
+  .dual-col .sub{font-family:var(--mono);font-size:11.5px;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:22px}
+  .dual-col ul{list-style:none}
+  .dual-col li{
+    font-size:.93rem;color:var(--muted);font-weight:300;
+    padding:10px 0 10px 20px;position:relative;border-top:1px solid var(--line);
+  }
+  .dual-col li::before{
+    content:"";position:absolute;left:0;top:18px;width:6px;height:6px;
+    border-radius:50%;background:var(--accent);
+  }
+  .dual-col li:first-child{border-top:none}
+  @media(max-width:700px){
+    .dual{grid-template-columns:1fr}
+    .dual-col:first-child{border-right:none;border-bottom:1px solid var(--line)}
+  }
+
+  /* ---------- FLOW ---------- */
+  .flow{counter-reset:step;display:grid;gap:0}
+  .flow-step{
+    display:grid;grid-template-columns:70px 1fr;gap:20px;
+    padding:24px 0;border-top:1px solid var(--line);align-items:baseline;
+  }
+  .flow-step:last-child{border-bottom:1px solid var(--line)}
+  .flow-step::before{
+    counter-increment:step;content:"0" counter(step);
+    font-family:var(--mono);font-size:13px;color:var(--accent);
+  }
+  .flow-step h3{font-size:1.05rem;font-weight:600;margin-bottom:4px}
+  .flow-step p{font-size:.93rem;color:var(--muted);font-weight:300}
+
+  /* ---------- QUOTE ---------- */
+  .quote{
+    font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:600;
+    letter-spacing:-.02em;line-height:1.3;max-width:26ch;
+    padding:56px 0;border-bottom:1px solid var(--line);
+  }
+  .quote span{color:var(--accent)}
+
+  /* ---------- CTA ---------- */
+  .cta{padding:96px 0;text-align:left}
+  .cta h2{max-width:24ch;margin-bottom:22px}
+  .cta p{font-size:1.05rem;color:var(--muted);max-width:60ch;font-weight:300;margin-bottom:36px}
+  .btn{
+    display:inline-block;background:var(--ink);color:#fff;
+    padding:16px 32px;border-radius:100px;text-decoration:none;
+    font-size:.95rem;font-weight:500;letter-spacing:-.01em;
+    transition:background .2s,transform .2s;
+  }
+  .btn:hover{background:var(--accent);transform:translateY(-2px)}
+  .btn-ghost{
+    display:inline-block;margin-left:14px;color:var(--muted);
+    text-decoration:none;font-size:.95rem;font-weight:400;
+    border-bottom:1px solid var(--line);padding-bottom:2px;transition:color .2s,border-color .2s;
+  }
+  .btn-ghost:hover{color:var(--ink);border-color:var(--ink)}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding:48px 0;font-size:13px;color:var(--muted);
+    display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
+  }
+  footer .mono{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em}
+
+  /* ---------- ANIM ---------- */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand">Datos de salud · <span>antes de la primera línea de código</span></div>
+    <div class="nav-links">
+      <a href="#problema">El problema</a>
+      <a href="#frentes">Dos frentes</a>
+      <a href="#checklist">Qué se exige</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Aviso para quien solicita software clínico</div>
+    <h1>Pasar de la libreta al software <em>cambia tus obligaciones</em>.</h1>
+    <p class="lead">
+      Esto no es una página para vender desarrollo. Es lo que necesitas saber antes de pedirme
+      que convierta tus registros de salud en un sistema. Léela completa: si después de leerla
+      sigues adelante, llegamos a la conversación hablando el mismo idioma.
+    </p>
+    <div class="tags">
+      <span class="tag">Datos sensibles</span>
+      <span class="tag">Consultorio privado</span>
+      <span class="tag">Hospital público</span>
+      <span class="tag">LFPDPPP</span>
+      <span class="tag">LGPDPPSO</span>
+      <span class="tag">NOM-004-SSA3-2012</span>
+    </div>
+    <p class="hero-note">
+      Escribo software, pero mi trabajo formal es custodiar información clínica.
+      Esa doble posición es la razón por la que esta página existe: no puedo construir
+      algo que después no pueda defender ante una auditoría.
+    </p>
+  </div>
+</header>
+
+<!-- 01 PROBLEMA -->
+<section id="problema">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">01 · El problema</span>
+    </div>
+    <h2>Una libreta no genera una base de datos. Un software sí.</h2>
+    <p class="sec-intro">
+      En cuanto tus registros de salud dejan de estar en papel y pasan a un sistema,
+      dejas de ser solo quien atiende: te conviertes en responsable del tratamiento
+      de datos personales sensibles ante la ley mexicana. Eso no es un detalle técnico.
+      Es un cambio de régimen legal.
+    </p>
+    <div class="grid">
+      <div class="card">
+        <span class="num">01</span>
+        <h3>Datos que antes no existían</h3>
+        <p>Una libreta en un cajón no es consultable, exportable ni compartible. Un software sí. Y en cuanto hay una base de datos con datos de salud, entras al terreno de la ley.</p>
+      </div>
+      <div class="card">
+        <span class="num">02</span>
+        <h3>Responsabilidad que antes no tenías</h3>
+        <p>El paciente puede pedir acceso, rectificación, cancelación u oposición. Con papel es engorroso. Con software mal diseñado, es imposible. Y la sanción va contra ti, no contra el programador.</p>
+      </div>
+      <div class="card">
+        <span class="num">03</span>
+        <h3>Evidencia que antes no hacía falta</h3>
+        <p>Si mañana alguien reclama que sus datos se filtraron, ¿cómo lo demuestras? Una libreta no te da bitácoras. Un software sin registro de auditoría, tampoco.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 DOS FRENTES -->
+<section id="frentes">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">02 · Dos frentes</span>
+    </div>
+    <h2>No es lo mismo un consultorio privado que un hospital público.</h2>
+    <p class="sec-intro">
+      Me llegan solicitudes desde los dos lados. La ley que aplica no es la misma,
+      y las obligaciones tampoco. Esta es la diferencia en una sola vista.
+    </p>
+    <div class="dual">
+      <div class="dual-col">
+        <h3>Consultorio privado</h3>
+        <div class="sub">LFPDPPP · Sector privado</div>
+        <ul>
+          <li>Eres el responsable del tratamiento.</li>
+          <li>Necesitas aviso de privacidad desde la primera captura.</li>
+          <li>Consentimiento expreso y por escrito para datos de salud.</li>
+          <li>Debes permitir derechos ARCO al paciente.</li>
+          <li>La autoridad vigila a través de la SABG.</li>
+          <li>La sanción y la demanda van contra el consultorio.</li>
+        </ul>
+      </div>
+      <div class="dual-col">
+        <h3>Hospital público</h3>
+        <div class="sub">LGPDPPSO · Sujeto obligado</div>
+        <ul>
+          <li>El hospital es sujeto obligado, no particular.</li>
+          <li>Aplica la ley de datos en posesión de sujetos obligados.</li>
+          <li>Evaluación de impacto antes de operar el sistema.</li>
+          <li>Derechos ARCO ampliados, vía Unidad de Transparencia.</li>
+          <li>Vigila la Autoridad Garante Local y el Comité de Transparencia.</li>
+          <li>El expediente clínico se rige además por la NOM-004-SSA3-2012.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="warn">
+      <div class="warn-title">Lo que ambos frentes comparten</div>
+      <p>
+        En los dos casos, los datos de salud son <strong>sensibles</strong>. Eso significa
+        consentimiento expreso y por escrito, medidas de seguridad reforzadas, registro de
+        accesos y un mecanismo real para que el paciente ejerza sus derechos. Si tu proyecto
+        no contempla eso, no es un proyecto de software clínico: es una libreta con teclado.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 03 CHECKLIST -->
+<section id="checklist">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">03 · Qué se exige</span>
+    </div>
+    <h2>Cinco cosas que tu sistema debe tener antes de que yo escriba código.</h2>
+    <p class="sec-intro">
+      No son sugerencias. Son condiciones. Si alguna no está resuelta, el desarrollo
+      no empieza, porque el riesgo legal no lo asumo yo: lo asume quien opera el sistema.
+    </p>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div>
+          <h3>Consentimiento expreso y por escrito</h3>
+          <p>Para datos de salud, la ley exige consentimiento expreso y por escrito, con firma autógrafa, electrónica o mecanismo de autenticación equivalente. Un “acepto” genérico no basta. El sistema debe capturar y resguardar esa evidencia.</p>
+          <span class="law">LFPDPPP · LGPDPPSO</span>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div>
+          <h3>Bitácoras de auditoría inmutables</h3>
+          <p>Quién accedió, a qué dato, cuándo y desde dónde. Sin esto no puedes demostrar confidencialidad ni responder a una reclamación. Si el sistema no lo registra, no sirve para datos clínicos.</p>
+          <span class="law">Medidas de seguridad · ambas leyes</span>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div>
+          <h3>Ejercicio real de derechos ARCO</h3>
+          <p>El paciente debe poder acceder a sus datos, rectificarlos, cancelarlos u oponerse. El sistema tiene que permitir localizar y exportar la información de una persona específica sin reconstruir todo a mano.</p>
+          <span class="law">Derechos ARCO · ambas leyes</span>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div>
+          <h3>Cumplimiento de la NOM-004-SSA3-2012</h3>
+          <p>Si el sistema integra expediente clínico, debe respetar la estructura de notas, la identificación de quien elabora, la fecha y hora, y los lineamientos de conservación. La norma no es opcional para el sector salud.</p>
+          <span class="law">NOM-004-SSA3-2012</span>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-box"></div>
+        <div>
+          <h3>Seguridad proporcionada al riesgo</h3>
+          <p>Control de accesos por perfil, cifrado, respaldos y un plan para notificar brechas. No se trata de tener “la mejor seguridad del mundo”, sino la suficiente para datos sensibles y demostrable ante una auditoría.</p>
+          <span class="law">Medidas técnicas · ambas leyes</span>
+        </div>
+      </div>
+    </div>
+    <div class="warn">
+      <div class="warn-title">Aviso importante</div>
+      <p>
+        Si tu sistema va a realizar funciones clínicas —diagnóstico, triaje, cálculo de dosis—
+        además es <strong>Software como Dispositivo Médico</strong> y entra en el terreno de
+        COFEPRIS y la NOM-241-SSA1-2025. Eso es otra conversación, y también hay que tenerla
+        antes, no después.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 04 PROCESO -->
+<section id="proceso">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">04 · Cómo trabajamos</span>
+    </div>
+    <h2>Primero la ley. Después el diseño. Al final el código.</h2>
+    <p class="sec-intro">
+      No empiezo por la pantalla. Empiezo por saber qué datos vas a tratar, bajo qué ley,
+      con qué consentimiento y con qué evidencia. Si eso no está claro, no hay software que valga.
+    </p>
+    <div class="flow">
+      <div class="flow-step">
+        <div>
+          <h3>Me cuentas qué registras y para qué</h3>
+          <p>Qué datos de salud capturas, quién los consulta, cuánto tiempo los conservas y qué haces hoy con la libreta.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div>
+          <h3>Identificamos el régimen legal</h3>
+          <p>Consultorio privado u hospital público. No es lo mismo, y cambia las obligaciones, la autoridad y el tipo de evidencia que necesitas.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div>
+          <h3>Revisamos si el sistema puede cumplir</h3>
+          <p>Consentimiento, bitácoras, derechos ARCO, conservación y seguridad. Si algo no se puede resolver con el alcance que propones, se dice antes.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div>
+          <h3>Propongo alcance, riesgos y costo</h3>
+          <p>Sin promesas de “app rápida”. Con etapas, responsabilidades claras y lo que cada parte asume legalmente.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div>
+          <h3>Construimos y documentamos</h3>
+          <p>El código va acompañado de la documentación que necesitas para defender el sistema ante tu Comité, tu Unidad de Transparencia o una auditoría.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="wrap">
+  <p class="quote">
+    El software clínico no es una libreta con <span>teclado</span>. Es una obligación legal con interfaz.
+  </p>
+</div>
+
+<!-- 05 CONTACTO -->
+<section id="contacto" class="cta">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">05 · Contacto</span>
+    </div>
+    <h2>Si después de leer esto sigues adelante, hablemos.</h2>
+    <p>
+      Escríbeme diciendo qué registras, para qué lo usas y si es consultorio privado u hospital público.
+      Con eso puedo decirte en una sola respuesta si tu proyecto es viable, si necesita ajustes
+      o si conviene quedarse en papel un tiempo más.
+    </p>
+    <a class="btn" href="mailto:tu-correo@ejemplo.mx?subject=Solicitud%20de%20software%20cl%C3%ADnico">Escribir un correo</a>
+    <a class="btn-ghost" href="#problema">Volver a leer</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;width:100%">
+    <span>Datos de salud · Aviso para solicitudes de software clínico</span>
+    <span class="mono">México · LFPDPPP / LGPDPPSO · NOM-004-SSA3-2012</span>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const els = document.querySelectorAll('section, .quote, header.hero');
+  els.forEach(el => el.classList.add('reveal'));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  els.forEach(el => io.observe(el));
+
+  // Smooth anchor already via CSS; add active state to nav
+  const links = document.querySelectorAll('.nav-links a');
+  links.forEach(l => {
+    l.addEventListener('click', () => {
+      links.forEach(x => x.style.color = '');
+      l.style.color = 'var(--ink)';
+    });
+  });
+</script>
+</body>
+</html>
