@@ -125,9 +125,9 @@ La configuración del proyecto marca `verify_jwt = true` para esta función. La 
 ## Pendientes de la siguiente etapa
 
 - RPC de consulta de estado para el propietario sin exponer ruta o metadatos sensibles.
-- RPC para suspender/liberar retención con bitácora y control administrativo.
-- Edge Function de limpieza diaria: reservas expiradas, objetos inválidos pendientes de borrar y comprobantes cuya retención terminó.
-- Cron + Vault/secretos para ejecutar limpieza sin credenciales en el navegador.
+- Las RPC para suspender/liberar retención y reclamar/registrar borrados ya están propuestas en `sql/004_retencion_y_limpieza.sql`.
+- La Edge Function de limpieza diaria está propuesta en `supabase/functions/limpiar-comprobantes-promocion/index.ts`.
+- Pendiente: crear secreto en Edge Functions y Vault, habilitar Cron/pg_net y programar la ejecución diaria conforme a `ESTADO-RETENCION-Y-LIMPIEZA.md`.
 - Pruebas PostgreSQL, Storage y Edge Function en un entorno aislado.
 - Confirmación visual del límite global de Storage y de la configuración Data API.
 - Revisión de permisos efectivos y Supabase Advisors.
