@@ -336,7 +336,7 @@ function renderizarAvisos(avisos, pagina, totalPaginas) {
           ${categoriaInfo.nombre}
         </div>
         
-        ${aviso.imagen_url ? `<img src="${aviso.imagen_url}" alt="${aviso.titulo}" class="aviso-imagen" loading="lazy">` : ''}
+        ${aviso.video_url && window.ElBarrioUI ? ElBarrioUI.videoThumbnailHTML(aviso.video_url, aviso.imagen_url, "Vista previa del video") : (aviso.imagen_url ? `<img src="${aviso.imagen_url}" alt="${aviso.titulo}" class="aviso-imagen" loading="lazy">` : '')}
         
         <div style="padding: 1rem;">
           <h3 class="tarjeta-titulo">${escapeHTML(aviso.titulo || 'Sin título')}</h3>\n          <div class="aviso-autor${sesionActiva ? ' autor-visible' : ''}"><span>👤</span> ${escapeHTML(aviso.nombre_autor || aviso.autor_nombre || aviso.nombre_usuario || 'Usuario')}</div>
