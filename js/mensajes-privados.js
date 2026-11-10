@@ -37,7 +37,7 @@
       .eb-online-dot{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#2b9a68}
       .eb-online-self{background:#f3f6f8}
       .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}
-      .eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(18,32,46,.48);backdrop-filter:blur(5px)}
+      .eb-chat-overlay[hidden]{display:none!important}.eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(18,32,46,.48);backdrop-filter:blur(5px)}
       .eb-chat-modal{display:flex;flex-direction:column;width:min(560px,100%);height:min(680px,88vh);overflow:hidden;border:1px solid rgba(255,255,255,.7);border-radius:18px;background:#f8fafb;box-shadow:0 24px 70px rgba(18,32,46,.28)}
       .eb-chat-head{display:flex;align-items:center;gap:12px;padding:15px 17px;background:#2c3e50;color:#fff}
       .eb-chat-head-copy{min-width:0;flex:1}
