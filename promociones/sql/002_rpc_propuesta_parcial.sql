@@ -50,7 +50,6 @@ declare
   v_cantidad integer;
   v_distintos integer;
   v_tipos integer;
-  v_producto record;
 begin
   if v_uid is null then
     raise exception 'Se requiere una sesión autenticada' using errcode = '28000';
@@ -361,7 +360,6 @@ declare
   v_item record;
   v_activada_at timestamptz := now();
   v_creadas integer := 0;
-  v_estado_anterior text;
 begin
   if v_uid is null or not private.es_admin() then
     raise exception 'Se requiere administrador activo' using errcode = '42501';
