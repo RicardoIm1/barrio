@@ -6,67 +6,82 @@
   <meta name="theme-color" content="#2c3e50">
   <title>Consumo de infraestructura | El Barrio</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/consumo.css?v=20261111-1">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/tipografia-global.css">
+  <link rel="stylesheet" href="/css/consumo.css?v=20261111-2">
+  <script src="/common/header-atmosfera.js?v=20261109-3"></script>
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar">
-      <a class="brand" href="/admin.html" aria-label="Volver a administración"><span class="brand-mark">EB</span><span>EL BARRIO<small>CONTROL DE INFRAESTRUCTURA</small></span></a>
-      <a class="back-link" href="/admin.html">← Administración</a>
-    </header>
+  <div id="header-container"></div>
 
-    <section class="intro">
-      <p class="eyebrow">PANEL PRIVADO · ADMINISTRACIÓN</p>
+  <main class="consumo-shell">
+    <section class="consumo-intro">
+      <p class="consumo-eyebrow">PANEL PRIVADO · ADMINISTRACIÓN</p>
       <h1>Consumo y capacidad</h1>
-      <p class="intro-copy">Una lectura sencilla de los recursos que sostienen El Barrio. Consulta el espacio ocupado y vigila la transferencia antes de que se convierta en un cuello de botella.</p>
-      <div class="refresh-row"><span id="actualizado" role="status">Conectando con Supabase…</span><button id="btn-actualizar" class="refresh-btn" type="button">Actualizar datos</button></div>
+      <p class="consumo-intro-copy">Una lectura sencilla de los recursos que sostienen El Barrio. Consulta el espacio ocupado y vigila la transferencia antes de que se convierta en un cuello de botella.</p>
+      <div class="consumo-refresh-row">
+        <span id="actualizado" role="status">Conectando con Supabase…</span>
+        <button id="btn-actualizar" class="consumo-refresh-btn" type="button">Actualizar datos</button>
+      </div>
     </section>
 
-    <section id="estado-carga" class="notice" aria-live="polite">Verificando sesión administrativa…</section>
+    <section id="estado-carga" class="consumo-notice" aria-live="polite">Verificando sesión administrativa…</section>
 
     <section id="panel-consumo" hidden>
-      <div class="section-heading"><div><p class="eyebrow">01 / ALMACENAMIENTO</p><h2>Espacio ocupado</h2></div><span class="source-tag">Lectura en tiempo real</span></div>
-      <article class="usage-card">
-        <div class="usage-main">
-          <div><span class="metric-label">Almacenamiento total</span><strong id="total-espacio" class="big-number">—</strong><span id="detalle-archivos" class="metric-note">—</span></div>
-          <div class="usage-percent"><strong id="porcentaje">—</strong><span>de 1 GB incluido</span></div>
+      <div class="consumo-section-heading">
+        <div><p class="consumo-eyebrow">01 / ALMACENAMIENTO</p><h2>Espacio ocupado</h2></div>
+        <span class="consumo-source-tag">Lectura en tiempo real</span>
+      </div>
+      <article class="consumo-usage-card">
+        <div class="consumo-usage-main">
+          <div><span class="consumo-metric-label">Almacenamiento total</span><strong id="total-espacio" class="consumo-big-number">—</strong><span id="detalle-archivos" class="consumo-metric-note">—</span></div>
+          <div class="consumo-usage-percent"><strong id="porcentaje">—</strong><span>de 1 GB incluido</span></div>
         </div>
-        <div class="progress-track" role="progressbar" aria-label="Almacenamiento utilizado" aria-valuemin="0" aria-valuemax="100" id="barra-progreso"><span id="barra-uso"></span></div>
-        <div class="thresholds"><span>Normal <b>0–59%</b></span><span>Vigilar <b>60–79%</b></span><span>Optimizar <b>80–89%</b></span><span>Crítico <b>90%+</b></span></div>
-        <p id="estado-uso" class="usage-status">Calculando nivel de consumo…</p>
+        <div class="consumo-progress-track" role="progressbar" aria-label="Almacenamiento utilizado" aria-valuemin="0" aria-valuemax="100" id="barra-progreso"><span id="barra-uso"></span></div>
+        <div class="consumo-thresholds"><span>Normal <b>0–59%</b></span><span>Vigilar <b>60–79%</b></span><span>Optimizar <b>80–89%</b></span><span>Crítico <b>90%+</b></span></div>
+        <p id="estado-uso" class="consumo-usage-status">Calculando nivel de consumo…</p>
       </article>
 
-      <div class="bucket-grid" id="bucket-grid"></div>
+      <div class="consumo-bucket-grid" id="bucket-grid"></div>
 
-      <div class="section-heading transfer-heading"><div><p class="eyebrow">02 / TRANSFERENCIA</p><h2>Datos enviados a visitantes</h2></div><span class="source-tag external">Medidor oficial</span></div>
-      <article class="transfer-card">
-        <div class="transfer-copy">
+      <div class="consumo-section-heading consumo-transfer-heading">
+        <div><p class="consumo-eyebrow">02 / TRANSFERENCIA</p><h2>Datos enviados a visitantes</h2></div>
+        <span class="consumo-source-tag external">Medidor oficial</span>
+      </div>
+      <article class="consumo-transfer-card">
+        <div class="consumo-transfer-copy">
           <h3>El tráfico también consume cuota</h3>
           <p>Las imágenes, videos, consultas y respuestas de la plataforma generan transferencia. El dato exacto se mide en la página de uso de la organización de Supabase, no en la tabla de archivos.</p>
-          <div class="egress-quotas"><div><strong>5 GB</strong><span>Transferencia sin caché</span></div><div><strong>5 GB</strong><span>Transferencia con caché</span></div></div>
-          <a class="primary-link" href="https://supabase.com/dashboard/org/_/usage" target="_blank" rel="noopener noreferrer">Abrir medidor oficial de Supabase ↗</a>
-          <p class="fine-print">Selecciona la organización y el proyecto El Barrio. Revisa por separado Egress y Cached Egress, así como el periodo mensual.</p>
+          <div class="consumo-egress-quotas"><div><strong>5 GB</strong><span>Transferencia sin caché</span></div><div><strong>5 GB</strong><span>Transferencia con caché</span></div></div>
+          <a class="consumo-primary-link" href="https://supabase.com/dashboard/org/_/usage" target="_blank" rel="noopener noreferrer">Abrir medidor oficial de Supabase ↗</a>
+          <p class="consumo-fine-print">Selecciona la organización y el proyecto El Barrio. Revisa por separado Egress y Cached Egress, así como el periodo mensual.</p>
         </div>
       </article>
 
-      <section class="guidance">
-        <div><p class="eyebrow">03 / REGLAS DE OPERACIÓN</p><h2>Semáforo de capacidad</h2></div>
+      <section class="consumo-guidance">
+        <div><p class="consumo-eyebrow">03 / REGLAS DE OPERACIÓN</p><h2>Semáforo de capacidad</h2></div>
         <ul>
-          <li><span class="dot normal"></span><div><strong>Menos de 60%</strong><p>Operación normal. Mantener límites y limpieza de archivos.</p></div></li>
-          <li><span class="dot watch"></span><div><strong>60% a 79%</strong><p>Revisar archivos grandes y crecimiento mensual.</p></div></li>
-          <li><span class="dot optimize"></span><div><strong>80% a 89%</strong><p>Optimizar imágenes y revisar políticas de retención.</p></div></li>
-          <li><span class="dot critical"></span><div><strong>90% o más</strong><p>Detener ampliaciones de carga hasta recuperar capacidad.</p></div></li>
+          <li><span class="consumo-dot normal"></span><div><strong>Menos de 60%</strong><p>Operación normal. Mantener límites y limpieza de archivos.</p></div></li>
+          <li><span class="consumo-dot watch"></span><div><strong>60% a 79%</strong><p>Revisar archivos grandes y crecimiento mensual.</p></div></li>
+          <li><span class="consumo-dot optimize"></span><div><strong>80% a 89%</strong><p>Optimizar imágenes y revisar políticas de retención.</p></div></li>
+          <li><span class="consumo-dot critical"></span><div><strong>90% o más</strong><p>Detener ampliaciones de carga hasta recuperar capacidad.</p></div></li>
         </ul>
       </section>
     </section>
-
-    <footer><span>EL BARRIO · Puerto Vallarta</span><span>Panel interno · Solo lectura</span></footer>
   </main>
+
+  <div id="footer-container"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/js/supabase.js"></script>
-  <script src="/js/consumo.js?v=20261111-1"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/common/header-init.js"></script>
+  <script>
+    Promise.all([
+      window.cargarHeaderCompartido?.(),
+      window.cargarFooterCompartido?.()
+    ]).catch(error => console.error('No fue posible cargar los elementos compartidos:', error));
+  </script>
+  <script src="/js/consumo.js?v=20261111-2"></script>
 </body>
 </html>
