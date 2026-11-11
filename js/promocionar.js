@@ -147,10 +147,15 @@
       const path=usuario.id+'/'+solicitudId+'/'+crypto.randomUUID()+'.'+ext;
       const upload=await client.storage.from('comprobantes-promocion').upload(path,file,{contentType:file.type,upsert:false});
       if(upload.error)throw upload.error;
-      const {error}=await client.rpc('reportar_pago_promocion',{
+      const reporte=await client.rpc('reportar_pago_promocion',{
         p_solicitud_id:solicitudId,p_metodo:metodo,p_referencia:referencia||null,p_comprobante_path:path
       });
-      if(error)throw error;
+      if(reporte.error){
+        // Si la RPC rechaza el reporte, evita dejar un archivo huérfano en Storage.
+        const cleanup=await client.storage.from('comprobantes-promocion').remove([path]);
+        if(cleanup.error)console.warn('No se pudo retirar el comprobante sin registro:',cleanup.error);
+        throw reporte.error;
+      }
       feedback('Comprobante enviado. El pago queda pendiente de validación.');
       await cargarSolicitudes();
     }catch(error){feedback(error.message||'No se pudo reportar el pago.',true);submit.disabled=false;submit.textContent='Enviar comprobante';}
