@@ -22,6 +22,30 @@
   let enviando = false;
   let modal = null;
 
+  function actualizarAtmosferaModal() {
+    if (!modal) return;
+    const ahora = new Date();
+    const hora = ahora.getHours() + ahora.getMinutes() / 60;
+    const cielo = hora >= 6 && hora < 9 ? "amanecer"
+      : hora >= 9 && hora < 17 ? "dia"
+      : hora >= 17 && hora < 20 ? "atardecer"
+      : "noche";
+    if (modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
+  }
+
+  function iniciarAtmosferaModal() {
+    actualizarAtmosferaModal();
+    if (modal.dataset.atmosferaActiva === "true") return;
+    modal.dataset.atmosferaActiva = "true";
+    const intervalo = window.setInterval(() => {
+      if (!modal || !modal.isConnected) {
+        window.clearInterval(intervalo);
+        return;
+      }
+      actualizarAtmosferaModal();
+    }, 60000);
+  }
+
   function estilos() {
     if (document.getElementById('eb-mensajes-styles')) return;
     const style = document.createElement('style');
@@ -39,9 +63,18 @@
       .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}\n      .eb-messages-guide{display:inline-flex;align-items:center;gap:5px;margin:10px 0 0 7px;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.72);color:#527083;font-size:11px;font-weight:600;text-decoration:none;transition:background .18s,border-color .18s}\n      .eb-messages-guide:hover{background:#edf5f8;border-color:#9bb9c8;color:#2c5368}\n      .eb-messages-guide:focus-visible{outline:3px solid rgba(52,152,219,.35);outline-offset:2px}
       .eb-chat-overlay[hidden]{display:none!important}
       .eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(25,39,52,.56);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:1px solid rgba(255,255,255,.82);border-radius:22px;background:linear-gradient(155deg,#fff 0%,#f8fafb 58%,#f2f6f8 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate}
-      .eb-chat-modal:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#2c3e50 0%,#3498db 48%,#d4a043 100%);z-index:2}
-      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:linear-gradient(125deg,#2c3e50 0%,#34495e 72%,#3c566d 100%);color:#fff}
+      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:1px solid rgba(255,255,255,.82);border-radius:22px;background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
+      .eb-chat-modal:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#2c3e50 0%,#3498db 48%,#d4a043 100%);z-index:3}
+      .eb-chat-modal:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.95;background-image:radial-gradient(circle at 8% 24%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 17% 68%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 29% 31%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 43% 73%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 54% 22%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 68% 52%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 78% 19%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 65%,#dceaff 0 1px,transparent 1.8px);transition:opacity 1400ms ease}
+      .eb-chat-modal[data-cielo="dia"]{background:linear-gradient(180deg,#9fc8e2 0%,#d4e6ed 72%,#edf1ef 100%)}
+      .eb-chat-modal[data-cielo="amanecer"]{background:linear-gradient(180deg,#586d91 0%,#d59b9a 58%,#f4d2ad 100%)}
+      .eb-chat-modal[data-cielo="atardecer"]{background:linear-gradient(180deg,#354567 0%,#a86d83 57%,#f0b98d 100%)}
+      .eb-chat-modal[data-cielo="noche"]{background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%)}
+      .eb-chat-modal[data-cielo="dia"]:after{opacity:.12}
+      .eb-chat-modal[data-cielo="amanecer"]:after,.eb-chat-modal[data-cielo="atardecer"]:after{opacity:.5}
+      .eb-chat-modal[data-cielo="noche"]:after{opacity:.95}
+      .eb-chat-modal>*{position:relative;z-index:1}
+      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:linear-gradient(125deg,rgba(16,27,51,.94) 0%,rgba(29,49,82,.92) 72%,rgba(64,90,120,.9) 100%);color:#fff}
       .eb-chat-head-copy{min-width:0;flex:1}
       .eb-chat-head strong{display:block;font-size:15px;font-weight:700;letter-spacing:.1px}
       .eb-chat-head small{display:block;margin-top:4px;color:rgba(239,245,249,.76);font-size:11px;letter-spacing:.2px}
@@ -49,7 +82,7 @@
       .eb-chat-close:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.48);transform:rotate(90deg)}
       .eb-chat-back{padding:7px 10px;border:1px solid rgba(245,176,66,.35);border-radius:999px;background:rgba(245,176,66,.10);color:#f5c36f;font-size:12px;font-weight:700;cursor:pointer}
       .eb-chat-back:hover{background:rgba(245,176,66,.2)}
-      .eb-chat-body{flex:1;min-height:0;overflow:auto;padding:20px;background:radial-gradient(ellipse at 10% 0%,rgba(52,152,219,.045),transparent 38%),linear-gradient(180deg,#f8fafb,#f4f7f9);scrollbar-width:thin;scrollbar-color:#cbd6de transparent}
+      .eb-chat-body{flex:1;min-height:0;overflow:auto;padding:20px;background:radial-gradient(ellipse at 10% 0%,rgba(52,152,219,.07),transparent 38%),linear-gradient(180deg,rgba(248,250,251,.88),rgba(244,247,249,.9));backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);scrollbar-width:thin;scrollbar-color:#cbd6de transparent}
       .eb-chat-empty{max-width:340px;margin:42px auto;padding:20px 18px;border:1px solid #e5edf2;border-radius:16px;background:rgba(255,255,255,.78);color:#718092;text-align:center;font-size:13px;line-height:1.6;box-shadow:0 5px 18px rgba(44,62,80,.035)}
       .eb-chat-contact{display:flex;align-items:center;gap:12px;width:100%;padding:14px 13px;border:0;border-bottom:1px solid #e8eef2;background:transparent;color:#34495e;text-align:left;cursor:pointer;transition:background .18s,border-radius .18s}
       .eb-chat-contact:hover{border-radius:12px;background:#fff}
@@ -89,7 +122,7 @@
       .eb-chat-send{min-height:44px;padding:0 17px;border:1px solid #26394a;border-radius:13px;background:linear-gradient(135deg,#34495e,#2c3e50);color:#fff;font-size:12px;font-weight:700;letter-spacing:.15px;cursor:pointer;box-shadow:0 3px 8px rgba(44,62,80,.14);transition:transform .18s,box-shadow .18s,background .18s}
       .eb-chat-send:hover:not(:disabled){transform:translateY(-1px);background:linear-gradient(135deg,#3d5870,#34495e);box-shadow:0 5px 12px rgba(44,62,80,.2)}
       .eb-chat-send:disabled{opacity:.48;cursor:wait;box-shadow:none}
-      .eb-chat-note{padding:9px 14px 11px;border-top:1px solid rgba(230,237,241,.65);background:#fff;color:#91a0ab;text-align:center;font-size:10px;letter-spacing:.1px}
+      .eb-chat-note{padding:9px 14px 11px;border-top:1px solid rgba(230,237,241,.65);background:rgba(255,255,255,.91);color:#718092;text-align:center;font-size:10px;letter-spacing:.1px;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
       .eb-chat-close:focus-visible,.eb-chat-back:focus-visible,.eb-chat-send:focus-visible,.eb-chat-compose textarea:focus-visible,.eb-chat-contact:focus-visible{outline:3px solid rgba(52,152,219,.28);outline-offset:2px}
       @media(max-width:520px){.eb-chat-overlay{padding:0;align-items:stretch}.eb-chat-modal{width:100%;height:100%;height:100dvh;max-height:100%;border:0;border-radius:0}.eb-chat-head{min-height:70px;padding:15px 16px}.eb-chat-body{padding:15px 13px}.eb-chat-compose{gap:8px;padding:10px}.eb-chat-compose-row textarea{font-size:16px}.eb-chat-send{padding:0 13px}.eb-chat-emoji-picker{left:auto;right:0}}
       @media(prefers-reduced-motion:reduce){.eb-online-user,.eb-chat-close,.eb-chat-contact,.eb-chat-send{transition:none}}
@@ -174,6 +207,7 @@
         <div class="eb-chat-note">Tus mensajes solo son visibles para ti y la persona destinataria.</div>
       </section>`;
     document.body.appendChild(modal);
+    iniciarAtmosferaModal();
     configurarEditor();
     modal.querySelector('.eb-chat-close').addEventListener('click', cerrarModal);
     modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(); });
