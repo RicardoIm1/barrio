@@ -22,36 +22,12 @@
   let enviando = false;
   let modal = null;
 
-  function actualizarAtmosferaModal(header) {
-    if (!modal) return;
-    const fuente = header || document.querySelector(".header[data-cielo]");
-    const cielo = fuente?.dataset?.cielo;
-    if (cielo && modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
-  }
-
   function iniciarAtmosferaModal() {
-    if (!modal || modal.dataset.atmosferaActiva === "true") return;
+    if (!modal) return;
+    // El encabezado de mensajes privados conserva siempre la variante diurna
+    // de la portada, sin heredar cambios horarios del documento contenedor.
+    modal.dataset.cielo = "dia";
     modal.dataset.atmosferaActiva = "true";
-
-    // El encabezado global conserva el único reloj. Si aún no existe, esperamos
-    // su inserción sin intervalos; después solo observamos su atributo data-cielo.
-    let observerHeader = null;
-    const conectarHeader = () => {
-      const header = document.querySelector(".header");
-      if (!header) return false;
-      actualizarAtmosferaModal(header);
-      if (observerHeader) observerHeader.disconnect();
-      observerHeader = new MutationObserver(() => actualizarAtmosferaModal(header));
-      observerHeader.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
-      observerDocumento?.disconnect();
-      return true;
-    };
-
-    let observerDocumento = null;
-    if (!conectarHeader() && "MutationObserver" in window) {
-      observerDocumento = new MutationObserver(() => conectarHeader());
-      observerDocumento.observe(document.documentElement, { childList: true, subtree: true });
-    }
   }
 
   function estilos() {
