@@ -2295,6 +2295,47 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+    
+        
+        /* Ajustes de alineación y proporciones para la lista de avisos. */
+        #tab-lista .tabla-admin thead th {
+            text-align: center !important;
+        }
+
+        #tab-lista .tabla-admin th:nth-child(4),
+        #tab-lista .tabla-admin td:nth-child(4) {
+            text-align: center !important;
+        }
+
+        #tab-lista .tabla-admin td:nth-child(4) .select-estado {
+            display: inline-block;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: 112px !important;
+            box-sizing: border-box;
+            padding: 5px 7px !important;
+        }
+
+        #tab-lista .tabla-admin th:nth-child(5),
+        #tab-lista .tabla-admin td:nth-child(5) {
+            text-align: center !important;
+        }
+
+        #tab-lista .tabla-admin td:nth-child(5) .acciones-botones {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-wrap: wrap !important;
+            width: 100%;
+            gap: 4px !important;
+        }
+
+        #tab-lista .tabla-admin td:nth-child(5) .acciones-botones button,
+        #tab-lista .tabla-admin td:nth-child(5) .acciones-botones .accion-btn {
+            width: auto !important;
+            flex: 0 0 auto !important;
+        }
     </style>
 
     <!-- Inclusión de tus archivos JavaScript -->
