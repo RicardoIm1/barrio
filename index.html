@@ -863,6 +863,66 @@
         }, 0);
       }
 
+      // Los videos solo solicitan poster y archivo cuando la tarjeta entra realmente en pantalla.
+      // Al salir del viewport se pausan; al regresar continúan sin reiniciar la descarga.
+      let observadorVideosAvisos = null;
+
+      function prepararVideoAviso(video) {
+        if (!video || video.dataset.videoPreparado === "1") return;
+        video.dataset.videoPreparado = "1";
+
+        const poster = video.dataset.poster;
+        if (poster) {
+          video.poster = poster;
+          delete video.dataset.poster;
+        }
+
+        const source = video.querySelector("source[data-src]");
+        if (source) {
+          source.src = source.dataset.src;
+          delete source.dataset.src;
+          video.load();
+        }
+
+        const reproduccion = video.play();
+        if (reproduccion && typeof reproduccion.catch === "function") {
+          reproduccion.catch(() => {
+            // Algunos dispositivos bloquean autoplay por ahorro de energía o políticas del navegador.
+            video.closest(".aviso-video")?.classList.add("video-reproduccion-bloqueada");
+          });
+        }
+      }
+
+      function observarVideosAvisos(raiz = document) {
+        const videos = raiz.querySelectorAll(
+          '.aviso-video video[data-lazy-video="true"]:not([data-observado])',
+        );
+        if (!videos.length) return;
+
+        if (!("IntersectionObserver" in window)) {
+          videos.forEach(prepararVideoAviso);
+          return;
+        }
+
+        if (!observadorVideosAvisos) {
+          observadorVideosAvisos = new IntersectionObserver((entradas) => {
+            entradas.forEach((entrada) => {
+              const video = entrada.target;
+              if (entrada.isIntersecting && entrada.intersectionRatio >= 0.25) {
+                prepararVideoAviso(video);
+              } else if (video.dataset.videoPreparado === "1") {
+                video.pause();
+              }
+            });
+          }, { root: null, rootMargin: "0px", threshold: [0, 0.25] });
+        }
+
+        videos.forEach((video) => {
+          video.dataset.observado = "1";
+          observadorVideosAvisos.observe(video);
+        });
+      }
+
       function appendAvisosToGrid(avisos) {
         const container = document.getElementById("avisos-container");
         if (!container) return;
@@ -955,11 +1015,11 @@
                 // Mantener el formato visual actual, declarando el MIME real del archivo.
                 multimediaHTML = `
     <div class="aviso-video" onclick="event.stopPropagation()">
-        <video poster="${escapeHtml(aviso.imagen_url || "")}" autoplay muted loop playsinline preload="metadata"
+        <video data-lazy-video="true" data-poster="${escapeHtml(aviso.imagen_url || "")}" autoplay muted loop playsinline preload="none"
             onerror="this.closest(\'.aviso-video\')?.classList.add(\'video-no-compatible\')"
             style="width:100%;height:100%;object-fit:cover;"
             aria-label="Video del aviso">
-            <source src="${videoSeguro}"${tipoVideo ? ` type="${tipoVideo}"` : ""}>
+            <source data-src="${videoSeguro}"${tipoVideo ? ` type="${tipoVideo}"` : ""}>
             Tu navegador no puede reproducir este video.
         </video>
         <a class="video-fallback-link" href="${videoSeguro}" target="_blank" rel="noopener noreferrer">Abrir video</a>
@@ -1035,6 +1095,7 @@
           })
           .join("");
         container.insertAdjacentHTML("beforeend", html);
+        observarVideosAvisos(container);
       }
 
       // La sesión de Supabase es la fuente de verdad para revelar nombres.
