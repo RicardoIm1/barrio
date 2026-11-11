@@ -2398,5 +2398,119 @@
         </div>
     </div>
   <script src="/js/transiciones.js?v=20261109-2"></script>
+
+    <style id="perfil-responsive-rework">
+      /* Mi perfil: composición estable en escritorio, tablet y móvil */
+      #tab-perfil .perfil-hero {
+        display: grid !important;
+        grid-template-columns: 54px minmax(0, 1fr) auto;
+        grid-template-areas: "avatar copy status";
+        align-items: center;
+        gap: 12px 16px;
+        min-width: 0;
+      }
+      #tab-perfil .perfil-avatar { grid-area: avatar; }
+      #tab-perfil .perfil-hero-copy {
+        grid-area: copy;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      #tab-perfil .perfil-hero-copy h2 {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        line-height: 1.22;
+      }
+      #tab-perfil .perfil-hero-copy p {
+        max-width: 62ch;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+      #tab-perfil .perfil-status {
+        grid-area: status;
+        justify-self: end;
+        align-self: center;
+        margin: 0 !important;
+        max-width: 100%;
+        white-space: normal;
+        text-align: center;
+      }
+      #tab-perfil .perfil-notificaciones {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 12px 20px;
+        min-width: 0;
+      }
+      #tab-perfil .perfil-notificaciones > div {
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+      #tab-perfil .perfil-notificaciones h3,
+      #tab-perfil .perfil-notificaciones p {
+        overflow-wrap: anywhere;
+      }
+      #tab-perfil .perfil-notificaciones .notificaciones-toggle {
+        justify-self: end;
+        width: auto;
+        max-width: 100%;
+        white-space: normal;
+      }
+      #tab-perfil .perfil-notificaciones .toggle-label {
+        max-width: none;
+        overflow: visible;
+        text-overflow: clip;
+      }
+
+      @media (max-width: 560px) {
+        #tab-perfil .perfil-hero {
+          grid-template-columns: 46px minmax(0, 1fr);
+          grid-template-areas:
+            "avatar copy"
+            "avatar status";
+          align-items: start;
+          gap: 8px 12px;
+          padding: 16px;
+        }
+        #tab-perfil .perfil-avatar {
+          width: 46px;
+          height: 46px;
+          flex-basis: 46px;
+          border-radius: 13px;
+        }
+        #tab-perfil .perfil-hero-copy h2 { font-size: 1.08rem; }
+        #tab-perfil .perfil-hero-copy p { font-size: .78rem; }
+        #tab-perfil .perfil-status {
+          justify-self: start;
+          align-self: start;
+          padding: 6px 10px;
+          font-size: .7rem;
+        }
+        #tab-perfil .perfil-notificaciones {
+          grid-template-columns: minmax(0, 1fr);
+          justify-items: start;
+          gap: 12px;
+          padding: 15px;
+        }
+        #tab-perfil .perfil-notificaciones .notificaciones-toggle {
+          justify-self: start;
+          padding: 4px 0;
+          gap: 9px;
+          font-size: .76rem;
+        }
+      }
+
+      @media (max-width: 360px) {
+        #tab-perfil .perfil-hero { padding: 13px; gap: 7px 10px; }
+        #tab-perfil .perfil-avatar {
+          width: 42px;
+          height: 42px;
+          flex-basis: 42px;
+          font-size: 1.05rem;
+        }
+        #tab-perfil .perfil-hero-copy h2 { font-size: 1rem; }
+        #tab-perfil .perfil-notificaciones { padding: 13px; }
+      }
+    </style>
+
 </body>
 </html>
