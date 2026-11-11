@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2c3e50">
+  <title>Administrar promociones | El Barrio</title>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/estilo.css">
+  <link rel="stylesheet" href="/css/tipografia-global.css">
+  <link rel="stylesheet" href="/css/promociones.css?v=20261111-1">
+  <script src="/common/header-atmosfera.js?v=20261109-2" defer></script>
+</head>
+<body>
+  <div id="header-container"></div>
+  <main class="promo-shell promo-admin-shell">
+    <header class="promo-intro">
+      <p class="promo-kicker">EL BARRIO · CONTROL COMERCIAL</p>
+      <h1>Administración de promociones</h1>
+      <p>Revisión editorial, validación de pagos, registro de activaciones y seguimiento automático de vencimientos.</p>
+      <div class="promo-admin-links"><a href="/admin.html">Abrir administrador de avisos</a><span>El panel original permanece separado y sin modificaciones.</span></div>
+    </header>
+
+    <section class="promo-admin-summary" id="promo-admin-summary">
+      <div><strong id="count-review">0</strong><span>Solicitudes por revisar</span></div>
+      <div><strong id="count-payment">0</strong><span>Pagos por validar</span></div>
+      <div><strong id="count-activation">0</strong><span>Por activar manualmente</span></div>
+      <div><strong id="count-active">0</strong><span>Promociones activas</span></div>
+    </section>
+
+    <section class="promo-panel">
+      <div class="promo-section-heading"><div><h2>Solicitudes</h2><p>Evalúa cada producto de manera independiente.</p></div><button type="button" class="promo-refresh" id="admin-refresh">Actualizar</button></div>
+      <div id="admin-requests" class="promo-list"><p class="promo-muted">Cargando solicitudes…</p></div>
+    </section>
+
+    <section class="promo-panel">
+      <div class="promo-section-heading"><div><h2>Comprobantes de pago</h2><p>Los comprobantes se almacenan en un bucket privado.</p></div></div>
+      <div id="admin-payments" class="promo-list"><p class="promo-muted">Cargando pagos…</p></div>
+    </section>
+
+    <section class="promo-panel">
+      <div class="promo-section-heading"><div><h2>Activación manual</h2><p>Primero marca el distintivo en el administrador original. Después registra aquí el inicio de la vigencia.</p></div></div>
+      <div id="admin-activation" class="promo-list"><p class="promo-muted">Cargando promociones…</p></div>
+    </section>
+
+    <section class="promo-panel">
+      <div class="promo-section-heading"><div><h2>Vigencia y vencimientos</h2><p>Supabase revisa los vencimientos cada minuto y retira automáticamente el atributo correspondiente.</p></div></div>
+      <div id="admin-active" class="promo-list"><p class="promo-muted">Cargando promociones…</p></div>
+    </section>
+
+    <div id="promo-feedback" class="promo-feedback" role="status" aria-live="polite"></div>
+    <p class="promo-back"><a href="/admin.html">Volver al administrador</a> · <a href="/index.html">Inicio</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/promociones-admin.js?v=20261111-1"></script>
+</body>
+</html>
