@@ -25,35 +25,31 @@
   function actualizarAtmosferaModal() {
     if (!modal) return;
     const header = document.querySelector(".header[data-cielo]");
-    if (!header) {
-      window.inicializarAtmosferaHeader?.(document);
-      return;
-    }
+    if (!header) return;
     const cielo = header.dataset.cielo;
     if (cielo && modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
   }
 
   function iniciarAtmosferaModal() {
-    actualizarAtmosferaModal();
-    if (modal.dataset.atmosferaActiva === "true") return;
+    if (!modal || modal.dataset.atmosferaActiva === "true") return;
     modal.dataset.atmosferaActiva = "true";
 
-    // El encabezado es la fuente de verdad: el modal solo refleja su estado.
+    // El encabezado global mantiene el único reloj. El modal solo escucha su estado.
     const header = document.querySelector(".header");
-    if (header && "MutationObserver" in window) {
-      const observer = new MutationObserver(() => actualizarAtmosferaModal());
-      observer.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
-      modal.addEventListener("DOMNodeRemoved", () => observer.disconnect(), { once: true });
-    }
+    if (!header || !("MutationObserver" in window)) return;
 
-    // Respaldo ligero para páginas donde el encabezado se inicializa después.
-    const intervalo = window.setInterval(() => {
-      if (!modal || !modal.isConnected) {
-        window.clearInterval(intervalo);
-        return;
+    actualizarAtmosferaModal();
+    const observer = new MutationObserver(actualizarAtmosferaModal);
+    observer.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
+
+    // Desconecta el observador al retirar el modal del documento.
+    const vigilarRetiro = new MutationObserver(() => {
+      if (!modal?.isConnected) {
+        observer.disconnect();
+        vigilarRetiro.disconnect();
       }
-      actualizarAtmosferaModal();
-    }, 60000);
+    });
+    vigilarRetiro.observe(document.body, { childList: true, subtree: true });
   }
 
   function estilos() {
@@ -73,8 +69,7 @@
       .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}\n      .eb-messages-guide{display:inline-flex;align-items:center;gap:5px;margin:10px 0 0 7px;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.72);color:#527083;font-size:11px;font-weight:600;text-decoration:none;transition:background .18s,border-color .18s}\n      .eb-messages-guide:hover{background:#edf5f8;border-color:#9bb9c8;color:#2c5368}\n      .eb-messages-guide:focus-visible{outline:3px solid rgba(52,152,219,.35);outline-offset:2px}
       .eb-chat-overlay[hidden]{display:none!important}
       .eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(25,39,52,.56);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:1px solid rgba(255,255,255,.82);border-radius:22px;background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
-      .eb-chat-modal:before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#2c3e50 0%,#3498db 48%,#d4a043 100%);z-index:3}
+      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:0;border-radius:22px;background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
       .eb-chat-modal:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.95;background-image:radial-gradient(circle at 8% 24%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 17% 68%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 29% 31%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 43% 73%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 54% 22%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 68% 52%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 78% 19%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 65%,#dceaff 0 1px,transparent 1.8px);transition:opacity 1400ms ease}
       .eb-chat-modal[data-cielo="dia"]{background:linear-gradient(180deg,#9fc8e2 0%,#d4e6ed 72%,#edf1ef 100%)}
       .eb-chat-modal[data-cielo="amanecer"]{background:linear-gradient(180deg,#586d91 0%,#d59b9a 58%,#f4d2ad 100%)}
@@ -84,16 +79,7 @@
       .eb-chat-modal[data-cielo="amanecer"]:after,.eb-chat-modal[data-cielo="atardecer"]:after{opacity:.5}
       .eb-chat-modal[data-cielo="noche"]:after{opacity:.95}
       .eb-chat-modal>*{position:relative;z-index:1}
-      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;overflow:hidden;background:linear-gradient(125deg,rgba(16,27,51,.94) 0%,rgba(29,49,82,.92) 72%,rgba(64,90,120,.9) 100%);color:#fff;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
-      .eb-chat-head:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.9;background-image:radial-gradient(circle at 9% 28%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 22% 72%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 38% 20%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 57% 67%,#fff 0 1.1px,transparent 1.9px),radial-gradient(circle at 73% 25%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 70%,#fff 0 1px,transparent 1.8px);transition:opacity 1400ms ease}
-      .eb-chat-head>*{position:relative;z-index:1}
-      .eb-chat-modal[data-cielo="dia"] .eb-chat-head{background:linear-gradient(125deg,rgba(76,130,163,.94) 0%,rgba(111,158,177,.92) 72%,rgba(151,181,188,.9) 100%)}
-      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head{background:linear-gradient(125deg,rgba(48,65,96,.96) 0%,rgba(133,91,113,.93) 58%,rgba(196,135,119,.92) 100%)}
-      .eb-chat-modal[data-cielo="atardecer"] .eb-chat-head{background:linear-gradient(125deg,rgba(35,49,79,.97) 0%,rgba(112,72,101,.94) 58%,rgba(181,119,112,.92) 100%)}
-      .eb-chat-modal[data-cielo="noche"] .eb-chat-head{background:linear-gradient(125deg,rgba(16,27,51,.96) 0%,rgba(29,49,82,.94) 72%,rgba(64,90,120,.92) 100%)}
-      .eb-chat-modal[data-cielo="dia"] .eb-chat-head:after{opacity:.08}
-      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head:after,.eb-chat-modal[data-cielo="atardecer"] .eb-chat-head:after{opacity:.42}
-      .eb-chat-modal[data-cielo="noche"] .eb-chat-head:after{opacity:.9}
+      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:rgba(28,48,72,.94);color:#fff}
       .eb-chat-head-copy{min-width:0;flex:1}
       .eb-chat-head strong{display:block;font-size:15px;font-weight:700;letter-spacing:.1px}
       .eb-chat-head small{display:block;margin-top:4px;color:rgba(239,245,249,.76);font-size:11px;letter-spacing:.2px}
