@@ -43,6 +43,9 @@
             <nav class="header-menu-links" aria-label="Información de El Barrio">
                 <a href="/novedades.html">✨ Novedades</a>
                 <a href="/como-funciona.html">❓ Cómo funciona</a>
+                <a href="/promocionar.html" class="admin-only-menu-link" hidden>📣 Promocionar mis avisos</a>
+                <a href="/promociones-admin.html" class="admin-only-menu-link" hidden>🧾 Gestión de promociones</a>
+                <a href="/consumo.html" class="admin-only-menu-link" hidden>📊 Consumo de infraestructura</a>
             </nav>
         </div>
     </div>
@@ -176,6 +179,10 @@
                 userArea.style.display = 'flex';
 
                 const esAdmin = usuario.rol === 'admin';
+                document.querySelectorAll('.admin-only-menu-link').forEach(link => {
+                    link.hidden = !esAdmin;
+                    link.style.display = esAdmin ? 'flex' : 'none';
+                });
                 const nombreMostrar = usuario.nombre || usuario.email || 'Usuario';
                 const menuUserLabel = document.getElementById('header-menu-user-label');
                 const menuToggle = document.getElementById('header-menu-toggle');
@@ -224,6 +231,10 @@
                     });
                 }
             } else {
+                document.querySelectorAll('.admin-only-menu-link').forEach(link => {
+                    link.hidden = true;
+                    link.style.display = 'none';
+                });
                 loginLink.style.display = 'inline-flex';
                 userArea.style.display = 'none';
                 if (userNameSpan) userNameSpan.onclick = null;
