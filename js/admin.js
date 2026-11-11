@@ -1088,14 +1088,14 @@ async function cargarAvisosParaAdmin() {
   const tbody = document.getElementById("tabla-avisos-cuerpo");
   if (tbody)
     tbody.innerHTML =
-      '<tr><td colspan="6" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
+      '<tr><td colspan="5" style="text-align: center; padding: 15px;">🔄 Cargando avisos...</td></tr>';
   try {
     const apiKey = localStorage.getItem("api_key");
     const usuario = API.getUsuarioActual();
     if (!apiKey || !usuario) {
       if (tbody)
         tbody.innerHTML =
-          '<tr><td colspan="6" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
+          '<tr><td colspan="5" style="text-align: center; padding: 15px; color: #ff8c42;">⚠️ Necesitas iniciar sesión</td></tr>';
       return;
     }
     console.log(`👤 Usuario logueado: ${usuario.rol} - ${usuario.email}`);
@@ -1131,7 +1131,7 @@ async function cargarAvisosParaAdmin() {
     if (!avisos || avisos.length === 0) {
       if (tbody)
         tbody.innerHTML =
-          '<tr><td colspan="6" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
+          '<tr><td colspan="5" style="text-align: center; padding: 15px;">📭 No tienes avisos registrados aún</td></tr>';
       todosLosAvisos = [];
       return;
     }
@@ -1219,7 +1219,7 @@ async function cargarAvisosParaAdmin() {
   } catch (error) {
     console.error("❌ Error:", error);
     if (tbody)
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || "Error de conexión"}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 15px; color: red;">❌ ${error.message || "Error de conexión"}</td></tr>`;
   }
 }
 
@@ -1251,7 +1251,7 @@ function renderizarTablaAvisos() {
     );
   if (avisosFiltrados.length === 0) {
     tbody.innerHTML =
-      '<tr><td colspan="' + (esAdmin ? 6 : 5) + '" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
+      '<tr><td colspan="' + (esAdmin ? 5 : 4) + '" style="text-align: center; padding: 15px;">🔍 No hay avisos que coincidan con los filtros</td></tr>';
     return;
   }
   tbody.innerHTML = avisosFiltrados
@@ -1294,7 +1294,6 @@ function renderizarTablaAvisos() {
         }
       }
       return `<tr data-id="${aviso.id}" onclick="editarAviso('${aviso.id}')" title="Haz clic en la fila para editar este aviso">
-            <td data-label="ID">${aviso.id ? String(aviso.id).substring(0, 8) : "N/A"}..</td>
             <td data-label="Imagen" style="text-align: center;">${aviso.imagen_url ? `<img src="${aviso.imagen_url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" onerror="this.style.display='none'">` : "📷"}</td>
             <td data-label="Título"><strong>${escapeHTML(aviso.titulo || "Sin título")}</strong><br>
                 <div style="font-size: 0.7rem; margin-top: 5px;"><span title="Vistas">🙉 ${vistas}</span><span style="margin-left: 8px;" title="Comentarios">💬 ${comentarios}</span><span style="margin-left: 8px;" title="Votos positivos">👍 ${votosPos}</span><span style="margin-left: 8px;" title="Votos negativos">👎 ${votosNeg}</span>${totalInteracciones > 0 ? `<span style="margin-left: 8px;" title="Interacciones (comentarios + votos)">📊 ${totalInteracciones}</span>` : ""}</div>
