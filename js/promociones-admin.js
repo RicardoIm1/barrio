@@ -82,7 +82,7 @@
     aviso('Solicitud actualizada: '+state+'.');await cargar();
   }
   async function validarPago(id,state){
-    const note=window.prompt(state==='verificado'?'Observación de validación (opcional):':'Motivo del rechazo (opcional):')||null;
+    const note=null;
     const {error}=await client.rpc('admin_validar_pago_promocion',{p_pago_id:id,p_estado:state,p_observaciones:note});
     if(error)throw error;
     aviso(state==='verificado'?'Pago verificado. La promoción quedó pendiente de activación manual.':'Pago rechazado.');await cargar();
