@@ -124,6 +124,12 @@
   }
 
   async function sincronizarSuscripcion({ forzarMigracion = false } = {}) {
+    const hostPermitido = ["elbarrio.me", "www.elbarrio.me"].includes(window.location.hostname);
+    if (window.location.protocol !== "https:" || !hostPermitido) {
+      console.info("Web Push: las suscripciones solo se registran desde el dominio oficial de producción.");
+      return false;
+    }
+
     const usuario = await obtenerUsuarioAutenticado();
 
     if (!usuario?.id) return false;

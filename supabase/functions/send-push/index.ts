@@ -409,7 +409,7 @@ Deno.serve(async (req: Request) => {
     } = await supabase
       .from('push_subscriptions')
       .select(
-        'id,endpoint,p256dh,auth',
+        'id,endpoint,p256dh,auth,origen',
       )
       .eq(
         'usuario_id',
@@ -426,12 +426,22 @@ Deno.serve(async (req: Request) => {
     }
 
 
-    if (!suscripciones?.length) {
+    // Si ya existe al menos una suscripción identificada como producción,
+    // se envía exclusivamente a producción. Los registros históricos sin origen
+    // se conservan como fallback hasta que cada dispositivo vuelva a sincronizar.
+    const suscripcionesProduccion = (suscripciones || []).filter((s: any) =>
+      ['https://elbarrio.me', 'https://www.elbarrio.me'].includes(s.origen)
+    );
+    const suscripcionesHeredadas = (suscripciones || []).filter((s: any) => !s.origen);
+    const suscripcionesDestino = suscripcionesProduccion.length
+      ? suscripcionesProduccion
+      : suscripcionesHeredadas;
+
+    if (!suscripcionesDestino.length) {
       return respuesta({
         success: true,
         enviados: 0,
-        motivo:
-          'El usuario no tiene suscripciones activas',
+        motivo: 'El usuario no tiene suscripciones activas de producción',
       });
     }
 
@@ -457,7 +467,7 @@ Deno.serve(async (req: Request) => {
     // ENVIAR A CADA SUSCRIPCIÓN
     // ========================================================
 
-    for (const suscripcion of suscripciones) {
+    for (const suscripcion of suscripcionesDestino) {
 
       try {
 
