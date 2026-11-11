@@ -48,8 +48,19 @@
   function cardPago(p){
     const s=solicitudes.find(x=>x.id===p.solicitud_id);
     const url=urls.get(p.id);
+    const plazo=p.comprobante_eliminado_at
+      ? '<p><strong>Imagen eliminada:</strong> '+fmt(p.comprobante_eliminado_at)+'. Los metadatos del pago se conservan.</p>'
+      : p.comprobante_retenido_hasta
+        ? '<p>Eliminación automática programada después de: <strong>'+fmt(p.comprobante_retenido_hasta)+'</strong>.</p>'
+        : '<p>El plazo de siete días comenzará cuando registres la activación.</p>';
+    const retencion=p.retener_comprobante
+      ? '<p><strong>Retención activa:</strong> '+esc(p.retencion_motivo||'Sin motivo registrado')+'</p>'
+      : '<p>Retención excepcional desactivada.</p>';
+    const control='<label class="promo-preserve"><input type="checkbox" data-retain-payment="'+esc(p.id)+'" '+(p.retener_comprobante?'checked':'')+'> Suspender eliminación automática</label>'+
+      '<textarea class="promo-retention-note" data-retain-note="'+esc(p.id)+'" placeholder="Motivo obligatorio al suspender la eliminación">'+esc(p.retencion_motivo||'')+'</textarea>';
     return '<article class="promo-admin-card"><div class="promo-admin-card-top"><div><h3>'+esc(s?.aviso_titulo_snapshot||'Aviso no disponible')+'</h3><p>'+esc(s?.producto_nombre_snapshot||'Promoción')+' · $'+Number(p.importe).toFixed(2)+' MXN · '+esc(p.metodo)+'</p><p>Propietario: '+esc(userLabel(s?.usuario_id))+' · Reportado: '+fmt(p.fecha_reporte)+'</p><p>Referencia: '+esc(p.referencia||'No proporcionada')+'</p></div><span class="promo-state '+(p.estado==='verificado'?'good':p.estado==='rechazado'?'bad':'wait')+'">'+esc(p.estado)+'</span></div>'+
       (url?'<a class="receipt-link" href="'+esc(url)+'" target="_blank" rel="noopener">Abrir comprobante</a>':'<p>Comprobante no disponible.</p>')+
+      plazo+retencion+control+
       (p.estado==='reportado'?'<div class="promo-admin-card-actions"><button data-payment="verificado" data-id="'+esc(p.id)+'">Verificar pago</button><button class="danger" data-payment="rechazado" data-id="'+esc(p.id)+'">Rechazar pago</button></div>':'')+'</article>';
   }
   function cardActivation(p){
@@ -116,9 +127,23 @@
   });
   document.addEventListener('change',async e=>{
     const c=e.target.closest('[data-preserve]');
-    if(!c)return;
-    c.disabled=true;
-    try{await conservar(c.dataset.preserve,c.checked);}catch(error){aviso(error.message||'No se pudo actualizar la opción.',true);c.checked=!c.checked;c.disabled=false;}
+    if(c){
+      c.disabled=true;
+      try{await conservar(c.dataset.preserve,c.checked);}catch(error){aviso(error.message||'No se pudo actualizar la opción.',true);c.checked=!c.checked;c.disabled=false;}
+      return;
+    }
+    const r=e.target.closest('[data-retain-payment]');
+    if(!r)return;
+    r.disabled=true;
+    const note=document.querySelector('[data-retain-note="'+r.dataset.retainPayment+'"]')?.value||null;
+    try{
+      const {error}=await client.rpc('admin_configurar_retencion_comprobante',{
+        p_pago_id:r.dataset.retainPayment,p_retener:r.checked,p_motivo:note
+      });
+      if(error)throw error;
+      aviso(r.checked?'El comprobante quedó retenido por el motivo indicado.':'Se reanudó la eliminación automática cuando venza el plazo.');
+      await cargar();
+    }catch(error){aviso(error.message||'No se pudo modificar la retención.',true);r.checked=!r.checked;r.disabled=false;}
   });
   init().catch(error=>{console.error(error);aviso(error.message||'No se pudo cargar el panel.',true);});
 })();
