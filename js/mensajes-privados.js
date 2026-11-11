@@ -42,14 +42,8 @@
     const observer = new MutationObserver(actualizarAtmosferaModal);
     observer.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
 
-    // Desconecta el observador al retirar el modal del documento.
-    const vigilarRetiro = new MutationObserver(() => {
-      if (!modal?.isConnected) {
-        observer.disconnect();
-        vigilarRetiro.disconnect();
-      }
-    });
-    vigilarRetiro.observe(document.body, { childList: true, subtree: true });
+    // El modal se conserva en el DOM y se oculta al cerrar; el observador
+    // vive lo mismo que la página y solo escucha cambios en data-cielo.
   }
 
   function estilos() {
