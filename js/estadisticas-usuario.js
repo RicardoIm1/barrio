@@ -108,9 +108,26 @@
             .estadisticas-usuario-footer .eu-panel h3{margin:0 0 .65rem;color:#34495e;font:750 .82rem Manrope,sans-serif}
             .estadisticas-usuario-footer .eu-chart-wrap{width:100%;overflow:hidden}
             .estadisticas-usuario-footer canvas{display:block;width:100%;height:170px}
-            .estadisticas-usuario-footer .eu-tabla-wrap{overflow-x:auto}
-            .estadisticas-usuario-footer table{width:100%;border-collapse:collapse;font-size:.74rem;color:#40566b}
-            .estadisticas-usuario-footer th{text-align:left;background:#edf3f7;color:#52697d;padding:.55rem;white-space:nowrap;font-weight:700}
+            .estadisticas-usuario-footer .eu-tabla-wrap{
+                max-height:360px;
+                overflow-y:auto;
+                overflow-x:auto;
+                overscroll-behavior:contain;
+                scrollbar-gutter:stable;
+                border-radius:9px;
+            }
+            .estadisticas-usuario-footer table{width:100%;border-collapse:separate;border-spacing:0;font-size:.74rem;color:#40566b}
+            .estadisticas-usuario-footer thead th{
+                position:sticky;
+                top:0;
+                z-index:2;
+                text-align:left;
+                background:#edf3f7;
+                color:#52697d;
+                padding:.55rem;
+                white-space:nowrap;
+                font-weight:700;
+            }
             .estadisticas-usuario-footer td{padding:.55rem;border-top:1px solid #e8edf2;vertical-align:middle}
             .estadisticas-usuario-footer tbody tr:hover{background:#f7fafc}
             .estadisticas-usuario-footer .eu-num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -122,7 +139,13 @@
             .estadisticas-usuario-footer .eu-miniatura-vacia{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:8px;background:#edf3f7;color:#8193a3;font-size:1.15rem}
             .estadisticas-usuario-footer th[title]{text-align:center;font-size:1rem}
             .estadisticas-usuario-footer .eu-vacio{color:#718092;padding:1rem 0;text-align:center}
-            @media(max-width:600px){.estadisticas-usuario-footer{padding-top:.9rem}.estadisticas-usuario-footer .eu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.estadisticas-usuario-footer .eu-card{padding:.7rem}.estadisticas-usuario-footer .eu-value{font-size:1.08rem}}
+            @media(max-width:600px){
+                .estadisticas-usuario-footer{padding-top:.9rem}
+                .estadisticas-usuario-footer .eu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}
+                .estadisticas-usuario-footer .eu-card{padding:.7rem}
+                .estadisticas-usuario-footer .eu-value{font-size:1.08rem}
+                .estadisticas-usuario-footer .eu-tabla-wrap{max-height:48vh}
+            }
         `;
         document.head.appendChild(style);
     }
