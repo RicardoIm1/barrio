@@ -422,6 +422,14 @@
             align-items: flex-start;
             gap: 11px;
         }
+        #chartOnline .presence-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 24px;
+            width: auto;
+        }
+        #chartOnline .presence-content { width: 100%; min-width: 0; }
         #chartOnline .presence-copy > div { width: 100%; }
         #chartOnline .presence-copy h4 { font-size: .95rem; line-height: 1.3; }
         #chartOnline .presence-hint {
@@ -456,7 +464,11 @@
             padding: 10px 17px;
             box-sizing: border-box;
         }
-        #chartOnline .online-badge { align-self: flex-start; order: -1; }
+        #chartOnline .online-badge {
+            align-self: center;
+            order: 0;
+            margin: 0;
+        }
 
         @media (max-width: 1023px) {
             .admin-workspace {
@@ -1643,14 +1655,16 @@
     <!-- Aside global, independiente de las secciones y del contenido del footer -->
     <aside class="dashboard-section dashboard-presence admin-presence-feature" id="chartOnline" aria-label="Usuarios conectados ahora">
         <div class="presence-copy">
-            <span class="presence-dot" aria-hidden="true"></span>
-            <div>
+            <div class="presence-indicator" aria-label="Cantidad de usuarios conectados">
+                <span class="presence-dot" aria-hidden="true"></span>
+                <strong class="online-badge" id="onlineCount">—</strong>
+            </div>
+            <div class="presence-content">
                 <h4>Usuarios conectados ahora</h4>
                 <p class="presence-hint">Selecciona un vecino para iniciar una conversación privada.</p>
                 <div id="onlineUsersList" aria-live="polite">Inicia sesión para consultar usuarios conectados.</div>
             </div>
         </div>
-        <strong class="online-badge" id="onlineCount">—</strong>
     </aside>
     </div>
     
