@@ -1,0 +1,21 @@
+.promo-admin-shell .promo-admin-links{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.promo-admin-links a{display:inline-flex;padding:9px 13px;border-radius:10px;background:#2c3e50;color:#fff;text-decoration:none;font-size:.78rem;font-weight:700}
+.promo-admin-links span{color:#87939d;font-size:.75rem}
+.promo-admin-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0 20px}
+.promo-admin-summary>div{padding:14px 16px;border:1px solid #e1e8ed;border-radius:14px;background:#fff}
+.promo-admin-summary strong{display:block;color:#2c3e50;font-size:1.45rem;line-height:1.2}
+.promo-admin-summary span{display:block;margin-top:4px;color:#84919b;font-size:.72rem}
+.promo-admin-card{padding:16px;border:1px solid #e3eaf0;border-radius:14px;background:#fff}
+.promo-admin-card h3{margin:0 0 5px;font-size:.94rem;color:#2c3e50}
+.promo-admin-card p{margin:3px 0;color:#7a8995;font-size:.76rem;line-height:1.5}
+.promo-admin-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.promo-admin-card-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.promo-admin-card button{border:0;border-radius:9px;padding:8px 11px;background:#2c3e50;color:#fff;font-size:.75rem;font-weight:700;cursor:pointer}
+.promo-admin-card button.secondary{background:#edf2f6;color:#40586d}
+.promo-admin-card button.danger{background:#fff0ef;color:#a33c34}
+.promo-admin-card textarea{width:100%;min-height:58px;margin-top:10px;padding:9px 10px;border:1px solid #dce4ea;border-radius:9px;font:inherit;font-size:.78rem;resize:vertical}
+.promo-admin-card a.receipt-link{display:inline-flex;margin-top:8px;color:#3d718d;font-size:.78rem;font-weight:700}
+.promo-preserve{display:flex;align-items:center;gap:8px;margin-top:12px;color:#566d7f;font-size:.78rem}
+.promo-preserve input{width:17px;height:17px;accent-color:#2c3e50}
+.promo-admin-empty{padding:14px;color:#8996a1;font-size:.8rem}
+@media(max-width:640px){.promo-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.promo-admin-summary>div{padding:12px}.promo-admin-card-top{display:block}.promo-admin-card-top .promo-state{margin-top:8px}.promo-admin-card-actions button{flex:1 1 auto}}
