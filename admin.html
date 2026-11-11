@@ -333,6 +333,48 @@
             opacity: 0.9;
         }
 
+        /* Acceso prioritario a usuarios conectados */
+        .admin-presence-feature {
+            margin: 0 0 20px;
+            padding: 18px 20px;
+            border: 1px solid #cbdde7;
+            border-left: 4px solid #3498db;
+            border-radius: 16px;
+            background: linear-gradient(120deg, #f1f7fa 0%, #f8fbf8 100%);
+            box-shadow: 0 7px 20px rgba(44, 62, 80, 0.08);
+        }
+
+        .admin-presence-feature .presence-copy h4 {
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+
+        .admin-presence-feature .presence-hint {
+            margin: 4px 0 8px;
+            color: #718092;
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        .admin-presence-feature #onlineUsersList {
+            margin-top: 0;
+        }
+
+        @media (max-width: 560px) {
+            .admin-presence-feature {
+                align-items: flex-start;
+                padding: 15px 13px;
+            }
+
+            .admin-presence-feature .presence-copy {
+                align-items: flex-start;
+            }
+
+            .admin-presence-feature .online-badge {
+                margin-left: auto;
+            }
+        }
+
         /* Estilos para formularios */
         .formulario {
             background: white;
@@ -1308,6 +1350,19 @@
 
     <main class="contenedor">
         <div id="mensaje-container"></div>
+
+        <!-- Acceso prioritario a la comunidad conectada -->
+        <section class="dashboard-section dashboard-presence admin-presence-feature" id="chartOnline" aria-label="Usuarios conectados">
+            <div class="presence-copy">
+                <span class="presence-dot" aria-hidden="true"></span>
+                <div>
+                    <h4>Usuarios conectados ahora</h4>
+                    <p class="presence-hint">Selecciona el nombre de un vecino para iniciar una conversación privada.</p>
+                    <div id="onlineUsersList" aria-live="polite">Inicia sesión para consultar usuarios conectados.</div>
+                </div>
+            </div>
+            <strong class="online-badge" id="onlineCount">—</strong>
+        </section>
 
         <div class="filtros" id="admin-tabs">
             <button class="filtro activo" data-tab="lista" title="Avisos" aria-label="Avisos">📋</button>
