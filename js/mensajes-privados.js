@@ -24,19 +24,29 @@
 
   function actualizarAtmosferaModal() {
     if (!modal) return;
-    const ahora = new Date();
-    const hora = ahora.getHours() + ahora.getMinutes() / 60;
-    const cielo = hora >= 6 && hora < 9 ? "amanecer"
-      : hora >= 9 && hora < 17 ? "dia"
-      : hora >= 17 && hora < 20 ? "atardecer"
-      : "noche";
-    if (modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
+    const header = document.querySelector(".header[data-cielo]");
+    if (!header) {
+      window.inicializarAtmosferaHeader?.(document);
+      return;
+    }
+    const cielo = header.dataset.cielo;
+    if (cielo && modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
   }
 
   function iniciarAtmosferaModal() {
     actualizarAtmosferaModal();
     if (modal.dataset.atmosferaActiva === "true") return;
     modal.dataset.atmosferaActiva = "true";
+
+    // El encabezado es la fuente de verdad: el modal solo refleja su estado.
+    const header = document.querySelector(".header");
+    if (header && "MutationObserver" in window) {
+      const observer = new MutationObserver(() => actualizarAtmosferaModal());
+      observer.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
+      modal.addEventListener("DOMNodeRemoved", () => observer.disconnect(), { once: true });
+    }
+
+    // Respaldo ligero para páginas donde el encabezado se inicializa después.
     const intervalo = window.setInterval(() => {
       if (!modal || !modal.isConnected) {
         window.clearInterval(intervalo);
