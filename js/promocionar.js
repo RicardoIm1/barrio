@@ -166,11 +166,6 @@
     client=await obtenerSupabaseClient();
     usuario=await Auth.requireAuth();
     if(!usuario){window.location.href='/login.html?redirect='+encodeURIComponent('/promocionar.html');return;}
-    // Separación de funciones: los administradores operan desde su módulo exclusivo.
-    if(usuario.rol==='admin'){
-      window.location.replace('/promociones-admin.html');
-      return;
-    }
     await Promise.all([cargarAvisos(),cargarCatalogo()]);
     actualizarMetaAviso();
     await cargarSolicitudes();
