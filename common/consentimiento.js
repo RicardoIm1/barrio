@@ -137,7 +137,7 @@
       #elbarrio-privacy-root .eb-privacy-options{margin:12px 0;padding:12px;border:1px solid #dce3e8;border-radius:10px;background:#f7f9fa}
       #elbarrio-privacy-root .eb-privacy-options label{display:flex;gap:10px;align-items:flex-start;margin:8px 0}
       #elbarrio-privacy-root .eb-privacy-options input{margin-top:4px}
-      #elbarrio-privacy-root .eb-privacy-manage{position:fixed;right:12px;bottom:12px;z-index:2147482999;background:#fff;color:#243746;border:1px solid #cbd5dc;border-radius:999px;padding:8px 12px;font:600 12px system-ui;box-shadow:0 3px 16px rgba(0,0,0,.14);cursor:pointer}
+      #elbarrio-privacy-root .eb-privacy-manage{position:fixed;left:12px;bottom:12px;z-index:2147482999;background:#fff;color:#243746;border:1px solid #cbd5dc;border-radius:999px;padding:8px 12px;font:600 12px system-ui;box-shadow:0 3px 16px rgba(0,0,0,.14);cursor:pointer}
       #elbarrio-privacy-root[hidden],#elbarrio-privacy-root [hidden]{display:none!important}
       @media(max-width:600px){#elbarrio-privacy-root{inset:auto 8px 8px}#elbarrio-privacy-root .eb-privacy-panel{padding:14px;border-radius:13px}#elbarrio-privacy-root .eb-privacy-actions{display:grid;grid-template-columns:1fr 1fr}#elbarrio-privacy-root .eb-privacy-actions .eb-accept{grid-column:1/-1}#elbarrio-privacy-root .eb-privacy-actions a{justify-content:center}}
       @media(prefers-reduced-motion:reduce){#elbarrio-privacy-root *{scroll-behavior:auto!important;transition:none!important}}
