@@ -250,7 +250,14 @@ async function construirUsuario(client, user) {
 }
 
 function actualizarEnlacesAdminHeader(usuario) {
+  const autenticado = Boolean(usuario?.id) && usuario?.activo !== false;
   const esAdmin = usuario?.rol === 'admin' && usuario?.activo !== false;
+
+  document.querySelectorAll('.authenticated-menu-link').forEach(link => {
+    link.hidden = !autenticado;
+    link.style.display = autenticado ? 'flex' : 'none';
+  });
+
   document.querySelectorAll('.admin-only-menu-link').forEach(link => {
     link.hidden = !esAdmin;
     link.style.display = esAdmin ? 'flex' : 'none';
