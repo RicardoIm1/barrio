@@ -249,9 +249,18 @@ async function construirUsuario(client, user) {
   };
 }
 
+function actualizarEnlacesAdminHeader(usuario) {
+  const esAdmin = usuario?.rol === 'admin' && usuario?.activo !== false;
+  document.querySelectorAll('.admin-only-menu-link').forEach(link => {
+    link.hidden = !esAdmin;
+    link.style.display = esAdmin ? 'flex' : 'none';
+  });
+}
+
 function guardarCompatibilidad(usuario, session) {
   localStorage.setItem('usuario', JSON.stringify(usuario));
   if (session?.access_token) localStorage.setItem('api_key', session.access_token);
+  actualizarEnlacesAdminHeader(usuario);
 }
 
 const Auth = {
@@ -303,6 +312,7 @@ const Auth = {
     if (error) { console.error('❌ Error cerrando sesión:', error); throw error; }
     localStorage.removeItem('usuario');
     localStorage.removeItem('api_key');
+    actualizarEnlacesAdminHeader(null);
     console.log('🔓 Sesión Supabase cerrada');
   }
 };
@@ -351,6 +361,7 @@ function inicializarHeaderAuth() {
     if (login) login.style.display = 'inline-flex';
     if (userArea) userArea.style.display = 'none';
   }
+  actualizarEnlacesAdminHeader(usuario);
 
   if (logout && logout.dataset.logoutInit !== '1') {
     logout.dataset.logoutInit = '1';
