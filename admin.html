@@ -2193,6 +2193,16 @@
         #tab-lista .tabla-admin th:nth-child(5),
         #tab-lista .tabla-admin td:nth-child(5) { width: 17%; }
 
+        /* Cuando no hay columna Acciones, redistribuir las cuatro columnas restantes. */
+        #tab-lista .tabla-admin.sin-acciones th:nth-child(1),
+        #tab-lista .tabla-admin.sin-acciones td:nth-child(1) { width: 10%; }
+        #tab-lista .tabla-admin.sin-acciones th:nth-child(2),
+        #tab-lista .tabla-admin.sin-acciones td:nth-child(2) { width: 40%; }
+        #tab-lista .tabla-admin.sin-acciones th:nth-child(3),
+        #tab-lista .tabla-admin.sin-acciones td:nth-child(3) { width: 30%; }
+        #tab-lista .tabla-admin.sin-acciones th:nth-child(4),
+        #tab-lista .tabla-admin.sin-acciones td:nth-child(4) { width: 20%; }
+
         /* Usuarios: correo y nombre pueden partirse en varias líneas */
         #tab-usuarios .tabla-admin th:nth-child(1),
         #tab-usuarios .tabla-admin td:nth-child(1) { width: 29%; }
