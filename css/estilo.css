@@ -10,8 +10,8 @@
 
 html {
     height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow-x: clip;
+    overflow-y: visible;
     scroll-behavior: smooth;
 }
 
@@ -35,7 +35,8 @@ body {
     line-height: 1.5;
     font-size: var(--fuente-cuerpo);
 
-    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
 }
 
 main,
@@ -110,9 +111,9 @@ main,
 /* Asegurar que sticky funcione */
 html,
 body {
-    overflow-x: hidden;
-    overflow-y: auto;
-    /* ← Importante: auto, no hidden */
+    /* Evita crear un scroll-container que anule el sticky del header. */
+    overflow-x: clip;
+    overflow-y: visible;
     height: auto;
 }
 
