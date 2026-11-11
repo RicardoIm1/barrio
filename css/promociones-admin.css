@@ -19,3 +19,5 @@
 .promo-preserve input{width:17px;height:17px;accent-color:#2c3e50}
 .promo-admin-empty{padding:14px;color:#8996a1;font-size:.8rem}
 @media(max-width:640px){.promo-admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.promo-admin-summary>div{padding:12px}.promo-admin-card-top{display:block}.promo-admin-card-top .promo-state{margin-top:8px}.promo-admin-card-actions button{flex:1 1 auto}}
+
+.promo-retention-note{width:100%;min-height:48px;margin-top:8px;padding:9px 10px;border:1px solid #dce4ea;border-radius:9px;font:inherit;font-size:.76rem;resize:vertical}
