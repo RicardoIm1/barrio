@@ -23,7 +23,7 @@
 .promo-price{margin:17px 0 1px;font-size:2rem;font-weight:800;letter-spacing:-.04em;color:#2c3e50}
 .promo-price small{font-size:.72rem;letter-spacing:0;font-weight:650;color:#87939d}
 .promo-product .promo-duration{min-height:0;margin-bottom:17px;color:#657888;font-size:.78rem}
-.promo-button,.promo-refresh{border:0;border-radius:11px;padding:11px 16px;background:#2c3e50;color:#fff;font:650 .82rem inherit;cursor:pointer;transition:transform .15s,background .15s}
+.promo-button,.promo-refresh{border:0;border-radius:11px;padding:11px 16px;background:#2c3e50;color:#fff;font:inherit;font-size:.82rem;font-weight:650;cursor:pointer;transition:transform .15s,background .15s}
 .promo-button{width:100%}
 .promo-button:hover,.promo-refresh:hover{background:#3e5a73;transform:translateY(-1px)}
 .promo-button:disabled{opacity:.55;cursor:wait;transform:none}
