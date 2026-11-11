@@ -868,22 +868,26 @@
       let observadorVideosAvisos = null;
 
       function prepararVideoAviso(video) {
-        if (!video || video.dataset.videoPreparado === "1") return;
-        video.dataset.videoPreparado = "1";
+        if (!video) return;
 
-        const poster = video.dataset.poster;
-        if (poster) {
-          video.poster = poster;
-          delete video.dataset.poster;
+        if (video.dataset.videoPreparado !== "1") {
+          video.dataset.videoPreparado = "1";
+
+          const poster = video.dataset.poster;
+          if (poster) {
+            video.poster = poster;
+            delete video.dataset.poster;
+          }
+
+          const source = video.querySelector("source[data-src]");
+          if (source) {
+            source.src = source.dataset.src;
+            delete source.dataset.src;
+            video.load();
+          }
         }
 
-        const source = video.querySelector("source[data-src]");
-        if (source) {
-          source.src = source.dataset.src;
-          delete source.dataset.src;
-          video.load();
-        }
-
+        // Al volver a entrar al viewport, reanuda el mismo video sin volver a solicitar su fuente.
         const reproduccion = video.play();
         if (reproduccion && typeof reproduccion.catch === "function") {
           reproduccion.catch(() => {
