@@ -411,7 +411,6 @@
             overflow-y: auto;
             padding: 17px 14px;
             border: 1px solid #d5e2e9;
-            border-left: 3px solid #3498db;
             border-radius: 17px;
             background: linear-gradient(155deg, #f4f8fa 0%, #ffffff 62%, #f5f8f7 100%);
             box-shadow: 0 8px 24px rgba(44, 62, 80, 0.08);
@@ -1536,7 +1535,6 @@
                 <table class="tabla-admin">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Imagen</th>
                             <th>Título / Estadísticas</th>
                             <th>Publicado por</th>
@@ -1546,7 +1544,7 @@
                     </thead>
                     <tbody id="tabla-avisos-cuerpo">
                         <tr>
-                            <td colspan="6" style="text-align: center; padding: 15px; color: #777;">Cargando registros
+                            <td colspan="5" style="text-align: center; padding: 15px; color: #777;">Cargando registros
                                 vecinales...</td>
                         </tr>
                     </tbody>
@@ -2178,25 +2176,22 @@
             display: none !important;
         }
 
-        .tabla-admin.sin-acciones th:nth-child(1) { width: 8% !important; }
-        .tabla-admin.sin-acciones th:nth-child(2) { width: 10% !important; }
-        .tabla-admin.sin-acciones th:nth-child(3) { width: 36% !important; }
-        .tabla-admin.sin-acciones th:nth-child(4) { width: 28% !important; }
-        .tabla-admin.sin-acciones th:nth-child(5) { width: 18% !important; }
+        .tabla-admin.sin-acciones th:nth-child(1) { width: 10% !important; }
+        .tabla-admin.sin-acciones th:nth-child(2) { width: 40% !important; }
+        .tabla-admin.sin-acciones th:nth-child(3) { width: 30% !important; }
+        .tabla-admin.sin-acciones th:nth-child(4) { width: 20% !important; }
 
-        /* Avisos: prioriza título y acciones sin perder ninguna columna */
+        /* Avisos: distribución sin columna de identificador */
         #tab-lista .tabla-admin th:nth-child(1),
-        #tab-lista .tabla-admin td:nth-child(1) { width: 7%; }
+        #tab-lista .tabla-admin td:nth-child(1) { width: 9%; }
         #tab-lista .tabla-admin th:nth-child(2),
-        #tab-lista .tabla-admin td:nth-child(2) { width: 9%; }
+        #tab-lista .tabla-admin td:nth-child(2) { width: 35%; }
         #tab-lista .tabla-admin th:nth-child(3),
-        #tab-lista .tabla-admin td:nth-child(3) { width: 29%; }
+        #tab-lista .tabla-admin td:nth-child(3) { width: 25%; }
         #tab-lista .tabla-admin th:nth-child(4),
-        #tab-lista .tabla-admin td:nth-child(4) { width: 19%; }
+        #tab-lista .tabla-admin td:nth-child(4) { width: 14%; }
         #tab-lista .tabla-admin th:nth-child(5),
-        #tab-lista .tabla-admin td:nth-child(5) { width: 14%; }
-        #tab-lista .tabla-admin th:nth-child(6),
-        #tab-lista .tabla-admin td:nth-child(6) { width: 22%; }
+        #tab-lista .tabla-admin td:nth-child(5) { width: 17%; }
 
         /* Usuarios: correo y nombre pueden partirse en varias líneas */
         #tab-usuarios .tabla-admin th:nth-child(1),
