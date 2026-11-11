@@ -22,11 +22,10 @@
   let enviando = false;
   let modal = null;
 
-  function actualizarAtmosferaModal() {
+  function actualizarAtmosferaModal(header) {
     if (!modal) return;
-    const header = document.querySelector(".header[data-cielo]");
-    if (!header) return;
-    const cielo = header.dataset.cielo;
+    const fuente = header || document.querySelector(".header[data-cielo]");
+    const cielo = fuente?.dataset?.cielo;
     if (cielo && modal.dataset.cielo !== cielo) modal.dataset.cielo = cielo;
   }
 
@@ -34,16 +33,25 @@
     if (!modal || modal.dataset.atmosferaActiva === "true") return;
     modal.dataset.atmosferaActiva = "true";
 
-    // El encabezado global mantiene el único reloj. El modal solo escucha su estado.
-    const header = document.querySelector(".header");
-    if (!header || !("MutationObserver" in window)) return;
+    // El encabezado global conserva el único reloj. Si aún no existe, esperamos
+    // su inserción sin intervalos; después solo observamos su atributo data-cielo.
+    let observerHeader = null;
+    const conectarHeader = () => {
+      const header = document.querySelector(".header");
+      if (!header) return false;
+      actualizarAtmosferaModal(header);
+      if (observerHeader) observerHeader.disconnect();
+      observerHeader = new MutationObserver(() => actualizarAtmosferaModal(header));
+      observerHeader.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
+      observerDocumento?.disconnect();
+      return true;
+    };
 
-    actualizarAtmosferaModal();
-    const observer = new MutationObserver(actualizarAtmosferaModal);
-    observer.observe(header, { attributes: true, attributeFilter: ["data-cielo"] });
-
-    // El modal se conserva en el DOM y se oculta al cerrar; el observador
-    // vive lo mismo que la página y solo escucha cambios en data-cielo.
+    let observerDocumento = null;
+    if (!conectarHeader() && "MutationObserver" in window) {
+      observerDocumento = new MutationObserver(() => conectarHeader());
+      observerDocumento.observe(document.documentElement, { childList: true, subtree: true });
+    }
   }
 
   function estilos() {
@@ -63,17 +71,21 @@
       .eb-inbox-button{margin-top:10px;padding:6px 11px;border:1px solid #d4a043;border-radius:999px;background:#fff;color:#34495e;font-size:12px;font-weight:700;cursor:pointer}\n      .eb-messages-guide{display:inline-flex;align-items:center;gap:5px;margin:10px 0 0 7px;padding:6px 10px;border:1px solid #dce6ed;border-radius:999px;background:rgba(255,255,255,.72);color:#527083;font-size:11px;font-weight:600;text-decoration:none;transition:background .18s,border-color .18s}\n      .eb-messages-guide:hover{background:#edf5f8;border-color:#9bb9c8;color:#2c5368}\n      .eb-messages-guide:focus-visible{outline:3px solid rgba(52,152,219,.35);outline-offset:2px}
       .eb-chat-overlay[hidden]{display:none!important}
       .eb-chat-overlay{position:fixed;inset:0;z-index:99990;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(25,39,52,.56);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:0;border-radius:22px;background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%);box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
-      .eb-chat-modal:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.95;background-image:radial-gradient(circle at 8% 24%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 17% 68%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 29% 31%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 43% 73%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 54% 22%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 68% 52%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 78% 19%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 65%,#dceaff 0 1px,transparent 1.8px);transition:opacity 1400ms ease}
-      .eb-chat-modal[data-cielo="dia"]{background:linear-gradient(180deg,#9fc8e2 0%,#d4e6ed 72%,#edf1ef 100%)}
-      .eb-chat-modal[data-cielo="amanecer"]{background:linear-gradient(180deg,#586d91 0%,#d59b9a 58%,#f4d2ad 100%)}
-      .eb-chat-modal[data-cielo="atardecer"]{background:linear-gradient(180deg,#354567 0%,#a86d83 57%,#f0b98d 100%)}
-      .eb-chat-modal[data-cielo="noche"]{background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%)}
-      .eb-chat-modal[data-cielo="dia"]:after{opacity:.12}
-      .eb-chat-modal[data-cielo="amanecer"]:after,.eb-chat-modal[data-cielo="atardecer"]:after{opacity:.5}
-      .eb-chat-modal[data-cielo="noche"]:after{opacity:.95}
+      .eb-chat-modal{position:relative;display:flex;flex-direction:column;width:min(570px,100%);height:min(700px,88vh);overflow:hidden;border:0;border-radius:22px;background:#f4f7f9;box-shadow:0 28px 90px rgba(22,39,54,.32),0 5px 18px rgba(22,39,54,.10);color:#2c3e50;isolation:isolate}
       .eb-chat-modal>*{position:relative;z-index:1}
-      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:rgba(28,48,72,.94);color:#fff}
+      .eb-chat-head{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%);color:#fff;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
+      .eb-chat-head:before,.eb-chat-head:after{content:"";position:absolute;pointer-events:none;transition:opacity 1400ms ease}
+      .eb-chat-head:before{z-index:0;inset:0;opacity:.9;background-image:radial-gradient(circle at 8% 24%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 17% 68%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 29% 31%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 43% 73%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 54% 22%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 68% 52%,#fff 0 1.2px,transparent 2px),radial-gradient(circle at 78% 19%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 65%,#dceaff 0 1px,transparent 1.8px)}
+      .eb-chat-head:after{z-index:0;inset:auto -8% -28px -8%;height:76px;opacity:.25;background:radial-gradient(ellipse at 16% 65%,#d9e4ef 0 13%,transparent 14%),radial-gradient(ellipse at 25% 50%,#d9e4ef 0 17%,transparent 18%),radial-gradient(ellipse at 35% 70%,#d9e4ef 0 14%,transparent 15%),radial-gradient(ellipse at 71% 62%,#d9e4ef 0 16%,transparent 17%),radial-gradient(ellipse at 82% 48%,#d9e4ef 0 18%,transparent 19%),radial-gradient(ellipse at 91% 70%,#d9e4ef 0 14%,transparent 15%);filter:blur(2px)}
+      .eb-chat-head>*{position:relative;z-index:1}
+      .eb-chat-modal[data-cielo="dia"] .eb-chat-head{background:linear-gradient(180deg,#9fc8e2 0%,#d4e6ed 72%,#edf1ef 100%)}
+      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head{background:linear-gradient(180deg,#586d91 0%,#d59b9a 58%,#f4d2ad 100%)}
+      .eb-chat-modal[data-cielo="atardecer"] .eb-chat-head{background:linear-gradient(180deg,#354567 0%,#a86d83 57%,#f0b98d 100%)}
+      .eb-chat-modal[data-cielo="noche"] .eb-chat-head{background:linear-gradient(180deg,#101b33 0%,#1d3152 62%,#405a78 100%)}
+      .eb-chat-modal[data-cielo="dia"] .eb-chat-head:before{opacity:.12}
+      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head:before,.eb-chat-modal[data-cielo="atardecer"] .eb-chat-head:before{opacity:.5}
+      .eb-chat-modal[data-cielo="noche"] .eb-chat-head:before{opacity:.95}
+      .eb-chat-modal[data-cielo="dia"] .eb-chat-head:after{opacity:.3}
       .eb-chat-head-copy{min-width:0;flex:1}
       .eb-chat-head strong{display:block;font-size:15px;font-weight:700;letter-spacing:.1px}
       .eb-chat-head small{display:block;margin-top:4px;color:rgba(239,245,249,.76);font-size:11px;letter-spacing:.2px}
