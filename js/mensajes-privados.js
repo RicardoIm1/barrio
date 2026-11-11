@@ -74,7 +74,16 @@
       .eb-chat-modal[data-cielo="amanecer"]:after,.eb-chat-modal[data-cielo="atardecer"]:after{opacity:.5}
       .eb-chat-modal[data-cielo="noche"]:after{opacity:.95}
       .eb-chat-modal>*{position:relative;z-index:1}
-      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;background:linear-gradient(125deg,rgba(16,27,51,.94) 0%,rgba(29,49,82,.92) 72%,rgba(64,90,120,.9) 100%);color:#fff}
+      .eb-chat-head{position:relative;display:flex;align-items:center;gap:12px;min-height:76px;padding:17px 20px;overflow:hidden;background:linear-gradient(125deg,rgba(16,27,51,.94) 0%,rgba(29,49,82,.92) 72%,rgba(64,90,120,.9) 100%);color:#fff;transition:background 1600ms cubic-bezier(.22,.61,.36,1)}
+      .eb-chat-head:after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.9;background-image:radial-gradient(circle at 9% 28%,#fff 0 1px,transparent 1.7px),radial-gradient(circle at 22% 72%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 38% 20%,#fff 0 1px,transparent 1.8px),radial-gradient(circle at 57% 67%,#fff 0 1.1px,transparent 1.9px),radial-gradient(circle at 73% 25%,#dceaff 0 1px,transparent 1.8px),radial-gradient(circle at 91% 70%,#fff 0 1px,transparent 1.8px);transition:opacity 1400ms ease}
+      .eb-chat-head>*{position:relative;z-index:1}
+      .eb-chat-modal[data-cielo="dia"] .eb-chat-head{background:linear-gradient(125deg,rgba(76,130,163,.94) 0%,rgba(111,158,177,.92) 72%,rgba(151,181,188,.9) 100%)}
+      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head{background:linear-gradient(125deg,rgba(48,65,96,.96) 0%,rgba(133,91,113,.93) 58%,rgba(196,135,119,.92) 100%)}
+      .eb-chat-modal[data-cielo="atardecer"] .eb-chat-head{background:linear-gradient(125deg,rgba(35,49,79,.97) 0%,rgba(112,72,101,.94) 58%,rgba(181,119,112,.92) 100%)}
+      .eb-chat-modal[data-cielo="noche"] .eb-chat-head{background:linear-gradient(125deg,rgba(16,27,51,.96) 0%,rgba(29,49,82,.94) 72%,rgba(64,90,120,.92) 100%)}
+      .eb-chat-modal[data-cielo="dia"] .eb-chat-head:after{opacity:.08}
+      .eb-chat-modal[data-cielo="amanecer"] .eb-chat-head:after,.eb-chat-modal[data-cielo="atardecer"] .eb-chat-head:after{opacity:.42}
+      .eb-chat-modal[data-cielo="noche"] .eb-chat-head:after{opacity:.9}
       .eb-chat-head-copy{min-width:0;flex:1}
       .eb-chat-head strong{display:block;font-size:15px;font-weight:700;letter-spacing:.1px}
       .eb-chat-head small{display:block;margin-top:4px;color:rgba(239,245,249,.76);font-size:11px;letter-spacing:.2px}
