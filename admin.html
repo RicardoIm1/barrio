@@ -375,6 +375,111 @@
             }
         }
 
+        /* Panel lateral de comunidad: columna persistente en escritorio */
+        @media (min-width: 1024px) {
+            main.contenedor:has(> #chartOnline) {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) 286px;
+                grid-template-rows: auto;
+                align-items: start;
+                column-gap: 22px;
+                row-gap: 0;
+            }
+
+            main.contenedor:has(> #chartOnline) > :not(#chartOnline) {
+                grid-column: 1;
+                min-width: 0;
+            }
+
+            main.contenedor > #chartOnline {
+                grid-column: 2;
+                grid-row: 1 / span 30;
+                position: sticky;
+                top: 88px;
+                z-index: 5;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                gap: 14px;
+                width: 100%;
+                max-height: calc(100vh - 108px);
+                overflow-y: auto;
+                padding: 17px 14px;
+                border: 1px solid #d5e2e9;
+                border-left: 3px solid #3498db;
+                border-radius: 17px;
+                background: linear-gradient(155deg, #f4f8fa 0%, #ffffff 62%, #f5f8f7 100%);
+                box-shadow: 0 8px 24px rgba(44, 62, 80, 0.08);
+            }
+
+            #chartOnline .presence-copy {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 11px;
+            }
+
+            #chartOnline .presence-copy > div {
+                width: 100%;
+            }
+
+            #chartOnline .presence-copy h4 {
+                font-size: .95rem;
+                line-height: 1.3;
+            }
+
+            #chartOnline .presence-hint {
+                margin: 6px 0 12px;
+                color: #718092;
+                font-size: .74rem;
+                line-height: 1.45;
+            }
+
+            #chartOnline #onlineUsersList {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 7px;
+                margin-top: 0;
+            }
+
+            #chartOnline .eb-online-user {
+                width: 100%;
+                justify-content: flex-start;
+                padding: 9px 10px;
+                border-radius: 11px;
+                text-align: left;
+                white-space: normal;
+            }
+
+            #chartOnline .eb-inbox-button {
+                width: 100%;
+                margin-top: 12px;
+                padding: 9px 11px;
+            }
+
+            #chartOnline .online-badge {
+                align-self: flex-start;
+                order: -1;
+            }
+        }
+
+        @media (max-width: 1023px) {
+            main.contenedor:has(> #chartOnline) {
+                display: flex;
+                flex-direction: column;
+            }
+
+            main.contenedor > #chartOnline {
+                order: 0;
+                width: 100%;
+                position: static;
+                max-height: none;
+                overflow: visible;
+            }
+        }
+
         /* Estilos para formularios */
         .formulario {
             background: white;
@@ -1351,18 +1456,18 @@
     <main class="contenedor">
         <div id="mensaje-container"></div>
 
-        <!-- Acceso prioritario a la comunidad conectada -->
-        <section class="dashboard-section dashboard-presence admin-presence-feature" id="chartOnline" aria-label="Usuarios conectados">
+        <!-- Panel lateral de comunidad conectada -->
+        <aside class="dashboard-section dashboard-presence admin-presence-feature" id="chartOnline" aria-label="Usuarios conectados ahora">
             <div class="presence-copy">
                 <span class="presence-dot" aria-hidden="true"></span>
                 <div>
                     <h4>Usuarios conectados ahora</h4>
-                    <p class="presence-hint">Selecciona el nombre de un vecino para iniciar una conversación privada.</p>
+                    <p class="presence-hint">Selecciona un vecino para iniciar una conversación privada.</p>
                     <div id="onlineUsersList" aria-live="polite">Inicia sesión para consultar usuarios conectados.</div>
                 </div>
             </div>
             <strong class="online-badge" id="onlineCount">—</strong>
-        </section>
+        </aside>
 
         <div class="filtros" id="admin-tabs">
             <button class="filtro activo" data-tab="lista" title="Avisos" aria-label="Avisos">📋</button>
