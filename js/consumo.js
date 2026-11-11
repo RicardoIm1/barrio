@@ -54,7 +54,7 @@
       $("barra-progreso").classList.toggle("watch",percent >= 60 && percent < 90);
       $("barra-progreso").classList.toggle("critical",percent >= 90);
       const status = $("estado-uso");
-      status.className = "usage-status";
+      status.className = "consumo-usage-status";
       if (percent >= 90) { status.textContent = "Nivel crítico. No ampliar cargas hasta recuperar capacidad."; status.classList.add("critical"); }
       else if (percent >= 80) { status.textContent = "Optimización prioritaria. Revisar archivos pesados y políticas de limpieza."; status.classList.add("watch"); }
       else if (percent >= 60) { status.textContent = "Conviene vigilar el crecimiento y revisar los archivos más pesados."; status.classList.add("watch"); }
@@ -62,7 +62,7 @@
       $("bucket-grid").innerHTML = (data?.buckets || []).map(bucket => {
         const visibility = bucket.public ? "Público" : "Privado";
         const extra = [Number(bucket.images||0)+" imágenes",Number(bucket.videos||0)+" videos",Number(bucket.files||0)+" archivos"].join(" · ");
-        return '<article class="bucket-card"><div class="bucket-head"><span class="bucket-name">'+escapeHtml(bucket.name)+'</span><span class="bucket-visibility">'+visibility+'</span></div><div class="bucket-size">'+formatBytes(bucket.bytes)+'</div><div class="bucket-meta">'+extra+'<br>Límite por archivo: '+(bucket.file_size_limit ? formatBytes(bucket.file_size_limit) : "No definido")+'</div></article>';
+        return '<article class="consumo-bucket-card"><div class="consumo-bucket-head"><span class="consumo-bucket-name">'+escapeHtml(bucket.name)+'</span><span class="consumo-bucket-visibility">'+visibility+'</span></div><div class="consumo-bucket-size">'+formatBytes(bucket.bytes)+'</div><div class="consumo-bucket-meta">'+extra+'<br>Límite por archivo: '+(bucket.file_size_limit ? formatBytes(bucket.file_size_limit) : "No definido")+'</div></article>';
       }).join("") || '<p>No hay buckets registrados.</p>';
       const fecha = data?.generated_at ? new Date(data.generated_at) : new Date();
       $("actualizado").textContent = "Actualizado: " + fecha.toLocaleString("es-MX",{dateStyle:"medium",timeStyle:"short"});
