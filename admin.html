@@ -445,7 +445,17 @@
             text-align: left;
             white-space: normal;
         }
-        #chartOnline .eb-inbox-button { width: 100%; margin-top: 12px; padding: 9px 11px; }
+        #chartOnline .eb-inbox-button {
+            align-self: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            max-width: calc(100% - 16px);
+            margin: 14px 8px 6px;
+            padding: 10px 17px;
+            box-sizing: border-box;
+        }
         #chartOnline .online-badge { align-self: flex-start; order: -1; }
 
         @media (max-width: 1023px) {
